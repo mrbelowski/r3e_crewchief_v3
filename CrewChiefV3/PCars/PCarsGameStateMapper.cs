@@ -221,12 +221,30 @@ namespace CrewChiefV3.PCars
             currentGameState.SessionData.IsRacingSameCarBehind = previousGameState != null && previousGameState.getOpponentIdBehind() == currentGameState.getOpponentIdBehind();
             currentGameState.SessionData.IsRacingSameCarInFront = previousGameState != null && previousGameState.getOpponentIdInFront() == currentGameState.getOpponentIdInFront();
 
-            currentGameState.SessionData.LapTimeBestPlayer = shared.mPersonalFastestLapTime;
             currentGameState.SessionData.LapTimePrevious = shared.mLastLapTime;
+            if (previousGameState != null && previousGameState.SessionData.LapTimeBestPlayer > 0)
+            {
+                if (shared.mLastLapTime > 0 && shared.mLastLapTime < previousGameState.SessionData.LapTimeBestPlayer)
+                {
+                    currentGameState.SessionData.LapTimeBestPlayer = shared.mLastLapTime;
+                }
+                else
+                {
+                    currentGameState.SessionData.LapTimeBestPlayer = previousGameState.SessionData.LapTimeBestPlayer;
+                }
+            }
+            else
+            {
+                currentGameState.SessionData.LapTimeBestPlayer = shared.mLastLapTime;
+            }
+            // TODO: the available times in the block are *all* for the player :(
+            if (previousGameState == null || !currentGameState.SessionData.IsNewSector)
+            {
+                currentGameState.SessionData.LapTimeSessionBest = currentGameState.getBestOpponentLapTime();
+                currentGameState.SessionData.LapTimeSessionBestPlayerClass = currentGameState.SessionData.LapTimeSessionBest;
+            }
             currentGameState.SessionData.LapTimeCurrent = shared.mCurrentTime;
-            currentGameState.SessionData.LapTimeSessionBest = shared.mSessionFastestLapTime;
-            currentGameState.SessionData.LapTimeSessionBestPlayerClass = shared.mSessionFastestLapTime;
-            currentGameState.SessionData.LapTimeDeltaSelf = shared.mLastLapTime - shared.mSessionFastestLapTime;
+            currentGameState.SessionData.LapTimeDeltaSelf = shared.mLastLapTime - currentGameState.SessionData.LapTimeBestPlayer;
             currentGameState.SessionData.LapTimeDeltaLeader = shared.mLastLapTime - shared.mSessionFastestLapTime; // is this appropriate?
             currentGameState.SessionData.TimeDeltaBehind = shared.mSplitTimeBehind;
             currentGameState.SessionData.TimeDeltaFront = shared.mSplitTimeAhead;
@@ -402,6 +420,7 @@ namespace CrewChiefV3.PCars
                 opponentData.CurrentSectorNumber = (int)sector;
                 if (opponentData.CurrentSectorNumber == 1)
                 {
+                    opponentData.approximateLastLapTime = sessionRunningTime - opponentData.SessionTimeAtEndOfLastSector3;
                     opponentData.SessionTimeAtEndOfLastSector3 = sessionRunningTime;
                     opponentData.LapsCompletedAtEndOfLastSector3 = (int)completedLaps;
                 }

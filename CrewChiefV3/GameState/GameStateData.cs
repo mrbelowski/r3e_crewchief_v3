@@ -265,13 +265,15 @@ namespace CrewChiefV3.GameState
         public float SessionTimeAtEndOfLastSector2 = 0;
 
         public float SessionTimeAtEndOfLastSector3 = 0;
-
+        
         public int LapsCompletedAtEndOfLastSector1 = 0;
 
         public int LapsCompletedAtEndOfLastSector2 = 0;
 
         public int LapsCompletedAtEndOfLastSector3 = 0;
 
+        public float approximateLastLapTime = 0;
+        
         // TODO: the logic in this method is bascially bollocks
         public OpponentDelta getTimeDifferenceToPlayer(SessionData playerSessionData)
         {
@@ -523,6 +525,20 @@ namespace CrewChiefV3.GameState
                 }
             }
             return -1;
+        }
+
+        public float getBestOpponentLapTime()
+        {
+            float bestLapTime = -1;
+            foreach (KeyValuePair<int, OpponentData> entry in OpponentData)
+            {
+                if (entry.Value.approximateLastLapTime > 0 &&
+                    (bestLapTime == -1 || entry.Value.approximateLastLapTime < bestLapTime))
+                {
+                    bestLapTime = entry.Value.approximateLastLapTime;
+                }
+            }
+            return bestLapTime;
         }
 
         public void display()

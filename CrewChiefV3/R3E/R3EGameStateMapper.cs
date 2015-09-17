@@ -95,7 +95,13 @@ namespace CrewChiefV3.RaceRoom
                 lastSessionRunningTime > currentGameState.SessionData.SessionRunningTime)
             {
                 currentGameState.SessionData.IsNewSession = true;
-                Console.WriteLine("New session");
+                Console.WriteLine("New session, trigger data:");
+                Console.WriteLine("lastSessionPhase = " + lastSessionPhase);
+                Console.WriteLine("lastSessionRunningTime = " + lastSessionRunningTime);
+                Console.WriteLine("currentSessionPhase = " + currentGameState.SessionData.SessionPhase);
+                Console.WriteLine("rawSessionPhase = " + shared.SessionPhase);
+                Console.WriteLine("currentSessionRunningTime = " + currentGameState.SessionData.SessionRunningTime);
+
                 currentGameState.SessionData.EventIndex = shared.EventIndex;
                 currentGameState.SessionData.SessionIteration = shared.SessionIteration;
             }
