@@ -181,22 +181,25 @@ namespace CrewChiefV3.Events
                         audioPlayer.queueClip(folderOneLapEstimate, 0, this);
                     }
                 }
-                else if (initialised && currentGameState.SessionData.SessionNumberOfLaps <= 0 && !playedHalfTimeFuelEstimate && currentGameState.SessionData.SessionTimeRemaining <= halfTime &&
-                    averageUsagePerMinute > 0)
+                else if (initialised && currentGameState.SessionData.SessionNumberOfLaps <= 0 && !playedHalfTimeFuelEstimate &&
+                    currentGameState.SessionData.SessionTimeRemaining <= halfTime && currentGameState.SessionData.SessionTimeRemaining > halfTime - 30 && averageUsagePerMinute > 0)
                 {
                     Console.WriteLine("Half race distance. Fuel in tank = " + currentGameState.FuelData.FuelLeft + ", average usage per minute = " + averageUsagePerMinute);
                     playedHalfTimeFuelEstimate = true;
-                    if (enableFuelMessages && averageUsagePerMinute * halfTime / 60 > currentGameState.FuelData.FuelLeft
-                        && currentGameState.FuelData.FuelLeft / fuelAfter15Seconds < 0.6)
+                    if (enableFuelMessages)
                     {
-                        audioPlayer.queueClip(folderHalfDistanceLowFuel, 0, this);
-                    }
-                    else
-                    {
-                        audioPlayer.queueClip(folderHalfDistanceGoodFuel, 0, this);
+                        if (averageUsagePerMinute * halfTime / 60 > currentGameState.FuelData.FuelLeft && currentGameState.FuelData.FuelLeft / fuelAfter15Seconds < 0.6)
+                        {
+                            audioPlayer.queueClip(folderHalfDistanceLowFuel, 0, this);
+                        }
+                        else
+                        {
+                            audioPlayer.queueClip(folderHalfDistanceGoodFuel, 0, this);
+                        }
                     }
                 }
-                else if (initialised && currentGameState.SessionData.SessionNumberOfLaps <= 0 && currentGameState.SessionData.SessionRunningTime > gameTimeAtLastFuelWindowUpdate + (60 * fuelUseSampleTime))
+                else if (initialised && currentGameState.SessionData.SessionNumberOfLaps <= 0 && 
+                    currentGameState.SessionData.SessionRunningTime > gameTimeAtLastFuelWindowUpdate + (60 * fuelUseSampleTime))
                 {
                     // it's 2 minutes since the last fuel window check
                     gameTimeAtLastFuelWindowUpdate = currentGameState.SessionData.SessionRunningTime;
