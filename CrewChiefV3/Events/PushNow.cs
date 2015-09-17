@@ -120,38 +120,44 @@ namespace CrewChiefV3.Events
         private Boolean checkGaps(GameStateData currentGameState, int numLapsLeft)
         {
             Boolean playedMessage = false;
-            float opponentInFrontBestLap = getOpponentBestLapInWindow(currentGameState.SessionData.LapTimeSessionBest, true);
-            float opponentBehindBestLap = getOpponentBestLapInWindow(currentGameState.SessionData.LapTimeSessionBest, false);
-            if (currentGameState.SessionData.Position > 1 && pushDataInFront.Count >= previousDataWindowSizeToCheck && opponentInFrontBestLap > 0 &&
-                (opponentInFrontBestLap - currentGameState.SessionData.LapTimeBestPlayer) * numLapsLeft > currentGameState.SessionData.TimeDeltaFront)
+            if (currentGameState.SessionData.Position > 1 && pushDataInFront.Count >= previousDataWindowSizeToCheck)
             {
-                // going flat out, we're going to catch the guy ahead us before the end
-                playedMessage = true;
-                if (currentGameState.SessionData.Position == 2)
+                float opponentInFrontBestLap = getOpponentBestLapInWindow(currentGameState.SessionData.LapTimeSessionBest, true);
+                if (opponentInFrontBestLap > 0 && 
+                    (opponentInFrontBestLap - currentGameState.SessionData.LapTimeBestPlayer) * numLapsLeft > currentGameState.SessionData.TimeDeltaFront)
                 {
-                    audioPlayer.queueClip(folderPushToGetWin, 0, this);
-                }
-                else if (currentGameState.SessionData.Position == 3)
-                {
-                    audioPlayer.queueClip(folderPushToGetSecond, 0, this);
-                }
-                else if (currentGameState.SessionData.Position == 4)
-                {
-                    audioPlayer.queueClip(folderPushToGetThird, 0, this);
-                }
-                else
-                {
-                    audioPlayer.queueClip(folderPushToImprove, 0, this);
+                    // going flat out, we're going to catch the guy ahead us before the end
+                    playedMessage = true;
+                    if (currentGameState.SessionData.Position == 2)
+                    {
+                        audioPlayer.queueClip(folderPushToGetWin, 0, this);
+                    }
+                    else if (currentGameState.SessionData.Position == 3)
+                    {
+                        audioPlayer.queueClip(folderPushToGetSecond, 0, this);
+                    }
+                    else if (currentGameState.SessionData.Position == 4)
+                    {
+                        audioPlayer.queueClip(folderPushToGetThird, 0, this);
+                    }
+                    else
+                    {
+                        audioPlayer.queueClip(folderPushToImprove, 0, this);
+                    }
                 }
             }
-            else if (!isLast && pushDataBehind.Count >= previousDataWindowSizeToCheck && opponentBehindBestLap > 0 &&
-                (currentGameState.SessionData.LapTimeBestPlayer - opponentBehindBestLap) * numLapsLeft > currentGameState.SessionData.TimeDeltaBehind)
+            else if (!isLast && pushDataBehind.Count >= previousDataWindowSizeToCheck)
             {
-                // even with us going flat out, the guy behind is going to catch us before the end
-                playedMessage = true;
-                Console.WriteLine("might lose this position. Player best lap = " + currentGameState.SessionData.LapTimeBestPlayer + " laps left = "+ numLapsLeft +
-                    " opponent best lap = " + opponentBehindBestLap + " time delta = " + currentGameState.SessionData.TimeDeltaBehind);
-                audioPlayer.queueClip(folderPushToHoldPosition, 0, this);
+                float opponentBehindBestLap = getOpponentBestLapInWindow(currentGameState.SessionData.LapTimeSessionBest, false);
+                if (opponentBehindBestLap > 0 &&
+                    (currentGameState.SessionData.LapTimeBestPlayer - opponentBehindBestLap) * numLapsLeft > currentGameState.SessionData.TimeDeltaBehind)
+                {
+                    // even with us going flat out, the guy behind is going to catch us before the end
+                    playedMessage = true;
+                    Console.WriteLine("might lose this position. Player best lap = " + currentGameState.SessionData.LapTimeBestPlayer + " laps left = " + numLapsLeft +
+                        " opponent best lap = " + opponentBehindBestLap + " time delta = " + currentGameState.SessionData.TimeDeltaBehind);
+                    audioPlayer.queueClip(folderPushToHoldPosition, 0, this);
+                }
             }
             return playedMessage;
         }
