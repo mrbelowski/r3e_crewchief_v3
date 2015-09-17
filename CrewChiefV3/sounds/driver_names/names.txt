@@ -1,0 +1,180 @@
+knight:night
+piquet:peekay
+Andersson:Anderson
+Berjot:Beryot
+Brand:
+Calcich:Calitch
+Correard:Corryard
+Ehtamo:Ettamo
+Filippini:
+Hing:
+Holmgaard:
+Holmlund Jørgensen:Yorgensen
+Keim:Keem
+Klemola:
+Macedo:Masedo
+Mönchmeier:Monchmeyer
+Navone:Navown
+Petersson:
+Piotr Borkiewicz:Borkewitch
+Schnieders:Shniders
+Scott Taylor:Taylor
+Stevenson:
+Tauhardt:
+Wetzel:
+Allen:
+Boland:
+Bradshaw:
+Bruun Christensen:Christensen
+César:Sayzar
+Claisse:Clayse
+Coffey:
+de Vries:
+de Zwart:
+Dunand:
+El Khereiji:Kereiiji
+Fokker Palmisano:Palmisano
+Govender:
+Green:
+Langkau:
+Layer:
+Lemke:
+Møller:Moller
+Olofsson:
+Stuermer:
+Williams:
+Young:
+Andre Oddene:Oddene
+Aul:All
+Bersano:
+Chaves:Chavez
+Dashey:
+Gulyas:
+Hampson:
+James:
+Korpak:
+Kütt:
+Mercier:
+Moersch:
+Pettett:
+Rae:
+Rogers:
+Schall:Shawl
+Schild:
+Silbernagel:
+van Meerbeek:
+Venker:
+Zawada:
+Banac:
+Båth:Bath
+Bortolin:
+Campo:
+Carvalho:Carvallo
+Dinstuehler:Dinstooler
+Dries:
+Fernandez Ramos:Ramos
+Gómez:Gomez
+Gramss:
+Hicks:
+Kremer:
+Merrild:
+Rashid:Rasheed
+Ratajczyk:Ratachick
+Rodin:
+Schaap:
+Theobald:
+Vogel:
+Vomberg:
+Amiel:Ammeel
+Anderson:
+Antonides:
+Barrington:
+Battye:
+Develter:
+Dillon:
+Drexler:
+Emslander:
+F. de Bobadilla:De Bobadilla
+Fernandez:Hernandez
+Girard:
+Heineman:
+Iglesias:
+Larsson:
+Rowan:
+Savard:
+Scotti:
+Sofron:
+Souza:
+Zijlstra:
+Azevedo:
+Beran:
+Campos:
+Cardoso:
+Carrera:
+De Masi:
+Decroix:
+Kennedy:
+Kleber:
+M. Tomas:
+Martinez:
+Mercy:
+Michael:
+Moncalieri:
+Navarrete Rojas:
+Rambert:
+Sellhorn:
+Simko:
+Tumbas:
+Vidén:
+Weigel:
+Roettenbacher:
+Reed:
+Lo Porto:
+Mandel:
+Vitória:
+Tomkins:
+Bell:
+Gabor:
+Wendt:
+Schmidt:
+Goldhorn:
+H Schmidt:
+Scavone:
+Szczechowicz:
+Thomson:
+Weisenfeld:
+Al Mutawaa:
+Alfaro:
+Bundy:
+John Morgan:
+Kravarik:
+Lindstrem:
+Lloyd:
+Mason:
+Maziarka:
+Negretti:
+Oliveira:
+Paulik:
+Ray Houston:
+Siegel:
+Simmonds:
+Valiullin:
+Verhoef:
+Vorontsov:
+Mathieu:
+Bencze:
+Cleverley:
+Faulds:
+Flegontov:
+Higgins:
+Hyun-myung:
+Lehmann:
+Lipp:
+Lorenz:
+Newell:
+Puiravaud:
+Schaller:
+Silverii:
+Terry:
+Unsen:
+Mathieu:
