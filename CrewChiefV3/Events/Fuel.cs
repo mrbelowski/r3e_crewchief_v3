@@ -98,6 +98,11 @@ namespace CrewChiefV3.Events
             fuelUseActive = false;
         }
 
+        public override List<SessionType> applicableSessionTypes
+        {
+            get { return new List<SessionType> { SessionType.Race }; }
+        }
+
         override protected void triggerInternal(GameStateData previousGameState, GameStateData currentGameState)
         {
             if (currentGameState.SessionData.SessionType == SessionType.Race && currentGameState.FuelData.FuelUseActive)

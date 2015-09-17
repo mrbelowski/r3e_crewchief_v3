@@ -39,7 +39,7 @@ namespace CrewChiefV3.Events
             isLast = false;
         }
         
-        private float getOpponentBestLapInWindow(Boolean ahead)
+        private float getOpponentBestLapInWindow(float lapTimeSessionBest, Boolean ahead)
         {
             float bestLap = -1;
             if (ahead)
@@ -47,7 +47,7 @@ namespace CrewChiefV3.Events
                 for (int i = pushDataInFront.Count - 1; i > pushDataInFront.Count - previousDataWindowSizeToCheck; i--)
                 {
                     float thisLap = pushDataInFront[i].lapTime + (pushDataInFront[i - 1].gap - pushDataInFront[i].gap);
-                    if (bestLap == -1 || bestLap > thisLap)
+                    if ((bestLap == -1 || bestLap > thisLap) && bestLap >= lapTimeSessionBest)
                     {
                         bestLap = thisLap;
                     }
@@ -58,7 +58,7 @@ namespace CrewChiefV3.Events
                 for (int i = pushDataBehind.Count - 1; i > pushDataBehind.Count - previousDataWindowSizeToCheck; i--)
                 {
                     float thisLap = pushDataBehind[i].lapTime - (pushDataBehind[i - 1].gap - pushDataBehind[i].gap);
-                    if (bestLap == -1 || bestLap > thisLap)
+                    if ((bestLap == -1 || bestLap > thisLap) && bestLap >= lapTimeSessionBest)
                     {
                         bestLap = thisLap;
                     }
@@ -92,7 +92,7 @@ namespace CrewChiefV3.Events
                     currentGameState.SessionData.SessionTimeRemaining < 4 * 60 && currentGameState.SessionData.SessionTimeRemaining > 2 * 60)
             {
                 // estimate the number of remaining laps - be optimistic...
-                int numLapsLeft = (int)Math.Ceiling((double)currentGameState.SessionData.SessionTimeRemaining / (double)currentGameState.SessionData.LapTimeBest);
+                int numLapsLeft = (int)Math.Ceiling((double)currentGameState.SessionData.SessionTimeRemaining / (double)currentGameState.SessionData.LapTimeBestPlayer);
                 playedNearEndTimePush = checkGaps(currentGameState, numLapsLeft);
             }
             else if (currentGameState.SessionData.SessionNumberOfLaps > 0 && currentGameState.SessionData.SessionNumberOfLaps - currentGameState.SessionData.CompletedLaps <= 4 &&
@@ -121,7 +121,7 @@ namespace CrewChiefV3.Events
         {
             Boolean playedMessage = false;
             if (currentGameState.SessionData.Position > 1 && pushDataInFront.Count >= previousDataWindowSizeToCheck &&
-                (getOpponentBestLapInWindow(true) - currentGameState.SessionData.LapTimeBest) * numLapsLeft > currentGameState.SessionData.TimeDeltaFront)
+                (getOpponentBestLapInWindow(currentGameState.SessionData.LapTimeSessionBest, true) - currentGameState.SessionData.LapTimeBestPlayer) * numLapsLeft > currentGameState.SessionData.TimeDeltaFront)
             {
                 // going flat out, we're going to catch the guy ahead us before the end
                 playedMessage = true;
@@ -143,7 +143,7 @@ namespace CrewChiefV3.Events
                 }
             }
             else if (!isLast && pushDataBehind.Count >= previousDataWindowSizeToCheck &&
-                (currentGameState.SessionData.LapTimeBest - getOpponentBestLapInWindow(false)) * numLapsLeft > currentGameState.SessionData.TimeDeltaBehind)
+                (currentGameState.SessionData.LapTimeBestPlayer - getOpponentBestLapInWindow(currentGameState.SessionData.LapTimeSessionBest, false)) * numLapsLeft > currentGameState.SessionData.TimeDeltaBehind)
             {
                 // even with us going flat out, the guy behind is going to catch us before the end
                 playedMessage = true;

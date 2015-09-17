@@ -165,7 +165,7 @@ namespace CrewChiefV3.GameState
         public int CompletedLaps = 0;
 
         // Unit: Seconds (-1.0 = none)
-        public Single LapTimeBest = -1;
+        public Single LapTimeBestPlayer = -1;
 
         // Unit: Seconds (-1.0 = none)
         public Single LapTimePrevious = -1;
@@ -187,10 +187,9 @@ namespace CrewChiefV3.GameState
         public Single SessionTimeRemaining = 0;
 
         // ...
-        public Single LapTimeBestLeader = 0;
+        public Single LapTimeSessionBest = 0;
 
-        // ...
-        public Single LapTimeBestLeaderClass = 0;
+        public Single LapTimeSessionBestPlayerClass = 0;
 
         // ...
         public Single LapTimeDeltaSelf = 0;

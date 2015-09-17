@@ -86,8 +86,10 @@ namespace CrewChiefV3.RaceRoom
             currentGameState.SessionData.SessionType = mapToSessionType(shared);
             currentGameState.SessionData.SessionRunningTime = (float)shared.Player.GameSimulationTime;
             currentGameState.ControlData.ControlType = mapToControlType(shared.ControlType); // TODO: the rest of the control data
+            int previousLapsCompleted = previousGameState == null ? 0 : previousGameState.SessionData.CompletedLaps;
             currentGameState.SessionData.SessionPhase = mapToSessionPhase(lastSessionPhase, lastSessionRunningTime,
-                currentGameState.SessionData.SessionRunningTime, shared.SessionPhase, currentGameState.ControlData.ControlType);
+                currentGameState.SessionData.SessionRunningTime, shared.SessionPhase, currentGameState.ControlData.ControlType,
+                previousLapsCompleted, shared.CompletedLaps);
 
             if ((lastSessionPhase != currentGameState.SessionData.SessionPhase && (lastSessionPhase == SessionPhase.Unavailable || lastSessionPhase == SessionPhase.Finished)) ||
                 lastSessionRunningTime > currentGameState.SessionData.SessionRunningTime)
@@ -161,9 +163,39 @@ namespace CrewChiefV3.RaceRoom
             currentGameState.SessionData.Flag = FlagEnum.UNKNOWN;
             currentGameState.SessionData.SessionTimeRemaining = shared.SessionTimeRemaining;
             currentGameState.SessionData.CompletedLaps = shared.CompletedLaps;     
-            currentGameState.SessionData.LapTimeBest = shared.LapTimeBest;
-            currentGameState.SessionData.LapTimeBestLeader = shared.LapTimeBestLeader;
-            currentGameState.SessionData.LapTimeBestLeaderClass = shared.LapTimeBestLeaderClass;
+            currentGameState.SessionData.LapTimeBestPlayer = shared.LapTimeBest;
+
+            float lapTimeBestLeader = shared.LapTimeBestLeader; 
+            float lapTimeBestLeaderClass = shared.LapTimeBestLeaderClass;
+            float lapTimeBestPlayer = shared.LapTimeBest;
+            if (lapTimeBestLeader > 0 && 
+                (currentGameState.SessionData.LapTimeSessionBest <= 0 || currentGameState.SessionData.LapTimeSessionBest > lapTimeBestLeader))
+            {
+                currentGameState.SessionData.LapTimeSessionBest = lapTimeBestLeader;
+            }
+            if (lapTimeBestLeaderClass > 0 &&
+                (currentGameState.SessionData.LapTimeSessionBestPlayerClass <= 0 || currentGameState.SessionData.LapTimeSessionBestPlayerClass > lapTimeBestLeaderClass))
+            {
+                currentGameState.SessionData.LapTimeSessionBestPlayerClass = lapTimeBestLeaderClass;
+                if (lapTimeBestLeaderClass < currentGameState.SessionData.LapTimeSessionBest)
+                {
+                    currentGameState.SessionData.LapTimeSessionBest = lapTimeBestLeaderClass;
+                }
+            }
+            if (lapTimeBestPlayer > 0 &&
+                (currentGameState.SessionData.LapTimeBestPlayer <= 0 || currentGameState.SessionData.LapTimeBestPlayer > lapTimeBestPlayer))
+            {
+                currentGameState.SessionData.LapTimeBestPlayer = lapTimeBestPlayer;
+                if (lapTimeBestPlayer < currentGameState.SessionData.LapTimeSessionBestPlayerClass)
+                {
+                    currentGameState.SessionData.LapTimeSessionBestPlayerClass = lapTimeBestPlayer;
+                }
+                if (lapTimeBestPlayer < currentGameState.SessionData.LapTimeSessionBest)
+                {
+                    currentGameState.SessionData.LapTimeSessionBest = lapTimeBestPlayer;
+                }
+            }
+
             currentGameState.SessionData.LapTimeCurrent = shared.LapTimeCurrent;
             currentGameState.SessionData.CurrentLapIsValid = currentGameState.SessionData.LapTimeCurrent != -1;
             currentGameState.SessionData.LapTimeDeltaLeader = shared.LapTimeDeltaLeader;
@@ -488,12 +520,20 @@ namespace CrewChiefV3.RaceRoom
          * Gets the current session phase. If the transition is valid this is returned, otherwise the
          * previous phase is returned
          */
-        private SessionPhase mapToSessionPhase(SessionPhase lastSessionPhase, float lastSessionRunningTime, float thisSessionRunningTime, int r3eSessionPhase, ControlType controlType)
+        private SessionPhase mapToSessionPhase(SessionPhase lastSessionPhase, float lastSessionRunningTime, float thisSessionRunningTime, 
+            int r3eSessionPhase, ControlType controlType, int previousLapsCompleted, int currentLapsCompleted)
         {
             if ((int)RaceRoomConstant.SessionPhase.Checkered == r3eSessionPhase && lastSessionPhase == SessionPhase.Green)
             {
                 // only allow a transition to checkered if the last state was green
                 return SessionPhase.Checkered;
+            }
+            else if (SessionPhase.Checkered == lastSessionPhase)
+            {
+                if (previousLapsCompleted != currentLapsCompleted || controlType == ControlType.AI)
+                {
+                    return SessionPhase.Finished;
+                }
             }
             else if ((int)RaceRoomConstant.SessionPhase.Countdown == r3eSessionPhase)
             {
@@ -520,7 +560,7 @@ namespace CrewChiefV3.RaceRoom
                 else
                 {
                     return SessionPhase.Green;
-                }                
+                }
             }
             else if ((int)RaceRoomConstant.SessionPhase.Gridwalk == r3eSessionPhase)
             {

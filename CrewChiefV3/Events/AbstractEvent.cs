@@ -12,12 +12,12 @@ namespace CrewChiefV3.Events
 
         protected PearlsOfWisdom pearlsOfWisdom;
 
-        protected virtual List<SessionType> applicableSessionTypes 
+        public virtual List<SessionType> applicableSessionTypes 
         {
             get { return new List<SessionType> { SessionType.Practice, SessionType.Qualify, SessionType.Race }; }
         }
 
-        protected virtual List<SessionPhase> applicableSessionPhases
+        public virtual List<SessionPhase> applicableSessionPhases
         {
             get { return new List<SessionPhase> { SessionPhase.Green }; }
         }

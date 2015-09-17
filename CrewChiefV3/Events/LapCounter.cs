@@ -33,7 +33,7 @@ namespace CrewChiefV3.Events
 
         private Boolean enableSessionEndMessages = UserSettings.GetUserSettings().getBoolean("enable_session_end_messages");
 
-        protected override List<SessionPhase> applicableSessionPhases
+        public override List<SessionPhase> applicableSessionPhases
         {
             get { return new List<SessionPhase> { SessionPhase.Countdown, SessionPhase.Formation, SessionPhase.Green, SessionPhase.Checkered, SessionPhase.Finished }; }
         }

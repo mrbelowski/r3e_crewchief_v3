@@ -221,10 +221,11 @@ namespace CrewChiefV3.PCars
             currentGameState.SessionData.IsRacingSameCarBehind = previousGameState != null && previousGameState.getOpponentIdBehind() == currentGameState.getOpponentIdBehind();
             currentGameState.SessionData.IsRacingSameCarInFront = previousGameState != null && previousGameState.getOpponentIdInFront() == currentGameState.getOpponentIdInFront();
 
-            currentGameState.SessionData.LapTimeBest = shared.mPersonalFastestLapTime;
-            currentGameState.SessionData.LapTimeBestLeader = shared.mSessionFastestLapTime;
+            currentGameState.SessionData.LapTimeBestPlayer = shared.mPersonalFastestLapTime;
             currentGameState.SessionData.LapTimePrevious = shared.mLastLapTime;
             currentGameState.SessionData.LapTimeCurrent = shared.mCurrentTime;
+            currentGameState.SessionData.LapTimeSessionBest = shared.mSessionFastestLapTime;
+            currentGameState.SessionData.LapTimeSessionBestPlayerClass = shared.mSessionFastestLapTime;
             currentGameState.SessionData.LapTimeDeltaSelf = shared.mLastLapTime - shared.mSessionFastestLapTime;
             currentGameState.SessionData.LapTimeDeltaLeader = shared.mLastLapTime - shared.mSessionFastestLapTime; // is this appropriate?
             currentGameState.SessionData.TimeDeltaBehind = shared.mSplitTimeBehind;
@@ -239,7 +240,7 @@ namespace CrewChiefV3.PCars
                 {
                     if (currentGameState.OpponentData[opponentSlotId].IsActive && participantStruct.mIsActive)
                     {
-                        upateOpponentData(currentGameState.OpponentData[opponentSlotId], participantStruct.mRacePosition, participantStruct.mCurrentLap - 1,
+                        upateOpponentData(currentGameState.OpponentData[opponentSlotId], participantStruct.mRacePosition, participantStruct.mLapsCompleted,
                                 participantStruct.mCurrentSector, false, currentGameState.SessionData.SessionRunningTime);
                     }
                     else

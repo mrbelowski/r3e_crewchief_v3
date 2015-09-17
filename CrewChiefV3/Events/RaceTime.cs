@@ -109,7 +109,7 @@ namespace CrewChiefV3.Events
                 // crosses the line :(
                 if (currentGameState.SessionData.SessionType == SessionType.Race && currentGameState.SessionData.IsNewLap &&
                     currentGameState.SessionData.SessionRunningTime > 60 && !playedLastLap &&
-                    currentGameState.SessionData.Position == 1 && timeLeft > 0 && timeLeft < currentGameState.SessionData.LapTimeBest)
+                    currentGameState.SessionData.Position == 1 && timeLeft > 0 && timeLeft < currentGameState.SessionData.LapTimeBestPlayer)
                 {
                     playedLastLap = true;
                     played2mins = true;

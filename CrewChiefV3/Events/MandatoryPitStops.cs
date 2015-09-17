@@ -229,7 +229,7 @@ namespace CrewChiefV3.Events
                             currentGameState.SessionData.SessionRunTime - currentGameState.SessionData.SessionTimeRemaining < pitWindowClosedTime * 60)
                         {
                             double timeLeftToPit = pitWindowClosedTime * 60 - (currentGameState.SessionData.SessionRunTime - currentGameState.SessionData.SessionTimeRemaining);
-                            if (playPitThisLap && currentGameState.SessionData.LapTimeBest + 10 > timeLeftToPit)
+                            if (playPitThisLap && currentGameState.SessionData.LapTimeBestPlayer + 10 > timeLeftToPit)
                             {
                                 // oh dear, we might have missed the pit window.
                                 playBoxNowMessage = true;
@@ -237,8 +237,8 @@ namespace CrewChiefV3.Events
                                 mandatoryStopBoxThisLap = true;
                                 audioPlayer.queueClip(folderMandatoryPitStopsPitThisLapTooLate, 0, this);
                             }
-                            else if (playPitThisLap && currentGameState.SessionData.LapTimeBest + 10 < timeLeftToPit &&
-                                (currentGameState.SessionData.LapTimeBest * 2) + 10 > timeLeftToPit)
+                            else if (playPitThisLap && currentGameState.SessionData.LapTimeBestPlayer + 10 < timeLeftToPit &&
+                                (currentGameState.SessionData.LapTimeBestPlayer * 2) + 10 > timeLeftToPit)
                             {
                                 // we probably won't make it round twice - pit at the end of this lap
                                 playBoxNowMessage = true;

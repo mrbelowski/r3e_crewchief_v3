@@ -105,9 +105,9 @@ namespace CrewChiefV3.Events
         protected override void triggerInternal(GameStateData previousGameState, GameStateData currentGameState)
         {
             sessionType = currentGameState.SessionData.SessionType;
-            if (currentGameState.SessionData.LapTimeBest > 0)
+            if (currentGameState.SessionData.LapTimeBestPlayer > 0)
             {
-                sessionBestLapTimeDeltaToLeader = TimeSpan.FromSeconds(currentGameState.SessionData.LapTimeBest - getLapTimeBestForClassLeader(currentGameState));
+                sessionBestLapTimeDeltaToLeader = TimeSpan.FromSeconds(currentGameState.SessionData.LapTimeBestPlayer - getLapTimeBestForClassLeader(currentGameState));
             }
             else
             {
@@ -309,17 +309,17 @@ namespace CrewChiefV3.Events
                
         private float getLapTimeBestForClassLeader(GameStateData currentGameState)
         {
-            if (currentGameState.SessionData.LapTimeBestLeaderClass > 0)
+            if (currentGameState.SessionData.LapTimeSessionBestPlayerClass > 0)
             {
-                if (currentGameState.SessionData.LapTimeBestLeaderClass > currentGameState.SessionData.LapTimeBestLeader)
+                if (currentGameState.SessionData.LapTimeSessionBestPlayerClass > currentGameState.SessionData.LapTimeSessionBest)
                 {
                     isInSlowerClass = true;
                 }
-                return currentGameState.SessionData.LapTimeBestLeaderClass;
+                return currentGameState.SessionData.LapTimeSessionBestPlayerClass;
             }
             else
             {
-                return currentGameState.SessionData.LapTimeBestLeader;
+                return currentGameState.SessionData.LapTimeSessionBest;
             }
         }
 
@@ -417,21 +417,21 @@ namespace CrewChiefV3.Events
             if (currentGameState.SessionData.PreviousLapWasValid)
             {
                 float closeThreshold = currentGameState.SessionData.LapTimePrevious * goodLapPercent / 100;
-                if (currentGameState.SessionData.LapTimeBestLeader >= currentGameState.SessionData.LapTimePrevious)
+                if (currentGameState.SessionData.LapTimeSessionBest >= currentGameState.SessionData.LapTimePrevious)
                 {
                     return LastLapRating.BEST_OVERALL;
                 }
-                else if (currentGameState.SessionData.LapTimeBestLeaderClass >= currentGameState.SessionData.LapTimePrevious)
+                else if (currentGameState.SessionData.LapTimeSessionBestPlayerClass >= currentGameState.SessionData.LapTimePrevious)
                 {
                     return LastLapRating.BEST_IN_CLASS;
                 }
-                else if (currentGameState.SessionData.LapTimePrevious <= currentGameState.SessionData.LapTimeBest)
+                else if (currentGameState.SessionData.LapTimePrevious <= currentGameState.SessionData.LapTimeBestPlayer)
                 {
-                    if (currentGameState.SessionData.LapTimeBestLeader > currentGameState.SessionData.LapTimeBest - closeThreshold)
+                    if (currentGameState.SessionData.LapTimeSessionBest > currentGameState.SessionData.LapTimeBestPlayer - closeThreshold)
                     {
                         return LastLapRating.PERSONAL_BEST_CLOSE_TO_OVERALL_LEADER;
                     }
-                    else if (currentGameState.SessionData.LapTimeBestLeaderClass > currentGameState.SessionData.LapTimeBest - closeThreshold)
+                    else if (currentGameState.SessionData.LapTimeSessionBestPlayerClass > currentGameState.SessionData.LapTimeBestPlayer - closeThreshold)
                     {
                         return LastLapRating.PERSONAL_BEST_CLOSE_TO_CLASS_LEADER;
                     }
@@ -440,15 +440,15 @@ namespace CrewChiefV3.Events
                         return LastLapRating.PERSONAL_BEST_STILL_SLOW;
                     }
                 }
-                else if (currentGameState.SessionData.LapTimeBestLeader >= currentGameState.SessionData.LapTimePrevious - closeThreshold)
+                else if (currentGameState.SessionData.LapTimeSessionBest >= currentGameState.SessionData.LapTimePrevious - closeThreshold)
                 {
                     return LastLapRating.CLOSE_TO_OVERALL_LEADER;
                 }
-                else if (currentGameState.SessionData.LapTimeBestLeaderClass >= currentGameState.SessionData.LapTimePrevious - closeThreshold)
+                else if (currentGameState.SessionData.LapTimeSessionBestPlayerClass >= currentGameState.SessionData.LapTimePrevious - closeThreshold)
                 {
                     return LastLapRating.CLOSE_TO_CLASS_LEADER;
                 }
-                else if (currentGameState.SessionData.LapTimeBest >= currentGameState.SessionData.LapTimePrevious - closeThreshold)
+                else if (currentGameState.SessionData.LapTimeBestPlayer >= currentGameState.SessionData.LapTimePrevious - closeThreshold)
                 {
                     return LastLapRating.CLOSE_TO_PERSONAL_BEST;
                 }
