@@ -153,10 +153,8 @@ namespace CrewChiefV3.Events
                         // queue would otherwise be empty
                         if (enableLapTimeMessages && readLapTimes && currentGameState.SessionData.SessionType != SessionType.HotLap)
                         {
-                            List<MessageFragment> messages = new List<MessageFragment>();
-                            messages.Add(MessageFragment.Text(folderLapTimeIntro));
-                            messages.Add(MessageFragment.Time(TimeSpan.FromSeconds(currentGameState.SessionData.LapTimePrevious)));
-                            QueuedMessage gapFillerLapTime = new QueuedMessage("laptime", messages, 0, this);
+                            QueuedMessage gapFillerLapTime = new QueuedMessage("laptime",
+                                MessageContents(folderLapTimeIntro, TimeSpan.FromSeconds(currentGameState.SessionData.LapTimePrevious)), 0, this);
                             gapFillerLapTime.gapFiller = true;
                             audioPlayer.queueClip(gapFillerLapTime);
                         }
@@ -168,10 +166,8 @@ namespace CrewChiefV3.Events
                             if (currentGameState.SessionData.SessionType == SessionType.HotLap)
                             {
                                 // special case for hot lapping - read best lap message and the laptime
-                                List<MessageFragment> messages = new List<MessageFragment>();
-                                messages.Add(MessageFragment.Text(folderLapTimeIntro));
-                                messages.Add(MessageFragment.Time(TimeSpan.FromSeconds(currentGameState.SessionData.LapTimePrevious)));
-                                audioPlayer.queueClip(new QueuedMessage("laptime", messages, 0, this));
+                                audioPlayer.queueClip(new QueuedMessage("laptime", 
+                                    MessageContents(folderLapTimeIntro, TimeSpan.FromSeconds(currentGameState.SessionData.LapTimePrevious)), 0, this));
                                 if (lastLapRating == LastLapRating.BEST_IN_CLASS || currentLapTimeDeltaToLeadersBest <= TimeSpan.Zero)
                                 {
                                     audioPlayer.queueClip(new QueuedMessage(folderPersonalBest, 0, this));
@@ -182,11 +178,8 @@ namespace CrewChiefV3.Events
                                 }
                                 else if (currentLapTimeDeltaToLeadersBest < TimeSpan.MaxValue)
                                 {
-                                    List<MessageFragment> messages2 = new List<MessageFragment>();
-                                    messages2.Add(MessageFragment.Text(folderGapIntro));
-                                    messages2.Add(MessageFragment.Time(currentLapTimeDeltaToLeadersBest));
-                                    messages2.Add(MessageFragment.Text(folderGapOutroOffPace));
-                                    audioPlayer.queueClip(new QueuedMessage("lapTimeNotRaceGap", messages2, 0, this));
+                                    audioPlayer.queueClip(new QueuedMessage("lapTimeNotRaceGap",
+                                        MessageContents(folderGapIntro, currentLapTimeDeltaToLeadersBest, folderGapOutroOffPace), 0, this));
                                 }
                             }
                             else if (lastLapRating == LastLapRating.BEST_IN_CLASS)
@@ -199,11 +192,8 @@ namespace CrewChiefV3.Events
                                         gapBehind.Seconds < 60)
                                     {
                                         // delay this a bit...
-                                        List<MessageFragment> messages = new List<MessageFragment>();
-                                        messages.Add(MessageFragment.Text(folderGapIntro));
-                                        messages.Add(MessageFragment.Time(gapBehind));
-                                        messages.Add(MessageFragment.Text(folderQuickerThanSecondPlace));
-                                        audioPlayer.queueClip(new QueuedMessage("lapTimeNotRaceGap", messages, random.Next(0, 20), this));
+                                        audioPlayer.queueClip(new QueuedMessage("lapTimeNotRaceGap",
+                                            MessageContents(folderGapIntro, gapBehind, folderQuickerThanSecondPlace), random.Next(0, 20), this));
                                     }
                                 }
                             }
@@ -224,11 +214,8 @@ namespace CrewChiefV3.Events
                                         gapBehind.Seconds < 60)
                                     {
                                         // delay this a bit...
-                                        List<MessageFragment> messages = new List<MessageFragment>();
-                                        messages.Add(MessageFragment.Text(folderGapIntro));
-                                        messages.Add(MessageFragment.Time(gapBehind));
-                                        messages.Add(MessageFragment.Text(folderQuickerThanSecondPlace));
-                                        audioPlayer.queueClip(new QueuedMessage("lapTimeNotRaceGap", messages, random.Next(0, 20), this));
+                                        audioPlayer.queueClip(new QueuedMessage("lapTimeNotRaceGap",
+                                            MessageContents(folderGapIntro, gapBehind, folderQuickerThanSecondPlace), random.Next(0, 20), this));
                                     }
                                 }
                             }
@@ -246,11 +233,8 @@ namespace CrewChiefV3.Events
                                         sessionBestLapTimeDeltaToLeader.Seconds < 60)
                                     {
                                         // delay this a bit...
-                                        List<MessageFragment> messages = new List<MessageFragment>();
-                                        messages.Add(MessageFragment.Text(folderGapIntro));
-                                        messages.Add(MessageFragment.Time(sessionBestLapTimeDeltaToLeader));
-                                        messages.Add(MessageFragment.Text(folderGapOutroOffPace));
-                                        audioPlayer.queueClip(new QueuedMessage("lapTimeNotRaceGap", messages, random.Next(0, 20), this));
+                                        audioPlayer.queueClip(new QueuedMessage("lapTimeNotRaceGap",
+                                            MessageContents(folderGapIntro, sessionBestLapTimeDeltaToLeader, folderGapOutroOffPace), random.Next(0, 20), this));
                                     }
                                 }
                             }
@@ -481,11 +465,9 @@ namespace CrewChiefV3.Events
             {
                 if (lastLapTime > 0)
                 {
-                    List<MessageFragment> messages = new List<MessageFragment>();
-                    messages.Add(MessageFragment.Text(folderLapTimeIntro));
-                    messages.Add(MessageFragment.Time(TimeSpan.FromSeconds(lastLapTime)));
                     audioPlayer.openChannel();
-                    audioPlayer.playClipImmediately(new QueuedMessage("lapTimeNotRaceTime", messages, 0, this));
+                    audioPlayer.playClipImmediately(new QueuedMessage("lapTimeNotRaceTime",
+                        MessageContents(folderLapTimeIntro, TimeSpan.FromSeconds(lastLapTime)), 0, this));
                     audioPlayer.closeChannel();
                 }
                 else
@@ -634,11 +616,8 @@ namespace CrewChiefV3.Events
                                     gapBehind.Seconds < 60)
                                 {
                                     // delay this a bit...
-                                    List<MessageFragment> messages = new List<MessageFragment>();
-                                    messages.Add(MessageFragment.Text(folderGapIntro));
-                                    messages.Add(MessageFragment.Time(gapBehind));
-                                    messages.Add(MessageFragment.Text(folderQuickerThanSecondPlace));
-                                    audioPlayer.queueClip(new QueuedMessage("lapTimeNotRaceGap", messages, random.Next(0, 20), this));
+                                    audioPlayer.queueClip(new QueuedMessage("lapTimeNotRaceGap",
+                                        MessageContents(folderGapIntro, gapBehind, folderQuickerThanSecondPlace), random.Next(0, 20), this));
                                 }
                             }
                         }
@@ -661,10 +640,8 @@ namespace CrewChiefV3.Events
                                 // should always trigger
                                 audioPlayer.playClipImmediately(new QueuedMessage(Position.folderStub + currentPosition, 0, null));
                             }
-                            List<MessageFragment> messages = new List<MessageFragment>();
-                            messages.Add(MessageFragment.Time(sessionBestLapTimeDeltaToLeader));
-                            messages.Add(MessageFragment.Text(folderGapOutroOffPace));
-                            audioPlayer.playClipImmediately(new QueuedMessage("lapTimeNotRaceGap", messages, 0, null));
+                            audioPlayer.playClipImmediately(new QueuedMessage("lapTimeNotRaceGap",
+                                MessageContents(sessionBestLapTimeDeltaToLeader, folderGapOutroOffPace), 0, null));
                             audioPlayer.closeChannel();
                         }
                     }

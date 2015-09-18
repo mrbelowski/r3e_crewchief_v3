@@ -259,11 +259,9 @@ namespace CrewChiefV3.Events
             {
                 if (hasOutstandingPenalty) {
                     if (lapsCompleted - penaltyLap == 2) {
-                        List<MessageFragment> messages = new List<MessageFragment>();
-                        messages.Add(MessageFragment.Text(folderYouHavePenalty));
-                        messages.Add(MessageFragment.Text(MandatoryPitStops.folderMandatoryPitStopsPitThisLap));
                         audioPlayer.openChannel();
-                        audioPlayer.playClipImmediately(new QueuedMessage("youHaveAPenaltyBoxThisLap", messages, 0, null));
+                        audioPlayer.playClipImmediately(new QueuedMessage("youHaveAPenaltyBoxThisLap",
+                            MessageContents(folderYouHavePenalty, MandatoryPitStops.folderMandatoryPitStopsPitThisLap), 0, null));
                         audioPlayer.closeChannel();
                     } else
                     {
@@ -296,11 +294,9 @@ namespace CrewChiefV3.Events
                 }
                 else
                 {
-                    List<MessageFragment> messages = new List<MessageFragment>();
-                    messages.Add(MessageFragment.Text(AudioPlayer.folderYes));
-                    messages.Add(MessageFragment.Text(folderPenaltyServed));
                     audioPlayer.openChannel();
-                    audioPlayer.playClipImmediately(new QueuedMessage("yesYouServedYourPenalty", messages, 0, null));
+                    audioPlayer.playClipImmediately(new QueuedMessage("yesYouServedYourPenalty",
+                        MessageContents(AudioPlayer.folderYes, folderPenaltyServed), 0, null));
                     audioPlayer.closeChannel();
                 }
             } else if (voiceMessage.Contains(SpeechRecogniser.DO_I_STILL_HAVE_A_PENALTY))
@@ -320,11 +316,9 @@ namespace CrewChiefV3.Events
                 }
                 else
                 {
-                    List<MessageFragment> messages = new List<MessageFragment>();
-                    messages.Add(MessageFragment.Text(AudioPlayer.folderNo));
-                    messages.Add(MessageFragment.Text(folderPenaltyServed));
                     audioPlayer.openChannel();
-                    audioPlayer.playClipImmediately(new QueuedMessage("noYouServedYourPenalty", messages, 0, null));
+                    audioPlayer.playClipImmediately(new QueuedMessage("noYouServedYourPenalty",
+                        MessageContents(AudioPlayer.folderNo, folderPenaltyServed), 0, null));
                     audioPlayer.closeChannel();
                 }                
             }

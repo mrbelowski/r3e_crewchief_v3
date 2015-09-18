@@ -324,30 +324,23 @@ namespace CrewChiefV3.Events
             }
             else if (mandatoryStopBoxThisLap)
             {
-                List<MessageFragment> messages = new List<MessageFragment>();
-                messages.Add(MessageFragment.Text(AudioPlayer.folderYes));
-                messages.Add(MessageFragment.Text(folderMandatoryPitStopsPitThisLap));
                 audioPlayer.openChannel();
-                audioPlayer.playClipImmediately(new QueuedMessage("yesBoxThisLap", messages, 0, null));
+                audioPlayer.playClipImmediately(new QueuedMessage("yesBoxThisLap",
+                    MessageContents(AudioPlayer.folderYes, folderMandatoryPitStopsPitThisLap), 0, null));
                 audioPlayer.closeChannel();
             }
             else if (pitWindowOpenLap > 0)
             {
-                List<MessageFragment> messages = new List<MessageFragment>();
-                messages.Add(MessageFragment.Text(folderMandatoryPitStopsYesStopOnLap));
-                messages.Add(MessageFragment.Text(QueuedMessage.folderNameNumbersStub + pitWindowOpenLap));
                 audioPlayer.openChannel();
-                audioPlayer.playClipImmediately(new QueuedMessage("yesBoxOnLap", messages, 0, null));
+                audioPlayer.playClipImmediately(new QueuedMessage("yesBoxOnLap",
+                    MessageContents(folderMandatoryPitStopsYesStopOnLap, QueuedMessage.folderNameNumbersStub + pitWindowOpenLap), 0, null));
                 audioPlayer.closeChannel();
             }
             else if (pitWindowOpenTime > 0)
             {
-                List<MessageFragment> messages = new List<MessageFragment>();
-                messages.Add(MessageFragment.Text(folderMandatoryPitStopsYesStopAfter));
-                messages.Add(MessageFragment.Text(QueuedMessage.folderNameNumbersStub + pitWindowOpenTime));
-                messages.Add(MessageFragment.Text(folderMandatoryPitStopsMinutes));
                 audioPlayer.openChannel();
-                audioPlayer.playClipImmediately(new QueuedMessage("yesBoxAfter", messages, 0, null));
+                audioPlayer.playClipImmediately(new QueuedMessage("yesBoxAfter",
+                    MessageContents(folderMandatoryPitStopsYesStopAfter, QueuedMessage.folderNameNumbersStub + pitWindowOpenTime, folderMandatoryPitStopsMinutes), 0, null));
                 audioPlayer.closeChannel();
             }
         }

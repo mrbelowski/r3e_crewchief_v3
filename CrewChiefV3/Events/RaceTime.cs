@@ -211,11 +211,9 @@ namespace CrewChiefV3.Events
                 else if (timeLeft >= 120)
                 {
                     TimeSpan timeLeftTimeSpan = TimeSpan.FromSeconds(timeLeft);
-                    List<MessageFragment> messages = new List<MessageFragment>();
-                    messages.Add(MessageFragment.Text(QueuedMessage.folderNameNumbersStub + timeLeftTimeSpan.Minutes));
-                    messages.Add(MessageFragment.Text(folderMinutesLeft));
                     audioPlayer.openChannel();
-                    audioPlayer.playClipImmediately(new QueuedMessage("RaceTime/time_remaining", messages, 0, this));
+                    audioPlayer.playClipImmediately(new QueuedMessage("RaceTime/time_remaining",
+                        MessageContents(QueuedMessage.folderNameNumbersStub + timeLeftTimeSpan.Minutes, folderMinutesLeft), 0, this));
                     audioPlayer.closeChannel();
                 }
                 else if (timeLeft >= 60)
@@ -249,11 +247,9 @@ namespace CrewChiefV3.Events
                 }
                 else if (lapsLeft > 1)
                 {
-                    List<MessageFragment> messages = new List<MessageFragment>();
-                    messages.Add(MessageFragment.Text(QueuedMessage.folderNameNumbersStub + lapsLeft));
-                    messages.Add(MessageFragment.Text(folderLapsLeft));
                     audioPlayer.openChannel();
-                    audioPlayer.playClipImmediately(new QueuedMessage("RaceTime/laps_remaining", messages, 0, this));
+                    audioPlayer.playClipImmediately(new QueuedMessage("RaceTime/laps_remaining",
+                        MessageContents(QueuedMessage.folderNameNumbersStub + lapsLeft, folderLapsLeft), 0, this));
 
                     audioPlayer.closeChannel();
                 }

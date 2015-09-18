@@ -241,19 +241,17 @@ namespace CrewChiefV3.Events
             if (minutesRemainingOnTheseTyres < 59 && minutesRemainingOnTheseTyres > 1 &&
                         minutesRemainingOnTheseTyres <= (timeInSession - timeElapsed) / 60)
             {
-                List<MessageFragment> messages = new List<MessageFragment>();
-                messages.Add(MessageFragment.Text(folderMinutesOnCurrentTyresIntro));
-                messages.Add(MessageFragment.Text(QueuedMessage.folderNameNumbersStub + minutesRemainingOnTheseTyres));
-                messages.Add(MessageFragment.Text(folderMinutesOnCurrentTyresOutro));
+                QueuedMessage queuedMessage = new QueuedMessage("minutes_on_current_tyres",
+                    MessageContents(folderMinutesOnCurrentTyresIntro, QueuedMessage.folderNameNumbersStub + minutesRemainingOnTheseTyres, folderMinutesOnCurrentTyresOutro), 0, this);
                 if (immediate)
                 {
                     audioPlayer.openChannel();
-                    audioPlayer.playClipImmediately(new QueuedMessage("minutes_on_current_tyres", messages, 0, this));
+                    audioPlayer.playClipImmediately(queuedMessage);
                     audioPlayer.closeChannel();
                 }
                 else
                 {
-                    audioPlayer.queueClip(new QueuedMessage("minutes_on_current_tyres", messages, 0, this));
+                    audioPlayer.queueClip(queuedMessage);
                 }
             }
             else if (immediate)
@@ -286,19 +284,17 @@ namespace CrewChiefV3.Events
             if (lapsRemainingOnTheseTyres < 59 && lapsRemainingOnTheseTyres > 1 &&
                         lapsRemainingOnTheseTyres <= lapsInSession - completedLaps)
             {
-                List<MessageFragment> messages = new List<MessageFragment>();
-                messages.Add(MessageFragment.Text(folderLapsOnCurrentTyresIntro));
-                messages.Add(MessageFragment.Text(QueuedMessage.folderNameNumbersStub + lapsRemainingOnTheseTyres));
-                messages.Add(MessageFragment.Text(folderLapsOnCurrentTyresOutro));
+                QueuedMessage queuedMessage = new QueuedMessage("laps_on_current_tyres",
+                    MessageContents(folderLapsOnCurrentTyresIntro, QueuedMessage.folderNameNumbersStub + lapsRemainingOnTheseTyres, folderLapsOnCurrentTyresOutro), 0, this);
                 if (immediate)
                 {
                     audioPlayer.openChannel();
-                    audioPlayer.playClipImmediately(new QueuedMessage("laps_on_current_tyres", messages, 0, this));
+                    audioPlayer.playClipImmediately(queuedMessage);
                     audioPlayer.closeChannel();
                 }
                 else
                 {
-                    audioPlayer.queueClip(new QueuedMessage("laps_on_current_tyres", messages, 0, this));
+                    audioPlayer.queueClip(queuedMessage);
                 }                
             }
             else if (immediate)

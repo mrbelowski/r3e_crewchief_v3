@@ -16,6 +16,14 @@ namespace CrewChiefV3.Events
         private String folderGapBehindIncreasing = "timings/gap_behind_increasing";
         private String folderGapBehindDecreasing = "timings/gap_behind_decreasing";
 
+        // for when we have a driver name...
+        private String folderTheGapTo = "timings/the_gap_to";
+        private String folderAheadIsIncreasing = "timings/ahead_is_increasing"; // ahead is increasing, it's now..."
+        private String folderBehindIsIncreasing = "timings/behind_is_increasing"; // behind is increasing, it's now..."
+        private String folderYoureReeling = "timings/youre_reeling";    // "you're reeling..."
+        private String folderInTheGapIsNow = "timings/the_gap_is_now";  // [bob] "in, the gap is now..."
+        private String folderIsReelingYouIn = "timings/is_reeling_you_in";    // [bob] "is reeling you in...."
+
         private String folderSeconds = "timings/seconds";
 
         private String folderBeingHeldUp = "timings/being_held_up";
@@ -122,22 +130,20 @@ namespace CrewChiefV3.Events
                         case GapStatus.INCREASING:
                             if (readGap)
                             {
-                                List<MessageFragment> messages = new List<MessageFragment>();
-                                messages.Add(MessageFragment.Text(folderGapInFrontIncreasing));
-                                messages.Add(MessageFragment.Time(gapInFront));
-                                messages.Add(MessageFragment.Text(folderSeconds));
-                                audioPlayer.queueClip(new QueuedMessage("Timings/gap_in_front", messages, 0, this));
+                                audioPlayer.queueClip(new QueuedMessage("Timings/gap_in_front",
+                                    MessageContents(folderTheGapTo, currentGameState.getOpponentAtPosition(currentGameState.SessionData.Position - 1), folderAheadIsIncreasing,
+                                    gapInFront, folderSeconds),
+                                    MessageContents(folderGapInFrontIncreasing, gapInFront, folderSeconds), 0, this));
                             }                            
                             gapInFrontAtLastReport = gapsInFront[0];
                             break;
                         case GapStatus.DECREASING:
                             if (readGap)
                             {
-                                List<MessageFragment> messages = new List<MessageFragment>();
-                                messages.Add(MessageFragment.Text(folderGapInFrontDecreasing));
-                                messages.Add(MessageFragment.Time(gapInFront));
-                                messages.Add(MessageFragment.Text(folderSeconds));
-                                audioPlayer.queueClip(new QueuedMessage("Timings/gap_in_front", messages, 0, this));
+                                audioPlayer.queueClip(new QueuedMessage("Timings/gap_in_front",
+                                    MessageContents(folderYoureReeling, currentGameState.getOpponentAtPosition(currentGameState.SessionData.Position - 1),
+                                    folderInTheGapIsNow, gapInFront, folderSeconds),
+                                    MessageContents(folderGapInFrontDecreasing, gapInFront, folderSeconds), 0, this));
                             }
                             gapInFrontAtLastReport = gapsInFront[0];
                             break;
@@ -158,22 +164,20 @@ namespace CrewChiefV3.Events
                         case GapStatus.INCREASING:
                             if (readGap)
                             {
-                                List<MessageFragment> messages = new List<MessageFragment>();
-                                messages.Add(MessageFragment.Text(folderGapBehindIncreasing));
-                                messages.Add(MessageFragment.Time(gapBehind));
-                                messages.Add(MessageFragment.Text(folderSeconds));
-                                audioPlayer.queueClip(new QueuedMessage("Timings/gap_behind", messages, 0, this));
+                                audioPlayer.queueClip(new QueuedMessage("Timings/gap_behind",
+                                   MessageContents(folderTheGapTo, currentGameState.getOpponentAtPosition(currentGameState.SessionData.Position + 1), 
+                                   folderBehindIsIncreasing, gapBehind, folderSeconds),
+                                   MessageContents(folderGapBehindIncreasing, gapBehind, folderSeconds), 0, this));
                             }
                             gapBehindAtLastReport = gapsBehind[0];
                             break;
                         case GapStatus.DECREASING:
                             if (readGap)
                             {
-                                List<MessageFragment> messages = new List<MessageFragment>();
-                                messages.Add(MessageFragment.Text(folderGapBehindDecreasing));
-                                messages.Add(MessageFragment.Time(gapBehind));
-                                messages.Add(MessageFragment.Text(folderSeconds));
-                                audioPlayer.queueClip(new QueuedMessage("Timings/gap_behind", messages, 0, this));
+                                audioPlayer.queueClip(new QueuedMessage("Timings/gap_in_front",
+                                    MessageContents(currentGameState.getOpponentAtPosition(currentGameState.SessionData.Position + 1), folderIsReelingYouIn,
+                                    folderInTheGapIsNow, gapBehind, folderSeconds),
+                                    MessageContents(folderGapBehindDecreasing, gapBehind, folderSeconds), 0, this));
                             }
                             gapBehindAtLastReport = gapsBehind[0];
                             break;
@@ -233,11 +237,9 @@ namespace CrewChiefV3.Events
                 }
                 else if (currentGapInFront < 60)
                 {
-                    List<MessageFragment> messages = new List<MessageFragment>();
-                    messages.Add(MessageFragment.Time(TimeSpan.FromMilliseconds(currentGapInFront * 1000)));
-                    messages.Add(MessageFragment.Text(folderSeconds));
                     audioPlayer.openChannel();
-                    audioPlayer.playClipImmediately(new QueuedMessage("Timings/gaps", messages, 0, this));
+                    audioPlayer.playClipImmediately(new QueuedMessage("Timings/gaps",
+                        MessageContents(TimeSpan.FromMilliseconds(currentGapInFront * 1000), folderSeconds), 0, this));
                     audioPlayer.closeChannel();
                     haveData = true;
                 }
@@ -258,11 +260,9 @@ namespace CrewChiefV3.Events
                 }
                 else if (currentGapBehind < 60)
                 {
-                    List<MessageFragment> messages = new List<MessageFragment>();
-                    messages.Add(MessageFragment.Time(TimeSpan.FromMilliseconds(currentGapBehind * 1000)));
-                    messages.Add(MessageFragment.Text(folderSeconds));
                     audioPlayer.openChannel();
-                    audioPlayer.playClipImmediately(new QueuedMessage("Timings/gaps", messages, 0, this));
+                    audioPlayer.playClipImmediately(new QueuedMessage("Timings/gaps",
+                        MessageContents(TimeSpan.FromMilliseconds(currentGapBehind * 1000), folderSeconds), 0, this));
                     audioPlayer.closeChannel();
                     haveData = true;
                 }

@@ -32,6 +32,8 @@ namespace CrewChiefV3
 
         public static List<String> allMessageNames = new List<String>();
 
+        public static List<String> availableDriverNames = new List<String>();
+
         private Boolean monitorRunning = false;
 
         private Boolean keepQuiet = false;
@@ -248,6 +250,7 @@ namespace CrewChiefV3
         {
             try
             {
+                availableDriverNames.Clear();
                 DirectoryInfo driverNamesSoundDirectory = new DirectoryInfo(driverNamesFolderPath);
                 if (!driverNamesSoundDirectory.Exists)
                 {
@@ -269,9 +272,9 @@ namespace CrewChiefV3
                                 List<SoundPlayer> driverNameClips = new List<SoundPlayer>();
                                 driverNameClips.Add(clip);
                                 clips.Add(driverName, driverNameClips);
-                                if (!allMessageNames.Contains(driverName))
+                                if (!availableDriverNames.Contains(driverName))
                                 {
-                                    allMessageNames.Add(driverName);
+                                    availableDriverNames.Add(driverName);
                                 }
                             }
                         }

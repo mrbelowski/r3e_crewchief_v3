@@ -238,7 +238,7 @@ namespace CrewChiefV3.PCars
             {
                 currentGameState.SessionData.LapTimeBestPlayer = shared.mLastLapTime;
             }
-            // TODO: the available times in the block are *all* for the player :(
+
             if (previousGameState == null || !currentGameState.SessionData.IsNewSector)
             {
                 currentGameState.SessionData.LapTimeSessionBest = currentGameState.getBestOpponentLapTime();
@@ -319,7 +319,7 @@ namespace CrewChiefV3.PCars
             currentGameState.CarDamageData.LeftRearSuspensionDamage = mapToDamageLevel(shared.mSuspensionDamage[2]);
             currentGameState.CarDamageData.RightRearSuspensionDamage = mapToDamageLevel(shared.mSuspensionDamage[3]);
 
-            currentGameState.EngineData.EngineOilPressure = shared.mOilPressureKPa; // todo: units
+            currentGameState.EngineData.EngineOilPressure = shared.mOilPressureKPa; // todo: units conversion
             currentGameState.EngineData.EngineOilTemp = shared.mOilTempCelsius;
             currentGameState.EngineData.EngineWaterTemp = shared.mWaterTempCelsius;
             currentGameState.EngineData.EngineRpm = shared.mRPM;

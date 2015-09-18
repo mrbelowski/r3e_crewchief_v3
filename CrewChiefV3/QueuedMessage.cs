@@ -11,25 +11,25 @@ namespace CrewChiefV3
     {
         public enum FragmentType
         {
-            Text, Time, DriverName
+            Text, Time, Opponent
         }
 
         public String text;
         public TimeSpan time;
-        public String driverName;
+        public OpponentData opponent;
         public FragmentType type;
 
-        private MessageFragment(String text, TimeSpan timeSpan, String driverName, FragmentType type)
+        private MessageFragment(String text, TimeSpan timeSpan, OpponentData opponent, FragmentType type)
         {
             this.text = text;
             this.time = timeSpan;
-            this.driverName = driverName;
+            this.opponent = opponent;
         }
 
-        private MessageFragment(String text, String driverName, FragmentType type)
+        private MessageFragment(String text, OpponentData opponent, FragmentType type)
         {
             this.text = text;
-            this.driverName = driverName;
+            this.opponent = opponent;
         }
 
         public static MessageFragment Text(String text)
@@ -40,9 +40,9 @@ namespace CrewChiefV3
         {
             return new MessageFragment(null, timeSpan, null, FragmentType.Time);
         }
-        public static MessageFragment DriverName(String driverName)
+        public static MessageFragment Opponent(OpponentData opponent)
         {
-            return new MessageFragment(null, driverName, FragmentType.DriverName);
+            return new MessageFragment(null, opponent, FragmentType.Opponent);
         }
     }
 
@@ -73,6 +73,8 @@ namespace CrewChiefV3
         // get been updated (like the session phase)
         private int updateInterval = UserSettings.GetUserSettings().getInt("update_interval");
 
+        // if any of the sound clips in this message are missing, this will be set to false when the constructors
+        // get the message folders to use
         public Boolean canBePlayed = true;
 
         // used for creating a pearl of wisdom message where we need to copy the dueTime from the original
@@ -85,6 +87,19 @@ namespace CrewChiefV3
         {
             this.messageName = compoundMessageIdentifier + messageName;
             this.messageFolders = getMessageFolders(messageFragments);
+            this.dueTime = (DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + (secondsDelay * 1000) + updateInterval;
+            this.abstractEvent = abstractEvent;
+        }
+
+        public QueuedMessage(String messageName, List<MessageFragment> messageFragments, List<MessageFragment> alternateMessageFragments, 
+            int secondsDelay, AbstractEvent abstractEvent)
+        {
+            this.messageName = compoundMessageIdentifier + messageName;
+            this.messageFolders = getMessageFolders(messageFragments);
+            if (!canBePlayed)
+            {
+                this.messageFolders = getMessageFolders(alternateMessageFragments);
+            }
             this.dueTime = (DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + (secondsDelay * 1000) + updateInterval;
             this.abstractEvent = abstractEvent;
         }
@@ -113,7 +128,8 @@ namespace CrewChiefV3
                 switch (messageFragment.type)
                 {
                     case MessageFragment.FragmentType.Text:
-                        if (AudioPlayer.allMessageNames.Contains(messageFragment.text))
+                        if (AudioPlayer.allMessageNames.Contains(messageFragment.text) || 
+                            AudioPlayer.availableDriverNames.Contains(messageFragment.text))
                         {
                             messages.Add(messageFragment.text);
                         }
@@ -134,16 +150,17 @@ namespace CrewChiefV3
                         }
                         messages.AddRange(getTimeMessageFolders(messageFragment.time));
                         break;
-                    case MessageFragment.FragmentType.DriverName:
-                        String usableName = DriverNameHelper.getUsableNameForRawName(messageFragment.driverName);
-                        if (AudioPlayer.allMessageNames.Contains(usableName))
+                    case MessageFragment.FragmentType.Opponent:
+                        canBePlayed = false;
+                        if (messageFragment.opponent != null)
                         {
-                            messages.Add(usableName);
-                        }
-                        else
-                        {
-                            canBePlayed = false;
-                        }
+                            String usableName = DriverNameHelper.getUsableNameForRawName(messageFragment.opponent.DriverRawName);
+                            if (AudioPlayer.availableDriverNames.Contains(usableName))
+                            {
+                                messages.Add(usableName);
+                                canBePlayed = true;
+                            }
+                        }                        
                         break;
                 }
                 if (!canBePlayed)

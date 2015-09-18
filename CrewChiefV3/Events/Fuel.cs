@@ -272,12 +272,8 @@ namespace CrewChiefV3.Events
                     }
                     else
                     {
-                        List<MessageFragment> messages = new List<MessageFragment>();
-                        messages.Add(MessageFragment.Text(folderWeEstimate));
-                        messages.Add(MessageFragment.Text(QueuedMessage.folderNameNumbersStub + lapsOfFuelLeft));
-                        messages.Add(MessageFragment.Text(folderLapsRemaining));
-                        audioPlayer.openChannel();
-                        audioPlayer.playClipImmediately(new QueuedMessage("Fuel/estimate", messages, 0, this));
+                        audioPlayer.playClipImmediately(new QueuedMessage("Fuel/estimate",
+                            MessageContents(folderWeEstimate, QueuedMessage.folderNameNumbersStub + lapsOfFuelLeft, folderLapsRemaining), 0, this));
                         audioPlayer.closeChannel();
                     }                    
                     haveData = true;
@@ -292,12 +288,9 @@ namespace CrewChiefV3.Events
                     }
                     else 
                     {
-                        List<MessageFragment> messages = new List<MessageFragment>();
-                        messages.Add(MessageFragment.Text(folderWeEstimate));
-                        messages.Add(MessageFragment.Text(QueuedMessage.folderNameNumbersStub + minutesOfFuelLeft));
-                        messages.Add(MessageFragment.Text(folderMinutesRemaining));
                         audioPlayer.openChannel();
-                        audioPlayer.playClipImmediately(new QueuedMessage("Fuel/estimate", messages, 0, this));
+                        audioPlayer.playClipImmediately(new QueuedMessage("Fuel/estimate",
+                            MessageContents(folderWeEstimate, QueuedMessage.folderNameNumbersStub + minutesOfFuelLeft, folderMinutesRemaining), 0, this));
                         audioPlayer.closeChannel();
                     }                    
                     haveData = true;
