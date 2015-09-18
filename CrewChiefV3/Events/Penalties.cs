@@ -130,9 +130,9 @@ namespace CrewChiefV3.Events
                 {
                     lapsCompleted = currentGameState.SessionData.CompletedLaps;
                     // this is a new penalty
-                    audioPlayer.queueClip(folderNewPenaltyDriveThrough, 0, this);
+                    audioPlayer.queueClip(new QueuedMessage(folderNewPenaltyDriveThrough, 0, this));
                     // queue a '3 laps to serve penalty' message - this might not get played
-                    audioPlayer.queueClip(folderThreeLapsToServe, 20, this);
+                    audioPlayer.queueClip(new QueuedMessage(folderThreeLapsToServe, 20, this));
                     // we don't already have a penalty
                     if (penaltyLap == -1 || !hasOutstandingPenalty)
                     {
@@ -145,9 +145,9 @@ namespace CrewChiefV3.Events
                 {
                     lapsCompleted = currentGameState.SessionData.CompletedLaps;
                     // this is a new penalty
-                    audioPlayer.queueClip(folderNewPenaltyStopGo, 0, this);
+                    audioPlayer.queueClip(new QueuedMessage(folderNewPenaltyStopGo, 0, this));
                     // queue a '3 laps to serve penalty' message - this might not get played
-                    audioPlayer.queueClip(folderThreeLapsToServe, 20, this);
+                    audioPlayer.queueClip(new QueuedMessage(folderThreeLapsToServe, 20, this));
                     // we don't already have a penalty
                     if (penaltyLap == -1 || !hasOutstandingPenalty)
                     {
@@ -159,7 +159,7 @@ namespace CrewChiefV3.Events
                 else if (currentGameState.PitData.InPitlane && currentGameState.PitData.OnOutLap && (currentGameState.PenaltiesData.HasStopAndGo || currentGameState.PenaltiesData.HasDriveThrough))
                 {
                     // we've exited the pits but there's still an outstanding penalty
-                    audioPlayer.queueClip(folderPenaltyNotServed, 3, this);
+                    audioPlayer.queueClip(new QueuedMessage(folderPenaltyNotServed, 3, this));
                 } 
                 else if (currentGameState.SessionData.IsNewLap && (currentGameState.PenaltiesData.HasStopAndGo || currentGameState.PenaltiesData.HasDriveThrough))
                 {
@@ -169,35 +169,35 @@ namespace CrewChiefV3.Events
                     if (lapsCompleted - penaltyLap == 3 && !currentGameState.PitData.InPitlane)
                     {
                         // run out of laps, an not in the pitlane
-                        audioPlayer.queueClip(folderDisqualified, 5, this);
+                        audioPlayer.queueClip(new QueuedMessage(folderDisqualified, 5, this));
                     }
                     else if (lapsCompleted - penaltyLap == 2 && currentGameState.PenaltiesData.HasDriveThrough)
                     {
-                        audioPlayer.queueClip(folderOneLapToServeDriveThrough, pitstopDelay, this);
+                        audioPlayer.queueClip(new QueuedMessage(folderOneLapToServeDriveThrough, pitstopDelay, this));
                     }
                     else if (lapsCompleted - penaltyLap == 2 && currentGameState.PenaltiesData.HasStopAndGo)
                     {
-                        audioPlayer.queueClip(folderOneLapToServeStopGo, pitstopDelay, this);
+                        audioPlayer.queueClip(new QueuedMessage(folderOneLapToServeStopGo, pitstopDelay, this));
                     }
                     else if (lapsCompleted - penaltyLap == 1)
                     {
-                        audioPlayer.queueClip(folderTwoLapsToServe, pitstopDelay, this);
+                        audioPlayer.queueClip(new QueuedMessage(folderTwoLapsToServe, pitstopDelay, this));
                     }
                 }
                 else if (!playedPitNow && currentGameState.SessionData.SectorNumber == 3 && currentGameState.PenaltiesData.HasStopAndGo && lapsCompleted - penaltyLap == 2)
                 {
                     playedPitNow = true;
-                    audioPlayer.queueClip(folderPitNowStopGo, 6, this);
+                    audioPlayer.queueClip(new QueuedMessage(folderPitNowStopGo, 6, this));
                 }
                 else if (!playedPitNow && currentGameState.SessionData.SectorNumber == 3 && currentGameState.PenaltiesData.HasDriveThrough && lapsCompleted - penaltyLap == 2)
                 {
                     playedPitNow = true;
-                    audioPlayer.queueClip(folderPitNowDriveThrough, 6, this);
+                    audioPlayer.queueClip(new QueuedMessage(folderPitNowDriveThrough, 6, this));
                 }
                 else if (!playedTimePenaltyMessage && currentGameState.PenaltiesData.HasTimeDeduction)
                 {
                     playedTimePenaltyMessage = true;
-                    audioPlayer.queueClip(folderTimePenalty, 0, this);
+                    audioPlayer.queueClip(new QueuedMessage(folderTimePenalty, 0, this));
                 }
             }
             else if (currentGameState.PositionAndMotionData.CarSpeed > 1 && playCutTrackWarnings && currentGameState.SessionData.SessionType != SessionType.Race &&
@@ -210,7 +210,7 @@ namespace CrewChiefV3.Events
                     lastCutTrackWarningTime.Add(cutTrackWarningFrequency) < now)
                 {
                     lastCutTrackWarningTime = DateTime.Now;
-                    audioPlayer.queueClip(folderLapDeleted, 2, this);
+                    audioPlayer.queueClip(new QueuedMessage(folderLapDeleted, 2, this));
                     clearPenaltyState();
                 }
             }
@@ -225,11 +225,11 @@ namespace CrewChiefV3.Events
                     lastCutTrackWarningTime = now;
                     if (currentGameState.SessionData.SessionType == SessionType.Race)
                     {
-                        audioPlayer.queueClip(folderCutTrackInRace, 2, this);
+                        audioPlayer.queueClip(new QueuedMessage(folderCutTrackInRace, 2, this));
                     }
                     else
                     {
-                        audioPlayer.queueClip(folderCutTrackPracticeOrQual, 2, this);
+                        audioPlayer.queueClip(new QueuedMessage(folderCutTrackPracticeOrQual, 2, this));
                     }
                     clearPenaltyState();
                 }
@@ -242,7 +242,7 @@ namespace CrewChiefV3.Events
                 ((previousGameState.PenaltiesData.HasStopAndGo && !currentGameState.PenaltiesData.HasStopAndGo) ||
                 (previousGameState.PenaltiesData.HasDriveThrough && !currentGameState.PenaltiesData.HasDriveThrough)))
             {
-                audioPlayer.queueClip(folderPenaltyServed, 0, null);
+                audioPlayer.queueClip(new QueuedMessage(folderPenaltyServed, 0, null));
             }            
         }
 
@@ -251,7 +251,7 @@ namespace CrewChiefV3.Events
             if (!hasHadAPenalty)
             {
                 audioPlayer.openChannel();
-                audioPlayer.playClipImmediately(folderYouDontHaveAPenalty, new QueuedMessage(0, null));
+                audioPlayer.playClipImmediately(new QueuedMessage(folderYouDontHaveAPenalty, 0, null));
                 audioPlayer.closeChannel();
                 return;
             }
@@ -259,24 +259,23 @@ namespace CrewChiefV3.Events
             {
                 if (hasOutstandingPenalty) {
                     if (lapsCompleted - penaltyLap == 2) {
-                        List<String> messages = new List<String>();
-                        messages.Add(folderYouHavePenalty);
-                        messages.Add(MandatoryPitStops.folderMandatoryPitStopsPitThisLap);
+                        List<MessageFragment> messages = new List<MessageFragment>();
+                        messages.Add(MessageFragment.Text(folderYouHavePenalty));
+                        messages.Add(MessageFragment.Text(MandatoryPitStops.folderMandatoryPitStopsPitThisLap));
                         audioPlayer.openChannel();
-                        audioPlayer.playClipImmediately(QueuedMessage.compoundMessageIdentifier + "_youHaveAPenaltyBoxThisLap",
-                            new QueuedMessage(messages, 0, null));
+                        audioPlayer.playClipImmediately(new QueuedMessage("youHaveAPenaltyBoxThisLap", messages, 0, null));
                         audioPlayer.closeChannel();
                     } else
                     {
                         audioPlayer.openChannel();
-                        audioPlayer.playClipImmediately(folderYouHavePenalty, new QueuedMessage(0, null));
+                        audioPlayer.playClipImmediately(new QueuedMessage(folderYouHavePenalty, 0, null));
                         audioPlayer.closeChannel();
                     }
                 }
                 else
                 {
                     audioPlayer.openChannel();
-                    audioPlayer.playClipImmediately(folderYouDontHaveAPenalty, new QueuedMessage(0, null));
+                    audioPlayer.playClipImmediately(new QueuedMessage(folderYouDontHaveAPenalty, 0, null));
                     audioPlayer.closeChannel();
                 }
             }
@@ -284,52 +283,48 @@ namespace CrewChiefV3.Events
             {
                 if (hasOutstandingPenalty)
                 {
-                    List<String> messages = new List<String>();
-                    messages.Add(AudioPlayer.folderNo);
-                    messages.Add(folderYouStillHavePenalty);
+                    List<MessageFragment> messages = new List<MessageFragment>();
+                    messages.Add(MessageFragment.Text(AudioPlayer.folderNo));
+                    messages.Add(MessageFragment.Text(folderYouStillHavePenalty));
                     if (lapsCompleted - penaltyLap == 2)
                     {
-                        messages.Add(MandatoryPitStops.folderMandatoryPitStopsPitThisLap);
+                        messages.Add(MessageFragment.Text(MandatoryPitStops.folderMandatoryPitStopsPitThisLap));
                     }
                     audioPlayer.openChannel();
-                    audioPlayer.playClipImmediately(QueuedMessage.compoundMessageIdentifier + "_noYouStillHaveAPenalty",
-                        new QueuedMessage(messages, 0, null));
+                    audioPlayer.playClipImmediately(new QueuedMessage("noYouStillHaveAPenalty", messages, 0, null));
                     audioPlayer.closeChannel();
                 }
                 else
                 {
-                    List<String> messages = new List<String>();
-                    messages.Add(AudioPlayer.folderYes);
-                    messages.Add(folderPenaltyServed);
+                    List<MessageFragment> messages = new List<MessageFragment>();
+                    messages.Add(MessageFragment.Text(AudioPlayer.folderYes));
+                    messages.Add(MessageFragment.Text(folderPenaltyServed));
                     audioPlayer.openChannel();
-                    audioPlayer.playClipImmediately(QueuedMessage.compoundMessageIdentifier + "_yesYouServedYourPenalty",
-                        new QueuedMessage(messages, 0, null));
+                    audioPlayer.playClipImmediately(new QueuedMessage("yesYouServedYourPenalty", messages, 0, null));
                     audioPlayer.closeChannel();
                 }
             } else if (voiceMessage.Contains(SpeechRecogniser.DO_I_STILL_HAVE_A_PENALTY))
             {
                 if (hasOutstandingPenalty)
                 {
-                    List<String> messages = new List<String>();
-                    messages.Add(AudioPlayer.folderYes);
-                    messages.Add(folderYouStillHavePenalty);
+                    List<MessageFragment> messages = new List<MessageFragment>();
+                    messages.Add(MessageFragment.Text(AudioPlayer.folderYes));
+                    messages.Add(MessageFragment.Text(folderYouStillHavePenalty));
                     if (lapsCompleted - penaltyLap == 2)
                     {
-                        messages.Add(MandatoryPitStops.folderMandatoryPitStopsPitThisLap);
+                        messages.Add(MessageFragment.Text(MandatoryPitStops.folderMandatoryPitStopsPitThisLap));
                     }
                     audioPlayer.openChannel();
-                    audioPlayer.playClipImmediately(QueuedMessage.compoundMessageIdentifier + "_yesYouStillHaveAPenalty",
-                        new QueuedMessage(messages, 0, null));
+                    audioPlayer.playClipImmediately(new QueuedMessage("yesYouStillHaveAPenalty", messages, 0, null));
                     audioPlayer.closeChannel();
                 }
                 else
                 {
-                    List<String> messages = new List<String>();
-                    messages.Add(AudioPlayer.folderNo);
-                    messages.Add(folderPenaltyServed);
+                    List<MessageFragment> messages = new List<MessageFragment>();
+                    messages.Add(MessageFragment.Text(AudioPlayer.folderNo));
+                    messages.Add(MessageFragment.Text(folderPenaltyServed));
                     audioPlayer.openChannel();
-                    audioPlayer.playClipImmediately(QueuedMessage.compoundMessageIdentifier + "_noYouServedYourPenalty",
-                        new QueuedMessage(messages, 0, null));
+                    audioPlayer.playClipImmediately(new QueuedMessage("noYouServedYourPenalty", messages, 0, null));
                     audioPlayer.closeChannel();
                 }                
             }

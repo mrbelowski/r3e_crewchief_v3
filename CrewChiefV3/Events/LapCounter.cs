@@ -60,7 +60,7 @@ namespace CrewChiefV3.Events
             if (!playedGetReady && currentGameState.SessionData.SessionType == SessionType.Race && currentGameState.SessionData.SessionPhase == SessionPhase.Countdown)
             {
                 audioPlayer.openChannel();
-                audioPlayer.playClipImmediately(folderGetReady, new QueuedMessage(0, this));
+                audioPlayer.playClipImmediately(new QueuedMessage(folderGetReady, 0, this));
                 playedGetReady = true;
                 audioPlayer.closeChannel();
             }
@@ -77,7 +77,7 @@ namespace CrewChiefV3.Events
                  previousGameState.SessionData.SessionPhase == SessionPhase.Countdown)
                 {
                     audioPlayer.openChannel();
-                    audioPlayer.playClipImmediately(folderGreenGreenGreen, new QueuedMessage(0, this));
+                    audioPlayer.playClipImmediately(new QueuedMessage(folderGreenGreenGreen, 0, this));
                     audioPlayer.closeChannel();
                     playedGreenGreenGreen = true;
                 }
@@ -90,19 +90,19 @@ namespace CrewChiefV3.Events
                 {
                     if (position == 1)
                     {
-                        audioPlayer.queueClip(folderLastLapLeading, 0, this);
+                        audioPlayer.queueClip(new QueuedMessage(folderLastLapLeading, 0, this));
                     }
                     else if (position < 4)
                     {
-                        audioPlayer.queueClip(folderLastLapTopThree, 0, this);
+                        audioPlayer.queueClip(new QueuedMessage(folderLastLapTopThree, 0, this));
                     }
                     else if (position >= 4)
                     {
-                        audioPlayer.queueClip(folderLastLap, 0, this, PearlsOfWisdom.PearlType.NEUTRAL, 0.5);
+                        audioPlayer.queueClip(new QueuedMessage(folderLastLap, 0, this), PearlsOfWisdom.PearlType.NEUTRAL, 0.5);
                     }
                     else if (position >= 10)
                     {
-                        audioPlayer.queueClip(folderLastLap, 0, this, PearlsOfWisdom.PearlType.BAD, 0.5);
+                        audioPlayer.queueClip(new QueuedMessage(folderLastLap, 0, this), PearlsOfWisdom.PearlType.BAD, 0.5);
                     }
                     else
                     {
@@ -113,19 +113,19 @@ namespace CrewChiefV3.Events
                 {
                     if (position == 1)
                     {
-                        audioPlayer.queueClip(folderTwoLeftLeading, 0, this);
+                        audioPlayer.queueClip(new QueuedMessage(folderTwoLeftLeading, 0, this));
                     }
                     else if (position < 4)
                     {
-                        audioPlayer.queueClip(folderTwoLeftTopThree, 0, this);
+                        audioPlayer.queueClip(new QueuedMessage(folderTwoLeftTopThree, 0, this));
                     }
                     else if (position >= 4)
                     {
-                        audioPlayer.queueClip(folderTwoLeft, 0, this, PearlsOfWisdom.PearlType.NEUTRAL, 0.5);
+                        audioPlayer.queueClip(new QueuedMessage(folderTwoLeft, 0, this), PearlsOfWisdom.PearlType.NEUTRAL, 0.5);
                     }
                     else if (position >= 10)
                     {
-                        audioPlayer.queueClip(folderTwoLeft, 0, this, PearlsOfWisdom.PearlType.BAD, 0.5);
+                        audioPlayer.queueClip(new QueuedMessage(folderTwoLeft, 0, this), PearlsOfWisdom.PearlType.BAD, 0.5);
                     }
                     else
                     {

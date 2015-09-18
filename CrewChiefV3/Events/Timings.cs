@@ -122,21 +122,27 @@ namespace CrewChiefV3.Events
                         case GapStatus.INCREASING:
                             if (readGap)
                             {
-                                audioPlayer.queueClip(QueuedMessage.compoundMessageIdentifier + "Timings/gap_in_front", 
-                                    new QueuedMessage(folderGapInFrontIncreasing, folderSeconds, gapInFront, 0, this));
+                                List<MessageFragment> messages = new List<MessageFragment>();
+                                messages.Add(MessageFragment.Text(folderGapInFrontIncreasing));
+                                messages.Add(MessageFragment.Time(gapInFront));
+                                messages.Add(MessageFragment.Text(folderSeconds));
+                                audioPlayer.queueClip(new QueuedMessage("Timings/gap_in_front", messages, 0, this));
                             }                            
                             gapInFrontAtLastReport = gapsInFront[0];
                             break;
                         case GapStatus.DECREASING:
                             if (readGap)
                             {
-                                audioPlayer.queueClip(QueuedMessage.compoundMessageIdentifier + "Timings/gap_in_front", 
-                                    new QueuedMessage(folderGapInFrontDecreasing, folderSeconds, gapInFront, 0, this));
+                                List<MessageFragment> messages = new List<MessageFragment>();
+                                messages.Add(MessageFragment.Text(folderGapInFrontDecreasing));
+                                messages.Add(MessageFragment.Time(gapInFront));
+                                messages.Add(MessageFragment.Text(folderSeconds));
+                                audioPlayer.queueClip(new QueuedMessage("Timings/gap_in_front", messages, 0, this));
                             }
                             gapInFrontAtLastReport = gapsInFront[0];
                             break;
                         case GapStatus.CLOSE:
-                            audioPlayer.queueClip(folderBeingHeldUp, 0, this);
+                            audioPlayer.queueClip(new QueuedMessage(folderBeingHeldUp, 0, this));
                             gapInFrontAtLastReport = gapsInFront[0];
                             break;
                     }
@@ -152,21 +158,27 @@ namespace CrewChiefV3.Events
                         case GapStatus.INCREASING:
                             if (readGap)
                             {
-                                audioPlayer.queueClip(QueuedMessage.compoundMessageIdentifier + "Timings/gap_behind",
-                                    new QueuedMessage(folderGapBehindIncreasing, folderSeconds, gapBehind, 0, this));
+                                List<MessageFragment> messages = new List<MessageFragment>();
+                                messages.Add(MessageFragment.Text(folderGapBehindIncreasing));
+                                messages.Add(MessageFragment.Time(gapBehind));
+                                messages.Add(MessageFragment.Text(folderSeconds));
+                                audioPlayer.queueClip(new QueuedMessage("Timings/gap_behind", messages, 0, this));
                             }
                             gapBehindAtLastReport = gapsBehind[0];
                             break;
                         case GapStatus.DECREASING:
                             if (readGap)
                             {
-                                audioPlayer.queueClip(QueuedMessage.compoundMessageIdentifier + "Timings/gap_behind",
-                                    new QueuedMessage(folderGapBehindDecreasing, folderSeconds, gapBehind, 0, this));
+                                List<MessageFragment> messages = new List<MessageFragment>();
+                                messages.Add(MessageFragment.Text(folderGapBehindDecreasing));
+                                messages.Add(MessageFragment.Time(gapBehind));
+                                messages.Add(MessageFragment.Text(folderSeconds));
+                                audioPlayer.queueClip(new QueuedMessage("Timings/gap_behind", messages, 0, this));
                             }
                             gapBehindAtLastReport = gapsBehind[0];
                             break;
                         case GapStatus.CLOSE:
-                            audioPlayer.queueClip(folderBeingPressured, 0, this);
+                            audioPlayer.queueClip(new QueuedMessage(folderBeingPressured, 0, this));
                             gapBehindAtLastReport = gapsBehind[0];
                             break;
                     }
@@ -215,16 +227,17 @@ namespace CrewChiefV3.Events
                 if (isLeading && isRace)
                 {
                     audioPlayer.openChannel();
-                    audioPlayer.playClipImmediately(Position.folderLeading, new QueuedMessage(0, this));
+                    audioPlayer.playClipImmediately(new QueuedMessage(Position.folderLeading, 0, this));
                     audioPlayer.closeChannel();
                     haveData = true;
                 }
                 else if (currentGapInFront < 60)
                 {
+                    List<MessageFragment> messages = new List<MessageFragment>();
+                    messages.Add(MessageFragment.Time(TimeSpan.FromMilliseconds(currentGapInFront * 1000)));
+                    messages.Add(MessageFragment.Text(folderSeconds));
                     audioPlayer.openChannel();
-                    audioPlayer.playClipImmediately(QueuedMessage.compoundMessageIdentifier + "Timings/gaps",
-                    new QueuedMessage(null, folderSeconds,
-                        TimeSpan.FromMilliseconds(currentGapInFront * 1000), 0, this));
+                    audioPlayer.playClipImmediately(new QueuedMessage("Timings/gaps", messages, 0, this));
                     audioPlayer.closeChannel();
                     haveData = true;
                 }
@@ -239,16 +252,17 @@ namespace CrewChiefV3.Events
                 if (isLast && isRace)
                 {
                     audioPlayer.openChannel();
-                    audioPlayer.playClipImmediately(Position.folderLast, new QueuedMessage(0, this));
+                    audioPlayer.playClipImmediately(new QueuedMessage(Position.folderLast, 0, this));
                     audioPlayer.closeChannel();
                     haveData = true;
                 }
                 else if (currentGapBehind < 60)
                 {
+                    List<MessageFragment> messages = new List<MessageFragment>();
+                    messages.Add(MessageFragment.Time(TimeSpan.FromMilliseconds(currentGapBehind * 1000)));
+                    messages.Add(MessageFragment.Text(folderSeconds));
                     audioPlayer.openChannel();
-                    audioPlayer.playClipImmediately(QueuedMessage.compoundMessageIdentifier + "Timings/gaps",
-                    new QueuedMessage(null, folderSeconds,
-                        TimeSpan.FromMilliseconds(currentGapBehind * 1000), 0, this));
+                    audioPlayer.playClipImmediately(new QueuedMessage("Timings/gaps", messages, 0, this));
                     audioPlayer.closeChannel();
                     haveData = true;
                 }
@@ -260,7 +274,7 @@ namespace CrewChiefV3.Events
             if (!haveData)
             {
                 audioPlayer.openChannel();
-                audioPlayer.playClipImmediately(AudioPlayer.folderNoData, new QueuedMessage(0, this));
+                audioPlayer.playClipImmediately(new QueuedMessage(AudioPlayer.folderNoData, 0, this));
                 audioPlayer.closeChannel();
             }
         }

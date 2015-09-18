@@ -57,14 +57,14 @@ namespace CrewChiefV3.Events
                         {
                             case EngineStatus.ALL_CLEAR:
                                 lastStatusMessage = currentEngineStatus;
-                                audioPlayer.queueClip(folderAllClear, 0, this);
+                                audioPlayer.queueClip(new QueuedMessage(folderAllClear, 0, this));
                                 break;
                             case EngineStatus.HOT_OIL:
                                 // don't play this if the last message was about hot oil *and* water - wait for 'all clear'
                                 if (lastStatusMessage != EngineStatus.HOT_OIL_AND_WATER)
                                 {
                                     lastStatusMessage = currentEngineStatus;
-                                    audioPlayer.queueClip(folderHotOil, 0, this);
+                                    audioPlayer.queueClip(new QueuedMessage(folderHotOil, 0, this));
                                 }
                                 break;
                             case EngineStatus.HOT_WATER:
@@ -72,12 +72,12 @@ namespace CrewChiefV3.Events
                                 if (lastStatusMessage != EngineStatus.HOT_OIL_AND_WATER)
                                 {
                                     lastStatusMessage = currentEngineStatus;
-                                    audioPlayer.queueClip(folderHotWater, 0, this);
+                                    audioPlayer.queueClip(new QueuedMessage(folderHotWater, 0, this));
                                 }
                                 break;
                             case EngineStatus.HOT_OIL_AND_WATER:
                                 lastStatusMessage = currentEngineStatus;
-                                audioPlayer.queueClip(folderHotOilAndWater, 0, this);
+                                audioPlayer.queueClip(new QueuedMessage(folderHotOilAndWater, 0, this));
                                 break;
                         }
                     }
@@ -99,14 +99,14 @@ namespace CrewChiefV3.Events
                 {
                     case EngineStatus.ALL_CLEAR:
                         lastStatusMessage = currentEngineStatus;
-                        audioPlayer.playClipImmediately(folderAllClear, new QueuedMessage(0, null));
+                        audioPlayer.playClipImmediately(new QueuedMessage(folderAllClear, 0, null));
                         break;
                     case EngineStatus.HOT_OIL:
                         // don't play this if the last message was about hot oil *and* water - wait for 'all clear'
                         if (lastStatusMessage != EngineStatus.HOT_OIL_AND_WATER)
                         {
                             lastStatusMessage = currentEngineStatus;
-                            audioPlayer.playClipImmediately(folderHotOil, new QueuedMessage(0, null));
+                            audioPlayer.playClipImmediately(new QueuedMessage(folderHotOil, 0, null));
                         }
                         break;
                     case EngineStatus.HOT_WATER:
@@ -114,12 +114,12 @@ namespace CrewChiefV3.Events
                         if (lastStatusMessage != EngineStatus.HOT_OIL_AND_WATER)
                         {
                             lastStatusMessage = currentEngineStatus;
-                            audioPlayer.playClipImmediately(folderHotWater, new QueuedMessage(0, null));
+                            audioPlayer.playClipImmediately(new QueuedMessage(folderHotWater, 0, null));
                         }
                         break;
                     case EngineStatus.HOT_OIL_AND_WATER:
                         lastStatusMessage = currentEngineStatus;
-                        audioPlayer.playClipImmediately(folderHotOilAndWater, new QueuedMessage(0, null));
+                        audioPlayer.playClipImmediately(new QueuedMessage(folderHotOilAndWater, 0, null));
                         break;
                 }
                 audioPlayer.closeChannel();
@@ -127,7 +127,7 @@ namespace CrewChiefV3.Events
             if (!gotData)
             {
                 audioPlayer.openChannel();
-                audioPlayer.playClipImmediately(AudioPlayer.folderNoData, new QueuedMessage(0, this));
+                audioPlayer.playClipImmediately(new QueuedMessage(AudioPlayer.folderNoData, 0, this));
                 audioPlayer.closeChannel();
             }
         }

@@ -28,7 +28,7 @@ namespace CrewChiefV3.Events
 
         override protected void triggerInternal(GameStateData previousGameState, GameStateData currentGameState)
         {
-            audioPlayer.queueClip(folderTest, 0, this);            
+            audioPlayer.queueClip(new QueuedMessage(folderTest, 0, this));            
         }
     }
 }

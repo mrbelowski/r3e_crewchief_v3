@@ -106,13 +106,13 @@ namespace CrewChiefV3.Events
                 if (currentGameState.SessionData.TimeDeltaFront > 3 && currentGameState.SessionData.TimeDeltaBehind > 4)
                 {
                     // we've exited into clean air
-                    audioPlayer.queueClip(folderPushExitingPits, 0, this);
+                    audioPlayer.queueClip(new QueuedMessage(folderPushExitingPits, 0, this));
                 }
                 else if (currentGameState.SessionData.TimeDeltaBehind > 0 && currentGameState.SessionData.TimeDeltaBehind <= 4 &&
                     previousGameState != null && currentGameState.SessionData.TimeDeltaBehind < previousGameState.SessionData.TimeDeltaBehind)
                 {
                     // we've exited the pits but there's traffic behind
-                    audioPlayer.queueClip(folderTrafficBehindExitingPits, 0, this);
+                    audioPlayer.queueClip(new QueuedMessage(folderTrafficBehindExitingPits, 0, this));
                 }
             }            
         }
@@ -130,19 +130,19 @@ namespace CrewChiefV3.Events
                     playedMessage = true;
                     if (currentGameState.SessionData.Position == 2)
                     {
-                        audioPlayer.queueClip(folderPushToGetWin, 0, this);
+                        audioPlayer.queueClip(new QueuedMessage(folderPushToGetWin, 0, this));
                     }
                     else if (currentGameState.SessionData.Position == 3)
                     {
-                        audioPlayer.queueClip(folderPushToGetSecond, 0, this);
+                        audioPlayer.queueClip(new QueuedMessage(folderPushToGetSecond, 0, this));
                     }
                     else if (currentGameState.SessionData.Position == 4)
                     {
-                        audioPlayer.queueClip(folderPushToGetThird, 0, this);
+                        audioPlayer.queueClip(new QueuedMessage(folderPushToGetThird, 0, this));
                     }
                     else
                     {
-                        audioPlayer.queueClip(folderPushToImprove, 0, this);
+                        audioPlayer.queueClip(new QueuedMessage(folderPushToImprove, 0, this));
                     }
                 }
             }
@@ -156,7 +156,7 @@ namespace CrewChiefV3.Events
                     playedMessage = true;
                     Console.WriteLine("might lose this position. Player best lap = " + currentGameState.SessionData.LapTimeBestPlayer + " laps left = " + numLapsLeft +
                         " opponent best lap = " + opponentBehindBestLap + " time delta = " + currentGameState.SessionData.TimeDeltaBehind);
-                    audioPlayer.queueClip(folderPushToHoldPosition, 0, this);
+                    audioPlayer.queueClip(new QueuedMessage(folderPushToHoldPosition, 0, this));
                 }
             }
             return playedMessage;

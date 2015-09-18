@@ -47,7 +47,7 @@ namespace CrewChiefV3.Events
                 if (now > lastBlackFlagTime.Add(timeBetweenBlackFlagMessages))
                 {
                     lastBlackFlagTime = now;
-                    audioPlayer.queueClip(folderBlackFlag, 0, this);
+                    audioPlayer.queueClip(new QueuedMessage(folderBlackFlag, 0, this));
                 }
             }
             else if (currentGameState.SessionData.Flag == FlagEnum.BLUE)
@@ -55,7 +55,7 @@ namespace CrewChiefV3.Events
                 if (now > lastBlueFlagTime.Add(timeBetweenBlueFlagMessages))
                 {
                     lastBlueFlagTime = now;
-                    audioPlayer.queueClip(folderBlueFlag, 0, this);
+                    audioPlayer.queueClip(new QueuedMessage(folderBlueFlag, 0, this));
                 }
             }
             else if (currentGameState.SessionData.Flag == FlagEnum.YELLOW)
@@ -63,7 +63,7 @@ namespace CrewChiefV3.Events
                 if (now > lastYellowFlagTime.Add(timeBetweenYellowFlagMessages))
                 {
                     lastYellowFlagTime = now;
-                    audioPlayer.queueClip(folderYellowFlag, 0, this);
+                    audioPlayer.queueClip(new QueuedMessage(folderYellowFlag, 0, this));
                 }
             }
             else if (currentGameState.SessionData.Flag == FlagEnum.WHITE)
@@ -71,7 +71,7 @@ namespace CrewChiefV3.Events
                 if (now > lastWhiteFlagTime.Add(timeBetweenWhiteFlagMessages))
                 {
                     lastWhiteFlagTime = now;
-                    audioPlayer.queueClip(folderWhiteFlag, 0, this);
+                    audioPlayer.queueClip(new QueuedMessage(folderWhiteFlag, 0, this));
                 }
             }
             else if (currentGameState.SessionData.Flag == FlagEnum.DOUBLE_YELLOW)
@@ -79,7 +79,7 @@ namespace CrewChiefV3.Events
                 if (now > lastYellowFlagTime.Add(timeBetweenYellowFlagMessages))
                 {
                     lastYellowFlagTime = now;
-                    audioPlayer.queueClip(folderDoubleYellowFlag, 0, this);
+                    audioPlayer.queueClip(new QueuedMessage(folderDoubleYellowFlag, 0, this));
                 }
             }
         }

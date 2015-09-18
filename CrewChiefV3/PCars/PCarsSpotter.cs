@@ -249,39 +249,39 @@ namespace CrewChiefV3.PCars
                 {
                     case NextMessageType.threeWide:
                         audioPlayer.holdOpenChannel(true);
-                        QueuedMessage inTheMiddleMessage = new QueuedMessage(0, null);
+                        QueuedMessage inTheMiddleMessage = new QueuedMessage(folderInTheMiddle, 0, null);
                         inTheMiddleMessage.expiryTime = (DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + inTheMiddleMessageExpiresAfter;
-                        audioPlayer.playClipImmediately(folderInTheMiddle, inTheMiddleMessage);
+                        audioPlayer.playClipImmediately(inTheMiddleMessage);
                         nextMessageType = NextMessageType.stillThere;
                         nextMessageDue = now.Add(repeatHoldFrequency);
                         break;
                     case NextMessageType.carLeft:
                         audioPlayer.holdOpenChannel(true);
-                        QueuedMessage carLeftMessage = new QueuedMessage(0, null);
+                        QueuedMessage carLeftMessage = new QueuedMessage(folderCarLeft, 0, null);
                         carLeftMessage.expiryTime = (DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + holdMessageExpiresAfter;
-                        audioPlayer.playClipImmediately(folderCarLeft, carLeftMessage);
+                        audioPlayer.playClipImmediately(carLeftMessage);
                         nextMessageType = NextMessageType.stillThere;
                         nextMessageDue = now.Add(repeatHoldFrequency);
                         break;
                     case NextMessageType.carRight:
                         audioPlayer.holdOpenChannel(true);
-                        QueuedMessage carRightMessage = new QueuedMessage(0, null);
+                        QueuedMessage carRightMessage = new QueuedMessage(folderCarRight, 0, null);
                         carRightMessage.expiryTime = (DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + holdMessageExpiresAfter;
-                        audioPlayer.playClipImmediately(folderCarRight, carRightMessage);
+                        audioPlayer.playClipImmediately(carRightMessage);
                         nextMessageType = NextMessageType.stillThere;
                         nextMessageDue = now.Add(repeatHoldFrequency);
                         break;
                     case NextMessageType.clearAllRound:
-                        QueuedMessage clearAllRoundMessage = new QueuedMessage(0, null);
+                        QueuedMessage clearAllRoundMessage = new QueuedMessage(folderClearAllRound, 0, null);
                         clearAllRoundMessage.expiryTime = (DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + clearAllRoundMessageExpiresAfter;
-                        audioPlayer.playClipImmediately(folderClearAllRound, clearAllRoundMessage);
+                        audioPlayer.playClipImmediately(clearAllRoundMessage);
                         audioPlayer.closeChannel();
                         nextMessageType = NextMessageType.none;
                         break;
                     case NextMessageType.clearLeft:
-                        QueuedMessage clearLeftMessage = new QueuedMessage(0, null);
+                        QueuedMessage clearLeftMessage = new QueuedMessage(folderClearLeft, 0, null);
                         clearLeftMessage.expiryTime = (DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + clearMessageExpiresAfter;
-                        audioPlayer.playClipImmediately(folderClearLeft, clearLeftMessage);
+                        audioPlayer.playClipImmediately(clearLeftMessage);
                         if (carsOnRightCount == 0)
                         {
                             audioPlayer.closeChannel();
@@ -289,9 +289,9 @@ namespace CrewChiefV3.PCars
                         nextMessageType = NextMessageType.none;
                         break;
                     case NextMessageType.clearRight:
-                        QueuedMessage clearRightMessage = new QueuedMessage(0, null);
+                        QueuedMessage clearRightMessage = new QueuedMessage(folderClearRight, 0, null);
                         clearRightMessage.expiryTime = (DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + clearMessageExpiresAfter;
-                        audioPlayer.playClipImmediately(folderClearRight, clearRightMessage);
+                        audioPlayer.playClipImmediately(clearRightMessage);
                         if (carsOnLeftCount == 0)
                         {
                             audioPlayer.closeChannel();
@@ -299,9 +299,9 @@ namespace CrewChiefV3.PCars
                         nextMessageType = NextMessageType.none;
                         break;
                     case NextMessageType.stillThere:
-                        QueuedMessage holdYourLineMessage = new QueuedMessage(0, null);
+                        QueuedMessage holdYourLineMessage = new QueuedMessage(folderStillThere, 0, null);
                         holdYourLineMessage.expiryTime = (DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + holdMessageExpiresAfter;
-                        audioPlayer.playClipImmediately(folderStillThere, holdYourLineMessage);
+                        audioPlayer.playClipImmediately(holdYourLineMessage);
                         nextMessageType = NextMessageType.stillThere;
                         nextMessageDue = now.Add(repeatHoldFrequency);
                         break;
@@ -372,14 +372,14 @@ namespace CrewChiefV3.PCars
         public void enableSpotter()
         {
             enabled = true;
-            audioPlayer.playClipImmediately(AudioPlayer.folderEnableSpotter, new QueuedMessage(0, null));
+            audioPlayer.playClipImmediately(new QueuedMessage(AudioPlayer.folderEnableSpotter, 0, null));
             audioPlayer.closeChannel();
         }
 
         public void disableSpotter()
         {
             enabled = false;
-            audioPlayer.playClipImmediately(AudioPlayer.folderDisableSpotter, new QueuedMessage(0, null));
+            audioPlayer.playClipImmediately(new QueuedMessage(AudioPlayer.folderDisableSpotter, 0, null));
             audioPlayer.closeChannel();
         }
     }

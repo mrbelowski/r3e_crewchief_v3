@@ -65,32 +65,32 @@ namespace CrewChiefV3.Events
                     Boolean isLast = position == numCars;
                     if (position == 1)
                     {
-                        audioPlayer.queueClip(folderWonRace, 0, null);
+                        audioPlayer.queueClip(new QueuedMessage(folderWonRace, 0, null));
                     }
                     else if (position < 4)
                     {
-                        audioPlayer.queueClip(folderPodiumFinish, 0, null);
+                        audioPlayer.queueClip(new QueuedMessage(folderPodiumFinish, 0, null));
                     }
                     else if (position >= 4 && !isLast)
                     {
-                        audioPlayer.queueClip(Position.folderStub + position, 0, null);
-                        audioPlayer.queueClip(folderFinishedRace, 0, null);
+                        audioPlayer.queueClip(new QueuedMessage(Position.folderStub + position, 0, null));
+                        audioPlayer.queueClip(new QueuedMessage(folderFinishedRace, 0, null));
                     }
                     else if (isLast)
                     {
-                        audioPlayer.queueClip(folderFinishedRaceLast, 0, null);
+                        audioPlayer.queueClip(new QueuedMessage(folderFinishedRaceLast, 0, null));
                     }
                 }
                 else
                 {
                     if (sessionType == SessionType.Qualify && position == 1)
                     {
-                        audioPlayer.queueClip(folderEndOfSessionPole, 0, null);
+                        audioPlayer.queueClip(new QueuedMessage(folderEndOfSessionPole, 0, null));
                     }
                     else
                     {
-                        audioPlayer.queueClip(folderEndOfSession, 0, null, PearlsOfWisdom.PearlType.NONE, 0);
-                        audioPlayer.queueClip(Position.folderStub + position, 0, null);
+                        audioPlayer.queueClip(new QueuedMessage(folderEndOfSession, 0, null), PearlsOfWisdom.PearlType.NONE, 0);
+                        audioPlayer.queueClip(new QueuedMessage(Position.folderStub + position, 0, null));
                     }
                 }
             }

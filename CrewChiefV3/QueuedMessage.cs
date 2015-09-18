@@ -7,11 +7,48 @@ using CrewChiefV3.GameState;
 
 namespace CrewChiefV3
 {
+    class MessageFragment
+    {
+        public enum FragmentType
+        {
+            Text, Time, DriverName
+        }
+
+        public String text;
+        public TimeSpan time;
+        public String driverName;
+        public FragmentType type;
+
+        private MessageFragment(String text, TimeSpan timeSpan, String driverName, FragmentType type)
+        {
+            this.text = text;
+            this.time = timeSpan;
+            this.driverName = driverName;
+        }
+
+        private MessageFragment(String text, String driverName, FragmentType type)
+        {
+            this.text = text;
+            this.driverName = driverName;
+        }
+
+        public static MessageFragment Text(String text)
+        {
+            return new MessageFragment(text, null, FragmentType.Text);
+        }
+        public static MessageFragment Time(TimeSpan timeSpan)
+        {
+            return new MessageFragment(null, timeSpan, null, FragmentType.Time);
+        }
+        public static MessageFragment DriverName(String driverName)
+        {
+            return new MessageFragment(null, driverName, FragmentType.DriverName);
+        }
+    }
+
     class QueuedMessage
     {
-        public static String compoundMessageIdentifier = "COMPOUND_";
-
-        public static String driverNameIdentifier = "DRIVERNAME_";
+        private static String compoundMessageIdentifier = "COMPOUND_";
 
         public static String folderNameOh = "numbers/oh";
         public static String folderNamePoint = "numbers/point";
@@ -22,10 +59,8 @@ namespace CrewChiefV3
         public Boolean gapFiller = false;
         public long dueTime;
         public AbstractEvent abstractEvent;
-        public TimeSpan timeSpan;
-        private Boolean timeSpanSet = false;
-        public List<String> messagesBeforeTimeSpan = new List<String>();
-        public List<String> messagesAfterTimeSpan = new List<String>();
+        public String messageName;
+        public List<String> messageFolders;
 
         // TODO: the queued message should contain some snapshot of pertentent data at the point of creation, 
         // which can be validated before it actually gets played. Perhaps a Dictionary of property names and value - 
@@ -38,11 +73,7 @@ namespace CrewChiefV3
         // get been updated (like the session phase)
         private int updateInterval = UserSettings.GetUserSettings().getInt("update_interval");
 
-        public QueuedMessage(int secondsDelay, AbstractEvent abstractEvent)
-        {
-            this.dueTime = (DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + (secondsDelay * 1000) + updateInterval;
-            this.abstractEvent = abstractEvent;
-        }
+        public Boolean canBePlayed = true;
 
         // used for creating a pearl of wisdom message where we need to copy the dueTime from the original
         public QueuedMessage(AbstractEvent abstractEvent)
@@ -50,44 +81,20 @@ namespace CrewChiefV3
             this.abstractEvent = abstractEvent;
         }
 
-        public QueuedMessage(List<String> messages, int secondsDelay, AbstractEvent abstractEvent)
+        public QueuedMessage(String messageName, List<MessageFragment> messageFragments, int secondsDelay, AbstractEvent abstractEvent)
         {
-            if (messages != null && messages.Count > 0)
-            {
-                this.messagesBeforeTimeSpan.AddRange(messages);
-            }
+            this.messageName = compoundMessageIdentifier + messageName;
+            this.messageFolders = getMessageFolders(messageFragments);
             this.dueTime = (DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + (secondsDelay * 1000) + updateInterval;
             this.abstractEvent = abstractEvent;
         }
 
-        public QueuedMessage(String messageBeforeTimeSpan, String messageAfterTimeSpan, TimeSpan timeSpan, int secondsDelay, AbstractEvent abstractEvent)
+        public QueuedMessage(String message, int secondsDelay, AbstractEvent abstractEvent)
         {
-            if (messageBeforeTimeSpan != null)
-            {
-                this.messagesBeforeTimeSpan.Add(messageBeforeTimeSpan);
-            }
-            if (messageAfterTimeSpan != null)
-            {
-                this.messagesAfterTimeSpan.Add(messageAfterTimeSpan);
-            }
-            this.timeSpan = timeSpan;
-            timeSpanSet = true;
-            this.dueTime = (DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + (secondsDelay * 1000) + updateInterval;
-            this.abstractEvent = abstractEvent;
-        }
-
-        public QueuedMessage(List<String> messagesBeforeTimeSpan, List<String> messagesAfterTimeSpan, TimeSpan timeSpan, int secondsDelay, AbstractEvent abstractEvent)
-        {
-            if (messagesBeforeTimeSpan != null && messagesBeforeTimeSpan.Count > 0)
-            {
-                this.messagesBeforeTimeSpan.AddRange(messagesBeforeTimeSpan);
-            }
-            if (messagesAfterTimeSpan != null && messagesAfterTimeSpan.Count > 0)
-            {
-                this.messagesAfterTimeSpan.AddRange(messagesAfterTimeSpan);
-            }
-            this.timeSpan = timeSpan;
-            timeSpanSet = true;
+            this.messageName = message;
+            List<MessageFragment> messageFragments = new List<MessageFragment>();
+            messageFragments.Add(MessageFragment.Text(message));
+            this.messageFolders = getMessageFolders(messageFragments);
             this.dueTime = (DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + (secondsDelay * 1000) + updateInterval;
             this.abstractEvent = abstractEvent;
         }
@@ -98,15 +105,53 @@ namespace CrewChiefV3
                 this.abstractEvent.isMessageStillValid(eventSubType, currentGameState);
         }
 
-        public List<String> getMessageFolders()
+        private List<String> getMessageFolders(List<MessageFragment> messageFragments)
         {
             List<String> messages = new List<String>();
-            messages.AddRange(messagesBeforeTimeSpan);
-            if (timeSpanSet == true && timeSpan != null)
+            foreach (MessageFragment messageFragment in messageFragments) 
             {
-                messages.AddRange(getTimeMessageFolders(timeSpan));
+                switch (messageFragment.type)
+                {
+                    case MessageFragment.FragmentType.Text:
+                        if (AudioPlayer.allMessageNames.Contains(messageFragment.text))
+                        {
+                            messages.Add(messageFragment.text);
+                        }
+                        else
+                        {
+                            canBePlayed = false;
+                        }                     
+                        break;
+                    case MessageFragment.FragmentType.Time:
+                        List<String> timeFolders = getTimeMessageFolders(messageFragment.time);
+                        foreach (String timeFolder in timeFolders)
+                        {
+                            if (!AudioPlayer.allMessageNames.Contains(timeFolder))
+                            {
+                                canBePlayed = false;
+                                break;
+                            }
+                        }
+                        messages.AddRange(getTimeMessageFolders(messageFragment.time));
+                        break;
+                    case MessageFragment.FragmentType.DriverName:
+                        String usableName = DriverNameHelper.getUsableNameForRawName(messageFragment.driverName);
+                        if (AudioPlayer.allMessageNames.Contains(usableName))
+                        {
+                            messages.Add(usableName);
+                        }
+                        else
+                        {
+                            canBePlayed = false;
+                        }
+                        break;
+                }
+                if (!canBePlayed)
+                {
+                    Console.WriteLine("Some message items in this message have no sound files");
+                    break;
+                }
             }
-            messages.AddRange(messagesAfterTimeSpan);
             return messages;
         }
 

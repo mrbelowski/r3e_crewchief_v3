@@ -130,7 +130,7 @@ namespace CrewChiefV3.Events
                     if (messageFolder != null)
                     {
                         Console.WriteLine("Reporting tyre temp status: " + tempsStatus);
-                        audioPlayer.queueClip(messageFolder, tyreTempMessageDelay, this);
+                        audioPlayer.queueClip(new QueuedMessage(messageFolder, tyreTempMessageDelay, this));
                     }
                     lastReportedStatus = tempsStatus;
                 }
@@ -226,14 +226,14 @@ namespace CrewChiefV3.Events
                 if (minutesRemainingOnTheseTyres > 59 || minutesRemainingOnTheseTyres > (timeInSession - timeElapsed) / 60)
                 {
                     audioPlayer.openChannel();
-                    audioPlayer.playClipImmediately(folderGoodWear, new QueuedMessage(0, this));
+                    audioPlayer.playClipImmediately(new QueuedMessage(folderGoodWear, 0, this));
                     audioPlayer.closeChannel();
                     return;
                 }
                 else if (minutesRemainingOnTheseTyres < 1)
                 {
                     audioPlayer.openChannel();
-                    audioPlayer.playClipImmediately(folderKnackeredAllRound, new QueuedMessage(0, this));
+                    audioPlayer.playClipImmediately(new QueuedMessage(folderKnackeredAllRound, 0, this));
                     audioPlayer.closeChannel();
                     return;
                 }
@@ -241,27 +241,25 @@ namespace CrewChiefV3.Events
             if (minutesRemainingOnTheseTyres < 59 && minutesRemainingOnTheseTyres > 1 &&
                         minutesRemainingOnTheseTyres <= (timeInSession - timeElapsed) / 60)
             {
-                List<String> messages = new List<String>();
-                messages.Add(folderMinutesOnCurrentTyresIntro);
-                messages.Add(QueuedMessage.folderNameNumbersStub + minutesRemainingOnTheseTyres);
-                messages.Add(folderMinutesOnCurrentTyresOutro);
+                List<MessageFragment> messages = new List<MessageFragment>();
+                messages.Add(MessageFragment.Text(folderMinutesOnCurrentTyresIntro));
+                messages.Add(MessageFragment.Text(QueuedMessage.folderNameNumbersStub + minutesRemainingOnTheseTyres));
+                messages.Add(MessageFragment.Text(folderMinutesOnCurrentTyresOutro));
                 if (immediate)
                 {
                     audioPlayer.openChannel();
-                    audioPlayer.playClipImmediately(QueuedMessage.compoundMessageIdentifier + "minutes_on_current_tyres",
-                        new QueuedMessage(messages, 0, this));
+                    audioPlayer.playClipImmediately(new QueuedMessage("minutes_on_current_tyres", messages, 0, this));
                     audioPlayer.closeChannel();
                 }
                 else
                 {
-                    audioPlayer.queueClip(QueuedMessage.compoundMessageIdentifier + "minutes_on_current_tyres",
-                    new QueuedMessage(messages, 0, this));
+                    audioPlayer.queueClip(new QueuedMessage("minutes_on_current_tyres", messages, 0, this));
                 }
             }
             else if (immediate)
             {
                 audioPlayer.openChannel();
-                audioPlayer.playClipImmediately(AudioPlayer.folderNoData, new QueuedMessage(0, this));
+                audioPlayer.playClipImmediately(new QueuedMessage(AudioPlayer.folderNoData, 0, this));
                 audioPlayer.closeChannel();
             }
         }
@@ -273,14 +271,14 @@ namespace CrewChiefV3.Events
                 if (lapsRemainingOnTheseTyres > 59 || lapsRemainingOnTheseTyres > lapsInSession - completedLaps)
                 {
                     audioPlayer.openChannel();
-                    audioPlayer.playClipImmediately(folderGoodWear, new QueuedMessage(0, this));
+                    audioPlayer.playClipImmediately(new QueuedMessage(folderGoodWear, 0, this));
                     audioPlayer.closeChannel();
                     return;
                 }
                 else if (lapsRemainingOnTheseTyres < 1)
                 {
                     audioPlayer.openChannel();
-                    audioPlayer.playClipImmediately(folderKnackeredAllRound, new QueuedMessage(0, this));
+                    audioPlayer.playClipImmediately(new QueuedMessage(folderKnackeredAllRound, 0, this));
                     audioPlayer.closeChannel();
                     return;
                 }
@@ -288,27 +286,25 @@ namespace CrewChiefV3.Events
             if (lapsRemainingOnTheseTyres < 59 && lapsRemainingOnTheseTyres > 1 &&
                         lapsRemainingOnTheseTyres <= lapsInSession - completedLaps)
             {
-                List<String> messages = new List<String>();
-                messages.Add(folderLapsOnCurrentTyresIntro);
-                messages.Add(QueuedMessage.folderNameNumbersStub + lapsRemainingOnTheseTyres);
-                messages.Add(folderLapsOnCurrentTyresOutro);
+                List<MessageFragment> messages = new List<MessageFragment>();
+                messages.Add(MessageFragment.Text(folderLapsOnCurrentTyresIntro));
+                messages.Add(MessageFragment.Text(QueuedMessage.folderNameNumbersStub + lapsRemainingOnTheseTyres));
+                messages.Add(MessageFragment.Text(folderLapsOnCurrentTyresOutro));
                 if (immediate)
                 {
                     audioPlayer.openChannel();
-                    audioPlayer.playClipImmediately(QueuedMessage.compoundMessageIdentifier + "laps_on_current_tyres",
-                        new QueuedMessage(messages, 0, this));
+                    audioPlayer.playClipImmediately(new QueuedMessage("laps_on_current_tyres", messages, 0, this));
                     audioPlayer.closeChannel();
                 }
                 else
                 {
-                    audioPlayer.queueClip(QueuedMessage.compoundMessageIdentifier + "laps_on_current_tyres",
-                        new QueuedMessage(messages, 0, this));
+                    audioPlayer.queueClip(new QueuedMessage("laps_on_current_tyres", messages, 0, this));
                 }                
             }
             else if (immediate)
             {
                 audioPlayer.openChannel();
-                audioPlayer.playClipImmediately(AudioPlayer.folderNoData, new QueuedMessage(0, this));
+                audioPlayer.playClipImmediately(new QueuedMessage(AudioPlayer.folderNoData, 0, this));
                 audioPlayer.closeChannel();
             }
         }
@@ -348,14 +344,14 @@ namespace CrewChiefV3.Events
                         thisLapTyreTemps.displayCurrent();
                         gotData = true;
                         audioPlayer.openChannel();
-                        audioPlayer.playClipImmediately(messageFolder, new QueuedMessage(0, this));
+                        audioPlayer.playClipImmediately(new QueuedMessage(messageFolder, 0, this));
                         audioPlayer.closeChannel();
                     }
                 }
                 if (!gotData)
                 {
                     audioPlayer.openChannel();
-                    audioPlayer.playClipImmediately(AudioPlayer.folderNoData, new QueuedMessage(0, this));
+                    audioPlayer.playClipImmediately(new QueuedMessage(AudioPlayer.folderNoData, 0, this));
                     audioPlayer.closeChannel();
                 }
             }
@@ -377,12 +373,12 @@ namespace CrewChiefV3.Events
                 {
                     if (isQueuedMessage)
                     {
-                        audioPlayer.queueClip(folderGoodWear, 1, this);
+                        audioPlayer.queueClip(new QueuedMessage(folderGoodWear, 1, this));
                     }
                     else
                     {
                         audioPlayer.openChannel();
-                        audioPlayer.playClipImmediately(folderGoodWear, new QueuedMessage(0, this));
+                        audioPlayer.playClipImmediately(new QueuedMessage(folderGoodWear, 0, this));
                     }
                 }
             }
@@ -567,11 +563,11 @@ namespace CrewChiefV3.Events
             {
                 if (isQueuedMessage)
                 {
-                    audioPlayer.queueClip(clipToPlay, 0, this);
+                    audioPlayer.queueClip(new QueuedMessage(clipToPlay, 0, this));
                 }
                 else
                 {
-                    audioPlayer.playClipImmediately(clipToPlay, new QueuedMessage(0, this));
+                    audioPlayer.playClipImmediately(new QueuedMessage(clipToPlay, 0, this));
                     audioPlayer.closeChannel();
                 }
             }

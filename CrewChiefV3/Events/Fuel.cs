@@ -154,36 +154,36 @@ namespace CrewChiefV3.Events
                     {
                         if (estimatedFuelLapsLeft < halfDistance && currentGameState.FuelData.FuelLeft / fuelAfter15Seconds < 0.6)
                         {
-                            audioPlayer.queueClip(folderHalfDistanceLowFuel, 0, this);
+                            audioPlayer.queueClip(new QueuedMessage(folderHalfDistanceLowFuel, 0, this));
                         }
                         else
                         {
-                            audioPlayer.queueClip(folderHalfDistanceGoodFuel, 0, this);
+                            audioPlayer.queueClip(new QueuedMessage(folderHalfDistanceGoodFuel, 0, this));
                         }
                     }
                     else if (enableFuelMessages && estimatedFuelLapsLeft == 4)
                     {
                         Console.WriteLine("4 laps fuel left, starting fuel = " + fuelAfter15Seconds +
                                 ", current fuel = " + currentGameState.FuelData.FuelLeft + ", usage per lap = " + averageUsagePerLap);
-                        audioPlayer.queueClip(folderFourLapsEstimate, 0, this);
+                        audioPlayer.queueClip(new QueuedMessage(folderFourLapsEstimate, 0, this));
                     }
                     else if (enableFuelMessages && estimatedFuelLapsLeft == 3)
                     {
                         Console.WriteLine("3 laps fuel left, starting fuel = " + fuelAfter15Seconds +
                             ", current fuel = " + currentGameState.FuelData.FuelLeft + ", usage per lap = " + averageUsagePerLap);
-                        audioPlayer.queueClip(folderThreeLapsEstimate, 0, this);
+                        audioPlayer.queueClip(new QueuedMessage(folderThreeLapsEstimate, 0, this));
                     }
                     else if (enableFuelMessages && estimatedFuelLapsLeft == 2)
                     {
                         Console.WriteLine("2 laps fuel left, starting fuel = " + fuelAfter15Seconds +
                             ", current fuel = " + currentGameState.FuelData.FuelLeft + ", usage per lap = " + averageUsagePerLap);
-                        audioPlayer.queueClip(folderTwoLapsEstimate, 0, this);
+                        audioPlayer.queueClip(new QueuedMessage(folderTwoLapsEstimate, 0, this));
                     }
                     else if (enableFuelMessages && estimatedFuelLapsLeft == 1)
                     {
                         Console.WriteLine("1 lap fuel left, starting fuel = " + fuelAfter15Seconds +
                             ", current fuel = " + currentGameState.FuelData.FuelLeft + ", usage per lap = " + averageUsagePerLap);
-                        audioPlayer.queueClip(folderOneLapEstimate, 0, this);
+                        audioPlayer.queueClip(new QueuedMessage(folderOneLapEstimate, 0, this));
                     }
                 }
                 else if (initialised && currentGameState.SessionData.SessionNumberOfLaps <= 0 && !playedHalfTimeFuelEstimate &&
@@ -195,11 +195,11 @@ namespace CrewChiefV3.Events
                     {
                         if (averageUsagePerMinute * halfTime / 60 > currentGameState.FuelData.FuelLeft && currentGameState.FuelData.FuelLeft / fuelAfter15Seconds < 0.6)
                         {
-                            audioPlayer.queueClip(folderHalfDistanceLowFuel, 0, this);
+                            audioPlayer.queueClip(new QueuedMessage(folderHalfDistanceLowFuel, 0, this));
                         }
                         else
                         {
-                            audioPlayer.queueClip(folderHalfDistanceGoodFuel, 0, this);
+                            audioPlayer.queueClip(new QueuedMessage(folderHalfDistanceGoodFuel, 0, this));
                         }
                     }
                 }
@@ -233,25 +233,25 @@ namespace CrewChiefV3.Events
                         playedTwoMinutesRemaining = true;
                         playedFiveMinutesRemaining = true;
                         playedTenMinutesRemaining = true;
-                        audioPlayer.queueClip(folderTwoMinutesFuel, 0, this);
+                        audioPlayer.queueClip(new QueuedMessage(folderTwoMinutesFuel, 0, this));
                     }
                     else if (enableFuelMessages && currentGameState.FuelData.FuelLeft / averageUsagePerMinute < 5 && !playedFiveMinutesRemaining)
                     {
                         playedFiveMinutesRemaining = true;
                         playedTenMinutesRemaining = true;
-                        audioPlayer.queueClip(folderFiveMinutesFuel, 0, this);
+                        audioPlayer.queueClip(new QueuedMessage(folderFiveMinutesFuel, 0, this));
                     }
                     else if (enableFuelMessages && currentGameState.FuelData.FuelLeft / averageUsagePerMinute < 10 && !playedTenMinutesRemaining)
                     {
                         playedTenMinutesRemaining = true;
-                        audioPlayer.queueClip(folderTenMinutesFuel, 0, this);
+                        audioPlayer.queueClip(new QueuedMessage(folderTenMinutesFuel, 0, this));
                     }
                 }
                 else if (enableFuelMessages && initialised && !playedHalfTankWarning && currentGameState.FuelData.FuelLeft / fuelAfter15Seconds <= 0.50)
                 {
                     // warning message for fuel left - these play as soon as the fuel reaches 1/2 tank left
                     playedHalfTankWarning = true;
-                    audioPlayer.queueClip(folderHalfTankWarning, 0, this);
+                    audioPlayer.queueClip(new QueuedMessage(folderHalfTankWarning, 0, this));
                 }
             }
         }
@@ -267,18 +267,17 @@ namespace CrewChiefV3.Events
                     if (lapsOfFuelLeft > 60)
                     {
                         audioPlayer.openChannel();
-                        audioPlayer.playClipImmediately(folderPlentyOfFuel, new QueuedMessage(0, this));
+                        audioPlayer.playClipImmediately(new QueuedMessage(folderPlentyOfFuel, 0, this));
                         audioPlayer.closeChannel();
                     }
                     else
                     {
-                        List<String> messages = new List<String>();
-                        messages.Add(folderWeEstimate);
-                        messages.Add(QueuedMessage.folderNameNumbersStub + lapsOfFuelLeft);
-                        messages.Add(folderLapsRemaining);
+                        List<MessageFragment> messages = new List<MessageFragment>();
+                        messages.Add(MessageFragment.Text(folderWeEstimate));
+                        messages.Add(MessageFragment.Text(QueuedMessage.folderNameNumbersStub + lapsOfFuelLeft));
+                        messages.Add(MessageFragment.Text(folderLapsRemaining));
                         audioPlayer.openChannel();
-                        audioPlayer.playClipImmediately(QueuedMessage.compoundMessageIdentifier + "Fuel/estimate",
-                            new QueuedMessage(messages, 0, this));
+                        audioPlayer.playClipImmediately(new QueuedMessage("Fuel/estimate", messages, 0, this));
                         audioPlayer.closeChannel();
                     }                    
                     haveData = true;
@@ -288,18 +287,17 @@ namespace CrewChiefV3.Events
                     int minutesOfFuelLeft = (int)Math.Floor(currentFuel / averageUsagePerMinute);
                     if (minutesOfFuelLeft > 60) {
                         audioPlayer.openChannel();
-                        audioPlayer.playClipImmediately(folderPlentyOfFuel, new QueuedMessage(0, this));
+                        audioPlayer.playClipImmediately(new QueuedMessage(folderPlentyOfFuel, 0, this));
                         audioPlayer.closeChannel();
                     }
                     else 
                     {
-                        List<String> messages = new List<String>();
-                        messages.Add(folderWeEstimate);
-                        messages.Add(QueuedMessage.folderNameNumbersStub + minutesOfFuelLeft);
-                        messages.Add(folderMinutesRemaining);
+                        List<MessageFragment> messages = new List<MessageFragment>();
+                        messages.Add(MessageFragment.Text(folderWeEstimate));
+                        messages.Add(MessageFragment.Text(QueuedMessage.folderNameNumbersStub + minutesOfFuelLeft));
+                        messages.Add(MessageFragment.Text(folderMinutesRemaining));
                         audioPlayer.openChannel();
-                        audioPlayer.playClipImmediately(QueuedMessage.compoundMessageIdentifier + "Fuel/estimate",
-                            new QueuedMessage(messages, 0, this));
+                        audioPlayer.playClipImmediately(new QueuedMessage("Fuel/estimate", messages, 0, this));
                         audioPlayer.closeChannel();
                     }                    
                     haveData = true;
@@ -310,11 +308,11 @@ namespace CrewChiefV3.Events
                 audioPlayer.openChannel();
                 if (!fuelUseActive)
                 {
-                    audioPlayer.playClipImmediately(folderPlentyOfFuel, new QueuedMessage(0, this));
+                    audioPlayer.playClipImmediately(new QueuedMessage(folderPlentyOfFuel, 0, this));
                 }
                 else
                 {
-                    audioPlayer.playClipImmediately(AudioPlayer.folderNoData, new QueuedMessage(0, this));
+                    audioPlayer.playClipImmediately(new QueuedMessage(AudioPlayer.folderNoData, 0, this));
                 }
                 audioPlayer.closeChannel();
             }
