@@ -267,6 +267,7 @@ namespace CrewChiefV3
                                 SoundPlayer clip = new SoundPlayer(driverNameFile.FullName);
                                 clip.Load();
                                 List<SoundPlayer> driverNameClips = new List<SoundPlayer>();
+                                driverNameClips.Add(clip);
                                 clips.Add(driverName, driverNameClips);
                                 if (!allMessageNames.Contains(driverName))
                                 {

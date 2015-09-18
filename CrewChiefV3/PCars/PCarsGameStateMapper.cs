@@ -123,6 +123,7 @@ namespace CrewChiefV3.PCars
                 currentGameState.SessionData.IsNewSession = true;
                 currentGameState.SessionData.TrackLength = shared.mTrackLength;
                 currentGameState.SessionData.SessionNumberOfLaps = numberOfLapsInSession;
+                currentGameState.SessionData.DriverRawName = shared.mParticipantData[shared.mViewedParticipantIndex].mName;
 
                 foreach (pCarsAPIParticipantStruct participantStruct in shared.mParticipantData)
                 {
@@ -254,7 +255,7 @@ namespace CrewChiefV3.PCars
             opponentSlotId = 0;
             foreach (pCarsAPIParticipantStruct participantStruct in shared.mParticipantData)
             {
-                if (currentGameState.OpponentData.ContainsKey(opponentSlotId))
+                if (currentGameState.OpponentData.ContainsKey(opponentSlotId) && shared.mViewedParticipantIndex != opponentSlotId)
                 {
                     if (currentGameState.OpponentData[opponentSlotId].IsActive && participantStruct.mIsActive)
                     {

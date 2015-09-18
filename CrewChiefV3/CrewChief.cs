@@ -313,6 +313,7 @@ namespace CrewChiefV3
                                     stateCleared = true;
                                 }
                                 List<String> rawDriverNames = currentGameState.getRawDriverNames();
+                                rawDriverNames.Add(currentGameState.SessionData.DriverRawName);
                                 if (rawDriverNames.Count > 0)
                                 {
                                     List<String> usableDriverNames = DriverNameHelper.getUsableDriverNames(rawDriverNames, audioPlayer.soundFilesPath);

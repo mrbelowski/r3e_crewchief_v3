@@ -228,6 +228,8 @@ namespace CrewChiefV3.GameState
         public float SessionTimeAtEndOfLastSector2 = 0;
 
         public float SessionTimeAtEndOfLastSector3 = 0;
+
+        public String DriverRawName;
     }
 
     public class PositionAndMotionData
@@ -509,7 +511,7 @@ namespace CrewChiefV3.GameState
             {
                 foreach (KeyValuePair<int, OpponentData> entry in OpponentData)
                 {
-                    if (entry.Value.Position == position - 1)
+                    if (entry.Value.Position == position)
                     {
                         return entry.Key;
                     }
