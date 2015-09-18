@@ -5,73 +5,125 @@ using System.Linq;
 using System.Text;
 
 /**
- * Utility class to ease some of the pain of creating a vast driver name folder set
+ * Utility class to ease some of the pain of managing driver names.
  */
 namespace CrewChiefV3
 {
     class DriverNameHelper
     {
-        private static Dictionary<String, String> nameToPhonetic = new Dictionary<String, String>();
+        private static Dictionary<String, String> rawNameToUsableName = new Dictionary<String, String>();
 
-        static Dictionary<String, String> phoneticNamesForSession = new Dictionary<String, String>();
+        private static Dictionary<String, String> usableNamesForSession = new Dictionary<String, String>();
 
-        public static String getPhoneticForRealName(String realName)
+        private static Boolean useLastNameWherePossible = true;
+
+        public static String getUsableNameForRawName(String rawName)
         {
-            if (phoneticNamesForSession.ContainsKey(realName))
+            if (usableNamesForSession.ContainsKey(rawName))
             {
-                return phoneticNamesForSession[realName];
+                return usableNamesForSession[rawName];
             }
             else
             {
-                return realName;
+                return rawName;
             }
         }
 
-        private static void readNamesToPhoneticsFile(String soundsFolderName)
+        private static void readRawNamesToUsableNamesFile(String soundsFolderName)
         {
             int counter = 0;
             string line;
             StreamReader file = new StreamReader(soundsFolderName +@"\driver_names\names.txt");
             while ((line = file.ReadLine()) != null)
             {
-                String[] split = line.Split(new char[] {':'});
-                if (!nameToPhonetic.ContainsKey(split[0].Trim()))
+                int separatorIndex = line.LastIndexOf(":");
+                if (separatorIndex > 0 && line.Length > separatorIndex + 1)
                 {
-                    String phonetic = "";
-                    if (split.Length == 2)
+                    String rawName = line.Substring(0, separatorIndex);
+                    String usableName = validateAndCleanUpName(line.Substring(separatorIndex + 1));
+                    if (usableName != null && !rawNameToUsableName.ContainsKey(rawName))
                     {
-                        phonetic = split[1].Trim();
+                        rawNameToUsableName.Add(rawName, usableName);
                     }
-                    nameToPhonetic.Add(split[0].Trim(), phonetic);
                 }
                 counter++;
             }
             file.Close();
         }
 
-        public static List<String> getPhoneticDriverNames(List<String> driverNames, String soundsFolderName)
+        private static String validateAndCleanUpName(String name)
         {
-            readNamesToPhoneticsFile(soundsFolderName);
-            phoneticNamesForSession.Clear();
-            List<String> phoneticNames = new List<String>();
-            foreach (String driverName in driverNames)
+            name = name.Replace('_', ' ');
+            name = name.Replace('-', ' ');
+
+            if (name.All(c=>Char.IsLetter(c) || c==' ' || c=='\'' || c=='.') && name.Length > 0) {
+                return name;
+            }
+            else
             {
-                String phoneticName = driverName;
-                if (nameToPhonetic.ContainsKey(driverName) && nameToPhonetic[driverName].Length > 0)
+                return null;
+            }
+        }
+
+        public static List<String> getUsableDriverNames(List<String> rawDriverNames, String soundsFolderName)
+        {
+            readRawNamesToUsableNamesFile(soundsFolderName);
+            usableNamesForSession.Clear();
+            List<String> usableNames = new List<String>();
+            foreach (String rawDriverName in rawDriverNames)
+            {
+                if (rawNameToUsableName.ContainsKey(rawDriverName))
                 {
-                    phoneticName = nameToPhonetic[driverName];
-                    Console.WriteLine("Using phonetic " + phoneticName + " for driver name " + driverName);
+                    String usableDriverName = rawNameToUsableName[rawDriverName];
+                    usableNames.Add(usableDriverName);
+                    Console.WriteLine("Using mapped drivername " + usableDriverName + " for raw driver name " + rawDriverName);
+                    usableNamesForSession.Add(rawDriverName, usableDriverName);
                 }
-                if (!phoneticNames.Contains(phoneticName))
+                else
                 {
-                    phoneticNames.Add(phoneticName);
-                }
-                if (!phoneticNamesForSession.ContainsKey(driverName))
-                {
-                    phoneticNamesForSession.Add(driverName, phoneticName);
+                    String usableDriverName = validateAndCleanUpName(rawDriverName);
+                    if (usableDriverName != null)
+                    {
+                        Boolean usedLastName = false;
+                        if (useLastNameWherePossible)
+                        {
+                            String lastName = getUnambiguousLastName(usableDriverName);
+                            if (lastName != null && lastName.Count() > 0 && !usableNames.Contains(lastName))
+                            {
+                                usableNames.Add(lastName);
+                                Console.WriteLine("Using unmapped driver last name " + lastName + " for raw driver name " + rawDriverName);
+                                usableNamesForSession.Add(rawDriverName, lastName);
+                                usedLastName = true;
+                            }
+                        }
+                        if (!usedLastName)
+                        {
+                            usableNames.Add(usableDriverName);
+                            Console.WriteLine("Using unmapped drivername " + usableDriverName + " for raw driver name " + rawDriverName);
+                            usableNamesForSession.Add(rawDriverName, usableDriverName);
+                        }                        
+                    }
+                    else
+                    {
+                        Console.WriteLine("Unable to create a usable driver name for " + rawDriverName);
+                    }
                 }
             }
-            return phoneticNames;
+            return usableNames;
+        }
+
+        private static String getUnambiguousLastName(String fullName)
+        {
+            if (fullName.Count(Char.IsWhiteSpace) == 1)
+            {
+                return fullName.Split(' ')[1];
+            }
+            if (fullName.LastIndexOf(". ") > 0 && fullName.LastIndexOf(". ") == fullName.LastIndexOf(" ") - 1)
+            {
+                String[] split = fullName.Split(' ');
+                return split[split.Length - 1];
+            }
+            return null;
         }
     }
 }

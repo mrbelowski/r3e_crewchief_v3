@@ -44,9 +44,10 @@ namespace CrewChiefV3.Events
                 {
                     foreach (KeyValuePair<int, OpponentData> entry in currentGameState.OpponentData)
                     {
-                        if (voiceMessage.Contains(DriverNameHelper.getPhoneticForRealName(entry.Value.DriverLastName)))
+                        String usableDriverName = DriverNameHelper.getUsableNameForRawName(entry.Value.DriverRawName);
+                        if (voiceMessage.Contains(usableDriverName))
                         {
-                            Console.WriteLine("Got opponent name, " + entry.Value.DriverLastName);
+                            Console.WriteLine("Got opponent name, raw name = " + entry.Value.DriverRawName + ", using " + usableDriverName);
                             if (entry.Value.IsActive)
                             {
                                 int position = entry.Value.Position;
@@ -95,7 +96,7 @@ namespace CrewChiefV3.Events
                             }
                             else
                             {
-                                Console.WriteLine("Driver "+ entry.Value.DriverLastName + " is no longer active in this session");
+                                Console.WriteLine("Driver "+ entry.Value.DriverRawName + " is no longer active in this session");
                             }                            
                             foundDriver = true;
                             break;
@@ -105,10 +106,11 @@ namespace CrewChiefV3.Events
                 else if (voiceMessage.StartsWith(SpeechRecogniser.WHOS_BEHIND) && !currentGameState.isLast())
                 {
                     OpponentData opponent = currentGameState.getOpponentAtPosition(currentGameState.SessionData.Position + 1);
-                    if (audioPlayer.hasDriverName(opponent.DriverLastName) && opponent.IsActive)
+                    String usableDriverName = DriverNameHelper.getUsableNameForRawName(opponent.DriverRawName);
+                    if (audioPlayer.hasDriverName(usableDriverName) && opponent.IsActive)
                     {
                         audioPlayer.openChannel();
-                        audioPlayer.playClipImmediately(QueuedMessage.driverNameIdentifier + opponent.DriverLastName, new QueuedMessage(0, null));
+                        audioPlayer.playClipImmediately(QueuedMessage.driverNameIdentifier + usableDriverName, new QueuedMessage(0, null));
                         audioPlayer.closeChannel();
                         foundDriver = true;
                     }
@@ -116,10 +118,11 @@ namespace CrewChiefV3.Events
                 else if (voiceMessage.StartsWith(SpeechRecogniser.WHOS_IN_FRONT) && currentGameState.SessionData.Position > 1)
                 {
                     OpponentData opponent = currentGameState.getOpponentAtPosition(currentGameState.SessionData.Position - 1);
-                    if (audioPlayer.hasDriverName(opponent.DriverLastName) && opponent.IsActive)
+                    String usableDriverName = DriverNameHelper.getUsableNameForRawName(opponent.DriverRawName);
+                    if (audioPlayer.hasDriverName(usableDriverName) && opponent.IsActive)
                     {
                         audioPlayer.openChannel();
-                        audioPlayer.playClipImmediately(QueuedMessage.driverNameIdentifier + opponent.DriverLastName, new QueuedMessage(0, null));
+                        audioPlayer.playClipImmediately(QueuedMessage.driverNameIdentifier + usableDriverName, new QueuedMessage(0, null));
                         audioPlayer.closeChannel();
                         foundDriver = true;
                     }

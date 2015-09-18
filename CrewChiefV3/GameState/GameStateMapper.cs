@@ -7,6 +7,7 @@ namespace CrewChiefV3.GameState
 {
     interface GameStateMapper
     {
+        /** May return null if the game state raw data is considered invalid */
         GameStateData mapToGameStateData(Object memoryMappedFileStruct, GameStateData previousGameState);
 
         void versionCheck(Object memoryMappedFileStruct);

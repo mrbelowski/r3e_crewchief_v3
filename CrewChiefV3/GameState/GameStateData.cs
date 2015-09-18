@@ -246,9 +246,8 @@ namespace CrewChiefV3.GameState
         // set this to false if this opponent drops out of the race (i.e. leaves a server)
         public Boolean IsActive = true;
 
-        public String DriverFirstName = null;
-
-        public String DriverLastName = null;
+        // the name read directly from the game data - might be a 'handle' with all kinds of random crap in it
+        public String DriverRawName = null;
 
         public int Position = 0;
 
@@ -456,23 +455,15 @@ namespace CrewChiefV3.GameState
             return SessionData.Position == SessionData.NumCars;
         }
 
-        public List<String> getOpponentLastNames()
+        public List<String> getRawDriverNames()
         {
-            List<String> lastNames = new List<String>();
+            List<String> rawDriverNames = new List<String>();
             foreach (KeyValuePair<int, OpponentData> entry in OpponentData)
             {
-                String driverLastName = entry.Value.DriverLastName;
-                if (driverLastName.Length > 0)
-                {
-                    lastNames.Add(entry.Value.DriverLastName);
-                }
-                else
-                {
-                    Console.WriteLine("Driver name invalid " + entry.Value.DriverFirstName + " " + entry.Value.DriverLastName);
-                }
+                rawDriverNames.Add(entry.Value.DriverRawName);                
             }
-            lastNames.Sort();
-            return lastNames;
+            rawDriverNames.Sort();
+            return rawDriverNames;
         }
 
         public OpponentData getOpponentAtPosition(int position) 

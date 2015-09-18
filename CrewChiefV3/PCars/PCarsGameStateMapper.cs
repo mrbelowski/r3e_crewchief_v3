@@ -50,7 +50,7 @@ namespace CrewChiefV3.PCars
 
             if (shared.mViewedParticipantIndex < 0 || shared.mNumParticipants < 1)
             {
-                // Unusable data in the block - throw an error here?
+                // Unusable data in the block
                 return null;
             }
             pCarsAPIParticipantStruct viewedParticipant = shared.mParticipantData[shared.mViewedParticipantIndex];
@@ -442,22 +442,7 @@ namespace CrewChiefV3.PCars
         {
             OpponentData opponentData = new OpponentData();
             opponentData.DistanceRoundTrack = participantStruct.mCurrentLapDistance;
-            String driverName = participantStruct.mName;
-            String[] names = driverName.Split(' ');
-            if (names.Length == 1) {
-                opponentData.DriverFirstName = names[0];
-                opponentData.DriverLastName = names[0];
-            }
-            else if (names.Length == 2) {
-                opponentData.DriverFirstName = names[0];
-                opponentData.DriverLastName = names[1];
-            }
-            else if (names.Length > 2) {
-                // this is going to fail badly when the first name has a space in it. But we either fail
-                // for names like "john paul smith", or fail for names like "dick van dyke", can't work both ways
-                opponentData.DriverFirstName = driverName.Substring(0, driverName.IndexOf(" "));
-                opponentData.DriverLastName = driverName.Substring(driverName.IndexOf(" ") + 1);
-            }
+            opponentData.DriverRawName = participantStruct.mName.Trim();            
             opponentData.Position = (int)participantStruct.mRacePosition;
             opponentData.CompletedLaps = (int)participantStruct.mLapsCompleted;
             opponentData.CurrentSectorNumber = (int)participantStruct.mCurrentSector;

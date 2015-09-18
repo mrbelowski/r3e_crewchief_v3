@@ -75,6 +75,11 @@ namespace CrewChiefV3.RaceRoom
             GameStateData currentGameState = new GameStateData();
             RaceRoomData.RaceRoomShared shared = (RaceRoomData.RaceRoomShared)memoryMappedFileStruct;
 
+            if (shared.NumberOfLaps <= 0 && shared.SessionTimeRemaining <= 0 || shared.Player.GameSimulationTime <= 0)
+            {
+                return null;
+            }
+
             SessionPhase lastSessionPhase = SessionPhase.Unavailable;
             float lastSessionRunningTime = 0;
             if (previousGameState != null)

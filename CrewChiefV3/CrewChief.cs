@@ -223,7 +223,7 @@ namespace CrewChiefV3
                 {
                     lastSpotterState = currentSpotterState;
                     currentSpotterState = gameDataReader.ReadGameData();
-                    if (lastSpotterState != null)
+                    if (lastSpotterState != null && currentSpotterState != null)
                     {
                         spotter.trigger(lastSpotterState, currentSpotterState);
                     }
@@ -312,18 +312,15 @@ namespace CrewChiefV3
                                     faultingEventsCount.Clear();
                                     stateCleared = true;
                                 }
-                                List<String> opponentNames = currentGameState.getOpponentLastNames();
-                                if (opponentNames.Count > 0)
+                                List<String> rawDriverNames = currentGameState.getRawDriverNames();
+                                if (rawDriverNames.Count > 0)
                                 {
-                                    //DriveNameHelper.addNamesToPhoneticsFile(currentGameState.getOpponentLastNames());
-                                    //DriveNameHelper.addPhoneticNamesFolders();
-                                    List<String> phoneticDriverNames = DriverNameHelper.getPhoneticDriverNames(
-                                        currentGameState.getOpponentLastNames(), audioPlayer.soundFilesPath);
+                                    List<String> usableDriverNames = DriverNameHelper.getUsableDriverNames(rawDriverNames, audioPlayer.soundFilesPath);
                                     if (speechRecogniser != null && speechRecogniser.initialised)
                                     {
-                                        speechRecogniser.addNames(phoneticDriverNames);
+                                        speechRecogniser.addNames(usableDriverNames);
                                     }
-                                    audioPlayer.cacheDriverNames(phoneticDriverNames);
+                                    audioPlayer.cacheDriverNames(usableDriverNames);
                                 }
                             }
                             else if (!sessionFinished && previousGameState != null &&
