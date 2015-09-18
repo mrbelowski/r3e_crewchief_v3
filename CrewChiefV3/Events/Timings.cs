@@ -17,12 +17,22 @@ namespace CrewChiefV3.Events
         private String folderGapBehindDecreasing = "timings/gap_behind_decreasing";
 
         // for when we have a driver name...
-        private String folderTheGapTo = "timings/the_gap_to";
-        private String folderAheadIsIncreasing = "timings/ahead_is_increasing"; // ahead is increasing, it's now..."
-        private String folderBehindIsIncreasing = "timings/behind_is_increasing"; // behind is increasing, it's now..."
+
+
+
+        // TODO: record these...
+        private String folderTheGapTo = "timings/the_gap_to";   // "the gap to..."
+        private String folderAheadIsIncreasing = "timings/ahead_is_increasing"; // [bob] "ahead is increasing, it's now..."
+        private String folderBehindIsIncreasing = "timings/behind_is_increasing"; // [bob] "behind is increasing, it's now..."
+
         private String folderYoureReeling = "timings/youre_reeling";    // "you're reeling..."
-        private String folderInTheGapIsNow = "timings/the_gap_is_now";  // [bob] "in, the gap is now..."
+        private String folderInTheGapIsNow = "timings/in_the_gap_is_now";  // [bob] "in, the gap is now..."
+
         private String folderIsReelingYouIn = "timings/is_reeling_you_in";    // [bob] "is reeling you in...."
+        private String folderTheGapIsNow = "timings/the_gap_is_now";  // ", the gap is now..." **** note this is supposed to be different from the one above****
+
+
+
 
         private String folderSeconds = "timings/seconds";
 
@@ -176,7 +186,7 @@ namespace CrewChiefV3.Events
                             {
                                 audioPlayer.queueClip(new QueuedMessage("Timings/gap_in_front",
                                     MessageContents(currentGameState.getOpponentAtPosition(currentGameState.SessionData.Position + 1), folderIsReelingYouIn,
-                                    folderInTheGapIsNow, gapBehind, folderSeconds),
+                                    folderTheGapIsNow, gapBehind, folderSeconds),
                                     MessageContents(folderGapBehindDecreasing, gapBehind, folderSeconds), 0, this));
                             }
                             gapBehindAtLastReport = gapsBehind[0];
