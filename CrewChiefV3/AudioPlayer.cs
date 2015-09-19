@@ -264,7 +264,7 @@ namespace CrewChiefV3
                     {
                         foreach (String driverName in driverNames)
                         {
-                            if (driverNameFile.Name.Equals(driverName + ".wav") && !clips.ContainsKey(driverName))
+                            if (driverNameFile.Name.ToLower().Equals(driverName.ToLower() + ".wav") && !clips.ContainsKey(driverName))
                             {
                                 Console.WriteLine("Caching driver name sound file for " + driverName);
                                 SoundPlayer clip = new SoundPlayer(driverNameFile.FullName);

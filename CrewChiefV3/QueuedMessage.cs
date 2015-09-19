@@ -24,12 +24,14 @@ namespace CrewChiefV3
             this.text = text;
             this.time = timeSpan;
             this.opponent = opponent;
+            this.type = type;
         }
 
         private MessageFragment(String text, OpponentData opponent, FragmentType type)
         {
             this.text = text;
             this.opponent = opponent;
+            this.type = type;
         }
 
         public static MessageFragment Text(String text)
