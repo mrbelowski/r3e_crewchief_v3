@@ -288,11 +288,12 @@ namespace CrewChiefV3
                         {
                             previousGameState = currentGameState;
                             currentGameState = nextGameState;
-                            if (!sessionFinished && currentGameState.SessionData.SessionPhase == SessionPhase.Finished)
+                            if (!sessionFinished && currentGameState.SessionData.SessionPhase == SessionPhase.Finished
+                                && previousGameState != null)
                             {
                                 audioPlayer.purgeQueues();
-                                sessionEndMessages.trigger(currentGameState.SessionData.SessionRunningTime, currentGameState.SessionData.SessionType, currentGameState.SessionData.SessionPhase,
-                                    currentGameState.SessionData.Position, currentGameState.SessionData.NumCarsAtStartOfSession);
+                                sessionEndMessages.trigger(previousGameState.SessionData.SessionRunningTime, currentGameState.SessionData.SessionType, currentGameState.SessionData.SessionPhase,
+                                    currentGameState.SessionData.Position, previousGameState.SessionData.NumCarsAtStartOfSession);
                                 audioPlayer.closeChannel();
                                 sessionFinished = true;
                             }

@@ -131,7 +131,7 @@ namespace CrewChiefV3.Events
                 {
                     sectorsSinceLastReport = 0;
                     // here we report on gaps semi-randomly, we'll see how this sounds...
-                    sectorsUntilNextReport = rand.Next(2,3);
+                    sectorsUntilNextReport = rand.Next(3, 7);
                     TimeSpan gapInFront = TimeSpan.FromMilliseconds(gapsInFront[0] * 1000);
                     Boolean readGap = gapInFront.Seconds > 0 || gapInFront.Milliseconds > 50;
                     switch (gapInFrontStatus)

@@ -101,7 +101,9 @@ namespace CrewChiefV3.PCars
 
             // current session data
             currentGameState.SessionData.SessionType = mapToSessionType(shared);
-            currentGameState.SessionData.SessionPhase = mapToSessionPhase(currentGameState.SessionData.SessionType, shared.mSessionState, shared.mRaceState, shared.mNumParticipants);
+            Boolean leaderHasFinished = previousGameState != null && previousGameState.SessionData.LeaderHasFinishedRace;
+            currentGameState.SessionData.SessionPhase = mapToSessionPhase(currentGameState.SessionData.SessionType, 
+                shared.mSessionState, shared.mRaceState, shared.mNumParticipants, leaderHasFinished);
             float sessionTimeRemaining = -1;
             int numberOfLapsInSession = (int)shared.mLapsInEvent;
             if (shared.mEventTimeRemaining > 0)
@@ -118,7 +120,7 @@ namespace CrewChiefV3.PCars
             if (lastSessionType != currentGameState.SessionData.SessionType ||
                 lastSessionHasFixedTime != currentGameState.SessionData.SessionHasFixedTime || lastSessionTrack != currentGameState.SessionData.TrackName ||
                 lastSessionTrackLayout != currentGameState.SessionData.TrackLayout || lastSessionLapsCompleted > currentGameState.SessionData.CompletedLaps ||
-                (numberOfLapsInSession > 0 && lastSessionNumberOfLaps != numberOfLapsInSession) ||
+                (numberOfLapsInSession > 0 && lastSessionNumberOfLaps > 0 && lastSessionNumberOfLaps != numberOfLapsInSession) ||
                 (sessionTimeRemaining > 0 && currentGameState.SessionData.SessionRunTime > 0 &&
                     (sessionTimeRemaining > currentGameState.SessionData.SessionRunTime)))
             {
@@ -223,7 +225,8 @@ namespace CrewChiefV3.PCars
                     currentGameState.SessionData.PitWindowStart = previousGameState.SessionData.PitWindowStart;
                     currentGameState.SessionData.PitWindowEnd = previousGameState.SessionData.PitWindowEnd;
                     currentGameState.SessionData.HasMandatoryPitStop = previousGameState.SessionData.HasMandatoryPitStop;
-                    currentGameState.OpponentData = previousGameState.OpponentData;                   
+                    currentGameState.OpponentData = previousGameState.OpponentData;
+                    currentGameState.SessionData.LeaderHasFinishedRace = previousGameState.SessionData.LeaderHasFinishedRace;
                 }                
             }            
             
@@ -281,7 +284,13 @@ namespace CrewChiefV3.PCars
             currentGameState.SessionData.TimeDeltaBehind = shared.mSplitTimeBehind;
             currentGameState.SessionData.TimeDeltaFront = shared.mSplitTimeAhead;
             // is this right??
-            currentGameState.SessionData.LeaderHasFinishedRace = shared.mHighestFlagColour == (int) eFlagColors.FLAG_COLOUR_CHEQUERED;
+            if (!currentGameState.SessionData.LeaderHasFinishedRace)
+            {
+                if (shared.mHighestFlagColour == (int)eFlagColors.FLAG_COLOUR_CHEQUERED)
+                {
+                    currentGameState.SessionData.LeaderHasFinishedRace = true;
+                }
+            }
 
             opponentSlotId = 0;
             foreach (pCarsAPIParticipantStruct participantStruct in shared.mParticipantData)
@@ -568,7 +577,9 @@ namespace CrewChiefV3.PCars
             }
         }
 
-        private SessionPhase mapToSessionPhase(SessionType sessionType, uint sessionState, uint raceState, int numParticipants)
+        // TODO: this has been hacked around so much as to have become entirely bollocks. Re-write it
+        private SessionPhase mapToSessionPhase(SessionType sessionType, uint sessionState, uint raceState, int numParticipants,
+            Boolean leaderHasFinishedRace)
         {
             if (numParticipants < 1)
             {
@@ -589,17 +600,21 @@ namespace CrewChiefV3.PCars
                 }
                 else if (raceState == (uint)eRaceState.RACESTATE_RACING)
                 {
-                    return SessionPhase.Green;
+                    if (leaderHasFinishedRace)
+                    {
+                        return SessionPhase.Checkered;
+                    }
+                    else
+                    {
+                        return SessionPhase.Green;
+                    }
                 }
                 else if (raceState == (uint)eRaceState.RACESTATE_FINISHED ||
                     raceState == (uint)eRaceState.RACESTATE_DNF ||
                     raceState == (uint)eRaceState.RACESTATE_DISQUALIFIED ||
-                    raceState == (uint)eRaceState.RACESTATE_RETIRED)
-                {
-                    return SessionPhase.Checkered;
-                }
-                else if (raceState == (uint)eRaceState.RACESTATE_INVALID ||
-                   raceState == (uint)eRaceState.RACESTATE_MAX)
+                    raceState == (uint)eRaceState.RACESTATE_RETIRED ||
+                    raceState == (uint)eRaceState.RACESTATE_INVALID ||
+                    raceState == (uint)eRaceState.RACESTATE_MAX)
                 {
                     return SessionPhase.Finished;
                 }
@@ -609,22 +624,27 @@ namespace CrewChiefV3.PCars
                 if (raceState == (uint)eRaceState.RACESTATE_NOT_STARTED)
                 {
                     return SessionPhase.Garage;
-                } else if (raceState == (uint)eRaceState.RACESTATE_RACING)
+                }
+                else if (raceState == (uint)eRaceState.RACESTATE_RACING)
                 {
-                    return SessionPhase.Green;
+                    if (leaderHasFinishedRace)
+                    {
+                        return SessionPhase.Checkered;
+                    }
+                    else
+                    {
+                        return SessionPhase.Green;
+                    }
                 }
                 else if (raceState == (uint)eRaceState.RACESTATE_FINISHED ||
-                   raceState == (uint)eRaceState.RACESTATE_DNF ||
-                   raceState == (uint)eRaceState.RACESTATE_DISQUALIFIED ||
-                   raceState == (uint)eRaceState.RACESTATE_RETIRED)
-                {
-                    return SessionPhase.Checkered;
-                }
-                else if (raceState == (uint)eRaceState.RACESTATE_INVALID ||
-                   raceState == (uint)eRaceState.RACESTATE_MAX)
+                    raceState == (uint)eRaceState.RACESTATE_DNF ||
+                    raceState == (uint)eRaceState.RACESTATE_DISQUALIFIED ||
+                    raceState == (uint)eRaceState.RACESTATE_RETIRED ||
+                    raceState == (uint)eRaceState.RACESTATE_INVALID ||
+                    raceState == (uint)eRaceState.RACESTATE_MAX)
                 {
                     return SessionPhase.Finished;
-                } 
+                }
             }
             return SessionPhase.Unavailable;
         }
