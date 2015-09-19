@@ -7,7 +7,7 @@ Klemenz:clements
 Holmes:homes
 John Paul Carr:carr
 Martínez:martinez
-Goméz:gomez
+Gómez:gomez
 Muller:mueller
 Clark:clarke
 Fischer:fisher
