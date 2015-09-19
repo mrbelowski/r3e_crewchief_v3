@@ -10,30 +10,30 @@ namespace CrewChiefV3.Events
     // note this only works properly in race events as the TimeDeltas aren't populated in practice / qual
     class Timings : AbstractEvent
     {
-        private String folderGapInFrontIncreasing = "timings/gap_in_front_increasing";
-        private String folderGapInFrontDecreasing = "timings/gap_in_front_decreasing";
+        public static String folderGapInFrontIncreasing = "timings/gap_in_front_increasing";
+        public static String folderGapInFrontDecreasing = "timings/gap_in_front_decreasing";
 
-        private String folderGapBehindIncreasing = "timings/gap_behind_increasing";
-        private String folderGapBehindDecreasing = "timings/gap_behind_decreasing";
+        public static String folderGapBehindIncreasing = "timings/gap_behind_increasing";
+        public static String folderGapBehindDecreasing = "timings/gap_behind_decreasing";
 
         // for when we have a driver name...
 
 
 
         // TODO: record these...
-        private String folderTheGapTo = "timings/the_gap_to";   // "the gap to..."
-        private String folderAheadIsIncreasing = "timings/ahead_is_increasing"; // [bob] "ahead is increasing, it's now..."
-        private String folderBehindIsIncreasing = "timings/behind_is_increasing"; // [bob] "behind is increasing, it's now..."
+        public static String folderTheGapTo = "timings/the_gap_to";   // "the gap to..."
+        public static String folderAheadIsIncreasing = "timings/ahead_is_increasing"; // [bob] "ahead is increasing, it's now..."
+        public static String folderBehindIsIncreasing = "timings/behind_is_increasing"; // [bob] "behind is increasing, it's now..."
 
-        private String folderYoureReeling = "timings/youre_reeling";    // "you're reeling..."
-        private String folderInTheGapIsNow = "timings/in_the_gap_is_now";  // [bob] "in, the gap is now..."
+        public static String folderYoureReeling = "timings/youre_reeling";    // "you're reeling..."
+        public static String folderInTheGapIsNow = "timings/in_the_gap_is_now";  // [bob] "in, the gap is now..."
 
-        private String folderIsReelingYouIn = "timings/is_reeling_you_in";    // [bob] "is reeling you in, the gap is now...."
-
-
+        public static String folderIsReelingYouIn = "timings/is_reeling_you_in";    // [bob] "is reeling you in, the gap is now...."
 
 
-        private String folderSeconds = "timings/seconds";
+
+
+        public static String folderSeconds = "timings/seconds";
 
         private String folderBeingHeldUp = "timings/being_held_up";
         private String folderBeingPressured = "timings/being_pressured";
@@ -131,7 +131,7 @@ namespace CrewChiefV3.Events
                 {
                     sectorsSinceLastReport = 0;
                     // here we report on gaps semi-randomly, we'll see how this sounds...
-                    sectorsUntilNextReport = rand.Next(3, 7);
+                    sectorsUntilNextReport = rand.Next(2, 3);
                     TimeSpan gapInFront = TimeSpan.FromMilliseconds(gapsInFront[0] * 1000);
                     Boolean readGap = gapInFront.Seconds > 0 || gapInFront.Milliseconds > 50;
                     switch (gapInFrontStatus)
@@ -183,7 +183,7 @@ namespace CrewChiefV3.Events
                         case GapStatus.DECREASING:
                             if (readGap)
                             {
-                                audioPlayer.queueClip(new QueuedMessage("Timings/gap_in_front",
+                                audioPlayer.queueClip(new QueuedMessage("Timings/gap_behind",
                                     MessageContents(currentGameState.getOpponentAtPosition(currentGameState.SessionData.Position + 1), folderIsReelingYouIn, gapBehind, folderSeconds),
                                     MessageContents(folderGapBehindDecreasing, gapBehind, folderSeconds), 0, this));
                             }

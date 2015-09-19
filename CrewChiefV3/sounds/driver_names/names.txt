@@ -6,3 +6,9 @@ Balou the Bear:balou
 Klemenz:clements
 Holmes:homes
 John Paul Carr:carr
+Martínez:martinez
+Goméz:gomez
+Muller:mueller
+Clark:clarke
+Fischer:fisher
+Patricio Javier Alzamora:alzamora

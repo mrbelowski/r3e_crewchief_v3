@@ -264,14 +264,19 @@ namespace CrewChiefV3
                     {
                         foreach (String driverName in driverNames)
                         {
-                            if (driverNameFile.Name.ToLower().Equals(driverName.ToLower() + ".wav") && !clips.ContainsKey(driverName))
+                            if (driverNameFile.Name.ToLower().Equals(driverName.ToLower() + ".wav") ||
+                                driverNameFile.Name.Equals(driverName + ".wav") ||
+                                driverNameFile.Name.ToLowerInvariant().Equals(driverName.ToLower() + ".wav"))
                             {
-                                Console.WriteLine("Caching driver name sound file for " + driverName);
-                                SoundPlayer clip = new SoundPlayer(driverNameFile.FullName);
-                                clip.Load();
-                                List<SoundPlayer> driverNameClips = new List<SoundPlayer>();
-                                driverNameClips.Add(clip);
-                                clips.Add(driverName, driverNameClips);
+                                if (!clips.ContainsKey(driverName))
+                                {
+                                    Console.WriteLine("Caching driver name sound file for " + driverName);
+                                    SoundPlayer clip = new SoundPlayer(driverNameFile.FullName);
+                                    clip.Load();
+                                    List<SoundPlayer> driverNameClips = new List<SoundPlayer>();
+                                    driverNameClips.Add(clip);
+                                    clips.Add(driverName, driverNameClips);
+                                }
                                 if (!availableDriverNames.Contains(driverName))
                                 {
                                     availableDriverNames.Add(driverName);
@@ -644,33 +649,40 @@ namespace CrewChiefV3
                         QueuedMessage thisMessage = (QueuedMessage)thisQueue[eventName];
                         if (clipIsPearlOfWisdom(eventName))
                         {
+                            soundsProcessed.Add(eventName);
                             if (hasPearlJustBeenPlayed())
                             {
                                 Console.WriteLine("Rejecting pearl of wisdom " + eventName +
                                     " because one has been played in the last " + minTimeBetweenPearlsOfWisdom + " seconds");
-                                soundsProcessed.Add(eventName);
                                 continue;
                             }
                             else
                             {
                                 timeLastPearlOfWisdomPlayed = DateTime.UtcNow;
+                                List<SoundPlayer> clipsList = clips[eventName];
+                                int index = random.Next(0, clipsList.Count);
+                                SoundPlayer clip = clipsList[index];
+                                clip.PlaySync();
                             }
-                        }
-                        foreach (String message in thisMessage.messageFolders)
-                        {
-                            List<SoundPlayer> clipsList = clips[message];
-                            int index = random.Next(0, clipsList.Count);
-                            SoundPlayer clip = clipsList[index];
-                            clip.PlaySync();                 
-                        }
-                        if (playedMessagesCount.ContainsKey(eventName))
-                        {
-                            int count = playedMessagesCount[eventName] + 1;
-                            playedMessagesCount[eventName] = count;
                         }
                         else
                         {
-                            playedMessagesCount.Add(eventName, 1);
+                            foreach (String message in thisMessage.messageFolders)
+                            {
+                                List<SoundPlayer> clipsList = clips[message];
+                                int index = random.Next(0, clipsList.Count);
+                                SoundPlayer clip = clipsList[index];
+                                clip.PlaySync();
+                            }
+                            if (playedMessagesCount.ContainsKey(eventName))
+                            {
+                                int count = playedMessagesCount[eventName] + 1;
+                                playedMessagesCount[eventName] = count;
+                            }
+                            else
+                            {
+                                playedMessagesCount.Add(eventName, 1);
+                            }
                         }
                         soundsProcessed.Add(eventName);
                         playedEventCount++;
