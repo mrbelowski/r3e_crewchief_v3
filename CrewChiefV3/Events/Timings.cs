@@ -28,8 +28,7 @@ namespace CrewChiefV3.Events
         private String folderYoureReeling = "timings/youre_reeling";    // "you're reeling..."
         private String folderInTheGapIsNow = "timings/in_the_gap_is_now";  // [bob] "in, the gap is now..."
 
-        private String folderIsReelingYouIn = "timings/is_reeling_you_in";    // [bob] "is reeling you in...."
-        private String folderTheGapIsNow = "timings/the_gap_is_now";  // ", the gap is now..." **** note this is supposed to be different from the one above****
+        private String folderIsReelingYouIn = "timings/is_reeling_you_in";    // [bob] "is reeling you in, the gap is now...."
 
 
 
@@ -185,8 +184,7 @@ namespace CrewChiefV3.Events
                             if (readGap)
                             {
                                 audioPlayer.queueClip(new QueuedMessage("Timings/gap_in_front",
-                                    MessageContents(currentGameState.getOpponentAtPosition(currentGameState.SessionData.Position + 1), folderIsReelingYouIn,
-                                    folderTheGapIsNow, gapBehind, folderSeconds),
+                                    MessageContents(currentGameState.getOpponentAtPosition(currentGameState.SessionData.Position + 1), folderIsReelingYouIn, gapBehind, folderSeconds),
                                     MessageContents(folderGapBehindDecreasing, gapBehind, folderSeconds), 0, this));
                             }
                             gapBehindAtLastReport = gapsBehind[0];

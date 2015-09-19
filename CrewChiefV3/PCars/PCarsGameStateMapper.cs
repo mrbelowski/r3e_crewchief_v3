@@ -11,6 +11,9 @@ namespace CrewChiefV3.PCars
 {
     class PCarsGameStateMapper : GameStateMapper
     {
+
+        private DateTime nextOpponentDisplay = DateTime.Now;
+
         private static uint expectedVersion = 5;
 
         private List<uint> racingSurfaces = new List<uint>() { (uint)eTerrain.TERRAIN_BUMPY_DIRT_ROAD, 
@@ -255,17 +258,27 @@ namespace CrewChiefV3.PCars
             opponentSlotId = 0;
             foreach (pCarsAPIParticipantStruct participantStruct in shared.mParticipantData)
             {
-                if (currentGameState.OpponentData.ContainsKey(opponentSlotId) && shared.mViewedParticipantIndex != opponentSlotId)
+                if (shared.mViewedParticipantIndex != opponentSlotId)
                 {
-                    if (currentGameState.OpponentData[opponentSlotId].IsActive && participantStruct.mIsActive)
+                    if (currentGameState.OpponentData.ContainsKey(opponentSlotId))
                     {
-                        upateOpponentData(currentGameState.OpponentData[opponentSlotId], participantStruct.mRacePosition, participantStruct.mLapsCompleted,
-                                participantStruct.mCurrentSector, false, currentGameState.SessionData.SessionRunningTime);
+                        if (currentGameState.OpponentData[opponentSlotId].IsActive && participantStruct.mIsActive)
+                        {
+                            upateOpponentData(currentGameState.OpponentData[opponentSlotId], participantStruct.mRacePosition, participantStruct.mLapsCompleted,
+                                    participantStruct.mCurrentSector, false, currentGameState.SessionData.SessionRunningTime, participantStruct.mCurrentLapDistance);
+                        }
+                        else
+                        {
+                            currentGameState.OpponentData[opponentSlotId].IsActive = false;
+                        }
                     }
                     else
                     {
-                        currentGameState.OpponentData[opponentSlotId].IsActive = false;
-                    }
+                        if (participantStruct.mIsActive)
+                        {
+                            currentGameState.OpponentData.Add(opponentSlotId, createOpponentData(participantStruct));
+                        }
+                    }                    
                 }
                 opponentSlotId++;
             }
@@ -383,6 +396,11 @@ namespace CrewChiefV3.PCars
                 currentGameState.PenaltiesData.CutTrackWarnings = previousGameState.PenaltiesData.CutTrackWarnings + 1;
             }
 
+            if (DateTime.Now > nextOpponentDisplay)
+            {
+                currentGameState.displayOpponentData();
+                nextOpponentDisplay = DateTime.Now.Add(TimeSpan.FromSeconds(5));
+            }
             
             return currentGameState;
         }
@@ -412,16 +430,36 @@ namespace CrewChiefV3.PCars
         }
 
         private void upateOpponentData(OpponentData opponentData, uint position, uint completedLaps,
-            uint sector, Boolean isPitting, float sessionRunningTime)
+            uint sector, Boolean isPitting, float sessionRunningTime, float distanceRoundTrack)
         {
+            DateTime now = DateTime.Now;
             opponentData.IsPitting = isPitting;
+            if (distanceRoundTrack > opponentData.DistanceRoundTrack)
+            {
+                opponentData.approximateSpeed = (distanceRoundTrack - opponentData.DistanceRoundTrack) / (float)(now - opponentData.lastUpdateTime).TotalSeconds;
+            }
+            else if (distanceRoundTrack == opponentData.DistanceRoundTrack)
+            {
+                opponentData.approximateSpeed = 0;
+            }
+
             opponentData.Position = (int)position;
+            opponentData.DistanceRoundTrack = distanceRoundTrack;
+            opponentData.lastUpdateTime = now;
             if (opponentData.CurrentSectorNumber != sector)
             {
                 opponentData.CurrentSectorNumber = (int)sector;
-                if (opponentData.CurrentSectorNumber == 1)
+                if (opponentData.CurrentSectorNumber == 1 && completedLaps == opponentData.CompletedLaps + 1)
                 {
-                    opponentData.approximateLastLapTime = sessionRunningTime - opponentData.SessionTimeAtEndOfLastSector3;
+                    if (opponentData.SessionTimeAtEndOfLastSector3 > 0)
+                    {
+                        float errorCorrection = 0;
+                        if (opponentData.Position > 0 && opponentData.Position < 200)
+                        {
+                            errorCorrection = opponentData.Position / opponentData.approximateSpeed;
+                        }
+                        opponentData.approximateLastLapTime = sessionRunningTime - opponentData.SessionTimeAtEndOfLastSector3 - errorCorrection;
+                    }
                     opponentData.SessionTimeAtEndOfLastSector3 = sessionRunningTime;
                     opponentData.LapsCompletedAtEndOfLastSector3 = (int)completedLaps;
                 }

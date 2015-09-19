@@ -91,6 +91,11 @@ namespace CrewChiefV3
             this.abstractEvent = abstractEvent;
         }
 
+        /**
+         * Queues a message with multiple fragments, with an alternate version if the first version can't be played.
+         * Use this when a compound message includes a driver name which may or may not be in the set that are have associated
+         * sound files. If there's no sound file for this driver name, the alternate message will be played
+         */
         public QueuedMessage(String messageName, List<MessageFragment> messageFragments, List<MessageFragment> alternateMessageFragments, 
             int secondsDelay, AbstractEvent abstractEvent)
         {

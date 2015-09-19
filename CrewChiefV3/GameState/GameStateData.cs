@@ -274,6 +274,10 @@ namespace CrewChiefV3.GameState
         public int LapsCompletedAtEndOfLastSector3 = 0;
 
         public float approximateLastLapTime = 0;
+
+        public float approximateSpeed = 0;
+
+        public DateTime lastUpdateTime = DateTime.Now;
         
         // TODO: the logic in this method is bascially bollocks
         public OpponentDelta getTimeDifferenceToPlayer(SessionData playerSessionData)
@@ -540,6 +544,17 @@ namespace CrewChiefV3.GameState
             Console.WriteLine("Time elapsed = " + SessionData.SessionRunningTime);
             Console.WriteLine("Position = " + SessionData.Position);
             Console.WriteLine("Session phase = " + SessionData.SessionPhase);
+        }
+
+        public void displayOpponentData()
+        {
+            Console.WriteLine("got " + OpponentData.Count + " opponents");
+            foreach (KeyValuePair<int, OpponentData> opponent in OpponentData)
+            {
+                Console.WriteLine("ID " + opponent.Key + " name " + opponent.Value.DriverRawName + " active " + opponent.Value.IsActive +
+                    " completed laps " + opponent.Value.CompletedLaps + " last laptime " + opponent.Value.approximateLastLapTime + 
+                    " approx speed " + opponent.Value.approximateSpeed + " position " + opponent.Value.Position + " lap distance " + opponent.Value.DistanceRoundTrack);
+            }
         }
     }
 }

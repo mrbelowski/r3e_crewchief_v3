@@ -55,9 +55,13 @@ namespace CrewChiefV3
         {
             name = name.Replace('_', ' ');
             name = name.Replace('-', ' ');
+            if (name.EndsWith("]") && name.Contains("["))
+            {
+                name = name.Substring(0, name.LastIndexOf('['));
+            }
 
             if (name.All(c=>Char.IsLetter(c) || c==' ' || c=='\'' || c=='.') && name.Length > 0) {
-                return name;
+                return name.Trim();
             }
             else
             {
@@ -69,15 +73,16 @@ namespace CrewChiefV3
         {
             readRawNamesToUsableNamesFile(soundsFolderName);
             usableNamesForSession.Clear();
-            List<String> usableNames = new List<String>();
             foreach (String rawDriverName in rawDriverNames)
             {
                 if (rawNameToUsableName.ContainsKey(rawDriverName))
                 {
                     String usableDriverName = rawNameToUsableName[rawDriverName];
-                    usableNames.Add(usableDriverName);
-                    Console.WriteLine("Using mapped drivername " + usableDriverName + " for raw driver name " + rawDriverName);
-                    usableNamesForSession.Add(rawDriverName, usableDriverName);
+                    if (!usableNamesForSession.ContainsKey(rawDriverName))
+                    {
+                        Console.WriteLine("Using mapped drivername " + usableDriverName + " for raw driver name " + rawDriverName);
+                        usableNamesForSession.Add(rawDriverName, usableDriverName);
+                    }                    
                 }
                 else
                 {
@@ -88,17 +93,15 @@ namespace CrewChiefV3
                         if (useLastNameWherePossible)
                         {
                             String lastName = getUnambiguousLastName(usableDriverName);
-                            if (lastName != null && lastName.Count() > 0 && !usableNames.Contains(lastName))
+                            if (lastName != null && lastName.Count() > 0 && !usableNamesForSession.ContainsKey(rawDriverName))
                             {
-                                usableNames.Add(lastName);
                                 Console.WriteLine("Using unmapped driver last name " + lastName + " for raw driver name " + rawDriverName);
                                 usableNamesForSession.Add(rawDriverName, lastName);
                                 usedLastName = true;
                             }
                         }
-                        if (!usedLastName)
+                        if (!usedLastName && !usableNamesForSession.ContainsKey(rawDriverName))
                         {
-                            usableNames.Add(usableDriverName);
                             Console.WriteLine("Using unmapped drivername " + usableDriverName + " for raw driver name " + rawDriverName);
                             usableNamesForSession.Add(rawDriverName, usableDriverName);
                         }                        
@@ -109,7 +112,7 @@ namespace CrewChiefV3
                     }
                 }
             }
-            return usableNames;
+            return usableNamesForSession.Values.ToList();
         }
 
         private static String getUnambiguousLastName(String fullName)
