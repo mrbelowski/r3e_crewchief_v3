@@ -249,7 +249,7 @@ namespace CrewChiefV3
                 spotter = null;
             }
             running = true;
-            DateTime nextEventTrigger = DateTime.Now;
+            DateTime nextRunTime = DateTime.Now;
             if (!audioPlayer.initialised)
             {
                 Console.WriteLine("Failed to initialise audio player");
@@ -263,9 +263,10 @@ namespace CrewChiefV3
             Boolean sessionFinished = false;
             while (running)
             {
-                if (DateTime.Now > nextEventTrigger)
+                DateTime now = DateTime.Now;
+                if (now > nextRunTime)
                 {
-                    nextEventTrigger = nextEventTrigger.Add(_timeInterval);
+                    nextRunTime = DateTime.Now.Add(_timeInterval);
                     if (Utilities.IsGameRunning(gameDefinition.processName))
                     {
                         mapped = gameDataReader.Initialise();

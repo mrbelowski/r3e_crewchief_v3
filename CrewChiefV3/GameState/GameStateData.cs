@@ -248,6 +248,8 @@ namespace CrewChiefV3.GameState
         // set this to false if this opponent drops out of the race (i.e. leaves a server)
         public Boolean IsActive = true;
 
+        public Boolean LapIsValid = false;
+
         // the name read directly from the game data - might be a 'handle' with all kinds of random crap in it
         public String DriverRawName = null;
 
@@ -551,8 +553,8 @@ namespace CrewChiefV3.GameState
             Console.WriteLine("got " + OpponentData.Count + " opponents");
             foreach (KeyValuePair<int, OpponentData> opponent in OpponentData)
             {
-                Console.WriteLine("ID " + opponent.Key + " name " + opponent.Value.DriverRawName + " active " + opponent.Value.IsActive +
-                    " completed laps " + opponent.Value.CompletedLaps + " last laptime " + opponent.Value.approximateLastLapTime + 
+                Console.WriteLine("last laptime " + opponent.Value.approximateLastLapTime + " completed laps " + opponent.Value.CompletedLaps + 
+                    " ID " + opponent.Key + " name " + opponent.Value.DriverRawName + " active " + opponent.Value.IsActive + 
                     " approx speed " + opponent.Value.approximateSpeed + " position " + opponent.Value.Position + " lap distance " + opponent.Value.DistanceRoundTrack);
             }
         }

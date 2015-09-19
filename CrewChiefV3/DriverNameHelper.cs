@@ -59,6 +59,17 @@ namespace CrewChiefV3
             {
                 name = name.Substring(0, name.LastIndexOf('['));
             }
+            for (int i = 0; i < 4; i++)
+            {
+                if (name.Count() > 1 && Char.IsNumber(name[name.Count() - 1]))
+                {
+                    name = name.Substring(0, name.Count() - 1);
+                }
+                else
+                {
+                    break;
+                }
+            }                
 
             if (name.All(c=>Char.IsLetter(c) || c==' ' || c=='\'' || c=='.') && name.Length > 0) {
                 return name.Trim();
