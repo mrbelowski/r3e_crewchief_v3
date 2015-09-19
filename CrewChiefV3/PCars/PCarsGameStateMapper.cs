@@ -118,7 +118,9 @@ namespace CrewChiefV3.PCars
             if (lastSessionType != currentGameState.SessionData.SessionType ||
                 lastSessionHasFixedTime != currentGameState.SessionData.SessionHasFixedTime || lastSessionTrack != currentGameState.SessionData.TrackName ||
                 lastSessionTrackLayout != currentGameState.SessionData.TrackLayout || lastSessionLapsCompleted > currentGameState.SessionData.CompletedLaps ||
-                lastSessionNumberOfLaps != numberOfLapsInSession)
+                (numberOfLapsInSession > 0 && lastSessionNumberOfLaps != numberOfLapsInSession) ||
+                (sessionTimeRemaining > 0 && currentGameState.SessionData.SessionRunTime > 0 &&
+                    (sessionTimeRemaining > currentGameState.SessionData.SessionRunTime)))
             {
                 Console.WriteLine("New session, trigger...");  
                 if (lastSessionType != currentGameState.SessionData.SessionType) 
@@ -143,7 +145,7 @@ namespace CrewChiefV3.PCars
                 }
                 else if (lastSessionNumberOfLaps != numberOfLapsInSession)
                 {
-                    Console.WriteLine("lastSessionNumberOfLaps = + " + lastSessionNumberOfLaps + " numberOfLapsInSession = "+ numberOfLapsInSession);
+                    Console.WriteLine("lastSessionNumberOfLaps = " + lastSessionNumberOfLaps + " numberOfLapsInSession = "+ numberOfLapsInSession);
                 }
                 currentGameState.SessionData.IsNewSession = true;
                 currentGameState.SessionData.TrackLength = shared.mTrackLength;

@@ -128,9 +128,9 @@ namespace CrewChiefV3.PCars
 
             float currentSpeed = currentState.mSpeed;
             float previousSpeed = lastState.mSpeed;
-            // knock 10 metres off the track length to avoid farting about with positions wrapping relative to each other - 
+            // knock 6 metres off the track length to avoid farting about with positions wrapping relative to each other - 
             // we only use the track length here for belt n braces checking
-            float trackLengthToUse = currentState.mTrackLength - 10;
+            float trackLengthToUse = currentState.mTrackLength - 6;
             if (enabled && currentState.mParticipantData.Count() > 1 && currentState.mViewedParticipantIndex >= 0)
             {
                 pCarsAPIParticipantStruct playerData = currentState.mParticipantData[currentState.mViewedParticipantIndex];

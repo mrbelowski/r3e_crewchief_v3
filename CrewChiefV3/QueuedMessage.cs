@@ -105,7 +105,10 @@ namespace CrewChiefV3
             this.messageFolders = getMessageFolders(messageFragments);
             if (!canBePlayed)
             {
+                canBePlayed = true;
                 this.messageFolders = getMessageFolders(alternateMessageFragments);
+                Console.WriteLine("-----------------------------------Primary and secondary messages for event " + 
+                    messageName + " can't be played");
             }
             this.dueTime = (DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + (secondsDelay * 1000) + updateInterval;
             this.abstractEvent = abstractEvent;
