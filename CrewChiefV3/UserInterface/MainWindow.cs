@@ -129,7 +129,8 @@ namespace CrewChiefV3
             this.assignButtonToAction.Enabled = false;
             this.deleteAssigmentButton.Enabled = false;
 
-            if (UserSettings.GetUserSettings().getBoolean("run_immediately"))
+            if (UserSettings.GetUserSettings().getBoolean("run_immediately") &&
+                GameDefinition.getGameDefinitionForFriendlyName(gameDefinitionList.Text) != null)
             {
                 doStartAppStuff();
             }
