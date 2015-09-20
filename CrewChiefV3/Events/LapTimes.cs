@@ -71,6 +71,8 @@ namespace CrewChiefV3.Events
 
         private TimeSpan currentLapTimeDeltaToLeadersBest;
 
+        private TimeSpan currentLapTimeDeltaToLeadersLast;
+
         private float lastLapTime;
 
         private Boolean isInSlowerClass;
@@ -97,6 +99,7 @@ namespace CrewChiefV3.Events
             lastLapRating = LastLapRating.NO_DATA;
             sessionBestLapTimeDeltaToLeader = TimeSpan.MaxValue;
             currentLapTimeDeltaToLeadersBest = TimeSpan.MaxValue;
+            currentLapTimeDeltaToLeadersLast = TimeSpan.MaxValue;
             lastLapTime = 0;
             isInSlowerClass = false;
             currentPosition = -1;
@@ -116,11 +119,13 @@ namespace CrewChiefV3.Events
             if (currentGameState.SessionData.LapTimePrevious > 0)
             {
                 currentLapTimeDeltaToLeadersBest = TimeSpan.FromSeconds(currentGameState.SessionData.LapTimePrevious - getLapTimeBestForClassLeader(currentGameState));
+                currentLapTimeDeltaToLeadersLast = TimeSpan.FromSeconds(currentGameState.SessionData.LapTimeDeltaLeaderClass);
             }
             else
             {
                 // the last lap was invalid so the delta is undefined
                 currentLapTimeDeltaToLeadersBest = TimeSpan.MaxValue;
+                currentLapTimeDeltaToLeadersLast = TimeSpan.MaxValue;
             }
             currentPosition = currentGameState.SessionData.Position;
 
@@ -481,9 +486,11 @@ namespace CrewChiefV3.Events
             {
                 if (sessionType == SessionType.Race)
                 {
-                    if (lastLapRating != LastLapRating.NO_DATA && currentLapTimeDeltaToLeadersBest != TimeSpan.MaxValue)
+                    // TODO: should we use the leader's best lap, or the leader's last lap here?
+                    TimeSpan lapToCompare = currentLapTimeDeltaToLeadersBest;
+                    if (lastLapRating != LastLapRating.NO_DATA && lapToCompare != TimeSpan.MaxValue)
                     {
-                        if (currentLapTimeDeltaToLeadersBest < TimeSpan.FromMilliseconds(50))
+                        if (lapToCompare < TimeSpan.FromMilliseconds(50))
                         {
                             audioPlayer.openChannel();
                             audioPlayer.playClipImmediately(new QueuedMessage(folderPaceGood, 0, null));
@@ -492,21 +499,21 @@ namespace CrewChiefV3.Events
                         else 
                         {
                             String timeToFindFolder = null;
-                            if (currentLapTimeDeltaToLeadersBest.Seconds == 0 && currentLapTimeDeltaToLeadersBest.Milliseconds < 200)
+                            if (lapToCompare.Seconds == 0 && lapToCompare.Milliseconds < 200)
                             {
                                 timeToFindFolder = folderNeedToFindOneMoreTenth;
                             }
-                            else if (currentLapTimeDeltaToLeadersBest.Seconds == 0 && currentLapTimeDeltaToLeadersBest.Milliseconds < 600)
+                            else if (lapToCompare.Seconds == 0 && lapToCompare.Milliseconds < 600)
                             {
                                 timeToFindFolder = folderNeedToFindAFewMoreTenths;
                             }
-                            else if ((currentLapTimeDeltaToLeadersBest.Seconds == 1 && currentLapTimeDeltaToLeadersBest.Milliseconds < 500) ||
-                                (currentLapTimeDeltaToLeadersBest.Seconds == 0 && currentLapTimeDeltaToLeadersBest.Milliseconds >= 600))
+                            else if ((lapToCompare.Seconds == 1 && lapToCompare.Milliseconds < 500) ||
+                                (lapToCompare.Seconds == 0 && lapToCompare.Milliseconds >= 600))
                             {
                                 timeToFindFolder = folderNeedToFindASecond;
                             }
-                            else if ((currentLapTimeDeltaToLeadersBest.Seconds == 1 && currentLapTimeDeltaToLeadersBest.Milliseconds >= 500) ||
-                               currentLapTimeDeltaToLeadersBest.Seconds > 1)
+                            else if ((lapToCompare.Seconds == 1 && lapToCompare.Milliseconds >= 500) ||
+                               lapToCompare.Seconds > 1)
                             {
                                 timeToFindFolder = folderNeedToFindMoreThanASecond;
                             }

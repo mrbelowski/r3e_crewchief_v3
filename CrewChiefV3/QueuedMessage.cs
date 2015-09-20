@@ -64,8 +64,8 @@ namespace CrewChiefV3
         public String messageName;
         public List<String> messageFolders;
 
-        // TODO: the queued message should contain some snapshot of pertentent data at the point of creation, 
-        // which can be validated before it actually gets played. Perhaps a Dictionary of property names and value - 
+        // some snapshot of pertentent data at the point of creation, 
+        // which can be validated before it actually gets played. E.g.
         // e.g. {SessionData.Position = 1}
         public Dictionary<String, Object> validationData = null;
 

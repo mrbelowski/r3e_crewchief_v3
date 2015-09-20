@@ -52,11 +52,15 @@ namespace CrewChiefV3.PCars
             pCarsAPIStruct shared = (pCarsAPIStruct)memoryMappedFileStruct;
             DateTime now = DateTime.Now;
 
-            if (shared.mViewedParticipantIndex < 0 || shared.mNumParticipants < 1)
+
+            // if the shared.mViewdParticipantIndex isn't zero, we're not looking at the player's car (I think...) and 
+            // all the data will be bollocks. TODO: confirm this assumption
+            if (shared.mViewedParticipantIndex < 0 || shared.mNumParticipants < 1 || shared.mViewedParticipantIndex != 0)
             {
                 // Unusable data in the block
                 return null;
             }
+            
             pCarsAPIParticipantStruct viewedParticipant = shared.mParticipantData[shared.mViewedParticipantIndex];
             currentGameState.SessionData.CompletedLaps = (int)viewedParticipant.mLapsCompleted;
             currentGameState.SessionData.SectorNumber = (int)viewedParticipant.mCurrentSector;
@@ -286,7 +290,6 @@ namespace CrewChiefV3.PCars
             }
             currentGameState.SessionData.LapTimeCurrent = shared.mCurrentTime;
             currentGameState.SessionData.LapTimeDeltaSelf = shared.mLastLapTime - currentGameState.SessionData.LapTimeBestPlayer;
-            currentGameState.SessionData.LapTimeDeltaLeader = shared.mLastLapTime - shared.mSessionFastestLapTime; // is this appropriate?
             currentGameState.SessionData.TimeDeltaBehind = shared.mSplitTimeBehind;
             currentGameState.SessionData.TimeDeltaFront = shared.mSplitTimeAhead;
             // is this right??
@@ -326,7 +329,11 @@ namespace CrewChiefV3.PCars
                 }
                 opponentSlotId++;
             }
-            
+
+            currentGameState.SessionData.LapTimeDeltaLeader = shared.mLastLapTime - currentGameState.getOpponentAtPosition(1).approximateLastLapTime;
+            currentGameState.SessionData.LapTimeDeltaLeaderClass = currentGameState.SessionData.LapTimeDeltaLeader;
+            // TODO: get the leading opponent in the same car class...
+
             currentGameState.PitData.InPitlane = shared.mPitMode == (int)ePitMode.PIT_MODE_DRIVING_INTO_PITS ||
                 shared.mPitMode == (int)ePitMode.PIT_MODE_IN_PIT ||
                 shared.mPitMode == (int)ePitMode.PIT_MODE_DRIVING_OUT_OF_PITS ||
