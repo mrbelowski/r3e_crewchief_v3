@@ -157,6 +157,7 @@ namespace CrewChiefV3.PCars
                     currentGameState.SessionData.SessionRunTime = sessionTimeRemaining;
                 } 
                 currentGameState.SessionData.DriverRawName = shared.mParticipantData[shared.mViewedParticipantIndex].mName;
+                currentGameState.PitData.IsRefuellingAllowed = true;
 
                 foreach (pCarsAPIParticipantStruct participantStruct in shared.mParticipantData)
                 {
@@ -192,6 +193,7 @@ namespace CrewChiefV3.PCars
                         {
                             currentGameState.OpponentData = previousGameState.OpponentData;
                             currentGameState.SessionData.SessionStartTime = previousGameState.SessionData.SessionStartTime;
+                            currentGameState.PitData.IsRefuellingAllowed = previousGameState.PitData.IsRefuellingAllowed;
                         }
 
                         Console.WriteLine("Just gone green, session details...");
@@ -227,6 +229,7 @@ namespace CrewChiefV3.PCars
                     currentGameState.SessionData.HasMandatoryPitStop = previousGameState.SessionData.HasMandatoryPitStop;
                     currentGameState.OpponentData = previousGameState.OpponentData;
                     currentGameState.SessionData.LeaderHasFinishedRace = previousGameState.SessionData.LeaderHasFinishedRace;
+                    currentGameState.PitData.IsRefuellingAllowed = previousGameState.PitData.IsRefuellingAllowed;
                 }                
             }            
             

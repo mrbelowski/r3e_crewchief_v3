@@ -365,6 +365,8 @@ namespace CrewChiefV3.GameState
 
         // this is true for one tick, when the player is about to exit the pits
         public Boolean IsAtPitExit = false;
+
+        public Boolean IsRefuellingAllowed = false;
     }
 
     public class PenatiesData

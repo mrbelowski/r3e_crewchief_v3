@@ -19,7 +19,7 @@ namespace CrewChiefV3.Events
         private String folder10mins = "race_time/ten_minutes_left";
         private String folder15mins = "race_time/fifteen_minutes_left";
         private String folder20mins = "race_time/twenty_minutes_left";
-        private String folderHalfWayHome = "race_time/half_way";
+        public static String folderHalfWayHome = "race_time/half_way";
         private String folderLastLap = "race_time/last_lap";
         private String folderLastLapLeading = "race_time/last_lap_leading";
         private String folderLastLapPodium = "race_time/last_lap_top_three";

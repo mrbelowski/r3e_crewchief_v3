@@ -154,7 +154,19 @@ namespace CrewChiefV3.Events
                     {
                         if (estimatedFuelLapsLeft < halfDistance && currentGameState.FuelData.FuelLeft / fuelAfter15Seconds < 0.6)
                         {
-                            audioPlayer.queueClip(new QueuedMessage(folderHalfDistanceLowFuel, 0, this));
+                            if (currentGameState.PitData.IsRefuellingAllowed) 
+                            {
+                                audioPlayer.queueClip(new QueuedMessage(RaceTime.folderHalfWayHome, 0, this));
+                                if (estimatedFuelLapsLeft < 60)
+                                {
+                                    audioPlayer.queueClip(new QueuedMessage("Fuel/estimate", MessageContents(folderWeEstimate, 
+                                        QueuedMessage.folderNameNumbersStub + estimatedFuelLapsLeft, folderLapsRemaining), 0, this));
+                                }
+                            }
+                            else
+                            {
+                                audioPlayer.queueClip(new QueuedMessage(folderHalfDistanceLowFuel, 0, this));
+                            }
                         }
                         else
                         {
@@ -195,7 +207,20 @@ namespace CrewChiefV3.Events
                     {
                         if (averageUsagePerMinute * halfTime / 60 > currentGameState.FuelData.FuelLeft && currentGameState.FuelData.FuelLeft / fuelAfter15Seconds < 0.6)
                         {
-                            audioPlayer.queueClip(new QueuedMessage(folderHalfDistanceLowFuel, 0, this));
+                            if (currentGameState.PitData.IsRefuellingAllowed)
+                            {
+                                int minutesLeft = (int)Math.Floor(currentGameState.FuelData.FuelLeft / averageUsagePerMinute);
+                                audioPlayer.queueClip(new QueuedMessage(RaceTime.folderHalfWayHome, 0, this));
+                                if (minutesLeft < 60)
+                                {
+                                    audioPlayer.queueClip(new QueuedMessage("Fuel/estimate", MessageContents(
+                                        folderWeEstimate, QueuedMessage.folderNameNumbersStub + minutesLeft, folderMinutesRemaining), 0, this));
+                                }
+                            }
+                            else
+                            {
+                                audioPlayer.queueClip(new QueuedMessage(folderHalfDistanceLowFuel, 0, this));
+                            }
                         }
                         else
                         {
