@@ -22,7 +22,7 @@ namespace CrewChiefV3.Events
             currentGameState = null;
         }
 
-        public override bool isMessageStillValid(string eventSubType, GameStateData currentGameState)
+        public override bool isMessageStillValid(string eventSubType, GameStateData currentGameState, Dictionary<String, Object> validationData)
         {
             return true;
         }

@@ -17,10 +17,6 @@ namespace CrewChiefV3.Events
         public static String folderGapBehindDecreasing = "timings/gap_behind_decreasing";
 
         // for when we have a driver name...
-
-
-
-        // TODO: record these...
         public static String folderTheGapTo = "timings/the_gap_to";   // "the gap to..."
         public static String folderAheadIsIncreasing = "timings/ahead_is_increasing"; // [bob] "ahead is increasing, it's now..."
         public static String folderBehindIsIncreasing = "timings/behind_is_increasing"; // [bob] "behind is increasing, it's now..."
@@ -29,9 +25,6 @@ namespace CrewChiefV3.Events
         public static String folderInTheGapIsNow = "timings/in_the_gap_is_now";  // [bob] "in, the gap is now..."
 
         public static String folderIsReelingYouIn = "timings/is_reeling_you_in";    // [bob] "is reeling you in, the gap is now...."
-
-
-
 
         public static String folderSeconds = "timings/seconds";
 

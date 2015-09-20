@@ -8,6 +8,8 @@ namespace CrewChiefV3.Events
 {
     class Position : AbstractEvent
     {
+        private String positionValidationKey = "CURRENT_POSITION";
+
         public static String folderLeading = "position/leading";
         public static String folderPole = "position/pole";
         public static String folderStub = "position/p";
@@ -60,9 +62,16 @@ namespace CrewChiefV3.Events
             isLast = false;
         }
 
-        public override bool isMessageStillValid(string eventSubType, GameStateData currentGameState)
+        public override bool isMessageStillValid(string eventSubType, GameStateData currentGameState, Dictionary<String, Object> validationData)
         {
-            return isApplicableForCurrentSessionAndPhase(currentGameState.SessionData.SessionType, currentGameState.SessionData.SessionPhase) && !currentGameState.PitData.InPitlane;
+            Boolean isStillInThisPosition = true;
+            if (validationData != null && validationData.ContainsKey(positionValidationKey) &&
+                (int) validationData[positionValidationKey] != currentGameState.SessionData.Position)
+            {
+                isStillInThisPosition = false;
+            }
+            return isApplicableForCurrentSessionAndPhase(currentGameState.SessionData.SessionType, currentGameState.SessionData.SessionPhase) &&
+                !currentGameState.PitData.InPitlane && isStillInThisPosition;
         }
 
         protected override void triggerInternal(GameStateData previousGameState, GameStateData currentGameState)
@@ -117,6 +126,8 @@ namespace CrewChiefV3.Events
                     if (currentGameState.SessionData.CompletedLaps > lapNumberAtLastMessage + 3
                             || previousPosition != currentGameState.SessionData.Position)
                     {
+                        Dictionary<String, Object> validationData = new Dictionary<String, Object>();
+                        validationData.Add(positionValidationKey, currentGameState.SessionData.Position);
                         PearlsOfWisdom.PearlType pearlType = PearlsOfWisdom.PearlType.NONE;
                         float pearlLikelihood = 0.2f;
                         if (currentGameState.SessionData.SessionType == SessionType.Race)
@@ -143,11 +154,11 @@ namespace CrewChiefV3.Events
                         {
                             if (currentGameState.SessionData.SessionType == SessionType.Race)
                             {
-                                audioPlayer.queueClip(new QueuedMessage(folderLeading, 0, this), pearlType, pearlLikelihood);
+                                audioPlayer.queueClip(new QueuedMessage(folderLeading, 0, this, validationData), pearlType, pearlLikelihood);
                             }
                             else if (currentGameState.SessionData.SessionType == SessionType.Practice)
                             {
-                                audioPlayer.queueClip(new QueuedMessage(folderStub + 1, 0, this), pearlType, pearlLikelihood);
+                                audioPlayer.queueClip(new QueuedMessage(folderStub + 1, 0, this, validationData), pearlType, pearlLikelihood);
                             }
                             // no p1 for pole - this is in the laptime tracker (yuk)
                         }
@@ -159,11 +170,11 @@ namespace CrewChiefV3.Events
                         {
                             if (numberOfLapsInLastPlace > 3)
                             {
-                                audioPlayer.queueClip(new QueuedMessage(folderConsistentlyLast, 0, this), PearlsOfWisdom.PearlType.NONE, 0);
+                                audioPlayer.queueClip(new QueuedMessage(folderConsistentlyLast, 0, this, validationData), PearlsOfWisdom.PearlType.NONE, 0);
                             }
                             else
                             {
-                                audioPlayer.queueClip(new QueuedMessage(folderLast, 0, this), PearlsOfWisdom.PearlType.NONE, 0);
+                                audioPlayer.queueClip(new QueuedMessage(folderLast, 0, this, validationData), PearlsOfWisdom.PearlType.NONE, 0);
                             }
                         }
                         previousPosition = currentGameState.SessionData.Position;

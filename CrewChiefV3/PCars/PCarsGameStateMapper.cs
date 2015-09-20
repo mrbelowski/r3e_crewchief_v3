@@ -11,6 +11,9 @@ namespace CrewChiefV3.PCars
 {
     class PCarsGameStateMapper : GameStateMapper
     {
+        // if all 4 wheels are off the racing surface, increment the number of cut track incedents
+        private Boolean incrementCutTrackCountWhenLeavingRacingSurface = false;
+
         private static uint expectedVersion = 5;
 
         private List<uint> racingSurfaces = new List<uint>() { (uint)eTerrain.TERRAIN_BUMPY_DIRT_ROAD, 
@@ -429,13 +432,17 @@ namespace CrewChiefV3.PCars
             currentGameState.TyreData.RearRightCondition = getTyreCondition(currentGameState.TyreData.RearRightPercentWear);
 
             // improvised cut track warnings...
-            currentGameState.PenaltiesData.isOffRacingSurface = !racingSurfaces.Contains(shared.mTerrain[0]) &&
-                !racingSurfaces.Contains(shared.mTerrain[1]) && !racingSurfaces.Contains(shared.mTerrain[2]) &&
-                !racingSurfaces.Contains(shared.mTerrain[3]);
-            if (previousGameState != null && previousGameState.PenaltiesData.isOffRacingSurface && currentGameState.PenaltiesData.isOffRacingSurface) 
+            if (incrementCutTrackCountWhenLeavingRacingSurface)
             {
-                currentGameState.PenaltiesData.CutTrackWarnings = previousGameState.PenaltiesData.CutTrackWarnings + 1;
+                currentGameState.PenaltiesData.IsOffRacingSurface = !racingSurfaces.Contains(shared.mTerrain[0]) &&
+               !racingSurfaces.Contains(shared.mTerrain[1]) && !racingSurfaces.Contains(shared.mTerrain[2]) &&
+               !racingSurfaces.Contains(shared.mTerrain[3]);
+                if (previousGameState != null && previousGameState.PenaltiesData.IsOffRacingSurface && currentGameState.PenaltiesData.IsOffRacingSurface)
+                {
+                    currentGameState.PenaltiesData.CutTrackWarnings = previousGameState.PenaltiesData.CutTrackWarnings + 1;
+                }
             }
+           
             return currentGameState;
         }
 

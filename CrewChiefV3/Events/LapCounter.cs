@@ -50,7 +50,7 @@ namespace CrewChiefV3.Events
             playedFinished = false;
         }
 
-        public override bool isMessageStillValid(String eventSubType, GameStateData currentGameState)
+        public override bool isMessageStillValid(String eventSubType, GameStateData currentGameState, Dictionary<String, Object> validationData)
         {
             return applicableSessionPhases.Contains(currentGameState.SessionData.SessionPhase);
         }

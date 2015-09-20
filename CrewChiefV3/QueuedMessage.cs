@@ -67,6 +67,7 @@ namespace CrewChiefV3
         // TODO: the queued message should contain some snapshot of pertentent data at the point of creation, 
         // which can be validated before it actually gets played. Perhaps a Dictionary of property names and value - 
         // e.g. {SessionData.Position = 1}
+        public Dictionary<String, Object> validationData = null;
 
         public long expiryTime = 0;
 
@@ -85,6 +86,12 @@ namespace CrewChiefV3
             this.abstractEvent = abstractEvent;
         }
 
+        public QueuedMessage(String messageName, List<MessageFragment> messageFragments, int secondsDelay, AbstractEvent abstractEvent,
+            Dictionary<String, Object> validationData) : this(messageName, messageFragments, secondsDelay, abstractEvent)
+        {
+            this.validationData = validationData;
+        }
+
         public QueuedMessage(String messageName, List<MessageFragment> messageFragments, int secondsDelay, AbstractEvent abstractEvent)
         {
             this.messageName = compoundMessageIdentifier + messageName;
@@ -93,6 +100,12 @@ namespace CrewChiefV3
             this.abstractEvent = abstractEvent;
         }
 
+        public QueuedMessage(String messageName, List<MessageFragment> messageFragments, List<MessageFragment> alternateMessageFragments,
+            int secondsDelay, AbstractEvent abstractEvent, Dictionary<String, Object> validationData) : 
+            this(messageName, messageFragments, alternateMessageFragments, secondsDelay, abstractEvent)
+        {
+            this.validationData = validationData;
+        }
         /**
          * Queues a message with multiple fragments, with an alternate version if the first version can't be played.
          * Use this when a compound message includes a driver name which may or may not be in the set that are have associated
@@ -114,6 +127,12 @@ namespace CrewChiefV3
             this.abstractEvent = abstractEvent;
         }
 
+        public QueuedMessage(String message, int secondsDelay, AbstractEvent abstractEvent, 
+            Dictionary<String, Object> validationData) : this (message, secondsDelay, abstractEvent)
+        {
+            this.validationData = validationData;
+        }
+
         public QueuedMessage(String message, int secondsDelay, AbstractEvent abstractEvent)
         {
             this.messageName = message;
@@ -127,7 +146,7 @@ namespace CrewChiefV3
         public Boolean isMessageStillValid(String eventSubType, GameStateData currentGameState)
         {
             return this.abstractEvent == null || 
-                this.abstractEvent.isMessageStillValid(eventSubType, currentGameState);
+                this.abstractEvent.isMessageStillValid(eventSubType, currentGameState, validationData);
         }
 
         private List<String> getMessageFolders(List<MessageFragment> messageFragments)
