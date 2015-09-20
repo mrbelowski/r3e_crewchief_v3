@@ -120,8 +120,11 @@ namespace CrewChiefV3
             {
                 canBePlayed = true;
                 this.messageFolders = getMessageFolders(alternateMessageFragments);
-                Console.WriteLine("-----------------------------------Primary and secondary messages for event " + 
-                    messageName + " can't be played");
+                if (!canBePlayed)
+                {
+                    Console.WriteLine("-----------------------------------Primary and secondary messages for event " +
+                        messageName + " can't be played");
+                }
             }
             this.dueTime = (DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + (secondsDelay * 1000) + updateInterval;
             this.abstractEvent = abstractEvent;
@@ -154,6 +157,11 @@ namespace CrewChiefV3
             List<String> messages = new List<String>();
             foreach (MessageFragment messageFragment in messageFragments) 
             {
+                if (messageFragment == null)
+                {
+                    canBePlayed = false;
+                    break;
+                }
                 switch (messageFragment.type)
                 {
                     case MessageFragment.FragmentType.Text:

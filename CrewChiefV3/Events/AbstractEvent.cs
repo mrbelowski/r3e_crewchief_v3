@@ -56,7 +56,11 @@ namespace CrewChiefV3.Events
         }
 
         private static void addObjectToMessages(List<MessageFragment> messageFragments, Object o) {
-            if (o.GetType() == typeof(String)) {
+            if (o == null)
+            {
+                messageFragments.Add(null);
+            }
+            else if (o.GetType() == typeof(String)) {
                 messageFragments.Add(MessageFragment.Text((String)o));
             }
             else if (o.GetType() == typeof(TimeSpan))

@@ -541,6 +541,7 @@ namespace CrewChiefV3.RaceRoom
             }
             else if (SessionPhase.Checkered == lastSessionPhase)
             {
+                // TODO: this doesn't trigger - there's one update between this check and the lap rolling over :(
                 if (previousLapsCompleted != currentLapsCompleted || controlType == ControlType.AI)
                 {
                     return SessionPhase.Finished;

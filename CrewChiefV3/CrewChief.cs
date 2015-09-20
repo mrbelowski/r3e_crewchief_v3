@@ -285,6 +285,13 @@ namespace CrewChiefV3
                         stateCleared = false;
                         Object rawGameData = gameDataReader.ReadGameData();
                         gameStateMapper.versionCheck(rawGameData);
+                        // TODO... in raceroom, at the end of a race we get here and the previous state has 6 laps completed, but the next state *and the current state* have 7
+                        // raceroom hack...
+                        if (previousGameState != null && currentGameState != null && currentGameState.SessionData.SessionPhase == SessionPhase.Checkered &&
+                            currentGameState.SessionData.CompletedLaps == previousGameState.SessionData.CompletedLaps + 1)
+                        {
+                            currentGameState.SessionData.CompletedLaps = currentGameState.SessionData.CompletedLaps - 1;
+                        }
                         GameStateData nextGameState = gameStateMapper.mapToGameStateData(rawGameData, currentGameState);
                         if (nextGameState != null)
                         {
