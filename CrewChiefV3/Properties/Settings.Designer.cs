@@ -703,5 +703,17 @@ namespace CrewChiefV3.Properties {
                 this["pcars_spotter_car_length"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string last_game_definition {
+            get {
+                return ((string)(this["last_game_definition"]));
+            }
+            set {
+                this["last_game_definition"] = value;
+            }
+        }
     }
 }

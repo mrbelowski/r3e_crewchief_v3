@@ -42,6 +42,19 @@ namespace CrewChiefV3
             return null;
         }
 
+        public static GameDefinition getGameDefinitionForEnumName(String enumName)
+        {
+            List<GameDefinition> definitions = getAllGameDefinitions();
+            foreach (GameDefinition def in definitions)
+            {
+                if (def.gameEnum.ToString() == enumName)
+                {
+                    return def;
+                }
+            }
+            return null;
+        }
+
         public static String[] getGameDefinitionFriendlyNames()
         {
             List<String> names = new List<String>();

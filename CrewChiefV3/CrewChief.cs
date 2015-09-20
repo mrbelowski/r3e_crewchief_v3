@@ -98,6 +98,8 @@ namespace CrewChiefV3
             else
             {
                 Console.WriteLine("Using game definition " + gameDefinition.friendlyName);
+                UserSettings.GetUserSettings().setProperty("last_game_definition", gameDefinition.gameEnum.ToString());
+                UserSettings.GetUserSettings().saveUserSettings();
                 this.gameDefinition = gameDefinition;
             }
         }

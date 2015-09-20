@@ -80,6 +80,8 @@ namespace CrewChiefV3.PCars
 
         private NextMessageType nextMessageType;
 
+        private DateTime timeToStartSpotting = DateTime.Now;
+
         private enum Side {
             right, left, none
         }
@@ -104,6 +106,7 @@ namespace CrewChiefV3.PCars
             timeWhenChannelShouldBeClosed = DateTime.Now;
             channelLeftOpenTimerStarted = false;
             nextMessageType = NextMessageType.none;
+            timeToStartSpotting = DateTime.Now;
         }
 
         public void pause()
@@ -126,11 +129,21 @@ namespace CrewChiefV3.PCars
             pCarsAPIStruct currentState = (pCarsAPIStruct)currentStateObj;
             DateTime now = DateTime.Now;
 
+            if (currentState.mRaceState == (int)eRaceState.RACESTATE_RACING &&
+                lastState.mRaceState != (int)eRaceState.RACESTATE_RACING)
+            {
+                timeToStartSpotting = now.Add(TimeSpan.FromSeconds(timeAfterRaceStartToActivate));
+            }
+            if (currentState.mRaceState != (int)eRaceState.RACESTATE_RACING || now < timeToStartSpotting)
+            {
+                return;
+            }
+
             float currentSpeed = currentState.mSpeed;
             float previousSpeed = lastState.mSpeed;
-            // knock 6 metres off the track length to avoid farting about with positions wrapping relative to each other - 
+            // knock 10 metres off the track length to avoid farting about with positions wrapping relative to each other - 
             // we only use the track length here for belt n braces checking
-            float trackLengthToUse = currentState.mTrackLength - 6;
+            float trackLengthToUse = currentState.mTrackLength - 10;
             if (enabled && currentState.mParticipantData.Count() > 1 && currentState.mViewedParticipantIndex >= 0)
             {
                 pCarsAPIParticipantStruct playerData = currentState.mParticipantData[currentState.mViewedParticipantIndex];
@@ -151,14 +164,25 @@ namespace CrewChiefV3.PCars
                         {
                             //Console.WriteLine("speed = "+ currentState.mSpeed + " time ahead = " + currentState.mSplitTimeAhead + " time behind = " + currentState.mSplitTimeBehind);
                             pCarsAPIParticipantStruct opponentData = currentState.mParticipantData[i];
+                            pCarsAPIParticipantStruct opponentDataLastState = lastState.mParticipantData[i];
                             if (opponentData.mIsActive && opponentData.mWorldPosition[0] != 0 && opponentData.mWorldPosition[2] != 0)
                             {
                                 // if we think this opponent car isn't even on the same 10 metre chunk of track to us, ignore it
-                                Boolean opponentIsInQuickNDirtyCheckZone = playerData.mCurrentLapDistance < trackLengthToUse;
-                                if (playerIsInQuickNDirtyCheckZone && opponentIsInQuickNDirtyCheckZone &&
-                                    Math.Abs(playerData.mCurrentLapDistance - opponentData.mCurrentLapDistance) > 10)
+                                Boolean opponentIsInQuickNDirtyCheckZone = opponentData.mCurrentLapDistance < trackLengthToUse &&
+                                    opponentDataLastState.mCurrentLapDistance < trackLengthToUse;
+                                if (opponentIsInQuickNDirtyCheckZone) 
                                 {
-                                    continue;
+                                    if (playerIsInQuickNDirtyCheckZone &&
+                                        Math.Abs(playerData.mCurrentLapDistance - opponentData.mCurrentLapDistance) > 10)
+                                    {
+                                        continue;
+                                    }
+                                    // this car is close to use, so check its speed relative to ours
+                                    float approxOpponentSpeed = (opponentData.mCurrentLapDistance - opponentDataLastState.mCurrentLapDistance) / (float)CrewChief.spotterInterval.TotalSeconds;
+                                    if (Math.Abs(currentSpeed - approxOpponentSpeed) > maxClosingSpeed)
+                                    {
+                                        continue;
+                                    }
                                 }
                                 Side side = getSide(currentState.mOrientation[1], playerData.mWorldPosition, opponentData.mWorldPosition);
                                 if (side == Side.left)

@@ -173,5 +173,8 @@
     <Setting Name="pcars_spotter_car_length" Type="System.Single" Scope="User">
       <Value Profile="(Default)">4</Value>
     </Setting>
+    <Setting Name="last_game_definition" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
   </Settings>
 </SettingsFile>

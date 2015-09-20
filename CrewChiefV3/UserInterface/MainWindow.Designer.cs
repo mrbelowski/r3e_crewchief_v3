@@ -267,6 +267,7 @@ namespace CrewChiefV3
             this.gameDefinitionList.FormattingEnabled = true;
             this.gameDefinitionList.Items.AddRange(GameDefinition.getGameDefinitionFriendlyNames());
             String[] commandLineArgs = Environment.GetCommandLineArgs();
+            Boolean setFromCommandLine = false;
             if (commandLineArgs != null)
             {
                 foreach (String arg in commandLineArgs)
@@ -274,17 +275,32 @@ namespace CrewChiefV3
                     if (arg.Equals(GameDefinition.raceRoom.gameEnum.ToString()))
                     {
                         this.gameDefinitionList.Text = GameDefinition.raceRoom.friendlyName;
+                        setFromCommandLine = true;
                         break;
                     }
                     else if (arg.Equals(GameDefinition.pCars32Bit.gameEnum.ToString()))
                     {
                         this.gameDefinitionList.Text = GameDefinition.pCars32Bit.friendlyName;
+                        setFromCommandLine = true;
                         break;
                     }
                     else if (arg.Equals(GameDefinition.pCars64Bit.gameEnum.ToString()))
                     {
                         this.gameDefinitionList.Text = GameDefinition.pCars64Bit.friendlyName;
+                        setFromCommandLine = true;
                         break;
+                    }
+                }
+            }
+            if (!setFromCommandLine)
+            {
+                String lastDef = UserSettings.GetUserSettings().getString("last_game_definition");
+                if (lastDef != null && lastDef.Length > 0)
+                {
+                    GameDefinition gameDefinition = GameDefinition.getGameDefinitionForEnumName(lastDef);
+                    if (gameDefinition != null)
+                    {
+                        this.gameDefinitionList.Text = gameDefinition.friendlyName;
                     }
                 }
             }
