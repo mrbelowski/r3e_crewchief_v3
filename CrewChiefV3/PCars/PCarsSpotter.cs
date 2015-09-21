@@ -178,11 +178,12 @@ namespace CrewChiefV3.PCars
                                         continue;
                                     }
                                     // this car is close to use, so check its speed relative to ours
-                                    float approxOpponentSpeed = (opponentData.mCurrentLapDistance - opponentDataLastState.mCurrentLapDistance) / (float)CrewChief.spotterInterval.TotalSeconds;
+                                    // this check looks sane enough, but the speed often comes out as zero, not sure why yet...
+                                    /*float approxOpponentSpeed = 1000 * (opponentData.mCurrentLapDistance - opponentDataLastState.mCurrentLapDistance) / (float)CrewChief.spotterInterval.TotalMilliseconds;
                                     if (Math.Abs(currentSpeed - approxOpponentSpeed) > maxClosingSpeed)
                                     {
                                         continue;
-                                    }
+                                    }*/
                                 }
                                 Side side = getSide(currentState.mOrientation[1], playerData.mWorldPosition, opponentData.mWorldPosition);
                                 if (side == Side.left)

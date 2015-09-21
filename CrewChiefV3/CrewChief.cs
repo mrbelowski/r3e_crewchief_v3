@@ -225,12 +225,12 @@ namespace CrewChiefV3
                 DateTime now = DateTime.Now;
                 if (now > nextRunTime && spotter != null)
                 {
-                    lastSpotterState = currentSpotterState;
                     currentSpotterState = gameDataReader.ReadGameData();
                     if (lastSpotterState != null && currentSpotterState != null)
                     {
                         spotter.trigger(lastSpotterState, currentSpotterState);
                     }
+                    lastSpotterState = currentSpotterState;
                     nextRunTime = DateTime.Now.Add(spotterInterval);
                 }
                 Thread.Sleep(threadSleepTime);
