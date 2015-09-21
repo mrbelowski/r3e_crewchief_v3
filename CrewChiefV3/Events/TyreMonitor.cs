@@ -162,7 +162,7 @@ namespace CrewChiefV3.Events
                     
                 if (currentGameState.PitData.InPitlane && !currentGameState.SessionData.LeaderHasFinishedRace)
                 {
-                    if (enableTyreWearWarnings && !reportedTyreWearForCurrentPitEntry)
+                    if (currentGameState.SessionData.SessionType == SessionType.Race && enableTyreWearWarnings && !reportedTyreWearForCurrentPitEntry)
                     {
                         playTyreWearMessages(true, true);
                         reportedTyreWearForCurrentPitEntry = true;

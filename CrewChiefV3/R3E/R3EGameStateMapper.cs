@@ -231,6 +231,7 @@ namespace CrewChiefV3.RaceRoom
             if (shared.SessionType == (int)RaceRoomConstant.Session.Race && shared.SessionPhase == (int)RaceRoomConstant.SessionPhase.Checkered &&
                 previousGameState != null && previousGameState.SessionData.SessionPhase == SessionPhase.Green)
             {
+                Console.WriteLine("Leader has finished race, player has done "+ shared.CompletedLaps + " laps, session time = " + shared.Player.GameSimulationTime);
                 currentGameState.SessionData.LeaderHasFinishedRace = true;
             }
 
@@ -537,12 +538,15 @@ namespace CrewChiefV3.RaceRoom
             if ((int)RaceRoomConstant.SessionPhase.Checkered == r3eSessionPhase && lastSessionPhase == SessionPhase.Green)
             {
                 // only allow a transition to checkered if the last state was green
+                Console.WriteLine("checkered - completed " + currentLapsCompleted + " laps, session running time = " + thisSessionRunningTime);
                 return SessionPhase.Checkered;
             }
             else if (SessionPhase.Checkered == lastSessionPhase)
             {
                 if (previousLapsCompleted != currentLapsCompleted || controlType == ControlType.AI)
                 {
+                    Console.WriteLine("finished - completed " + currentLapsCompleted + " laps (was " + previousLapsCompleted + "), session running time = " + 
+                        thisSessionRunningTime + " control type = "+ controlType);
                     return SessionPhase.Finished;
                 }
             }

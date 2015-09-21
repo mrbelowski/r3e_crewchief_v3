@@ -333,10 +333,13 @@ namespace CrewChiefV3.PCars
                 opponentSlotId++;
             }
 
-            currentGameState.SessionData.LapTimeDeltaLeader = shared.mLastLapTime - currentGameState.getOpponentAtPosition(1).approximateLastLapTime;
-            currentGameState.SessionData.LapTimeDeltaLeaderClass = currentGameState.SessionData.LapTimeDeltaLeader;
-            // TODO: get the leading opponent in the same car class...
-
+            if (currentGameState.getOpponentAtPosition(1) != null)
+            {
+                currentGameState.SessionData.LapTimeDeltaLeader = shared.mLastLapTime - currentGameState.getOpponentAtPosition(1).approximateLastLapTime;
+                currentGameState.SessionData.LapTimeDeltaLeaderClass = currentGameState.SessionData.LapTimeDeltaLeader;
+                // TODO: get the leading opponent in the same car class...
+            }
+            
             currentGameState.PitData.InPitlane = shared.mPitMode == (int)ePitMode.PIT_MODE_DRIVING_INTO_PITS ||
                 shared.mPitMode == (int)ePitMode.PIT_MODE_IN_PIT ||
                 shared.mPitMode == (int)ePitMode.PIT_MODE_DRIVING_OUT_OF_PITS ||
