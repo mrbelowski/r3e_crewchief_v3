@@ -108,6 +108,14 @@ namespace CrewChiefV3.GameState
 
         public DamageLevel RightRearSuspensionDamage = DamageLevel.UNKNOWN;
 
+        public DamageLevel LeftFrontBrakeDamage = DamageLevel.UNKNOWN;
+
+        public DamageLevel LeftRearBrakeDamage = DamageLevel.UNKNOWN;
+
+        public DamageLevel RightFrontBrakeDamage = DamageLevel.UNKNOWN;
+
+        public DamageLevel RightRearBrakeDamage = DamageLevel.UNKNOWN;
+
     }
 
     public class SessionData

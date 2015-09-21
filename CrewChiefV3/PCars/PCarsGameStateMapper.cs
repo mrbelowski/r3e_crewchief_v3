@@ -185,10 +185,12 @@ namespace CrewChiefV3.PCars
             }
             else
             {
+                Boolean justGoneGreen = false;
                 if (lastSessionPhase != currentGameState.SessionData.SessionPhase)
                 {
                     if (currentGameState.SessionData.SessionPhase == SessionPhase.Green)
                     {
+                        justGoneGreen = true;
                         // just gone green, so get the session data                        
                         if (currentGameState.SessionData.SessionHasFixedTime)
                         {
@@ -225,7 +227,7 @@ namespace CrewChiefV3.PCars
                 }
                 // copy persistent data from the previous game state
                 //
-                else if (previousGameState != null)
+                if (!justGoneGreen && previousGameState != null)
                 {
                     currentGameState.SessionData.SessionStartTime = previousGameState.SessionData.SessionStartTime;
                     currentGameState.SessionData.SessionRunTime = previousGameState.SessionData.SessionRunTime;
