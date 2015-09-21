@@ -74,11 +74,8 @@ namespace CrewChiefV3.RaceRoom
         {
             GameStateData currentGameState = new GameStateData();
             RaceRoomData.RaceRoomShared shared = (RaceRoomData.RaceRoomShared)memoryMappedFileStruct;
-            
-            // don't ignore this game update even if the number of laps and the time remaining are zero - this
-            // happens when a timed session first goes chequered 
-            // if (shared.NumberOfLaps <= 0 && shared.SessionTimeRemaining <= 0 || shared.Player.GameSimulationTime <= 0)
-            if (shared.Player.GameSimulationTime <= 0)
+
+            if (shared.Player.GameSimulationTime <= 0 || shared.ControlType == (int)RaceRoomConstant.Control.Remote || shared.ControlType ==(int)RaceRoomConstant.Control.Replay)
             {
                 return null;
             }

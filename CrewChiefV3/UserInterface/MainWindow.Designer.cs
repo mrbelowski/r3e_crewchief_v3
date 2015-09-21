@@ -338,7 +338,7 @@ namespace CrewChiefV3
             this.Controls.Add(this.startApplicationButton);
             this.Controls.Add(this.textBox1);
             this.Name = "MainWindow";
-            this.Text = "Crew Chief V2";
+            this.Text = "Crew Chief V3";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.stopApp);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();

@@ -29,24 +29,21 @@ namespace CrewChiefV3.Events
             this.audioPlayer = audioPlayer;
         }
 
-        public void trigger(float sessionRunningTime, SessionType sessionType, SessionPhase lastSessionPhase, int finishPosition, int numCars)
+        public void trigger(float sessionRunningTime, SessionType sessionType, SessionPhase lastSessionPhase, int finishPosition, int numCars, int completedLaps)
         {
-            if (sessionRunningTime > 60)
+            if (sessionType == SessionType.Race && (sessionRunningTime > 60 || completedLaps > 0))
             {
-                if (sessionType == SessionType.Race) 
+                if (lastSessionPhase == SessionPhase.Finished)
                 {
-                    if (lastSessionPhase == SessionPhase.Finished)
-                    {
-                        // only play session end message for races if we've actually finished, not restarted
-                        playFinishMessage(sessionType, finishPosition, numCars);
-                    } 
+                    // only play session end message for races if we've actually finished, not restarted
+                    playFinishMessage(sessionType, finishPosition, numCars);
                 }
-                else if (sessionType == SessionType.Practice || sessionType == SessionType.Qualify)
+            }
+            else if ((sessionType == SessionType.Practice || sessionType == SessionType.Qualify) && sessionRunningTime > 60)
+            {
+                if (lastSessionPhase == SessionPhase.Green || lastSessionPhase == SessionPhase.Finished || lastSessionPhase == SessionPhase.Checkered)
                 {
-                    if (lastSessionPhase == SessionPhase.Green || lastSessionPhase == SessionPhase.Finished || lastSessionPhase == SessionPhase.Checkered)
-                    {
-                        playFinishMessage(sessionType, finishPosition, numCars);
-                    }
+                    playFinishMessage(sessionType, finishPosition, numCars);
                 }
             }
         }

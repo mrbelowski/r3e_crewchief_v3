@@ -17,6 +17,8 @@ namespace CrewChiefV3
 {
     class CrewChief : IDisposable
     {
+        public static Boolean loadDataFromFile = false;
+
         public SpeechRecogniser speechRecogniser;
 
         private GameDefinition gameDefinition;
@@ -238,7 +240,7 @@ namespace CrewChiefV3
 
         public Boolean Run(String filenameToRun, Boolean dumpToFile)
         {
-            Boolean loadDataFromFile = false;
+            loadDataFromFile = false;
             if (filenameToRun != null)
             {
                 loadDataFromFile = true;
@@ -330,7 +332,7 @@ namespace CrewChiefV3
                             {
                                 audioPlayer.purgeQueues();
                                 sessionEndMessages.trigger(previousGameState.SessionData.SessionRunningTime, currentGameState.SessionData.SessionType, currentGameState.SessionData.SessionPhase,
-                                    currentGameState.SessionData.Position, previousGameState.SessionData.NumCarsAtStartOfSession);
+                                    currentGameState.SessionData.Position, previousGameState.SessionData.NumCarsAtStartOfSession, currentGameState.SessionData.CompletedLaps);
                                 audioPlayer.closeChannel();
                                 sessionFinished = true;
                             }

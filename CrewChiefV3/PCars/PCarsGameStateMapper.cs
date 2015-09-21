@@ -55,7 +55,7 @@ namespace CrewChiefV3.PCars
 
             // if the shared.mViewdParticipantIndex isn't zero, we're not looking at the player's car (I think...) and 
             // all the data will be bollocks. TODO: confirm this assumption
-            if (shared.mViewedParticipantIndex < 0 || shared.mNumParticipants < 1 || shared.mViewedParticipantIndex != 0)
+            if (shared.mNumParticipants < 1 || shared.mViewedParticipantIndex != 0)
             {
                 // Unusable data in the block
                 return null;
@@ -109,6 +109,7 @@ namespace CrewChiefV3.PCars
             // current session data
             currentGameState.SessionData.SessionType = mapToSessionType(shared);
             Boolean leaderHasFinished = previousGameState != null && previousGameState.SessionData.LeaderHasFinishedRace;
+            currentGameState.SessionData.LeaderHasFinishedRace = leaderHasFinished;
             currentGameState.SessionData.SessionPhase = mapToSessionPhase(currentGameState.SessionData.SessionType, 
                 shared.mSessionState, shared.mRaceState, shared.mNumParticipants, leaderHasFinished);
             float sessionTimeRemaining = -1;
@@ -124,12 +125,12 @@ namespace CrewChiefV3.PCars
             int opponentSlotId = 0;
 
             // now check if this is a new session...
-            if (lastSessionType != currentGameState.SessionData.SessionType ||
+            if (currentGameState.SessionData.SessionType != SessionType.Unavailable && (lastSessionType != currentGameState.SessionData.SessionType ||
                 lastSessionHasFixedTime != currentGameState.SessionData.SessionHasFixedTime || lastSessionTrack != currentGameState.SessionData.TrackName ||
                 lastSessionTrackLayout != currentGameState.SessionData.TrackLayout || lastSessionLapsCompleted > currentGameState.SessionData.CompletedLaps ||
                 (numberOfLapsInSession > 0 && lastSessionNumberOfLaps > 0 && lastSessionNumberOfLaps != numberOfLapsInSession) ||
                 (sessionTimeRemaining > 0 && currentGameState.SessionData.SessionRunTime > 0 &&
-                    (sessionTimeRemaining > currentGameState.SessionData.SessionRunTime)))
+                    (sessionTimeRemaining > currentGameState.SessionData.SessionRunTime))))
             {
                 Console.WriteLine("New session, trigger...");  
                 if (lastSessionType != currentGameState.SessionData.SessionType) 
@@ -159,6 +160,7 @@ namespace CrewChiefV3.PCars
                 currentGameState.SessionData.IsNewSession = true;
                 currentGameState.SessionData.TrackLength = shared.mTrackLength;
                 currentGameState.SessionData.SessionNumberOfLaps = numberOfLapsInSession;
+                currentGameState.SessionData.LeaderHasFinishedRace = false;
                 if (currentGameState.SessionData.SessionHasFixedTime)
                 {
                     currentGameState.SessionData.SessionRunTime = sessionTimeRemaining;
@@ -196,6 +198,8 @@ namespace CrewChiefV3.PCars
                         currentGameState.SessionData.SessionStartPosition = (int)shared.mParticipantData[shared.mViewedParticipantIndex].mRacePosition;
                         currentGameState.SessionData.NumCarsAtStartOfSession = shared.mNumParticipants;
                         currentGameState.SessionData.TrackLength = shared.mTrackLength;
+                        currentGameState.SessionData.LeaderHasFinishedRace = false;
+
                         if (previousGameState != null)
                         {
                             currentGameState.OpponentData = previousGameState.OpponentData;
@@ -235,7 +239,6 @@ namespace CrewChiefV3.PCars
                     currentGameState.SessionData.PitWindowEnd = previousGameState.SessionData.PitWindowEnd;
                     currentGameState.SessionData.HasMandatoryPitStop = previousGameState.SessionData.HasMandatoryPitStop;
                     currentGameState.OpponentData = previousGameState.OpponentData;
-                    currentGameState.SessionData.LeaderHasFinishedRace = previousGameState.SessionData.LeaderHasFinishedRace;
                     currentGameState.PitData.IsRefuellingAllowed = previousGameState.PitData.IsRefuellingAllowed;
                 }                
             }            
@@ -292,14 +295,6 @@ namespace CrewChiefV3.PCars
             currentGameState.SessionData.LapTimeDeltaSelf = shared.mLastLapTime - currentGameState.SessionData.LapTimeBestPlayer;
             currentGameState.SessionData.TimeDeltaBehind = shared.mSplitTimeBehind;
             currentGameState.SessionData.TimeDeltaFront = shared.mSplitTimeAhead;
-            // is this right??
-            if (!currentGameState.SessionData.LeaderHasFinishedRace)
-            {
-                if (shared.mHighestFlagColour == (int)eFlagColors.FLAG_COLOUR_CHEQUERED)
-                {
-                    currentGameState.SessionData.LeaderHasFinishedRace = true;
-                }
-            }
 
             opponentSlotId = 0;
             foreach (pCarsAPIParticipantStruct participantStruct in shared.mParticipantData)
@@ -310,6 +305,14 @@ namespace CrewChiefV3.PCars
                     {
                         if (currentGameState.OpponentData[opponentSlotId].IsActive && participantStruct.mIsActive)
                         {
+                            if (currentGameState.OpponentData[opponentSlotId].Position == 1 && 
+                                (currentGameState.SessionData.SessionNumberOfLaps > 0 && 
+                                    currentGameState.SessionData.SessionNumberOfLaps == currentGameState.OpponentData[opponentSlotId].CompletedLaps) ||
+                                (currentGameState.SessionData.SessionRunTime > 0 && previousGameState != null && previousGameState.OpponentData.Count == currentGameState.OpponentData.Count &&
+                                    previousGameState.OpponentData[opponentSlotId].CompletedLaps < currentGameState.OpponentData[opponentSlotId].CompletedLaps))
+                            {
+                                currentGameState.SessionData.LeaderHasFinishedRace = true;
+                            }
                             upateOpponentData(currentGameState.OpponentData[opponentSlotId], participantStruct.mRacePosition, participantStruct.mLapsCompleted,
                                     participantStruct.mCurrentSector, false, currentGameState.SessionData.SessionRunningTime, participantStruct.mCurrentLapDistance, 
                                     shared.mTrackLength, now);
@@ -481,7 +484,8 @@ namespace CrewChiefV3.PCars
             uint sector, Boolean isPitting, float sessionRunningTime, float distanceRoundTrack, float trackLength, DateTime now)
         {
             opponentData.IsPitting = isPitting;
-            if (distanceRoundTrack > opponentData.DistanceRoundTrack)
+            // yuk... if we're loading the game data from a file  (testing mode) don't check for insane speeds
+            if (!CrewChief.loadDataFromFile && distanceRoundTrack > opponentData.DistanceRoundTrack)
             {
                 opponentData.approximateSpeed = (distanceRoundTrack - opponentData.DistanceRoundTrack) / ((float)(now - opponentData.lastUpdateTime).TotalMilliseconds / 1000);
                 if (opponentData.approximateSpeed > 150)
