@@ -31,19 +31,41 @@ namespace CrewChiefV3.Events
 
         public void trigger(float sessionRunningTime, SessionType sessionType, SessionPhase lastSessionPhase, int finishPosition, int numCars, int completedLaps)
         {
-            if (sessionType == SessionType.Race && (sessionRunningTime > 60 || completedLaps > 0))
+            if (sessionType == SessionType.Race)
             {
-                if (lastSessionPhase == SessionPhase.Finished)
+                if (sessionRunningTime > 60 || completedLaps > 0)
                 {
-                    // only play session end message for races if we've actually finished, not restarted
-                    playFinishMessage(sessionType, finishPosition, numCars);
+                    if (lastSessionPhase == SessionPhase.Finished)
+                    {
+                        // only play session end message for races if we've actually finished, not restarted
+                        playFinishMessage(sessionType, finishPosition, numCars);
+                    }
+                    else
+                    {
+                        Console.WriteLine("skipping race session end message because the previous phase wasn't Finished");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("skipping race session end message because it didn't run for a lap or a minute");
                 }
             }
-            else if ((sessionType == SessionType.Practice || sessionType == SessionType.Qualify) && sessionRunningTime > 60)
+            else if (sessionType == SessionType.Practice || sessionType == SessionType.Qualify)
             {
-                if (lastSessionPhase == SessionPhase.Green || lastSessionPhase == SessionPhase.Finished || lastSessionPhase == SessionPhase.Checkered)
+                if (sessionRunningTime > 60)
                 {
-                    playFinishMessage(sessionType, finishPosition, numCars);
+                    if (lastSessionPhase == SessionPhase.Green || lastSessionPhase == SessionPhase.Finished || lastSessionPhase == SessionPhase.Checkered)
+                    {
+                        playFinishMessage(sessionType, finishPosition, numCars);
+                    }
+                    else
+                    {
+                        Console.WriteLine("skipping non-race session end message because the previous phase wasn't green, finished, or checkered");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("skipping non-race session end message because the session didn't run for a minute");
                 }
             }
         }

@@ -93,6 +93,7 @@ namespace CrewChiefV3.RaceRoom
             currentGameState.SessionData.SessionType = mapToSessionType(shared);
             currentGameState.SessionData.SessionRunningTime = (float)shared.Player.GameSimulationTime;
             currentGameState.ControlData.ControlType = mapToControlType(shared.ControlType); // TODO: the rest of the control data
+            currentGameState.SessionData.NumCarsAtStartOfSession = shared.NumCars;
             int previousLapsCompleted = previousGameState == null ? 0 : previousGameState.SessionData.CompletedLaps;
             currentGameState.SessionData.SessionPhase = mapToSessionPhase(lastSessionPhase, currentGameState.SessionData.SessionType, lastSessionRunningTime,
                 currentGameState.SessionData.SessionRunningTime, shared.SessionPhase, currentGameState.ControlData.ControlType,
@@ -373,7 +374,8 @@ namespace CrewChiefV3.RaceRoom
 
             if (!gotBaselineEngineData)
             {
-                if (currentGameState.SessionData.SessionRunningTime > baselineEngineDataStartSeconds && currentGameState.SessionData.SessionRunningTime < baselineEngineDataFinishSeconds)
+                if (currentGameState.SessionData.SessionRunningTime > baselineEngineDataStartSeconds && 
+                    currentGameState.SessionData.SessionRunningTime < baselineEngineDataFinishSeconds && isCarRunning)
                 {
                     baselineEngineDataSamples++;
                     baselineEngineDataWaterTemp += shared.EngineWaterTemp;
@@ -544,20 +546,23 @@ namespace CrewChiefV3.RaceRoom
              * during this period we can detect the session end and trigger the finish message. Otherwise we just can't detect
              * this period end - hence the 'isCarRunning' hack...
             */
-            if ((int)RaceRoomConstant.SessionPhase.Checkered == r3eSessionPhase && lastSessionPhase == SessionPhase.Green)
+            if ((int)RaceRoomConstant.SessionPhase.Checkered == r3eSessionPhase)
             {
-                // only allow a transition to checkered if the last state was green
-                Console.WriteLine("checkered - completed " + currentLapsCompleted + " laps, session running time = " + thisSessionRunningTime);
-                return SessionPhase.Checkered;
-            }
-            else if (SessionPhase.Checkered == lastSessionPhase)
-            {
-                if (previousLapsCompleted != currentLapsCompleted || controlType == ControlType.AI ||
-                    ((currentSessionType == SessionType.Qualify || currentSessionType == SessionType.Practice) && !isCarRunning))
+                if (lastSessionPhase == SessionPhase.Green)
                 {
-                    Console.WriteLine("finished - completed " + currentLapsCompleted + " laps (was " + previousLapsCompleted + "), session running time = " + 
-                        thisSessionRunningTime + " control type = "+ controlType);
-                    return SessionPhase.Finished;
+                    // only allow a transition to checkered if the last state was green
+                    Console.WriteLine("checkered - completed " + currentLapsCompleted + " laps, session running time = " + thisSessionRunningTime);
+                    return SessionPhase.Checkered;
+                }
+                else if (SessionPhase.Checkered == lastSessionPhase)
+                {
+                    if (previousLapsCompleted != currentLapsCompleted || controlType == ControlType.AI ||
+                        ((currentSessionType == SessionType.Qualify || currentSessionType == SessionType.Practice) && !isCarRunning))
+                    {
+                        Console.WriteLine("finished - completed " + currentLapsCompleted + " laps (was " + previousLapsCompleted + "), session running time = " +
+                            thisSessionRunningTime + " control type = " + controlType);
+                        return SessionPhase.Finished;
+                    }
                 }
             }
             else if ((int)RaceRoomConstant.SessionPhase.Countdown == r3eSessionPhase)
@@ -662,7 +667,7 @@ namespace CrewChiefV3.RaceRoom
 
         private Boolean CheckIsCarRunning(RaceRoomData.RaceRoomShared shared)
         {
-            return shared.EngineRps == 0 && shared.Gear == 0 && shared.CarSpeed < 0.001;
+            return shared.EngineRps > 0.001 || shared.Gear > 0 || shared.CarSpeed > 0.001;
         }
 
         private TyreCondition getTyreCondition(float percentWear)

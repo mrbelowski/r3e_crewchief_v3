@@ -311,7 +311,9 @@ namespace CrewChiefV3
                             rawGameData = gameDataReader.ReadGameDataFromFile(filenameToRun);
                             if (rawGameData == null)
                             {
-                                Console.WriteLine("Reached the end of the data file");
+                                Console.WriteLine("Reached the end of the data file, sleeping to clear queued messages");
+                                Thread.Sleep(5000);
+                                audioPlayer.purgeQueues();
                                 running = false;
                                 continue;
                             }
@@ -331,7 +333,7 @@ namespace CrewChiefV3
                                 && previousGameState != null)
                             {
                                 audioPlayer.purgeQueues();
-                                sessionEndMessages.trigger(previousGameState.SessionData.SessionRunningTime, currentGameState.SessionData.SessionType, currentGameState.SessionData.SessionPhase,
+                                sessionEndMessages.trigger(currentGameState.SessionData.SessionRunningTime, currentGameState.SessionData.SessionType, currentGameState.SessionData.SessionPhase,
                                     currentGameState.SessionData.Position, previousGameState.SessionData.NumCarsAtStartOfSession, currentGameState.SessionData.CompletedLaps);
                                 audioPlayer.closeChannel();
                                 sessionFinished = true;
@@ -421,6 +423,7 @@ namespace CrewChiefV3
             }
             stateCleared = true;
             currentGameState = null;
+            previousGameState = null;
             sessionFinished = false;
             audioPlayer.stopMonitor();
             if (gameDataReader != null && gameDataReader.dumpToFile)
