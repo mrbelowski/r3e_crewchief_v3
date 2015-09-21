@@ -236,10 +236,24 @@ namespace CrewChiefV3
             spotterIsRunning = false;
         }
 
-        public Boolean Run()
+        public Boolean Run(String filenameToRun, Boolean dumpToFile)
         {
+            Boolean loadDataFromFile = false;
+            if (filenameToRun != null)
+            {
+                loadDataFromFile = true;
+                spotterEnabled = false;
+                _timeInterval = TimeSpan.Zero;
+                dumpToFile = false;
+            }
+            if (dumpToFile)
+            {
+                spotterEnabled = false;
+            }
+            
             gameStateMapper = (GameStateMapper)Activator.CreateInstance(Type.GetType(gameDefinition.gameStateMapperName));
             gameDataReader = (GameDataReader)Activator.CreateInstance(Type.GetType(gameDefinition.gameDataReaderName));
+            gameDataReader.dumpToFile = System.Diagnostics.Debugger.IsAttached;
             if (gameDefinition.spotterName != null)
             {
                 spotter = (Spotter)Activator.CreateInstance(Type.GetType(gameDefinition.spotterName), 
@@ -269,21 +283,41 @@ namespace CrewChiefV3
                 if (now > nextRunTime)
                 {
                     nextRunTime = DateTime.Now.Add(_timeInterval);
-                    if (Utilities.IsGameRunning(gameDefinition.processName))
+                    if (!loadDataFromFile)
                     {
-                        mapped = gameDataReader.Initialise();
-                    }
-                    else if (UserSettings.GetUserSettings().getBoolean(gameDefinition.gameStartEnabledProperty) && !attemptedToRunGame)
-                    {
-                        Utilities.runGame(UserSettings.GetUserSettings().getString(gameDefinition.gameStartCommandProperty),
-                            UserSettings.GetUserSettings().getString(gameDefinition.gameStartCommandOptionsProperty));
-                        attemptedToRunGame = true;
+                        if (Utilities.IsGameRunning(gameDefinition.processName))
+                        {
+                            if (!mapped)
+                            {
+                                mapped = gameDataReader.Initialise();
+                            }
+                        }
+                        else if (UserSettings.GetUserSettings().getBoolean(gameDefinition.gameStartEnabledProperty) && !attemptedToRunGame)
+                        {
+                            Utilities.runGame(UserSettings.GetUserSettings().getString(gameDefinition.gameStartCommandProperty),
+                                UserSettings.GetUserSettings().getString(gameDefinition.gameStartCommandOptionsProperty));
+                            attemptedToRunGame = true;
+                        }
                     }
 
-                    if (mapped)
+                    if (loadDataFromFile || mapped)
                     {
                         stateCleared = false;
-                        Object rawGameData = gameDataReader.ReadGameData();
+                        Object rawGameData;
+                        if (loadDataFromFile)
+                        {
+                            rawGameData = gameDataReader.ReadGameDataFromFile(filenameToRun);
+                            if (rawGameData == null)
+                            {
+                                Console.WriteLine("Reached the end of the data file");
+                                running = false;
+                                continue;
+                            }
+                        }
+                        else
+                        {
+                            rawGameData = gameDataReader.ReadGameData();
+                        }
                         gameStateMapper.versionCheck(rawGameData);
                         
                         GameStateData nextGameState = gameStateMapper.mapToGameStateData(rawGameData, currentGameState);
@@ -351,7 +385,7 @@ namespace CrewChiefV3
                                         triggerEvent(entry.Key, entry.Value, previousGameState, currentGameState);
                                     }
                                 }
-                                if (spotter != null && spotterEnabled && !spotterIsRunning)
+                                if (spotter != null && spotterEnabled && !spotterIsRunning && !dumpToFile && !loadDataFromFile)
                                 {
                                     Console.WriteLine("********** starting spotter***********");
                                     spotter.clearState();
@@ -387,6 +421,10 @@ namespace CrewChiefV3
             currentGameState = null;
             sessionFinished = false;
             audioPlayer.stopMonitor();
+            if (gameDataReader != null && gameDataReader.dumpToFile)
+            {
+                gameDataReader.DumpRawGameData();
+            }
             return true;
         }
 

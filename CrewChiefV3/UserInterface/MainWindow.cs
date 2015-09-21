@@ -70,9 +70,55 @@ namespace CrewChiefV3
             }
         }
 
+        private void setSelectedGameType()
+        {
+            String[] commandLineArgs = Environment.GetCommandLineArgs();
+            Boolean setFromCommandLine = false;
+            if (commandLineArgs != null)
+            {
+                foreach (String arg in commandLineArgs)
+                {
+                    if (arg.Equals(GameDefinition.raceRoom.gameEnum.ToString()))
+                    {
+                        this.gameDefinitionList.Text = GameDefinition.raceRoom.friendlyName;
+                        setFromCommandLine = true;
+                        break;
+                    }
+                    else if (arg.Equals(GameDefinition.pCars32Bit.gameEnum.ToString()))
+                    {
+                        this.gameDefinitionList.Text = GameDefinition.pCars32Bit.friendlyName;
+                        setFromCommandLine = true;
+                        break;
+                    }
+                    else if (arg.Equals(GameDefinition.pCars64Bit.gameEnum.ToString()))
+                    {
+                        this.gameDefinitionList.Text = GameDefinition.pCars64Bit.friendlyName;
+                        setFromCommandLine = true;
+                        break;
+                    }
+                }
+            }
+            if (!setFromCommandLine)
+            {
+                String lastDef = UserSettings.GetUserSettings().getString("last_game_definition");
+                if (lastDef != null && lastDef.Length > 0)
+                {
+                    GameDefinition gameDefinition = GameDefinition.getGameDefinitionForEnumName(lastDef);
+                    if (gameDefinition != null)
+                    {
+                        this.gameDefinitionList.Text = gameDefinition.friendlyName;
+                    }
+                }
+            }
+        }
+
         public MainWindow()
         {
             InitializeComponent();
+            setSelectedGameType();
+            this.filenameLabel.Visible = System.Diagnostics.Debugger.IsAttached;
+            this.filenameTextbox.Visible = System.Diagnostics.Debugger.IsAttached;
+            this.recordSession.Visible = System.Diagnostics.Debugger.IsAttached;
             CheckForIllegalCrossThreadCalls = false;
             Console.SetOut(new ControlWriter(textBox1));
             crewChief = new CrewChief();
@@ -289,7 +335,16 @@ namespace CrewChiefV3
 
         private void runApp()
         {
-            if (!crewChief.Run())
+            String filenameToRun = null;
+            Boolean record = false;
+            if (System.Diagnostics.Debugger.IsAttached && filenameTextbox.Text != null && filenameTextbox.Text.Count() > 0)
+            {
+                filenameToRun = filenameTextbox.Text;
+            }
+            if (System.Diagnostics.Debugger.IsAttached && recordSession.Checked) {
+                record = true;
+            }
+            if (!crewChief.Run(filenameToRun, record))
             {
                 this.deleteAssigmentButton.Enabled = this.buttonActionSelect.SelectedIndex > -1 &&
                     this.controllerConfiguration.buttonAssignments[this.buttonActionSelect.SelectedIndex].joystick != null;

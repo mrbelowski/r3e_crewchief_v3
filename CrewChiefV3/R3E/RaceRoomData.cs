@@ -57,7 +57,7 @@ namespace CrewChiefV3.RaceRoom
     namespace RaceRoomData
     {
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
-        internal struct Vector3<T>
+        public struct Vector3<T>
         {
             public T X;
             public T Y;
@@ -65,7 +65,7 @@ namespace CrewChiefV3.RaceRoom
         }
 
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
-        internal struct Orientation<T>
+        public struct Orientation<T>
         {
             public T Pitch;
             public T Yaw;
@@ -73,13 +73,13 @@ namespace CrewChiefV3.RaceRoom
         }
 
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
-        internal struct UserInput
+        public struct UserInput
         {
             public Single _1, _2, _3, _4, _5, _6;
         }
 
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
-        internal struct TireTemperature
+        public struct TireTemperature
         {
             public Single FrontLeft_Left;
             public Single FrontLeft_Center;
@@ -99,7 +99,7 @@ namespace CrewChiefV3.RaceRoom
         }
 
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
-        internal struct PlayerData
+        public struct PlayerData
         {
             // Virtual physics time
             // Unit: Ticks (1 tick = 1/400th of a second)
@@ -143,7 +143,7 @@ namespace CrewChiefV3.RaceRoom
         }
 
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
-        internal struct Flags
+        public struct Flags
         {
             // Whether yellow flag is currently active
             // -1 = no data
@@ -165,7 +165,7 @@ namespace CrewChiefV3.RaceRoom
         }
 
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
-        internal struct CarDamage
+        public struct CarDamage
         {
             // ...
             public Single Engine;
@@ -190,7 +190,7 @@ namespace CrewChiefV3.RaceRoom
         }
 
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
-        internal struct TirePressure
+        public struct TirePressure
         {
             // ...
             public Single FrontLeft;
@@ -206,7 +206,7 @@ namespace CrewChiefV3.RaceRoom
         }
 
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
-        internal struct BrakeTemperatures
+        public struct BrakeTemperatures
         {
             // ...
             public Single FrontLeft;
@@ -222,7 +222,7 @@ namespace CrewChiefV3.RaceRoom
         }
 
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
-        internal struct CutTrackPenalties
+        public struct CutTrackPenalties
         {
             // ...
             public Int32 DriveThrough;
@@ -241,7 +241,7 @@ namespace CrewChiefV3.RaceRoom
         }
 
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
-        internal struct Sectors<T>
+        public struct Sectors<T>
         {
             public T Sector1;
             public T Sector2;
@@ -249,7 +249,7 @@ namespace CrewChiefV3.RaceRoom
         }
 
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
-        internal struct RaceRoomShared
+        public struct RaceRoomShared
         {
             [ObsoleteAttribute("Not set anymore", false)]
             public UserInput UserInput;

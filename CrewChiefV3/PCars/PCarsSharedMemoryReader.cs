@@ -16,9 +16,43 @@ namespace CrewChiefV3.PCars
         private int sharedmemorysize;
         private byte[] sharedMemoryReadBuffer;
         private Boolean initialised = false;
+        private List<pCarsAPIStruct> dataToDump;
+        private pCarsAPIStruct[] dataReadFromFile = null;
+        private int dataReadFromFileIndex = 0;
 
-        public Boolean Initialise()
+        public override void DumpRawGameData()
         {
+            if (dumpToFile && dataToDump != null && dataToDump.Count > 0 && filenameToDump != null)
+            {
+                SerializeObject(dataToDump.ToArray<pCarsAPIStruct>(), filenameToDump);
+            }
+        }
+
+        public override Object ReadGameDataFromFile(String filename)
+        {
+            if (dataReadFromFile == null)
+            {
+                dataReadFromFileIndex = 0;
+                dataReadFromFile = DeSerializeObject<pCarsAPIStruct[]>(filename);
+            }
+            if (dataReadFromFile.Length > dataReadFromFileIndex)
+            {
+                pCarsAPIStruct data = dataReadFromFile[dataReadFromFileIndex];
+                dataReadFromFileIndex++;
+                return data;
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        protected override Boolean InitialiseInternal()
+        {
+            if (dumpToFile)
+            {
+                dataToDump = new List<pCarsAPIStruct>();
+            }
             lock (this)
             {
                 if (!initialised)
@@ -40,14 +74,14 @@ namespace CrewChiefV3.PCars
             }            
         }
 
-        public Object ReadGameData()
+        public override Object ReadGameData()
         {
             lock (this)
             {
                 pCarsAPIStruct _pcarsapistruct = new pCarsAPIStruct();
                 if (!initialised)
                 {
-                    if (!Initialise())
+                    if (!InitialiseInternal())
                     {
                         throw new GameDataReadException("Failed to initialise shared memory");
                     }
@@ -63,7 +97,10 @@ namespace CrewChiefV3.PCars
                         //Console.WriteLine(_pcarsapistruct.mSpeed);
                         handle.Free();
                     }
-
+                    if (dumpToFile && dataToDump != null)
+                    {
+                        dataToDump.Add(_pcarsapistruct);
+                    }
                     return _pcarsapistruct;
                 }
                 catch (Exception ex)
@@ -73,7 +110,7 @@ namespace CrewChiefV3.PCars
             }            
         }
 
-        public void Dispose()
+        public override void Dispose()
         {
             if (memoryMappedFile != null)
             {

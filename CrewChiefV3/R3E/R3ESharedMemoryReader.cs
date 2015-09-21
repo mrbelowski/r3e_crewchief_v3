@@ -7,6 +7,8 @@ using System.IO.MemoryMappedFiles;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Xml;
+using System.Xml.Serialization;
 
 namespace CrewChiefV3.RaceRoom
 {
@@ -14,9 +16,43 @@ namespace CrewChiefV3.RaceRoom
     {
         private MemoryMappedFile _file;
         private MemoryMappedViewAccessor _view;
+        private List<RaceRoomShared> dataToDump = null;
+        private RaceRoomShared[] dataReadFromFile = null;
+        private int dataReadFromFileIndex = 0;
 
-        public Boolean Initialise()
+        public override Object ReadGameDataFromFile(String filename)
         {
+            if (dataReadFromFile == null)
+            {
+                dataReadFromFileIndex = 0;
+                dataReadFromFile = DeSerializeObject<RaceRoomShared[]>(filename);
+            }
+            if (dataReadFromFile.Length > dataReadFromFileIndex)
+            {
+                RaceRoomShared data = dataReadFromFile[dataReadFromFileIndex];
+                dataReadFromFileIndex++;
+                return data;
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        public override void DumpRawGameData() 
+        {
+            if (dumpToFile && dataToDump != null && dataToDump.Count > 0 && filenameToDump!= null)
+            {
+                SerializeObject(dataToDump.ToArray<RaceRoomShared>(), filenameToDump);
+            }
+        }
+        
+        protected override Boolean InitialiseInternal()
+        {
+            if (dumpToFile)
+            {
+                dataToDump = new List<RaceRoomShared>();
+            }
             lock (this)
             {
                 try
@@ -32,21 +68,25 @@ namespace CrewChiefV3.RaceRoom
             }            
         }
 
-        public Object ReadGameData()
+        public override Object ReadGameData()
         {
             lock (this)
             {
                 if (_view == null && _file == null)
                 {
-                    Initialise();
+                    InitialiseInternal();
                 }
                 RaceRoomShared currentState = new RaceRoomShared();
                 _view.Read(0, out currentState);
+                if (dumpToFile && dataToDump != null)
+                {
+                    dataToDump.Add(currentState);
+                }
                 return currentState;
             }            
         }
 
-        public void Dispose()
+        public override void Dispose()
         {
             if (_view != null)
             {

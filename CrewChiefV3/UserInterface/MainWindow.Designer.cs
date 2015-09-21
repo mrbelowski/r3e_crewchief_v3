@@ -61,6 +61,9 @@ namespace CrewChiefV3
             this.label4 = new System.Windows.Forms.Label();
             this.gameDefinitionList = new System.Windows.Forms.ListBox();
             this.label5 = new System.Windows.Forms.Label();
+            this.filenameTextbox = new System.Windows.Forms.TextBox();
+            this.filenameLabel = new System.Windows.Forms.Label();
+            this.recordSession = new System.Windows.Forms.CheckBox();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.messagesVolumeSlider)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.backgroundVolumeSlider)).BeginInit();
@@ -261,52 +264,16 @@ namespace CrewChiefV3
             this.label4.TabIndex = 20;
             this.label4.Text = "Background volume";
             // 
-            // listBox2
+            // gameDefinitionList
             // 
             this.gameDefinitionList.AllowDrop = true;
             this.gameDefinitionList.FormattingEnabled = true;
-            this.gameDefinitionList.Items.AddRange(GameDefinition.getGameDefinitionFriendlyNames());
-            String[] commandLineArgs = Environment.GetCommandLineArgs();
-            Boolean setFromCommandLine = false;
-            if (commandLineArgs != null)
-            {
-                foreach (String arg in commandLineArgs)
-                {
-                    if (arg.Equals(GameDefinition.raceRoom.gameEnum.ToString()))
-                    {
-                        this.gameDefinitionList.Text = GameDefinition.raceRoom.friendlyName;
-                        setFromCommandLine = true;
-                        break;
-                    }
-                    else if (arg.Equals(GameDefinition.pCars32Bit.gameEnum.ToString()))
-                    {
-                        this.gameDefinitionList.Text = GameDefinition.pCars32Bit.friendlyName;
-                        setFromCommandLine = true;
-                        break;
-                    }
-                    else if (arg.Equals(GameDefinition.pCars64Bit.gameEnum.ToString()))
-                    {
-                        this.gameDefinitionList.Text = GameDefinition.pCars64Bit.friendlyName;
-                        setFromCommandLine = true;
-                        break;
-                    }
-                }
-            }
-            if (!setFromCommandLine)
-            {
-                String lastDef = UserSettings.GetUserSettings().getString("last_game_definition");
-                if (lastDef != null && lastDef.Length > 0)
-                {
-                    GameDefinition gameDefinition = GameDefinition.getGameDefinitionForEnumName(lastDef);
-                    if (gameDefinition != null)
-                    {
-                        this.gameDefinitionList.Text = gameDefinition.friendlyName;
-                    }
-                }
-            }
-            this.gameDefinitionList.Text = "Please select";
+            this.gameDefinitionList.Items.AddRange(new object[] {
+            "Project Cars (64 bit)",
+            "Project Cars (32 bit)",
+            "Race Room"});
             this.gameDefinitionList.Location = new System.Drawing.Point(782, 26);
-            this.gameDefinitionList.Name = "listBox2";
+            this.gameDefinitionList.Name = "gameDefinitionList";
             this.gameDefinitionList.Size = new System.Drawing.Size(203, 43);
             this.gameDefinitionList.TabIndex = 21;
             // 
@@ -319,11 +286,40 @@ namespace CrewChiefV3
             this.label5.TabIndex = 22;
             this.label5.Text = "Game";
             // 
+            // filenameTextbox
+            // 
+            this.filenameTextbox.Location = new System.Drawing.Point(186, 2);
+            this.filenameTextbox.Name = "filenameTextbox";
+            this.filenameTextbox.Size = new System.Drawing.Size(137, 20);
+            this.filenameTextbox.TabIndex = 23;
+            // 
+            // filenameLabel
+            // 
+            this.filenameLabel.AutoSize = true;
+            this.filenameLabel.Location = new System.Drawing.Point(101, 5);
+            this.filenameLabel.Name = "filenameLabel";
+            this.filenameLabel.Size = new System.Drawing.Size(82, 13);
+            this.filenameLabel.TabIndex = 24;
+            this.filenameLabel.Text = "File name to run";
+            // 
+            // recordSession
+            // 
+            this.recordSession.AutoSize = true;
+            this.recordSession.Location = new System.Drawing.Point(41, 4);
+            this.recordSession.Name = "recordSession";
+            this.recordSession.Size = new System.Drawing.Size(61, 17);
+            this.recordSession.TabIndex = 25;
+            this.recordSession.Text = "Record";
+            this.recordSession.UseVisualStyleBackColor = true;
+            // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1146, 692);
+            this.Controls.Add(this.recordSession);
+            this.Controls.Add(this.filenameLabel);
+            this.Controls.Add(this.filenameTextbox);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.gameDefinitionList);
             this.Controls.Add(this.label4);
@@ -377,6 +373,9 @@ namespace CrewChiefV3
         private System.Windows.Forms.ListBox listBox1;
         private System.Windows.Forms.ListBox gameDefinitionList;
         private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.TextBox filenameTextbox;
+        private System.Windows.Forms.Label filenameLabel;
+        private System.Windows.Forms.CheckBox recordSession;
 
     }
 }
