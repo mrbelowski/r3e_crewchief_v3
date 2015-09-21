@@ -74,8 +74,11 @@ namespace CrewChiefV3.RaceRoom
         {
             GameStateData currentGameState = new GameStateData();
             RaceRoomData.RaceRoomShared shared = (RaceRoomData.RaceRoomShared)memoryMappedFileStruct;
-
-            if (shared.NumberOfLaps <= 0 && shared.SessionTimeRemaining <= 0 || shared.Player.GameSimulationTime <= 0)
+            
+            // don't ignore this game update even if the number of laps and the time remaining are zero - this
+            // happens when a timed session first goes chequered 
+            // if (shared.NumberOfLaps <= 0 && shared.SessionTimeRemaining <= 0 || shared.Player.GameSimulationTime <= 0)
+            if (shared.Player.GameSimulationTime <= 0)
             {
                 return null;
             }
@@ -541,7 +544,6 @@ namespace CrewChiefV3.RaceRoom
             }
             else if (SessionPhase.Checkered == lastSessionPhase)
             {
-                // TODO: this doesn't trigger - there's one update between this check and the lap rolling over :(
                 if (previousLapsCompleted != currentLapsCompleted || controlType == ControlType.AI)
                 {
                     return SessionPhase.Finished;
