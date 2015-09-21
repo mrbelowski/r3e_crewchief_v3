@@ -25,7 +25,7 @@ namespace CrewChiefV3.RaceRoom
             if (dataReadFromFile == null)
             {
                 dataReadFromFileIndex = 0;
-                dataReadFromFile = DeSerializeObject<RaceRoomShared[]>(filename);
+                dataReadFromFile = DeSerializeObject<RaceRoomShared[]>(dataFilesPath + filename);
             }
             if (dataReadFromFile.Length > dataReadFromFileIndex)
             {

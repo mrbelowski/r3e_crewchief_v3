@@ -33,7 +33,7 @@ namespace CrewChiefV3.PCars
             if (dataReadFromFile == null)
             {
                 dataReadFromFileIndex = 0;
-                dataReadFromFile = DeSerializeObject<pCarsAPIStruct[]>(filename);
+                dataReadFromFile = DeSerializeObject<pCarsAPIStruct[]>(dataFilesPath + filename);
             }
             if (dataReadFromFile.Length > dataReadFromFileIndex)
             {

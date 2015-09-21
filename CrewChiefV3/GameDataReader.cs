@@ -24,13 +24,16 @@ namespace CrewChiefV3
 
         public abstract Object ReadGameDataFromFile(String filename);
 
+        protected String dataFilesPath = Path.Combine(Path.GetDirectoryName(
+                                            System.Reflection.Assembly.GetEntryAssembly().Location), @"..\", @"..\dataFiles\");
+
         public Boolean Initialise()
         {
             Boolean initialised = InitialiseInternal();
             if (initialised && dumpToFile)
             {
                 Console.WriteLine("initialising");
-                filenameToDump = "c:/temp/game_data_" + DateTime.Now.ToString("yyyy-dd-M--HH-mm-ss") + ".xml";
+                filenameToDump = dataFilesPath + "recording_" + DateTime.Now.ToString("yyyy-dd-M--HH-mm-ss") + ".xml";
             }
             return initialised;
         }

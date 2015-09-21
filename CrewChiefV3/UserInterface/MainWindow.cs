@@ -267,20 +267,20 @@ namespace CrewChiefV3
 
         private void doStartAppStuff()
         {
-            GameDefinition gameDefinition = GameDefinition.getGameDefinitionForFriendlyName(gameDefinitionList.Text);
-            if (gameDefinition != null)
-            {
-                crewChief.setGameDefinition(gameDefinition);
-            }
-            else
-            {
-                MessageBox.Show("Please choose a game option", "No game selected", 
-                    MessageBoxButtons.OK, MessageBoxIcon.Information);
-                return;
-            }
             IsAppRunning = !IsAppRunning;
             if (_IsAppRunning)
             {
+                GameDefinition gameDefinition = GameDefinition.getGameDefinitionForFriendlyName(gameDefinitionList.Text);
+                if (gameDefinition != null)
+                {
+                    crewChief.setGameDefinition(gameDefinition);
+                }
+                else
+                {
+                    MessageBox.Show("Please choose a game option", "No game selected",
+                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    return;
+                }
                 this.assignButtonToAction.Enabled = false;
                 this.deleteAssigmentButton.Enabled = false;
                 this.groupBox1.Enabled = false;
