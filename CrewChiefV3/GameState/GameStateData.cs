@@ -375,6 +375,8 @@ namespace CrewChiefV3.GameState
         public Boolean IsAtPitExit = false;
 
         public Boolean IsRefuellingAllowed = false;
+
+        public Boolean HasRequestedPitStop = false;
     }
 
     public class PenatiesData

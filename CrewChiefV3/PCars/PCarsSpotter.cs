@@ -134,7 +134,9 @@ namespace CrewChiefV3.PCars
             {
                 timeToStartSpotting = now.Add(TimeSpan.FromSeconds(timeAfterRaceStartToActivate));
             }
-            if (currentState.mRaceState != (int)eRaceState.RACESTATE_RACING || now < timeToStartSpotting)
+            // this check looks a bit funky... whe we start a practice session, the raceState is no_started
+            // until we cross the line for the first time. Which is retarded really.
+            if (currentState.mRaceState == (int)eRaceState.RACESTATE_INVALID || now < timeToStartSpotting)
             {
                 return;
             }

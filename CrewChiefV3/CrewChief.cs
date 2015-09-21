@@ -338,6 +338,7 @@ namespace CrewChiefV3
                                 audioPlayer.closeChannel();
                                 sessionFinished = true;
                             }
+                            float prevTime = previousGameState == null ? 0 : previousGameState.SessionData.SessionRunningTime;
                             if (currentGameState.SessionData.IsNewSession)
                             {
                                 displayNewSessionInfo(currentGameState);

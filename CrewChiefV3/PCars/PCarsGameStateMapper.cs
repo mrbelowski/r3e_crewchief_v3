@@ -22,9 +22,9 @@ namespace CrewChiefV3.PCars
             (uint)eTerrain.TERRAIN_LOW_GRIP_ROAD, (uint)eTerrain.TERRAIN_MARBLES,(uint)eTerrain.TERRAIN_PAVEMENT,
             (uint)eTerrain.TERRAIN_ROAD, (uint)eTerrain.TERRAIN_RUMBLE_STRIPS, (uint)eTerrain.TERRAIN_SAND_ROAD};
 
-        private float trivialDamageThreshold = 0.1f;
-        private float minorDamageThreshold = 0.3f;
-        private float severeDamageThreshold = 0.7f;
+        private float trivialDamageThreshold = 0.05f;
+        private float minorDamageThreshold = 0.15f;
+        private float severeDamageThreshold = 0.3f;
         private float destroyedDamageThreshold = 0.99f;
 
         // tyres in PCars are worn out when the wear level is > ?
@@ -94,6 +94,7 @@ namespace CrewChiefV3.PCars
             String lastSessionTrackLayout = "";
             Boolean lastSessionHasFixedTime = false;
             int lastSessionNumberOfLaps = 0;
+            float lastSessionRunTime = 0;
             if (previousGameState != null)
             {
                 lastSessionPhase = previousGameState.SessionData.SessionPhase;
@@ -104,6 +105,7 @@ namespace CrewChiefV3.PCars
                 lastSessionTrackLayout = previousGameState.SessionData.TrackLayout;
                 lastSessionLapsCompleted = previousGameState.SessionData.CompletedLaps;
                 lastSessionNumberOfLaps = previousGameState.SessionData.SessionNumberOfLaps;
+                lastSessionRunTime = previousGameState.SessionData.SessionRunTime;
             }
 
             // current session data
@@ -111,7 +113,7 @@ namespace CrewChiefV3.PCars
             Boolean leaderHasFinished = previousGameState != null && previousGameState.SessionData.LeaderHasFinishedRace;
             currentGameState.SessionData.LeaderHasFinishedRace = leaderHasFinished;
             currentGameState.SessionData.SessionPhase = mapToSessionPhase(currentGameState.SessionData.SessionType, 
-                shared.mSessionState, shared.mRaceState, shared.mNumParticipants, leaderHasFinished);
+                shared.mSessionState, shared.mRaceState, shared.mNumParticipants, leaderHasFinished, lastSessionPhase);
             float sessionTimeRemaining = -1;
             int numberOfLapsInSession = (int)shared.mLapsInEvent;
             if (shared.mEventTimeRemaining > 0)
@@ -129,8 +131,7 @@ namespace CrewChiefV3.PCars
                 lastSessionHasFixedTime != currentGameState.SessionData.SessionHasFixedTime || lastSessionTrack != currentGameState.SessionData.TrackName ||
                 lastSessionTrackLayout != currentGameState.SessionData.TrackLayout || lastSessionLapsCompleted > currentGameState.SessionData.CompletedLaps ||
                 (numberOfLapsInSession > 0 && lastSessionNumberOfLaps > 0 && lastSessionNumberOfLaps != numberOfLapsInSession) ||
-                (sessionTimeRemaining > 0 && currentGameState.SessionData.SessionRunTime > 0 &&
-                    (sessionTimeRemaining > currentGameState.SessionData.SessionRunTime))))
+                (sessionTimeRemaining > 0 && sessionTimeRemaining > lastSessionRunTime)))
             {
                 Console.WriteLine("New session, trigger...");  
                 if (lastSessionType != currentGameState.SessionData.SessionType) 
@@ -164,6 +165,7 @@ namespace CrewChiefV3.PCars
                 if (currentGameState.SessionData.SessionHasFixedTime)
                 {
                     currentGameState.SessionData.SessionRunTime = sessionTimeRemaining;
+                    Console.WriteLine("Time in this new session = " + sessionTimeRemaining);
                 } 
                 currentGameState.SessionData.DriverRawName = shared.mParticipantData[shared.mViewedParticipantIndex].mName;
                 currentGameState.PitData.IsRefuellingAllowed = true;
@@ -381,7 +383,11 @@ namespace CrewChiefV3.PCars
                 currentGameState.PitData.OnInLap = previousGameState.PitData.OnInLap;
                 currentGameState.PitData.OnOutLap = previousGameState.PitData.OnOutLap;
             }
-                
+            currentGameState.PitData.HasRequestedPitStop = shared.mPitSchedule == (int)ePitSchedule.PIT_SCHEDULE_STANDARD;
+            if (previousGameState != null && previousGameState.PitData.HasRequestedPitStop)
+            {
+                Console.WriteLine("Has requested pitstop");
+            }
             currentGameState.CarDamageData.DamageEnabled = true;    // no way to tell if it's disabled from the shared memory
             currentGameState.CarDamageData.OverallAeroDamage = mapToDamageLevel(shared.mAeroDamage);
             currentGameState.CarDamageData.OverallEngineDamage = mapToDamageLevel(shared.mEngineDamage);
@@ -604,8 +610,13 @@ namespace CrewChiefV3.PCars
         }
 
         // TODO: this has been hacked around so much as to have become entirely bollocks. Re-write it
+        /*
+         * When a practice session ends (while driving around) the mSessionState goes from 2 (racing) to
+         * 1 (race not started) to 0 (invalid) over a few seconds. It never goes to any of the finished
+         * states
+         */
         private SessionPhase mapToSessionPhase(SessionType sessionType, uint sessionState, uint raceState, int numParticipants,
-            Boolean leaderHasFinishedRace)
+            Boolean leaderHasFinishedRace, SessionPhase previousSessionPhase)
         {
             if (numParticipants < 1)
             {
@@ -647,29 +658,20 @@ namespace CrewChiefV3.PCars
             }
             else if (sessionType == SessionType.Practice || sessionType == SessionType.Qualify)
             {
-                if (raceState == (uint)eRaceState.RACESTATE_NOT_STARTED)
-                {
-                    return SessionPhase.Garage;
-                }
-                else if (raceState == (uint)eRaceState.RACESTATE_RACING)
-                {
-                    if (leaderHasFinishedRace)
-                    {
-                        return SessionPhase.Checkered;
-                    }
-                    else
-                    {
-                        return SessionPhase.Green;
-                    }
-                }
-                else if (raceState == (uint)eRaceState.RACESTATE_FINISHED ||
+                if (raceState == (uint)eRaceState.RACESTATE_FINISHED ||
                     raceState == (uint)eRaceState.RACESTATE_DNF ||
                     raceState == (uint)eRaceState.RACESTATE_DISQUALIFIED ||
                     raceState == (uint)eRaceState.RACESTATE_RETIRED ||
                     raceState == (uint)eRaceState.RACESTATE_INVALID ||
-                    raceState == (uint)eRaceState.RACESTATE_MAX)
+                    raceState == (uint)eRaceState.RACESTATE_MAX || 
+                    ((raceState == (uint)eRaceState.RACESTATE_NOT_STARTED || raceState == (uint)eRaceState.RACESTATE_INVALID) &&
+                        previousSessionPhase == SessionPhase.Green))
                 {
                     return SessionPhase.Finished;
+                } 
+                else if (raceState == (uint)eRaceState.RACESTATE_RACING || raceState == (uint)eRaceState.RACESTATE_NOT_STARTED)
+                {
+                    return SessionPhase.Green;
                 }
             }
             return SessionPhase.Unavailable;
