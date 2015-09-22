@@ -19,3 +19,12 @@ Christopherssen:christopherson
 Christoffersen:christopherson
 D'Alessandro:dalessandro
 Frank:franke
+Low:laux
+Laughton:lawton
+Leigh:lee
+McDonald:macdonald
+Moor:moore
+Sergent:sargent
+Sunn:son
+Tomas:thomas
+Webber:weber
