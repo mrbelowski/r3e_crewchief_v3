@@ -35,6 +35,12 @@ namespace CrewChiefV3.Events
 
         private List<float> gapsBehind;
 
+        private List<float> leaderLastLaps = new List<float>();
+
+        private List<float> carAheadLastLaps = new List<float>();
+
+        private List<float> carBehindLastLaps = new List<float>();
+
         private float gapBehindAtLastReport;
 
         private float gapInFrontAtLastReport;
@@ -67,6 +73,9 @@ namespace CrewChiefV3.Events
         {
             gapsInFront = new List<float>();
             gapsBehind = new List<float>();
+            leaderLastLaps = new List<float>();
+            carAheadLastLaps = new List<float>();
+            carBehindLastLaps = new List<float>();
             gapBehindAtLastReport = -1;
             gapInFrontAtLastReport = -1;
             sectorsSinceLastReport = 0;
@@ -93,10 +102,42 @@ namespace CrewChiefV3.Events
             if (!currentGameState.SessionData.IsRacingSameCarInFront)
             {
                 gapsInFront.Clear();
+                carAheadLastLaps.Clear();
+            }
+            else if (currentGameState.SessionData.Position > 1) 
+            {
+                OpponentData carAheadCurrentState = currentGameState.getOpponentAtPosition(currentGameState.SessionData.Position - 1);
+                OpponentData carAheadPreviousState = previousGameState == null ? null : previousGameState.getOpponentAtPosition(currentGameState.SessionData.Position - 1);
+                if (carAheadCurrentState != null && carAheadPreviousState != null && carAheadCurrentState.CompletedLaps == carAheadPreviousState.CompletedLaps + 1)
+                {
+                    carAheadLastLaps.Add(carAheadCurrentState.approximateLastLapTime);
+                }
             }
             if (!currentGameState.SessionData.IsRacingSameCarBehind)
             {
                 gapsBehind.Clear();
+                carBehindLastLaps.Clear();
+            }
+            else if (!currentGameState.isLast())
+            {
+                OpponentData carBehindCurrentState = currentGameState.getOpponentAtPosition(currentGameState.SessionData.Position + 1);
+                OpponentData carBehindPreviousState = previousGameState == null ? null : previousGameState.getOpponentAtPosition(currentGameState.SessionData.Position + 1);
+                if (carBehindCurrentState != null && carBehindPreviousState != null && carBehindCurrentState.CompletedLaps == carBehindPreviousState.CompletedLaps + 1)
+                {
+                    carBehindLastLaps.Add(carBehindCurrentState.approximateLastLapTime);
+                }
+            }
+            if (currentGameState.SessionData.HasLeadChanged)
+            {
+                leaderLastLaps.Clear();
+            }
+            else if (currentGameState.SessionData.Position > 1) {
+                OpponentData leaderCurrentState = currentGameState.getOpponentAtPosition(1);
+                OpponentData leaderPreviousState = previousGameState == null ? null : previousGameState.getOpponentAtPosition(1);
+                if (leaderCurrentState != null && leaderPreviousState != null && leaderCurrentState.CompletedLaps == leaderPreviousState.CompletedLaps + 1)
+                {
+                    leaderLastLaps.Add(leaderCurrentState.approximateLastLapTime);
+                }
             }
             if (enableGapMessages && currentGameState.SessionData.IsNewSector && 
                 !currentGameState.PitData.InPitlane)

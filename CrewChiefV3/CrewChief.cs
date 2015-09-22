@@ -347,6 +347,7 @@ namespace CrewChiefV3
                                 {
                                     Console.WriteLine("Clearing game state...");
                                     audioPlayer.purgeQueues();
+                                    // TODO: make the session end messages survive a purge
                                     audioPlayer.closeChannel();
                                     foreach (KeyValuePair<String, AbstractEvent> entry in eventsList)
                                     {

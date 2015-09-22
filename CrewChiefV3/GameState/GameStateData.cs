@@ -231,6 +231,8 @@ namespace CrewChiefV3.GameState
 
         public Boolean IsRacingSameCarBehind = true;
 
+        public Boolean HasLeadChanged = false;
+
         public float SessionTimeAtEndOfLastSector1 = 0;
 
         public float SessionTimeAtEndOfLastSector2 = 0;
