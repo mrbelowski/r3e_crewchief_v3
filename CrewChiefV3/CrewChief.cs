@@ -241,7 +241,7 @@ namespace CrewChiefV3
         public Boolean Run(String filenameToRun, Boolean dumpToFile)
         {
             loadDataFromFile = false;
-            if (filenameToRun != null)
+            if (filenameToRun != null && System.Diagnostics.Debugger.IsAttached)
             {
                 loadDataFromFile = true;
                 spotterEnabled = false;
@@ -255,7 +255,7 @@ namespace CrewChiefV3
             
             gameStateMapper = (GameStateMapper)Activator.CreateInstance(Type.GetType(gameDefinition.gameStateMapperName));
             gameDataReader = (GameDataReader)Activator.CreateInstance(Type.GetType(gameDefinition.gameDataReaderName));
-            gameDataReader.dumpToFile = System.Diagnostics.Debugger.IsAttached;
+            gameDataReader.dumpToFile = System.Diagnostics.Debugger.IsAttached && dumpToFile;
             if (gameDefinition.spotterName != null)
             {
                 spotter = (Spotter)Activator.CreateInstance(Type.GetType(gameDefinition.spotterName), 

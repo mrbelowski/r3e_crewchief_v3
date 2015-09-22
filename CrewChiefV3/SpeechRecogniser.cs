@@ -243,7 +243,7 @@ namespace CrewChiefV3
             }
             else
             {
-                Console.WriteLine("Drive names are already loaded");
+                Console.WriteLine("Driver names are already loaded");
             }
         }
 
