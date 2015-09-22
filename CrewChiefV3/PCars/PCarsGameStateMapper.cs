@@ -669,9 +669,14 @@ namespace CrewChiefV3.PCars
                 {
                     return SessionPhase.Finished;
                 } 
-                else if (raceState == (uint)eRaceState.RACESTATE_RACING || raceState == (uint)eRaceState.RACESTATE_NOT_STARTED)
+                else if (raceState == (uint)eRaceState.RACESTATE_RACING) 
                 {
                     return SessionPhase.Green;
+                }
+                else if (raceState == (uint)eRaceState.RACESTATE_NOT_STARTED)
+                {
+                    // for these sessions, we'll be in 'countdown' for all of the first lap :(
+                    return SessionPhase.Countdown;
                 }
             }
             return SessionPhase.Unavailable;
