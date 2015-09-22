@@ -12,3 +12,10 @@ Muller:mueller
 Clark:clarke
 Fischer:fisher
 Patricio Javier Alzamora:alzamora
+Andersson:Anderson
+Chavez:chaves
+Christoph:christophe
+Christopherssen:christopherson
+Christoffersen:christopherson
+D'Alessandro:dalessandro
+Frank:franke
