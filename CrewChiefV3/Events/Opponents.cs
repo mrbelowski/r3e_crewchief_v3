@@ -8,11 +8,26 @@ using CrewChiefV3.GameState;
 
 namespace CrewChiefV3.Events
 {
-    class DriverNames : AbstractEvent
+    class Opponents : AbstractEvent
     {
+        private string folderLeaderIsPitting = "opponents/the_leader_is_pitting";
+        private string folderCarAheadIsPitting = "opponents/the_car_ahead_is_pitting";
+        private string folderCarBehindIsPitting = "opponents/the_car_behind_is_pitting";
+
+        private String folderTheLeader = "opponents/the_leader";
+        private string folderIsPitting = "opponents/is_pitting";
+        private string folderAheadIsPitting = "opponents/ahead_is_pitting";
+        private string folderBehindIsPitting = "opponents/behind_is_pitting";
+
+        private List<float> leaderLastLaps = new List<float>();
+
+        private List<float> carAheadLastLaps = new List<float>();
+
+        private List<float> carBehindLastLaps = new List<float>();
+
         private GameStateData currentGameState;
 
-        public DriverNames(AudioPlayer audioPlayer)
+        public Opponents(AudioPlayer audioPlayer)
         {
             this.audioPlayer = audioPlayer;
         }
@@ -20,6 +35,9 @@ namespace CrewChiefV3.Events
         public override void clearState()
         {
             currentGameState = null;
+            leaderLastLaps = new List<float>();
+            carAheadLastLaps = new List<float>();
+            carBehindLastLaps = new List<float>();
         }
 
         public override bool isMessageStillValid(string eventSubType, GameStateData currentGameState, Dictionary<String, Object> validationData)
@@ -30,6 +48,64 @@ namespace CrewChiefV3.Events
         override protected void triggerInternal(GameStateData previousGameState, GameStateData currentGameState)
         {
             this.currentGameState = currentGameState;
+            if (currentGameState.SessionData.SessionType == SessionType.Race)
+            {
+                if (!currentGameState.SessionData.IsRacingSameCarInFront)
+                {
+                    carAheadLastLaps.Clear();
+                }
+                else if (currentGameState.SessionData.Position > 1)
+                {
+                    OpponentData carAheadCurrentState = currentGameState.getOpponentAtPosition(currentGameState.SessionData.Position - 1);
+                    OpponentData carAheadPreviousState = previousGameState == null ? null : previousGameState.getOpponentAtPosition(currentGameState.SessionData.Position - 1);
+                    if (carAheadCurrentState != null && carAheadPreviousState != null && carAheadCurrentState.CompletedLaps == carAheadPreviousState.CompletedLaps + 1)
+                    {
+                        carAheadLastLaps.Add(carAheadCurrentState.approximateLastLapTime);
+                    }
+                }
+                if (!currentGameState.SessionData.IsRacingSameCarBehind)
+                {
+                    carBehindLastLaps.Clear();
+                }
+                else if (!currentGameState.isLast())
+                {
+                    OpponentData carBehindCurrentState = currentGameState.getOpponentAtPosition(currentGameState.SessionData.Position + 1);
+                    OpponentData carBehindPreviousState = previousGameState == null ? null : previousGameState.getOpponentAtPosition(currentGameState.SessionData.Position + 1);
+                    if (carBehindCurrentState != null && carBehindPreviousState != null && carBehindCurrentState.CompletedLaps == carBehindPreviousState.CompletedLaps + 1)
+                    {
+                        carBehindLastLaps.Add(carBehindCurrentState.approximateLastLapTime);
+                    }
+                }
+                if (currentGameState.SessionData.HasLeadChanged)
+                {
+                    leaderLastLaps.Clear();
+                }
+                else if (currentGameState.SessionData.Position > 1)
+                {
+                    OpponentData leaderCurrentState = currentGameState.getOpponentAtPosition(1);
+                    OpponentData leaderPreviousState = previousGameState == null ? null : previousGameState.getOpponentAtPosition(1);
+                    if (leaderCurrentState != null && leaderPreviousState != null && leaderCurrentState.CompletedLaps == leaderPreviousState.CompletedLaps + 1)
+                    {
+                        leaderLastLaps.Add(leaderCurrentState.approximateLastLapTime);
+                    }
+                }
+
+                if (currentGameState.PitData.LeaderIsPitting)
+                {
+                    audioPlayer.queueClip(new QueuedMessage("leader_is_pitting", MessageContents(folderTheLeader, currentGameState.getOpponentAtPosition(1), folderIsPitting), 
+                        MessageContents(folderLeaderIsPitting), 0, this));
+                }
+                if (currentGameState.PitData.CarInFrontIsPitting)
+                {
+                    audioPlayer.queueClip(new QueuedMessage("car_in_front_is_pitting", MessageContents(currentGameState.getOpponentAtPosition(currentGameState.SessionData.Position - 1), 
+                        folderAheadIsPitting), MessageContents(folderCarAheadIsPitting), 0, this));
+                }
+                if (currentGameState.PitData.CarBehindIsPitting)
+                {
+                    audioPlayer.queueClip(new QueuedMessage("car_behind_is_pitting", MessageContents(currentGameState.getOpponentAtPosition(currentGameState.SessionData.Position + 1), 
+                        folderBehindIsPitting), MessageContents(folderCarBehindIsPitting), 0, this));
+                }
+            }
         }
         
         public override void respond(String voiceMessage)
@@ -131,6 +207,24 @@ namespace CrewChiefV3.Events
                 audioPlayer.playClipImmediately(new QueuedMessage(AudioPlayer.folderNoData, 0, null));
                 audioPlayer.closeChannel();
             }       
+        }
+
+        private float getOpponentBestLap(List<float> opponentLapTimes, int lapsToCheck)
+        {
+            if (opponentLapTimes == null && opponentLapTimes.Count == 0)
+            {
+                return -1;
+            }
+            float bestLap = opponentLapTimes[opponentLapTimes.Count - 1];
+            int minIndex = opponentLapTimes.Count - lapsToCheck;
+            for (int i = opponentLapTimes.Count - 1; i >= minIndex; i--)
+            {
+                if (opponentLapTimes[i] > 0 && opponentLapTimes[i] < bestLap)
+                {
+                    bestLap = opponentLapTimes[i];
+                }
+            }
+            return bestLap;
         }
     }
 }

@@ -265,6 +265,9 @@ namespace CrewChiefV3.GameState
 
         public int Position = 0;
 
+        // used to work out where this opponent was before he started his pit entry
+        public int PositionAtSector3 = 0;
+
         public Single DistanceRoundTrack = 0;
 
         public int CompletedLaps = 0;
@@ -379,6 +382,12 @@ namespace CrewChiefV3.GameState
         public Boolean IsRefuellingAllowed = false;
 
         public Boolean HasRequestedPitStop = false;
+
+        public Boolean LeaderIsPitting = false;
+
+        public Boolean CarInFrontIsPitting = false;
+
+        public Boolean CarBehindIsPitting = false;
     }
 
     public class PenatiesData

@@ -256,7 +256,7 @@ namespace CrewChiefV3
                 {
                     if (e.Result.Grammar == namesGrammar)
                     {
-                        CrewChief.getEvent("DriverNames").respond(e.Result.Text);
+                        CrewChief.getEvent("Opponents").respond(e.Result.Text);
                     }
                     else
                     {

@@ -80,7 +80,7 @@
     <Compile Include="AudioPlayer.cs" />
     <Compile Include="ControllerConfiguration.cs" />
     <Compile Include="Events\SessionEndMessages.cs" />
-    <Compile Include="Events\DriverNames.cs" />
+    <Compile Include="Events\Opponents.cs" />
     <Compile Include="Events\FlagsMonitor.cs" />
     <Compile Include="Events\Spotter.cs" />
     <Compile Include="GameDefinition.cs" />
