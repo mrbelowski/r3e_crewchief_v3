@@ -29,3 +29,19 @@ Sunn:son
 Tomas:thomas
 Webber:weber
 Hundt:hunt
+Bryan:brien
+Clement:clemente
+De Campos:decampos
+Foulds:faulds
+Folett:follett
+Graeme:graham
+Grey:gray
+Healey:healyfs
+Hugues:hughes
+Larsson:larsen
+Manson:mansson
+Mellor:meller
+Prince:prinz
+Stephenson:stevenson
+Villa:vila
+Yung:young
