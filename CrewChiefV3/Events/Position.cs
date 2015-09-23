@@ -170,11 +170,13 @@ namespace CrewChiefV3.Events
                         {
                             if (numberOfLapsInLastPlace > 3)
                             {
-                                audioPlayer.queueClip(new QueuedMessage(folderConsistentlyLast, 0, this, validationData), PearlsOfWisdom.PearlType.NONE, 0);
+                                audioPlayer.suspendPearlsOfWisdom();
+                                audioPlayer.queueClip(new QueuedMessage(folderConsistentlyLast, 0, this, validationData));
                             }
                             else
                             {
-                                audioPlayer.queueClip(new QueuedMessage(folderLast, 0, this, validationData), PearlsOfWisdom.PearlType.NONE, 0);
+                                audioPlayer.suspendPearlsOfWisdom();
+                                audioPlayer.queueClip(new QueuedMessage(folderLast, 0, this, validationData));
                             }
                         }
                         previousPosition = currentGameState.SessionData.Position;

@@ -79,7 +79,7 @@ namespace CrewChiefV3.Events
         public override void clearState()
         {
             clearPenaltyState();
-            lastCutTrackWarningTime = DateTime.Now;
+            lastCutTrackWarningTime = DateTime.MinValue;
             cutTrackWarningsCount = 0;
             hasHadAPenalty = false;
         }
@@ -204,12 +204,11 @@ namespace CrewChiefV3.Events
               !currentGameState.SessionData.CurrentLapIsValid && previousGameState != null && previousGameState.SessionData.CurrentLapIsValid)
             {
                 cutTrackWarningsCount = currentGameState.PenaltiesData.CutTrackWarnings;
-                DateTime now = DateTime.Now;
                 // don't warn about cut track if the AI is driving
                 if (currentGameState.ControlData.ControlType != ControlType.AI &&
-                    lastCutTrackWarningTime.Add(cutTrackWarningFrequency) < now)
+                    lastCutTrackWarningTime.Add(cutTrackWarningFrequency) < currentGameState.Now)
                 {
-                    lastCutTrackWarningTime = DateTime.Now;
+                    lastCutTrackWarningTime = currentGameState.Now;
                     audioPlayer.queueClip(new QueuedMessage(folderLapDeleted, 2, this));
                     clearPenaltyState();
                 }
@@ -218,11 +217,10 @@ namespace CrewChiefV3.Events
                 currentGameState.PenaltiesData.CutTrackWarnings > cutTrackWarningsCount)
             {
                 cutTrackWarningsCount = currentGameState.PenaltiesData.CutTrackWarnings;
-                DateTime now = DateTime.Now;
                 if (currentGameState.ControlData.ControlType != ControlType.AI &&
-                    lastCutTrackWarningTime.Add(cutTrackWarningFrequency) < now)
+                    lastCutTrackWarningTime.Add(cutTrackWarningFrequency) < currentGameState.Now)
                 {
-                    lastCutTrackWarningTime = now;
+                    lastCutTrackWarningTime = currentGameState.Now;
                     if (currentGameState.SessionData.SessionType == SessionType.Race)
                     {
                         audioPlayer.queueClip(new QueuedMessage(folderCutTrackInRace, 2, this));

@@ -334,7 +334,7 @@ namespace CrewChiefV3
                             {
                                 audioPlayer.purgeQueues();
                                 sessionEndMessages.trigger(previousGameState.SessionData.SessionRunningTime, previousGameState.SessionData.SessionType, currentGameState.SessionData.SessionPhase,
-                                    previousGameState.SessionData.Position, previousGameState.SessionData.NumCarsAtStartOfSession, previousGameState.SessionData.CompletedLaps);
+                                    previousGameState.SessionData.Position, previousGameState.SessionData.NumCarsAtStartOfSession, previousGameState.SessionData.CompletedLaps, currentGameState.Now);
                                 audioPlayer.closeChannel();
                                 sessionFinished = true;
                             }

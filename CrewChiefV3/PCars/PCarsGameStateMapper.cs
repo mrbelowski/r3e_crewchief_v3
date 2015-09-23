@@ -15,7 +15,7 @@ namespace CrewChiefV3.PCars
 {
     class PCarsGameStateMapper : GameStateMapper
     {
-        private Dictionary<int, List<float>> OpponentPositions = new Dictionary<int, List<float>>();
+        private Dictionary<int, List<float>> OpponentSpeeds = new Dictionary<int, List<float>>();
 
         // if all 4 wheels are off the racing surface, increment the number of cut track incedents
         private Boolean incrementCutTrackCountWhenLeavingRacingSurface = false;
@@ -45,7 +45,8 @@ namespace CrewChiefV3.PCars
 
         public void versionCheck(Object memoryMappedFileStruct)
         {
-            uint currentVersion = ((pCarsAPIStruct)memoryMappedFileStruct).mVersion;
+            pCarsAPIStruct shared = ((CrewChiefV3.PCars.PCarsSharedMemoryReader.PCarsStructWrapper)memoryMappedFileStruct).data;
+            uint currentVersion = shared.mVersion;
             if (currentVersion != expectedVersion)
             {
                 throw new GameDataReadException("Expected shared data version " + expectedVersion + " but got version " + currentVersion);
@@ -54,9 +55,10 @@ namespace CrewChiefV3.PCars
 
         public GameStateData mapToGameStateData(Object memoryMappedFileStruct, GameStateData previousGameState)
         {
-            GameStateData currentGameState = new GameStateData();
-            pCarsAPIStruct shared = (pCarsAPIStruct)memoryMappedFileStruct;
-            DateTime now = DateTime.Now;
+            pCarsAPIStruct shared = ((CrewChiefV3.PCars.PCarsSharedMemoryReader.PCarsStructWrapper)memoryMappedFileStruct).data;
+            long ticks = ((CrewChiefV3.PCars.PCarsSharedMemoryReader.PCarsStructWrapper)memoryMappedFileStruct).ticksWhenRead;
+            
+            GameStateData currentGameState = new GameStateData(ticks);
 
             if (shared.mNumParticipants < 1 || 
                 ((shared.mEventTimeRemaining == -1 || shared.mEventTimeRemaining == 0) && shared.mLapsInEvent == 0) ||
@@ -173,6 +175,7 @@ namespace CrewChiefV3.PCars
                 currentGameState.SessionData.TrackLength = shared.mTrackLength;
                 currentGameState.SessionData.SessionNumberOfLaps = numberOfLapsInSession;
                 currentGameState.SessionData.LeaderHasFinishedRace = false;
+                currentGameState.SessionData.SessionStartTime = currentGameState.Now;
                 if (currentGameState.SessionData.SessionHasFixedTime)
                 {
                     currentGameState.SessionData.SessionRunTime = sessionTimeRemaining;
@@ -195,13 +198,13 @@ namespace CrewChiefV3.PCars
                             if (!currentGameState.OpponentData.ContainsKey(opponentSlotId))
                             {
                                 currentGameState.OpponentData.Add(opponentSlotId, createOpponentData(participantStruct));
-                                if (OpponentPositions.ContainsKey(opponentSlotId))
+                                if (OpponentSpeeds.ContainsKey(opponentSlotId))
                                 {
-                                    OpponentPositions[opponentSlotId].Clear();
+                                    OpponentSpeeds[opponentSlotId].Clear();
                                 }
                                 else
                                 {
-                                    OpponentPositions.Add(opponentSlotId, new List<float>());
+                                    OpponentSpeeds.Add(opponentSlotId, new List<float>());
                                 }
                             }
                         }
@@ -229,6 +232,7 @@ namespace CrewChiefV3.PCars
                                     Console.WriteLine("Setting session run time to 0");
                                 }
                             }
+                            currentGameState.SessionData.SessionStartTime = currentGameState.Now;
                             currentGameState.SessionData.SessionNumberOfLaps = numberOfLapsInSession;
                         }          
                         currentGameState.SessionData.TrackLength = shared.mTrackLength;
@@ -238,10 +242,10 @@ namespace CrewChiefV3.PCars
                         if (previousGameState != null)
                         {
                             currentGameState.OpponentData = previousGameState.OpponentData;
-                            currentGameState.SessionData.SessionStartTime = previousGameState.SessionData.SessionStartTime;
                             currentGameState.PitData.IsRefuellingAllowed = previousGameState.PitData.IsRefuellingAllowed;
                             if (currentGameState.SessionData.SessionType != SessionType.Race)
                             {
+                                currentGameState.SessionData.SessionStartTime = previousGameState.SessionData.SessionStartTime;
                                 currentGameState.SessionData.SessionRunTime = previousGameState.SessionData.SessionRunTime;
                                 currentGameState.SessionData.SessionTimeRemaining = previousGameState.SessionData.SessionTimeRemaining;
                                 currentGameState.SessionData.SessionNumberOfLaps = previousGameState.SessionData.SessionNumberOfLaps;
@@ -292,7 +296,7 @@ namespace CrewChiefV3.PCars
             }
             else
             {
-                currentGameState.SessionData.SessionRunningTime = (float)(now - currentGameState.SessionData.SessionStartTime).TotalSeconds;
+                currentGameState.SessionData.SessionRunningTime = (float)(currentGameState.Now - currentGameState.SessionData.SessionStartTime).TotalSeconds;
             }
             currentGameState.SessionData.Flag = mapToFlagEnum(shared.mHighestFlagColour);
             currentGameState.SessionData.NumCars = shared.mNumParticipants;
@@ -354,6 +358,10 @@ namespace CrewChiefV3.PCars
                                 int currentOpponentLapsCompleted = (int) participantStruct.mLapsCompleted;
                                 int currentOpponentSector = (int) participantStruct.mCurrentSector;
                                 float currentOpponentLapDistance = participantStruct.mCurrentLapDistance;
+                                float previousOpponentLapDistance = previousOpponentData.DistanceRoundTrack;
+                                double secondsBetweenPoints = ((double)currentGameState.Ticks - (double)previousGameState.Ticks) / (double)TimeSpan.TicksPerSecond;
+                                float opponentSpeed = (float)((currentOpponentLapDistance - previousOpponentLapDistance) / secondsBetweenPoints);
+                                
                                 if (currentOpponentRacePosition == 1 && (currentGameState.SessionData.SessionNumberOfLaps > 0 && 
                                         currentGameState.SessionData.SessionNumberOfLaps == currentOpponentLapsCompleted) ||
                                         (currentGameState.SessionData.SessionRunTime > 0 && previousOpponentData.CompletedLaps < currentOpponentLapsCompleted))
@@ -364,32 +372,34 @@ namespace CrewChiefV3.PCars
                                 {
                                     currentGameState.SessionData.HasLeadChanged = true;
                                 }
-                                Boolean opponentOnPitLimiter = false;
+                                Boolean hasStopped = false;
+                                if (currentOpponentLapsCompleted > 0 && 
+                                    (currentOpponentLapDistance > currentGameState.SessionData.TrackLength - 300 ||
+                                    currentOpponentLapDistance < 250) &&
+                                    !previousOpponentData.IsPitting && hasOpponentStopped(opponentSlotId))
+                                {
+                                    hasStopped = true;
+                                }
+                                
                                 int opponentPositionAtSector3 = previousOpponentData.Position;
                                 if (currentOpponentSector == 3)
                                 {
                                     if (previousOpponentData.CurrentSectorNumber == 2)
                                     {
                                         opponentPositionAtSector3 = currentOpponentRacePosition;
-                                        if (OpponentPositions.ContainsKey(opponentSlotId))
-                                        {
-                                            OpponentPositions[opponentSlotId].Clear();
-                                        }
-                                        else
-                                        {
-                                            OpponentPositions.Add(opponentSlotId, new List<float>());
-                                        }
+                                    }
+                                }
+                                if (currentOpponentLapDistance < currentGameState.SessionData.TrackLength - 250) {
+                                    if (OpponentSpeeds.ContainsKey(opponentSlotId))
+                                    {
+                                        OpponentSpeeds[opponentSlotId].Clear();
                                     }
                                     else
                                     {
-                                        if (OpponentPositions.ContainsKey(opponentSlotId))
-                                        {
-                                            OpponentPositions[opponentSlotId].Add(currentOpponentLapDistance);
-                                        }
-                                        opponentOnPitLimiter = IsOpponentOnPitLimiter(opponentSlotId);
+                                        OpponentSpeeds.Add(opponentSlotId, new List<float>());
                                     }
                                 }
-                                if (opponentOnPitLimiter)
+                                if (hasStopped)
                                 {
                                     if (opponentPositionAtSector3 == 1 && !previousGameState.PitData.LeaderIsPitting)
                                     {
@@ -411,8 +421,8 @@ namespace CrewChiefV3.PCars
                                 }
 
                                 upateOpponentData(currentGameState.OpponentData[opponentSlotId], currentOpponentRacePosition, currentOpponentLapsCompleted,
-                                        currentOpponentSector, opponentOnPitLimiter, currentGameState.SessionData.SessionRunningTime, currentOpponentLapDistance,
-                                        shared.mTrackLength, now, opponentPositionAtSector3);
+                                        currentOpponentSector, hasStopped, currentGameState.SessionData.SessionRunningTime, currentOpponentLapDistance,
+                                        shared.mTrackLength, currentGameState.Now, previousGameState.Now, opponentPositionAtSector3, opponentSpeed);
                             }
                         }                            
                         else
@@ -425,13 +435,13 @@ namespace CrewChiefV3.PCars
                         if (participantStruct.mIsActive)
                         {
                             currentGameState.OpponentData.Add(opponentSlotId, createOpponentData(participantStruct));
-                            if (OpponentPositions.ContainsKey(opponentSlotId))
+                            if (OpponentSpeeds.ContainsKey(opponentSlotId))
                             {
-                                OpponentPositions[opponentSlotId].Clear();
+                                OpponentSpeeds[opponentSlotId].Clear();
                             }
                             else
                             {
-                                OpponentPositions.Add(opponentSlotId, new List<float>());
+                                OpponentSpeeds.Add(opponentSlotId, new List<float>());
                             }
                         }
                     }                    
@@ -594,22 +604,18 @@ namespace CrewChiefV3.PCars
         }
 
         private void upateOpponentData(OpponentData opponentData, int position, int completedLaps,
-            int sector, Boolean isPitting, float sessionRunningTime, float distanceRoundTrack, float trackLength, DateTime now, int positionAtSector3)
+            int sector, Boolean isPitting, float sessionRunningTime, float distanceRoundTrack, 
+            float trackLength, DateTime now, DateTime previousNow, int positionAtSector3, float speed)
         {
             opponentData.IsPitting = isPitting;
-            // yuk... if we're loading the game data from a file  (testing mode) don't check for insane speeds
-            if (!CrewChief.loadDataFromFile && distanceRoundTrack > opponentData.DistanceRoundTrack)
+            // check for insane speeds
+            if (distanceRoundTrack > opponentData.DistanceRoundTrack)
             {
-                opponentData.approximateSpeed = (distanceRoundTrack - opponentData.DistanceRoundTrack) / ((float)(now - opponentData.lastUpdateTime).TotalMilliseconds / 1000);
-                if (opponentData.approximateSpeed > 150)
+                if (speed > 150)
                 {
                     // going > 150m/s (about 320mph) suggests this guy's quit to the pits
                     opponentData.LapIsValid = false;
                 }
-            }
-            else if (distanceRoundTrack == opponentData.DistanceRoundTrack)
-            {
-                opponentData.approximateSpeed = 0;
             }
             else if (distanceRoundTrack < opponentData.DistanceRoundTrack)
             {
@@ -621,10 +627,9 @@ namespace CrewChiefV3.PCars
                     opponentData.LapIsValid = false;
                 }
             }
-
+            opponentData.speed = speed;
             opponentData.Position = position;
             opponentData.DistanceRoundTrack = distanceRoundTrack;
-            opponentData.lastUpdateTime = now;
             if (opponentData.CurrentSectorNumber != sector)
             {
                 opponentData.CurrentSectorNumber = sector;
@@ -637,9 +642,9 @@ namespace CrewChiefV3.PCars
                         if (opponentData.SessionTimeAtEndOfLastSector3 > 0 && opponentData.LapIsValid)
                         {
                             float errorCorrection = 0;
-                            if (opponentData.DistanceRoundTrack > 0 && opponentData.DistanceRoundTrack < 200 && opponentData.approximateSpeed > 0)
+                            if (opponentData.DistanceRoundTrack > 0 && opponentData.DistanceRoundTrack < 200 && opponentData.speed > 0)
                             {
-                                errorCorrection = opponentData.DistanceRoundTrack / opponentData.approximateSpeed;
+                                errorCorrection = opponentData.DistanceRoundTrack / opponentData.speed;
                             }
                             opponentData.approximateLastLapTime = sessionRunningTime - opponentData.SessionTimeAtEndOfLastSector3 - errorCorrection;
                         }
@@ -846,44 +851,20 @@ namespace CrewChiefV3.PCars
             return FlagEnum.UNKNOWN;
         }
 
-        private Boolean IsOpponentOnPitLimiter(int opponentId)
+        private Boolean hasOpponentStopped(int opponentId)
         {
-            float limiterSpeedVariance = 3;
-            float limiterMinSpeed = 10;
-            float limiterMaxSpeed = 30;
-            // if we're in debug mode playing back a recording, assume 100ms interval
-            double millisPerTick = CrewChief._timeInterval.TotalMilliseconds == 0 ? 100 : CrewChief._timeInterval.TotalMilliseconds;
-            int ticksPerSecond = (int)Math.Floor(1000 / millisPerTick);
-            int ticksToCheck = ticksPerSecond * 5;
-            Boolean onLimiter = false;
-            float initialSpeed;
-            if (OpponentPositions.ContainsKey(opponentId) && OpponentPositions[opponentId].Count > ticksToCheck)
+            int minCount = 20;
+            int count = OpponentSpeeds[opponentId].Count;
+            if (OpponentSpeeds.ContainsKey(opponentId) && count > minCount)
             {
-                List<float> positions = OpponentPositions[opponentId];
-                int count = positions.Count;
-                initialSpeed = (positions[count - 1] - positions[count - 2]) * ticksPerSecond;
-                if (initialSpeed > limiterMinSpeed && initialSpeed < limiterMaxSpeed)
+                float[] speeds = OpponentSpeeds[opponentId].GetRange(count - minCount, minCount).ToArray<float>();
+                float maxSpeed = speeds.Max();
+                if (maxSpeed < 1)
                 {
-                    onLimiter = true;
-                    for (int i = count - 2; i > count - ticksToCheck; i--)
-                    {
-                        if (positions[i] > positions[i - 1])
-                        {
-                            float speed = (positions[i] - positions[i - 1]) * ticksPerSecond;
-                            if (Math.Abs(speed - initialSpeed) > limiterSpeedVariance)
-                            {
-                                onLimiter = false;
-                                break;
-                            }
-                        }
-                    }
+                    return true;
                 }
             }
-            if (onLimiter)
-            {
-                Console.WriteLine("Opponent " + opponentId + " is on limiter");
-            }
-            return onLimiter;
+            return false;
         }
     }
 }

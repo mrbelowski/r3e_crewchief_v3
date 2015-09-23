@@ -29,7 +29,8 @@ namespace CrewChiefV3.Events
             this.audioPlayer = audioPlayer;
         }
 
-        public void trigger(float sessionRunningTime, SessionType sessionType, SessionPhase lastSessionPhase, int finishPosition, int numCars, int completedLaps)
+        public void trigger(float sessionRunningTime, SessionType sessionType, SessionPhase lastSessionPhase, 
+            int finishPosition, int numCars, int completedLaps, DateTime now)
         {
             if (sessionType == SessionType.Race)
             {
@@ -38,7 +39,7 @@ namespace CrewChiefV3.Events
                     if (lastSessionPhase == SessionPhase.Finished)
                     {
                         // only play session end message for races if we've actually finished, not restarted
-                        playFinishMessage(sessionType, finishPosition, numCars);
+                        playFinishMessage(sessionType, finishPosition, numCars, now);
                     }
                     else
                     {
@@ -56,7 +57,7 @@ namespace CrewChiefV3.Events
                 {
                     if (lastSessionPhase == SessionPhase.Green || lastSessionPhase == SessionPhase.Finished || lastSessionPhase == SessionPhase.Checkered)
                     {
-                        playFinishMessage(sessionType, finishPosition, numCars);
+                        playFinishMessage(sessionType, finishPosition, numCars, now);
                     }
                     else
                     {
@@ -70,11 +71,12 @@ namespace CrewChiefV3.Events
             }
         }
 
-        public void playFinishMessage(SessionType sessionType, int position, int numCars)
+        public void playFinishMessage(SessionType sessionType, int position, int numCars, DateTime now)
         {
-            if (lastFinishMessageTime.Add(TimeSpan.FromSeconds(2)) < DateTime.Now)
+            if (lastFinishMessageTime.Add(TimeSpan.FromSeconds(2)) < now)
             {
-                lastFinishMessageTime = DateTime.Now;
+                audioPlayer.suspendPearlsOfWisdom();
+                lastFinishMessageTime = now;
                 if (position < 1)
                 {
                     Console.WriteLine("Session finished but position is < 1");
@@ -108,7 +110,7 @@ namespace CrewChiefV3.Events
                     }
                     else
                     {
-                        audioPlayer.queueClip(new QueuedMessage(folderEndOfSession, 0, null), PearlsOfWisdom.PearlType.NONE, 0);
+                        audioPlayer.queueClip(new QueuedMessage(folderEndOfSession, 0, null));
                         if (position > 24)
                         {
                             audioPlayer.queueClip(new QueuedMessage("finish_position", AbstractEvent.MessageContents(Position.folderStub, QueuedMessage.folderNameNumbersStub + position), 0, null));

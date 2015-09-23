@@ -8,7 +8,7 @@ using System.Xml.Serialization;
 
 namespace CrewChiefV3
 {
-    abstract class GameDataReader
+    public abstract class GameDataReader
     {
         protected String filenameToDump;
         

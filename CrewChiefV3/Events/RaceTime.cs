@@ -141,7 +141,8 @@ namespace CrewChiefV3.Events
                     played15mins = true;
                     played20mins = true;
                     playedHalfWayHome = true;
-                    audioPlayer.queueClip(new QueuedMessage(folder2mins, 0, this), PearlsOfWisdom.PearlType.NONE, 0);
+                    audioPlayer.suspendPearlsOfWisdom();
+                    audioPlayer.queueClip(new QueuedMessage(folder2mins, 0, this));
                 } if (currentGameState.SessionData.SessionRunningTime > 60 && !played5mins && timeLeft / 60 < 5 && timeLeft / 60 > 4.9)
                 {
                     played5mins = true;

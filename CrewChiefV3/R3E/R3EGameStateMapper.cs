@@ -9,7 +9,7 @@ using CrewChiefV3.GameState;
  */
 namespace CrewChiefV3.RaceRoom
 {
-    class R3EGameStateMapper : GameStateMapper
+    public class R3EGameStateMapper : GameStateMapper
     {
         private TimeSpan minimumSessionParticipationTime = TimeSpan.FromSeconds(6);
 
@@ -72,8 +72,9 @@ namespace CrewChiefV3.RaceRoom
            
         public GameStateData mapToGameStateData(Object memoryMappedFileStruct, GameStateData previousGameState)
         {
-            GameStateData currentGameState = new GameStateData();
-            RaceRoomData.RaceRoomShared shared = (RaceRoomData.RaceRoomShared)memoryMappedFileStruct;
+            CrewChiefV3.RaceRoom.R3ESharedMemoryReader.R3EStructWrapper wrapper = (CrewChiefV3.RaceRoom.R3ESharedMemoryReader.R3EStructWrapper)memoryMappedFileStruct;
+            GameStateData currentGameState = new GameStateData(wrapper.ticksWhenRead);
+            RaceRoomData.RaceRoomShared shared = wrapper.data;
 
             if (shared.Player.GameSimulationTime <= 0 ||
                 shared.ControlType == (int)RaceRoomConstant.Control.Remote || shared.ControlType ==(int)RaceRoomConstant.Control.Replay)
@@ -112,6 +113,7 @@ namespace CrewChiefV3.RaceRoom
 
                 currentGameState.SessionData.EventIndex = shared.EventIndex;
                 currentGameState.SessionData.SessionIteration = shared.SessionIteration;
+                currentGameState.SessionData.SessionStartTime = currentGameState.Now;
             }
             else
             {
@@ -138,7 +140,8 @@ namespace CrewChiefV3.RaceRoom
                         currentGameState.SessionData.PitWindowStart = shared.PitWindowStart;
                         currentGameState.SessionData.PitWindowEnd = shared.PitWindowEnd;
                         currentGameState.SessionData.HasMandatoryPitStop = currentGameState.SessionData.PitWindowStart > 0 && currentGameState.SessionData.PitWindowEnd > 0; Console.WriteLine("Just gone green, session details...");
-                        
+                        currentGameState.SessionData.SessionStartTime = currentGameState.Now;
+
                         // reset the engine temp monitor stuff
                         gotBaselineEngineData = false;
                         baselineEngineDataSamples = 0;

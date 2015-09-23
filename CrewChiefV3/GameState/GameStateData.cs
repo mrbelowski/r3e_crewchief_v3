@@ -128,7 +128,7 @@ namespace CrewChiefV3.GameState
 
         public SessionType SessionType = SessionType.Unavailable;
 
-        public DateTime SessionStartTime = DateTime.Now;
+        public DateTime SessionStartTime;
 
         // in minutes, 0 if this session is a fixed number of laps rather than a fixed time.
         public float SessionRunTime = 0;
@@ -290,9 +290,7 @@ namespace CrewChiefV3.GameState
 
         public float approximateLastLapTime = 0;
 
-        public float approximateSpeed = 0;
-
-        public DateTime lastUpdateTime = DateTime.Now;
+        public float speed = 0;
         
         // TODO: the logic in this method is bascially bollocks
         public OpponentDelta getTimeDifferenceToPlayer(SessionData playerSessionData)
@@ -456,8 +454,12 @@ namespace CrewChiefV3.GameState
         public Single RearRightPressure = 0;
     }
 
-    class GameStateData
+    public class GameStateData
     {
+        public long Ticks;
+
+        public DateTime Now;
+
         public EngineData EngineData = new EngineData();
 
         public TransmissionData TransmissionData = new TransmissionData();
@@ -479,6 +481,12 @@ namespace CrewChiefV3.GameState
         public PositionAndMotionData PositionAndMotionData = new PositionAndMotionData();
 
         public Dictionary<int, OpponentData> OpponentData = new Dictionary<int, OpponentData>();
+
+        public GameStateData(long ticks)
+        {
+            this.Ticks = ticks;
+            this.Now = new DateTime(ticks);
+        }
 
         // some convenience methods
         public Boolean isLast()
@@ -578,7 +586,7 @@ namespace CrewChiefV3.GameState
             {
                 Console.WriteLine("last laptime " + opponent.Value.approximateLastLapTime + " completed laps " + opponent.Value.CompletedLaps + 
                     " ID " + opponent.Key + " name " + opponent.Value.DriverRawName + " active " + opponent.Value.IsActive + 
-                    " approx speed " + opponent.Value.approximateSpeed + " position " + opponent.Value.Position + " lap distance " + opponent.Value.DistanceRoundTrack);
+                    " approx speed " + opponent.Value.speed + " position " + opponent.Value.Position + " lap distance " + opponent.Value.DistanceRoundTrack);
             }
         }
     }

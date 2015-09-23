@@ -16,10 +16,10 @@ namespace CrewChiefV3.Events
         private String folderWhiteFlag = "flags/white_flag";
         private String folderBlackFlag = "flags/black_flag";
 
-        private DateTime lastYellowFlagTime = DateTime.Now;
-        private DateTime lastBlackFlagTime = DateTime.Now;
-        private DateTime lastWhiteFlagTime = DateTime.Now;
-        private DateTime lastBlueFlagTime = DateTime.Now;
+        private DateTime lastYellowFlagTime = DateTime.MinValue;
+        private DateTime lastBlackFlagTime = DateTime.MinValue;
+        private DateTime lastWhiteFlagTime = DateTime.MinValue;
+        private DateTime lastBlueFlagTime = DateTime.MinValue;
 
         private TimeSpan timeBetweenYellowFlagMessages = TimeSpan.FromSeconds(20);
         private TimeSpan timeBetweenBlueFlagMessages = TimeSpan.FromSeconds(10);
@@ -41,44 +41,43 @@ namespace CrewChiefV3.Events
 
         override protected void triggerInternal(GameStateData previousGameState, GameStateData currentGameState)
         {
-            DateTime now = DateTime.Now;
             if (currentGameState.SessionData.Flag == FlagEnum.BLACK)
             {
-                if (now > lastBlackFlagTime.Add(timeBetweenBlackFlagMessages))
+                if (currentGameState.Now > lastBlackFlagTime.Add(timeBetweenBlackFlagMessages))
                 {
-                    lastBlackFlagTime = now;
+                    lastBlackFlagTime = currentGameState.Now;
                     audioPlayer.queueClip(new QueuedMessage(folderBlackFlag, 0, this));
                 }
             }
             else if (currentGameState.SessionData.Flag == FlagEnum.BLUE)
             {
-                if (now > lastBlueFlagTime.Add(timeBetweenBlueFlagMessages))
+                if (currentGameState.Now > lastBlueFlagTime.Add(timeBetweenBlueFlagMessages))
                 {
-                    lastBlueFlagTime = now;
+                    lastBlueFlagTime = currentGameState.Now;
                     audioPlayer.queueClip(new QueuedMessage(folderBlueFlag, 0, this));
                 }
             }
             else if (currentGameState.SessionData.Flag == FlagEnum.YELLOW)
             {
-                if (now > lastYellowFlagTime.Add(timeBetweenYellowFlagMessages))
+                if (currentGameState.Now > lastYellowFlagTime.Add(timeBetweenYellowFlagMessages))
                 {
-                    lastYellowFlagTime = now;
+                    lastYellowFlagTime = currentGameState.Now;
                     audioPlayer.queueClip(new QueuedMessage(folderYellowFlag, 0, this));
                 }
             }
             else if (currentGameState.SessionData.Flag == FlagEnum.WHITE)
             {
-                if (now > lastWhiteFlagTime.Add(timeBetweenWhiteFlagMessages))
+                if (currentGameState.Now > lastWhiteFlagTime.Add(timeBetweenWhiteFlagMessages))
                 {
-                    lastWhiteFlagTime = now;
+                    lastWhiteFlagTime = currentGameState.Now;
                     audioPlayer.queueClip(new QueuedMessage(folderWhiteFlag, 0, this));
                 }
             }
             else if (currentGameState.SessionData.Flag == FlagEnum.DOUBLE_YELLOW)
             {
-                if (now > lastYellowFlagTime.Add(timeBetweenYellowFlagMessages))
+                if (currentGameState.Now > lastYellowFlagTime.Add(timeBetweenYellowFlagMessages))
                 {
-                    lastYellowFlagTime = now;
+                    lastYellowFlagTime = currentGameState.Now;
                     audioPlayer.queueClip(new QueuedMessage(folderDoubleYellowFlag, 0, this));
                 }
             }

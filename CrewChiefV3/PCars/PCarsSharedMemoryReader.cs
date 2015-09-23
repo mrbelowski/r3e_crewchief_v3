@@ -9,22 +9,28 @@ using System.Threading.Tasks;
 
 namespace CrewChiefV3.PCars
 {
-    class PCarsSharedMemoryReader : GameDataReader
+    public class PCarsSharedMemoryReader : GameDataReader
     {
         private MemoryMappedFile memoryMappedFile;
         private GCHandle handle;
         private int sharedmemorysize;
         private byte[] sharedMemoryReadBuffer;
         private Boolean initialised = false;
-        private List<pCarsAPIStruct> dataToDump;
-        private pCarsAPIStruct[] dataReadFromFile = null;
+        private List<PCarsStructWrapper> dataToDump;
+        private PCarsStructWrapper[] dataReadFromFile = null;
         private int dataReadFromFileIndex = 0;
+
+        public class PCarsStructWrapper
+        {
+            public long ticksWhenRead;
+            public pCarsAPIStruct data;
+        }
 
         public override void DumpRawGameData()
         {
             if (dumpToFile && dataToDump != null && dataToDump.Count > 0 && filenameToDump != null)
             {
-                SerializeObject(dataToDump.ToArray<pCarsAPIStruct>(), filenameToDump);
+                SerializeObject(dataToDump.ToArray<PCarsStructWrapper>(), filenameToDump);
             }
         }
 
@@ -33,13 +39,13 @@ namespace CrewChiefV3.PCars
             if (dataReadFromFile == null)
             {
                 dataReadFromFileIndex = 0;
-                dataReadFromFile = DeSerializeObject<pCarsAPIStruct[]>(dataFilesPath + filename);
+                dataReadFromFile = DeSerializeObject<PCarsStructWrapper[]>(dataFilesPath + filename);
             }
             if (dataReadFromFile.Length > dataReadFromFileIndex)
             {
-                pCarsAPIStruct data = dataReadFromFile[dataReadFromFileIndex];
+                PCarsStructWrapper structWrapperData = dataReadFromFile[dataReadFromFileIndex];
                 dataReadFromFileIndex++;
-                return data;
+                return structWrapperData;
             }
             else
             {
@@ -51,7 +57,7 @@ namespace CrewChiefV3.PCars
         {
             if (dumpToFile)
             {
-                dataToDump = new List<pCarsAPIStruct>();
+                dataToDump = new List<PCarsStructWrapper>();
             }
             lock (this)
             {
@@ -97,12 +103,15 @@ namespace CrewChiefV3.PCars
                         //Console.WriteLine(_pcarsapistruct.mSpeed);
                         handle.Free();
                     }
+                    PCarsStructWrapper structWrapper = new PCarsStructWrapper();
+                    structWrapper.ticksWhenRead = DateTime.Now.Ticks;
+                    structWrapper.data = _pcarsapistruct;
                     if (dumpToFile && dataToDump != null && _pcarsapistruct.mTrackLocation != null &&
                         _pcarsapistruct.mTrackLocation.Length > 0)
                     {
-                        dataToDump.Add(_pcarsapistruct);
+                        dataToDump.Add(structWrapper);
                     }
-                    return _pcarsapistruct;
+                    return structWrapper;
                 }
                 catch (Exception ex)
                 {

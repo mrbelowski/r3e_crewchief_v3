@@ -28,6 +28,8 @@ namespace CrewChiefV3
         public static String folderYes = "acknowledge/yes";
         public static String folderNo = "acknowledge/no";
 
+        private Boolean allowPearlsOnNextPlay = true;
+
         private Dictionary<String, int> playedMessagesCount = new Dictionary<String, int>();
 
         public static List<String> allMessageNames = new List<String>();
@@ -316,7 +318,7 @@ namespace CrewChiefV3
                 Thread thread = new Thread(work);
                 thread.Start();
             }
-            new SmokeTest(this).trigger(new GameStateData(), new GameStateData());
+            new SmokeTest(this).trigger(new GameStateData(DateTime.Now.Ticks), new GameStateData(DateTime.Now.Ticks));
         }
 
         public void stopMonitor()
@@ -443,6 +445,7 @@ namespace CrewChiefV3
                     try
                     {
                         playQueueContents(queuedClips, false);
+                        allowPearlsOnNextPlay = true;
                     }
                     catch (Exception e)
                     {
@@ -496,6 +499,7 @@ namespace CrewChiefV3
                 try
                 {
                     playQueueContents(queuedClips, false);
+                    allowPearlsOnNextPlay = true;
                 }
                 catch (Exception e)
                 {
@@ -654,6 +658,12 @@ namespace CrewChiefV3
                             {
                                 Console.WriteLine("Rejecting pearl of wisdom " + eventName +
                                     " because one has been played in the last " + minTimeBetweenPearlsOfWisdom + " seconds");
+                                continue;
+                            }
+                            else if (!allowPearlsOnNextPlay)
+                            {
+                                Console.WriteLine("Rejecting pearl of wisdom " + eventName +
+                                    " because they've been temporarily disabled");
                                 continue;
                             }
                             else
@@ -1015,6 +1025,11 @@ namespace CrewChiefV3
         private Boolean hasPearlJustBeenPlayed()
         {
             return timeLastPearlOfWisdomPlayed.Add(minTimeBetweenPearlsOfWisdom) > DateTime.UtcNow;
+        }
+
+        public void suspendPearlsOfWisdom()
+        {
+            allowPearlsOnNextPlay = false;
         }
     }
 }
