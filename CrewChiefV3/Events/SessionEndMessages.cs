@@ -109,7 +109,14 @@ namespace CrewChiefV3.Events
                     else
                     {
                         audioPlayer.queueClip(new QueuedMessage(folderEndOfSession, 0, null), PearlsOfWisdom.PearlType.NONE, 0);
-                        audioPlayer.queueClip(new QueuedMessage(Position.folderStub + position, 0, null));
+                        if (position > 24)
+                        {
+                            audioPlayer.queueClip(new QueuedMessage("finish_position", AbstractEvent.MessageContents(Position.folderStub, QueuedMessage.folderNameNumbersStub + position), 0, null));
+                        }
+                        else
+                        {
+                            audioPlayer.queueClip(new QueuedMessage(Position.folderStub + position, 0, null));
+                        }
                     }
                 }
             }

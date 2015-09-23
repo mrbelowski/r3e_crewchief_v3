@@ -97,7 +97,8 @@ namespace CrewChiefV3.PCars
                         //Console.WriteLine(_pcarsapistruct.mSpeed);
                         handle.Free();
                     }
-                    if (dumpToFile && dataToDump != null)
+                    if (dumpToFile && dataToDump != null && _pcarsapistruct.mTrackLocation != null &&
+                        _pcarsapistruct.mTrackLocation.Length > 0)
                     {
                         dataToDump.Add(_pcarsapistruct);
                     }

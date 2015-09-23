@@ -54,11 +54,9 @@ namespace CrewChiefV3.PCars
             pCarsAPIStruct shared = (pCarsAPIStruct)memoryMappedFileStruct;
             DateTime now = DateTime.Now;
 
-
-            // if the shared.mViewdParticipantIndex isn't zero, we're not looking at the player's car (I think...) and 
-            // all the data will be bollocks. TODO: confirm this assumption
-            if (shared.mNumParticipants < 1 || shared.mViewedParticipantIndex != 0 || 
-                ((shared.mEventTimeRemaining == -1 || shared.mEventTimeRemaining == 0) && shared.mLapsInEvent == 0))
+            if (shared.mNumParticipants < 1 || 
+                ((shared.mEventTimeRemaining == -1 || shared.mEventTimeRemaining == 0) && shared.mLapsInEvent == 0) ||
+                shared.mTrackLocation == null || shared.mTrackLocation.Length == 0)
             {
                 // Unusable data in the block
                 return null;
@@ -168,6 +166,11 @@ namespace CrewChiefV3.PCars
                 if (currentGameState.SessionData.SessionHasFixedTime)
                 {
                     currentGameState.SessionData.SessionRunTime = sessionTimeRemaining;
+                    currentGameState.SessionData.SessionTimeRemaining = sessionTimeRemaining;
+                    if (currentGameState.SessionData.SessionRunTime == 0)
+                    {
+                        Console.WriteLine("Setting session run time to 0");
+                    }
                     Console.WriteLine("Time in this new session = " + sessionTimeRemaining);
                 } 
                 currentGameState.SessionData.DriverRawName = shared.mParticipantData[shared.mViewedParticipantIndex].mName;
@@ -204,22 +207,35 @@ namespace CrewChiefV3.PCars
                     if (currentGameState.SessionData.SessionPhase == SessionPhase.Green)
                     {
                         justGoneGreen = true;
-                        // just gone green, so get the session data                        
-                        if (currentGameState.SessionData.SessionHasFixedTime)
+                        // just gone green, so get the session data   
+                        if (currentGameState.SessionData.SessionType == SessionType.Race)
                         {
-                            currentGameState.SessionData.SessionRunTime = sessionTimeRemaining;
-                        }
-                        currentGameState.SessionData.SessionNumberOfLaps = numberOfLapsInSession;
-                        currentGameState.SessionData.SessionStartPosition = (int)shared.mParticipantData[shared.mViewedParticipantIndex].mRacePosition;
-                        currentGameState.SessionData.NumCarsAtStartOfSession = shared.mNumParticipants;
+                            if (currentGameState.SessionData.SessionHasFixedTime)
+                            {
+                                currentGameState.SessionData.SessionRunTime = sessionTimeRemaining;
+                                currentGameState.SessionData.SessionTimeRemaining = sessionTimeRemaining;
+                                if (currentGameState.SessionData.SessionRunTime == 0)
+                                {
+                                    Console.WriteLine("Setting session run time to 0");
+                                }
+                            }
+                            currentGameState.SessionData.SessionNumberOfLaps = numberOfLapsInSession;
+                        }          
                         currentGameState.SessionData.TrackLength = shared.mTrackLength;
                         currentGameState.SessionData.LeaderHasFinishedRace = false;
+                        currentGameState.SessionData.NumCarsAtStartOfSession = shared.mNumParticipants;
 
                         if (previousGameState != null)
                         {
                             currentGameState.OpponentData = previousGameState.OpponentData;
                             currentGameState.SessionData.SessionStartTime = previousGameState.SessionData.SessionStartTime;
                             currentGameState.PitData.IsRefuellingAllowed = previousGameState.PitData.IsRefuellingAllowed;
+                            if (currentGameState.SessionData.SessionType != SessionType.Race)
+                            {
+                                currentGameState.SessionData.SessionRunTime = previousGameState.SessionData.SessionRunTime;
+                                currentGameState.SessionData.SessionTimeRemaining = previousGameState.SessionData.SessionTimeRemaining;
+                                currentGameState.SessionData.SessionNumberOfLaps = previousGameState.SessionData.SessionNumberOfLaps;
+                            }
                         }
 
                         Console.WriteLine("Just gone green, session details...");
@@ -262,6 +278,7 @@ namespace CrewChiefV3.PCars
             if (currentGameState.SessionData.SessionHasFixedTime)
             {
                 currentGameState.SessionData.SessionRunningTime = currentGameState.SessionData.SessionRunTime - shared.mEventTimeRemaining;
+                currentGameState.SessionData.SessionTimeRemaining = shared.mEventTimeRemaining;
             }
             else
             {
@@ -365,10 +382,12 @@ namespace CrewChiefV3.PCars
                                 upateOpponentData(currentGameState.OpponentData[opponentSlotId], currentOpponentRacePosition, currentOpponentLapsCompleted,
                                         currentOpponentSector, opponentOnPitLimiter, currentGameState.SessionData.SessionRunningTime, currentOpponentLapDistance,
                                         shared.mTrackLength, now, opponentPositionAtSector3);
-                                currentGameState.PitData.LeaderIsPitting = opponentOnPitLimiter && opponentPositionAtSector3 == 1;
+                                currentGameState.PitData.LeaderIsPitting = !previousGameState.PitData.LeaderIsPitting && opponentOnPitLimiter && opponentPositionAtSector3 == 1;
                                 // only want to know if the leader is pitting if we're 3rd or worse
-                                currentGameState.PitData.CarInFrontIsPitting = opponentOnPitLimiter && currentGameState.SessionData.Position > 2 && opponentPositionAtSector3 == currentGameState.SessionData.Position - 1;
-                                currentGameState.PitData.CarBehindIsPitting = opponentOnPitLimiter && !currentGameState.isLast() && opponentPositionAtSector3 == currentGameState.SessionData.Position + 1;
+                                currentGameState.PitData.CarInFrontIsPitting = !previousGameState.PitData.CarInFrontIsPitting && 
+                                    opponentOnPitLimiter && currentGameState.SessionData.Position > 2 && opponentPositionAtSector3 == currentGameState.SessionData.Position - 1;
+                                currentGameState.PitData.CarBehindIsPitting = !previousGameState.PitData.CarBehindIsPitting && 
+                                    opponentOnPitLimiter && !currentGameState.isLast() && opponentPositionAtSector3 == currentGameState.SessionData.Position + 1;
                             }
                         }                            
                         else
