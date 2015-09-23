@@ -6,6 +6,10 @@ using CrewChiefV3.GameState;
 
 /**
  * Maps memory mapped file to a local game-agnostic representation.
+ * 
+ * Weather...
+ * 
+ * cloud brightness varies a *lot*. Perhaps it's for that section of track?
  */
 namespace CrewChiefV3.PCars
 {
@@ -96,6 +100,7 @@ namespace CrewChiefV3.PCars
             Boolean lastSessionHasFixedTime = false;
             int lastSessionNumberOfLaps = 0;
             float lastSessionRunTime = 0;
+            float lastSessionTimeRemaining = 0;
             if (previousGameState != null)
             {
                 lastSessionPhase = previousGameState.SessionData.SessionPhase;
@@ -107,6 +112,7 @@ namespace CrewChiefV3.PCars
                 lastSessionLapsCompleted = previousGameState.SessionData.CompletedLaps;
                 lastSessionNumberOfLaps = previousGameState.SessionData.SessionNumberOfLaps;
                 lastSessionRunTime = previousGameState.SessionData.SessionRunTime;
+                lastSessionTimeRemaining = previousGameState.SessionData.SessionTimeRemaining;
             }
 
             // current session data
@@ -114,7 +120,7 @@ namespace CrewChiefV3.PCars
             Boolean leaderHasFinished = previousGameState != null && previousGameState.SessionData.LeaderHasFinishedRace;
             currentGameState.SessionData.LeaderHasFinishedRace = leaderHasFinished;
             currentGameState.SessionData.SessionPhase = mapToSessionPhase(currentGameState.SessionData.SessionType, 
-                shared.mSessionState, shared.mRaceState, shared.mNumParticipants, leaderHasFinished, lastSessionPhase);
+                shared.mSessionState, shared.mRaceState, shared.mNumParticipants, leaderHasFinished, lastSessionPhase, lastSessionTimeRemaining);
             float sessionTimeRemaining = -1;
             int numberOfLapsInSession = (int)shared.mLapsInEvent;
             if (shared.mEventTimeRemaining > 0)
@@ -158,6 +164,10 @@ namespace CrewChiefV3.PCars
                 else if (lastSessionNumberOfLaps != numberOfLapsInSession)
                 {
                     Console.WriteLine("lastSessionNumberOfLaps = " + lastSessionNumberOfLaps + " numberOfLapsInSession = "+ numberOfLapsInSession);
+                }
+                else if (sessionTimeRemaining > 0 && sessionTimeRemaining > lastSessionRunTime)
+                {
+                    Console.WriteLine("sessionTimeRemaining = " + sessionTimeRemaining + " lastSessionRunTime = " + lastSessionRunTime);
                 }
                 currentGameState.SessionData.IsNewSession = true;
                 currentGameState.SessionData.TrackLength = shared.mTrackLength;
@@ -379,15 +389,30 @@ namespace CrewChiefV3.PCars
                                         opponentOnPitLimiter = IsOpponentOnPitLimiter(opponentSlotId);
                                     }
                                 }
+                                if (opponentOnPitLimiter)
+                                {
+                                    if (opponentPositionAtSector3 == 1 && !previousGameState.PitData.LeaderIsPitting)
+                                    {
+                                        Console.WriteLine("leader pitting, pos at sector 3 = " + opponentPositionAtSector3 + " current pos = " + currentOpponentRacePosition);
+                                        currentGameState.PitData.LeaderIsPitting = true;
+                                    }
+                                    if (currentGameState.SessionData.Position > 2 && opponentPositionAtSector3 == currentGameState.SessionData.Position - 1 &&
+                                        !previousGameState.PitData.CarInFrontIsPitting)
+                                    {
+                                        Console.WriteLine("car in front pitting, pos at sector 3 = " + opponentPositionAtSector3 + " current pos = " + currentOpponentRacePosition);
+                                        currentGameState.PitData.CarInFrontIsPitting = true;
+                                    }
+                                    if (!currentGameState.isLast() && opponentPositionAtSector3 == currentGameState.SessionData.Position + 1 && 
+                                        !previousGameState.PitData.LeaderIsPitting)
+                                    {
+                                        Console.WriteLine("car behind pitting, pos at sector 3 = " + opponentPositionAtSector3 + " current pos = " + currentOpponentRacePosition);
+                                        currentGameState.PitData.CarBehindIsPitting = true;
+                                    }
+                                }
+
                                 upateOpponentData(currentGameState.OpponentData[opponentSlotId], currentOpponentRacePosition, currentOpponentLapsCompleted,
                                         currentOpponentSector, opponentOnPitLimiter, currentGameState.SessionData.SessionRunningTime, currentOpponentLapDistance,
                                         shared.mTrackLength, now, opponentPositionAtSector3);
-                                currentGameState.PitData.LeaderIsPitting = !previousGameState.PitData.LeaderIsPitting && opponentOnPitLimiter && opponentPositionAtSector3 == 1;
-                                // only want to know if the leader is pitting if we're 3rd or worse
-                                currentGameState.PitData.CarInFrontIsPitting = !previousGameState.PitData.CarInFrontIsPitting && 
-                                    opponentOnPitLimiter && currentGameState.SessionData.Position > 2 && opponentPositionAtSector3 == currentGameState.SessionData.Position - 1;
-                                currentGameState.PitData.CarBehindIsPitting = !previousGameState.PitData.CarBehindIsPitting && 
-                                    opponentOnPitLimiter && !currentGameState.isLast() && opponentPositionAtSector3 == currentGameState.SessionData.Position + 1;
                             }
                         }                            
                         else
@@ -694,7 +719,7 @@ namespace CrewChiefV3.PCars
          * states
          */
         private SessionPhase mapToSessionPhase(SessionType sessionType, uint sessionState, uint raceState, int numParticipants,
-            Boolean leaderHasFinishedRace, SessionPhase previousSessionPhase)
+            Boolean leaderHasFinishedRace, SessionPhase previousSessionPhase, float sessionTimeRemaining)
         {
             if (numParticipants < 1)
             {
@@ -743,7 +768,7 @@ namespace CrewChiefV3.PCars
                     raceState == (uint)eRaceState.RACESTATE_INVALID ||
                     raceState == (uint)eRaceState.RACESTATE_MAX || 
                     ((raceState == (uint)eRaceState.RACESTATE_NOT_STARTED || raceState == (uint)eRaceState.RACESTATE_INVALID) &&
-                        previousSessionPhase == SessionPhase.Green))
+                        previousSessionPhase == SessionPhase.Green && sessionTimeRemaining < 1))
                 {
                     return SessionPhase.Finished;
                 } 
