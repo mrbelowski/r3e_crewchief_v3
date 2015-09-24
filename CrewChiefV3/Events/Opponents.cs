@@ -74,7 +74,7 @@ namespace CrewChiefV3.Events
                 if (!currentGameState.SessionData.IsRacingSameCarInFront)
                 {
                     carAheadLastLaps.Clear();
-                    if (currentGameState.SessionData.Position > 2 && currentGameState.Now > nextCarAheadChangeMessage)
+                    if (currentGameState.SessionData.Position > 2 && currentGameState.Now > nextCarAheadChangeMessage && !currentGameState.PitData.InPitlane)
                     {
                         audioPlayer.queueClip(new QueuedMessage("new_car_ahead", MessageContents(folderNextCarIs,
                             currentGameState.getOpponentAtPosition(currentGameState.SessionData.Position - 1)), 0, this));
