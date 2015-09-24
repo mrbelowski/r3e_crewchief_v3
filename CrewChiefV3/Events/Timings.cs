@@ -115,7 +115,7 @@ namespace CrewChiefV3.Events
                     gapsInFront.Insert(0, currentGameState.SessionData.TimeDeltaFront);
                     gapInFrontStatus = getGapStatus(gapsInFront, gapInFrontAtLastReport);
                 }
-                if (isLast)
+                if (!isLast)
                 {
                     gapsBehind.Insert(0, currentGameState.SessionData.TimeDeltaBehind);
                     gapBehindStatus = getGapStatus(gapsBehind, gapBehindAtLastReport);
