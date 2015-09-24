@@ -10,14 +10,21 @@ namespace CrewChiefV3.Events
 {
     class Opponents : AbstractEvent
     {
-        private string folderLeaderIsPitting = "opponents/the_leader_is_pitting";
-        private string folderCarAheadIsPitting = "opponents/the_car_ahead_is_pitting";
-        private string folderCarBehindIsPitting = "opponents/the_car_behind_is_pitting";
+        private String folderLeaderIsPitting = "opponents/the_leader_is_pitting";
+        private String folderCarAheadIsPitting = "opponents/the_car_ahead_is_pitting";
+        private String folderCarBehindIsPitting = "opponents/the_car_behind_is_pitting";
 
         private String folderTheLeader = "opponents/the_leader";
-        private string folderIsPitting = "opponents/is_pitting";
-        private string folderAheadIsPitting = "opponents/ahead_is_pitting";
-        private string folderBehindIsPitting = "opponents/behind_is_pitting";
+        private String folderIsPitting = "opponents/is_pitting";
+        private String folderAheadIsPitting = "opponents/ahead_is_pitting";
+        private String folderBehindIsPitting = "opponents/behind_is_pitting";
+
+        private String folderLeaderHasJustDoneA = "opponents/the_leader_has_just_done_a";
+        private String folderTheCarAheadHasJustDoneA = "opponents/the_car_ahead_has_just_done_a";  
+        private String folderTheCarBehindHasJustDoneA = "opponents/the_car_behind_has_just_done_a"; 
+
+        private String folderIsNowLeading = "opponents/is_now_leading";
+        private String folderNextCarIs = "opponents/next_car_is";
 
         private List<float> leaderLastLaps = new List<float>();
 
@@ -26,6 +33,10 @@ namespace CrewChiefV3.Events
         private List<float> carBehindLastLaps = new List<float>();
 
         private GameStateData currentGameState;
+
+        private DateTime nextLeadChangeMessage = DateTime.MinValue;
+
+        private DateTime nextCarAheadChangeMessage = DateTime.MinValue;
 
         public Opponents(AudioPlayer audioPlayer)
         {
@@ -38,6 +49,8 @@ namespace CrewChiefV3.Events
             leaderLastLaps = new List<float>();
             carAheadLastLaps = new List<float>();
             carBehindLastLaps = new List<float>();
+            nextLeadChangeMessage = DateTime.MinValue;
+            nextCarAheadChangeMessage = DateTime.MinValue;
         }
 
         public override bool isMessageStillValid(string eventSubType, GameStateData currentGameState, Dictionary<String, Object> validationData)
@@ -53,13 +66,29 @@ namespace CrewChiefV3.Events
                 if (!currentGameState.SessionData.IsRacingSameCarInFront)
                 {
                     carAheadLastLaps.Clear();
+                    if (currentGameState.SessionData.Position > 2 && currentGameState.Now > nextCarAheadChangeMessage)
+                    {
+                        audioPlayer.queueClip(new QueuedMessage("new_car_ahead", MessageContents(folderNextCarIs,
+                            currentGameState.getOpponentAtPosition(currentGameState.SessionData.Position - 1)), 0, this));
+                        nextCarAheadChangeMessage = currentGameState.Now.Add(TimeSpan.FromSeconds(30));
+                    }
                 }
                 else if (currentGameState.SessionData.Position > 1)
                 {
                     OpponentData carAheadCurrentState = currentGameState.getOpponentAtPosition(currentGameState.SessionData.Position - 1);
                     OpponentData carAheadPreviousState = previousGameState == null ? null : previousGameState.getOpponentAtPosition(currentGameState.SessionData.Position - 1);
-                    if (carAheadCurrentState != null && carAheadPreviousState != null && carAheadCurrentState.CompletedLaps == carAheadPreviousState.CompletedLaps + 1)
+                    if (carAheadCurrentState != null && carAheadPreviousState != null && carAheadCurrentState.CompletedLaps == carAheadPreviousState.CompletedLaps + 1 &&
+                        carAheadCurrentState.ApproximateLastLapTime > 0)
                     {
+                        if (carAheadLastLaps.Count >= 2)
+                        {
+                            float previousBest = carAheadLastLaps.Min();
+                            if (previousBest > 0 && previousBest > carAheadCurrentState.ApproximateLastLapTime)
+                            {
+                                // this is his best lap for a while
+                                // TODO: message here?
+                            }
+                        } 
                         carAheadLastLaps.Add(carAheadCurrentState.ApproximateLastLapTime);
                     }
                 }
@@ -71,22 +100,48 @@ namespace CrewChiefV3.Events
                 {
                     OpponentData carBehindCurrentState = currentGameState.getOpponentAtPosition(currentGameState.SessionData.Position + 1);
                     OpponentData carBehindPreviousState = previousGameState == null ? null : previousGameState.getOpponentAtPosition(currentGameState.SessionData.Position + 1);
-                    if (carBehindCurrentState != null && carBehindPreviousState != null && carBehindCurrentState.CompletedLaps == carBehindPreviousState.CompletedLaps + 1)
+                    if (carBehindCurrentState != null && carBehindPreviousState != null && carBehindCurrentState.CompletedLaps == carBehindPreviousState.CompletedLaps + 1 && 
+                        carBehindCurrentState.ApproximateLastLapTime > 0)
                     {
-                        carBehindLastLaps.Add(carBehindCurrentState.ApproximateLastLapTime);
+                        if (carBehindLastLaps.Count >= 2)
+                        {
+                            float previousBest = carBehindLastLaps.Min();
+                            if (previousBest > 0 && previousBest > carBehindCurrentState.ApproximateLastLapTime)
+                            {
+                                // this is his best lap for a while
+                                // TODO: message here?
+                            }
+                        } 
+                        carBehindLastLaps.Add(carBehindCurrentState.ApproximateLastLapTime);                       
                     }
                 }
                 if (currentGameState.SessionData.HasLeadChanged)
                 {
                     leaderLastLaps.Clear();
+                    if (currentGameState.SessionData.Position > 1 && previousGameState.SessionData.Position > 1 && currentGameState.Now > nextLeadChangeMessage)
+                    {
+                        audioPlayer.queueClip(new QueuedMessage("new_leader", MessageContents(currentGameState.getOpponentAtPosition(1), folderIsNowLeading), 0, this));
+                            nextLeadChangeMessage = currentGameState.Now.Add(TimeSpan.FromSeconds(30));
+                    }
                 }
                 else if (currentGameState.SessionData.Position > 1)
                 {
                     OpponentData leaderCurrentState = currentGameState.getOpponentAtPosition(1);
                     OpponentData leaderPreviousState = previousGameState == null ? null : previousGameState.getOpponentAtPosition(1);
-                    if (leaderCurrentState != null && leaderPreviousState != null && leaderCurrentState.CompletedLaps == leaderPreviousState.CompletedLaps + 1)
+                    if (leaderCurrentState != null && leaderPreviousState != null && leaderCurrentState.CompletedLaps == leaderPreviousState.CompletedLaps + 1 &&
+                        leaderCurrentState.ApproximateLastLapTime > 0)
                     {
-                        leaderLastLaps.Add(leaderCurrentState.ApproximateLastLapTime);
+                        if (leaderLastLaps.Count >= 2)
+                        {
+                            float previousBest = leaderLastLaps.Min();
+                            if (previousBest > 0 && previousBest > leaderCurrentState.ApproximateLastLapTime)
+                            {
+                                // this is his best lap for a while
+                                audioPlayer.queueClip(new QueuedMessage("leader_good_laptime", MessageContents(folderLeaderHasJustDoneA, 
+                                    TimeSpan.FromSeconds(leaderCurrentState.ApproximateLastLapTime)), 0, this));
+                            }
+                        }
+                        leaderLastLaps.Add(leaderCurrentState.ApproximateLastLapTime);        
                     }
                 }
 

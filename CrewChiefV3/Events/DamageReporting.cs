@@ -38,12 +38,9 @@ namespace CrewChiefV3.Events
         DamageLevel trannyDamage;
         DamageLevel aeroDamage;
 
-        Boolean damageEnabled;
-
         public DamageReporting(AudioPlayer audioPlayer)
         {
             this.audioPlayer = audioPlayer;
-            damageEnabled = false;
         }
 
         public override void clearState()
