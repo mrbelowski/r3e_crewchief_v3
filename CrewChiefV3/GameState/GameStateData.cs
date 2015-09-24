@@ -267,14 +267,12 @@ namespace CrewChiefV3.GameState
 
         // used to work out where this opponent was before he started his pit entry
         public int PositionAtSector3 = 0;
-
-        public Single DistanceRoundTrack = 0;
-
+        
         public int CompletedLaps = 0;
 
         public int CurrentSectorNumber = 0;
 
-        public Boolean IsPitting = false;
+        public Boolean IsEnteringPits = false;
         
         public float SessionTimeAtEndOfLastSector1 = 0;
 
@@ -288,9 +286,11 @@ namespace CrewChiefV3.GameState
 
         public int LapsCompletedAtEndOfLastSector3 = 0;
 
-        public float approximateLastLapTime = 0;
+        public float ApproximateLastLapTime = 0;
 
-        public float speed = 0;
+        public float Speed = 0;
+
+        public float[] WorldPosition;
         
         // TODO: the logic in this method is bascially bollocks
         public OpponentDelta getTimeDifferenceToPlayer(SessionData playerSessionData)
@@ -562,10 +562,10 @@ namespace CrewChiefV3.GameState
             float bestLapTime = -1;
             foreach (KeyValuePair<int, OpponentData> entry in OpponentData)
             {
-                if (entry.Value.approximateLastLapTime > 0 &&
-                    (bestLapTime == -1 || entry.Value.approximateLastLapTime < bestLapTime))
+                if (entry.Value.ApproximateLastLapTime > 0 &&
+                    (bestLapTime == -1 || entry.Value.ApproximateLastLapTime < bestLapTime))
                 {
-                    bestLapTime = entry.Value.approximateLastLapTime;
+                    bestLapTime = entry.Value.ApproximateLastLapTime;
                 }
             }
             return bestLapTime;
@@ -584,9 +584,9 @@ namespace CrewChiefV3.GameState
             Console.WriteLine("got " + OpponentData.Count + " opponents");
             foreach (KeyValuePair<int, OpponentData> opponent in OpponentData)
             {
-                Console.WriteLine("last laptime " + opponent.Value.approximateLastLapTime + " completed laps " + opponent.Value.CompletedLaps + 
+                Console.WriteLine("last laptime " + opponent.Value.ApproximateLastLapTime + " completed laps " + opponent.Value.CompletedLaps + 
                     " ID " + opponent.Key + " name " + opponent.Value.DriverRawName + " active " + opponent.Value.IsActive + 
-                    " approx speed " + opponent.Value.speed + " position " + opponent.Value.Position + " lap distance " + opponent.Value.DistanceRoundTrack);
+                    " approx speed " + opponent.Value.Speed + " position " + opponent.Value.Position);
             }
         }
     }

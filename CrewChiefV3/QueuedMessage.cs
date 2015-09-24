@@ -118,6 +118,7 @@ namespace CrewChiefV3
             this.messageFolders = getMessageFolders(messageFragments);
             if (!canBePlayed)
             {
+                Console.WriteLine("Using secondary messages for event " + messageName);
                 canBePlayed = true;
                 this.messageFolders = getMessageFolders(alternateMessageFragments);
                 if (!canBePlayed)
@@ -202,7 +203,6 @@ namespace CrewChiefV3
                 }
                 if (!canBePlayed)
                 {
-                    Console.WriteLine("Some message items in this message have no sound files");
                     break;
                 }
             }

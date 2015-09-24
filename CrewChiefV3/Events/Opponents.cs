@@ -60,7 +60,7 @@ namespace CrewChiefV3.Events
                     OpponentData carAheadPreviousState = previousGameState == null ? null : previousGameState.getOpponentAtPosition(currentGameState.SessionData.Position - 1);
                     if (carAheadCurrentState != null && carAheadPreviousState != null && carAheadCurrentState.CompletedLaps == carAheadPreviousState.CompletedLaps + 1)
                     {
-                        carAheadLastLaps.Add(carAheadCurrentState.approximateLastLapTime);
+                        carAheadLastLaps.Add(carAheadCurrentState.ApproximateLastLapTime);
                     }
                 }
                 if (!currentGameState.SessionData.IsRacingSameCarBehind)
@@ -73,7 +73,7 @@ namespace CrewChiefV3.Events
                     OpponentData carBehindPreviousState = previousGameState == null ? null : previousGameState.getOpponentAtPosition(currentGameState.SessionData.Position + 1);
                     if (carBehindCurrentState != null && carBehindPreviousState != null && carBehindCurrentState.CompletedLaps == carBehindPreviousState.CompletedLaps + 1)
                     {
-                        carBehindLastLaps.Add(carBehindCurrentState.approximateLastLapTime);
+                        carBehindLastLaps.Add(carBehindCurrentState.ApproximateLastLapTime);
                     }
                 }
                 if (currentGameState.SessionData.HasLeadChanged)
@@ -86,7 +86,7 @@ namespace CrewChiefV3.Events
                     OpponentData leaderPreviousState = previousGameState == null ? null : previousGameState.getOpponentAtPosition(1);
                     if (leaderCurrentState != null && leaderPreviousState != null && leaderCurrentState.CompletedLaps == leaderPreviousState.CompletedLaps + 1)
                     {
-                        leaderLastLaps.Add(leaderCurrentState.approximateLastLapTime);
+                        leaderLastLaps.Add(leaderCurrentState.ApproximateLastLapTime);
                     }
                 }
 
