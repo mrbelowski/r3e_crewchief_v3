@@ -373,7 +373,8 @@ namespace CrewChiefV3
                                 }
                             }
                             else if (!sessionFinished && previousGameState != null &&
-                                currentGameState.SessionData.SessionRunningTime > previousGameState.SessionData.SessionRunningTime)
+                                        (currentGameState.SessionData.SessionRunningTime > previousGameState.SessionData.SessionRunningTime || 
+                                        (previousGameState != null && previousGameState.SessionData.SessionPhase != currentGameState.SessionData.SessionPhase)))
                             {
                                 if (spotter != null)
                                 {

@@ -272,6 +272,10 @@ namespace CrewChiefV3.PCars
                         Console.WriteLine("Just gone green, session details...");
                         Console.WriteLine("SessionType " + currentGameState.SessionData.SessionType);
                         Console.WriteLine("SessionPhase " + currentGameState.SessionData.SessionPhase);
+                        if (previousGameState != null)
+                        {
+                            Console.WriteLine("previous SessionPhase " + previousGameState.SessionData.SessionPhase);
+                        }
                         Console.WriteLine("EventIndex " + currentGameState.SessionData.EventIndex);
                         Console.WriteLine("SessionIteration " + currentGameState.SessionData.SessionIteration);
                         Console.WriteLine("HasMandatoryPitStop " + currentGameState.SessionData.HasMandatoryPitStop);

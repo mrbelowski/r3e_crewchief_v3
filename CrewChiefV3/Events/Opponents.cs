@@ -61,6 +61,14 @@ namespace CrewChiefV3.Events
         override protected void triggerInternal(GameStateData previousGameState, GameStateData currentGameState)
         {
             this.currentGameState = currentGameState;
+            if (nextCarAheadChangeMessage == DateTime.MinValue)
+            {
+                nextCarAheadChangeMessage = currentGameState.Now.Add(TimeSpan.FromSeconds(30));
+            }
+            if (nextLeadChangeMessage == DateTime.MinValue)
+            {
+                nextLeadChangeMessage = currentGameState.Now.Add(TimeSpan.FromSeconds(30));
+            }
             if (currentGameState.SessionData.SessionType == SessionType.Race)
             {
                 if (!currentGameState.SessionData.IsRacingSameCarInFront)
@@ -123,7 +131,7 @@ namespace CrewChiefV3.Events
                     if (currentGameState.SessionData.Position > 1 && previousGameState.SessionData.Position > 1 && currentGameState.Now > nextLeadChangeMessage)
                     {
                         audioPlayer.queueClip(new QueuedMessage("new_leader", MessageContents(currentGameState.getOpponentAtPosition(1), folderIsNowLeading), 0, this));
-                            nextLeadChangeMessage = currentGameState.Now.Add(TimeSpan.FromSeconds(30));
+                        nextLeadChangeMessage = currentGameState.Now.Add(TimeSpan.FromSeconds(30));
                     }
                 }
                 else if (currentGameState.SessionData.Position > 1)
