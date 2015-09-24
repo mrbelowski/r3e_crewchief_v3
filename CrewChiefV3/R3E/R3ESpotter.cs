@@ -125,8 +125,8 @@ namespace CrewChiefV3.RaceRoom
             {
                 return;
             }
-            RaceRoomShared lastState = (RaceRoomShared)lastStateObj;
-            RaceRoomShared currentState = (RaceRoomShared)currentStateObj;
+            RaceRoomShared lastState = ((CrewChiefV3.RaceRoom.R3ESharedMemoryReader.R3EStructWrapper)lastStateObj).data;
+            RaceRoomShared currentState = ((CrewChiefV3.RaceRoom.R3ESharedMemoryReader.R3EStructWrapper)currentStateObj).data;
             DateTime now = DateTime.Now;
 
             float currentSpeed = currentState.CarSpeed;

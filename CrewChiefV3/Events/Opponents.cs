@@ -80,13 +80,14 @@ namespace CrewChiefV3.Events
                     if (carAheadCurrentState != null && carAheadPreviousState != null && carAheadCurrentState.CompletedLaps == carAheadPreviousState.CompletedLaps + 1 &&
                         carAheadCurrentState.ApproximateLastLapTime > 0)
                     {
-                        if (carAheadLastLaps.Count >= 2)
+                        if (carAheadLastLaps.Count > 2)
                         {
                             float previousBest = carAheadLastLaps.Min();
                             if (previousBest > 0 && previousBest > carAheadCurrentState.ApproximateLastLapTime)
                             {
                                 // this is his best lap for a while
-                                // TODO: message here?
+                                audioPlayer.queueClip(new QueuedMessage("car_behind_good_laptime", MessageContents(folderTheCarAheadHasJustDoneA,
+                                    TimeSpan.FromSeconds(carAheadCurrentState.ApproximateLastLapTime)), 0, this));
                             }
                         } 
                         carAheadLastLaps.Add(carAheadCurrentState.ApproximateLastLapTime);
@@ -103,13 +104,14 @@ namespace CrewChiefV3.Events
                     if (carBehindCurrentState != null && carBehindPreviousState != null && carBehindCurrentState.CompletedLaps == carBehindPreviousState.CompletedLaps + 1 && 
                         carBehindCurrentState.ApproximateLastLapTime > 0)
                     {
-                        if (carBehindLastLaps.Count >= 2)
+                        if (carBehindLastLaps.Count > 2)
                         {
                             float previousBest = carBehindLastLaps.Min();
                             if (previousBest > 0 && previousBest > carBehindCurrentState.ApproximateLastLapTime)
                             {
                                 // this is his best lap for a while
-                                // TODO: message here?
+                                audioPlayer.queueClip(new QueuedMessage("car_behind_good_laptime", MessageContents(folderTheCarBehindHasJustDoneA,
+                                    TimeSpan.FromSeconds(carBehindCurrentState.ApproximateLastLapTime)), 0, this));
                             }
                         } 
                         carBehindLastLaps.Add(carBehindCurrentState.ApproximateLastLapTime);                       
@@ -131,7 +133,7 @@ namespace CrewChiefV3.Events
                     if (leaderCurrentState != null && leaderPreviousState != null && leaderCurrentState.CompletedLaps == leaderPreviousState.CompletedLaps + 1 &&
                         leaderCurrentState.ApproximateLastLapTime > 0)
                     {
-                        if (leaderLastLaps.Count >= 2)
+                        if (leaderLastLaps.Count > 2)
                         {
                             float previousBest = leaderLastLaps.Min();
                             if (previousBest > 0 && previousBest > leaderCurrentState.ApproximateLastLapTime)

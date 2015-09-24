@@ -125,8 +125,8 @@ namespace CrewChiefV3.PCars
             {
                 return;
             }
-            pCarsAPIStruct lastState = (pCarsAPIStruct)lastStateObj;
-            pCarsAPIStruct currentState = (pCarsAPIStruct)currentStateObj;
+            pCarsAPIStruct lastState = ((CrewChiefV3.PCars.PCarsSharedMemoryReader.PCarsStructWrapper)lastStateObj).data;
+            pCarsAPIStruct currentState = ((CrewChiefV3.PCars.PCarsSharedMemoryReader.PCarsStructWrapper)currentStateObj).data;
             DateTime now = DateTime.Now;
 
             if (currentState.mRaceState == (int)eRaceState.RACESTATE_RACING &&
