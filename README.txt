@@ -61,11 +61,11 @@ This can be used in conjunction with the launch_pcars / launch_raceroom / [game]
 
 Updating the app
 ----------------
-The app, the voice recognition packs, and the sound pack, and the driver names pack are all available separately. To install a new version simply download the CrewChiefV3.x.y_no_sounds and unzip it over the top of your existing installation. If the sound pack also needs to be updated, when you run the app you'll get an error in the console window telling you to update the sound pack. To do this, download the latest sound pack and replace the existing one with this new one. If you want to update your driver names, you can download the latest driver_names pack and unzip this into your install directory, overwriting the /sounds/driver_names folder. At the time of writing, I plan to keep adding to the driver_names package, making it a single ever-growing set of names, rather than releasing names in small chunks. But that might change.
+The app, the voice recognition packs, and the sound pack, and the driver names pack are all available separately. To install a new version of the app, simply download the CrewChiefV3.x.y_no_sounds and unzip it over the top of your existing installation. If the sound pack also needs to be updated, when you run the app you'll get an error in the console window telling you to update the sound pack. To do this, download the latest sound pack and replace the existing one with this new one. If you want to update your driver names, you can download the latest driver_names pack and unzip this into your install directory, overwriting the /sounds/driver_names folder. At the time of writing, I plan to keep adding to the driver_names package, making it a single ever-growing set of names, rather than releasing names in small chunks. But that might change.
 
-At the time of writing, the sound pack can be downloaded here  : [to be done]
-the application (with no sounds) can be downloaded here        : [to be done]
-the full app with sounds & driver names can be downloaded here : [to be done]
+At the time of writing, the sound pack can be downloaded here  : https://drive.google.com/file/d/0B4KQS820QNFbM0xoWVExOERnR2s/view?usp=sharing
+the application (with no sounds) can be downloaded here        : https://drive.google.com/file/d/0B4KQS820QNFbdGF6X2xhZzk3aG8/view?usp=sharing
+the full app with sounds & driver names can be downloaded here : https://drive.google.com/file/d/0B4KQS820QNFbN1VfZHRZMDdSc1k/view?usp=sharing
 the latest driver names can be downloaded here                 : https://drive.google.com/file/d/0B4KQS820QNFbVmZjR3g2aVlWb2c/view?usp=sharing
 the 64bit speech recognition installers can be downloaded here : https://drive.google.com/file/d/0B4KQS820QNFbY05tVnhiNVFnYkU/view?usp=sharing
 the 32bit speech recognition installers can be downloaded here : https://drive.google.com/file/d/0B4KQS820QNFbRVJrVjU4X1NxSEU/view?usp=sharing
