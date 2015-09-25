@@ -10,21 +10,21 @@ namespace CrewChiefV3.Events
 {
     class Opponents : AbstractEvent
     {
-        private String folderLeaderIsPitting = "opponents/the_leader_is_pitting";
-        private String folderCarAheadIsPitting = "opponents/the_car_ahead_is_pitting";
-        private String folderCarBehindIsPitting = "opponents/the_car_behind_is_pitting";
+        public static String folderLeaderIsPitting = "opponents/the_leader_is_pitting";
+        public static String folderCarAheadIsPitting = "opponents/the_car_ahead_is_pitting";
+        public static String folderCarBehindIsPitting = "opponents/the_car_behind_is_pitting";
 
-        private String folderTheLeader = "opponents/the_leader";
-        private String folderIsPitting = "opponents/is_pitting";
-        private String folderAheadIsPitting = "opponents/ahead_is_pitting";
-        private String folderBehindIsPitting = "opponents/behind_is_pitting";
+        public static String folderTheLeader = "opponents/the_leader";
+        public static String folderIsPitting = "opponents/is_pitting";
+        public static String folderAheadIsPitting = "opponents/ahead_is_pitting";
+        public static String folderBehindIsPitting = "opponents/behind_is_pitting";
 
-        private String folderLeaderHasJustDoneA = "opponents/the_leader_has_just_done_a";
-        private String folderTheCarAheadHasJustDoneA = "opponents/the_car_ahead_has_just_done_a";  
-        private String folderTheCarBehindHasJustDoneA = "opponents/the_car_behind_has_just_done_a"; 
+        public static String folderLeaderHasJustDoneA = "opponents/the_leader_has_just_done_a";
+        public static String folderTheCarAheadHasJustDoneA = "opponents/the_car_ahead_has_just_done_a";
+        public static String folderTheCarBehindHasJustDoneA = "opponents/the_car_behind_has_just_done_a";
 
-        private String folderIsNowLeading = "opponents/is_now_leading";
-        private String folderNextCarIs = "opponents/next_car_is";
+        public static String folderIsNowLeading = "opponents/is_now_leading";
+        public static String folderNextCarIs = "opponents/next_car_is";
 
         private List<float> leaderLastLaps = new List<float>();
 
