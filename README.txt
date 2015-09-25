@@ -69,3 +69,15 @@ the full app with sounds & driver names can be downloaded here : https://drive.g
 the latest driver names can be downloaded here                 : https://drive.google.com/file/d/0B4KQS820QNFbVmZjR3g2aVlWb2c/view?usp=sharing
 the 64bit speech recognition installers can be downloaded here : https://drive.google.com/file/d/0B4KQS820QNFbY05tVnhiNVFnYkU/view?usp=sharing
 the 32bit speech recognition installers can be downloaded here : https://drive.google.com/file/d/0B4KQS820QNFbRVJrVjU4X1NxSEU/view?usp=sharing
+
+
+Donations
+---------
+I made this because I wanted to make it and I enjoy making stuff. Working with the various quirks, errors and omissions in the shared data which the games provide hasn't been much fun, but it's all part of the challenge. Having said that, there are many many hours of hard work invested in this.
+If you use it and like it and it becomes a regular and positive part of your sim racing, I'd be grateful if you would consider making a small donation. If only to stop my wife from complaining at me.
+
+My paypal address is jim.britton@yahoo.co.uk
+
+Would be great to recoup some of the investment in making this, but the most important thing is that the app is used 'in anger' and enjoyed as part of the sim racing experience. To this end, I'm always on the lookout for bug reports and feature suggestions.
+
+One final point. If the app says "Jim is faster than you", let him through :)
