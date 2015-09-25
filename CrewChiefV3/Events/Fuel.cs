@@ -297,6 +297,7 @@ namespace CrewChiefV3.Events
                     }
                     else
                     {
+                        audioPlayer.openChannel();
                         audioPlayer.playClipImmediately(new QueuedMessage("Fuel/estimate",
                             MessageContents(folderWeEstimate, QueuedMessage.folderNameNumbersStub + lapsOfFuelLeft, folderLapsRemaining), 0, this));
                         audioPlayer.closeChannel();

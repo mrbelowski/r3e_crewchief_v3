@@ -120,6 +120,8 @@ namespace CrewChiefV3.GameState
 
     public class SessionData
     {
+        public Boolean IsDisqualified = false;
+
         public FlagEnum Flag = FlagEnum.GREEN;
 
         public Boolean IsNewSession = false;

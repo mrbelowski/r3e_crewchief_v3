@@ -30,7 +30,7 @@ namespace CrewChiefV3.Events
         }
 
         public void trigger(float sessionRunningTime, SessionType sessionType, SessionPhase lastSessionPhase, 
-            int finishPosition, int numCars, int completedLaps, DateTime now)
+            int finishPosition, int numCars, int completedLaps, DateTime now, Boolean isDisqualified)
         {
             if (sessionType == SessionType.Race)
             {
@@ -39,7 +39,7 @@ namespace CrewChiefV3.Events
                     if (lastSessionPhase == SessionPhase.Finished)
                     {
                         // only play session end message for races if we've actually finished, not restarted
-                        playFinishMessage(sessionType, finishPosition, numCars, now);
+                        playFinishMessage(sessionType, finishPosition, numCars, now, isDisqualified);
                     }
                     else
                     {
@@ -57,7 +57,7 @@ namespace CrewChiefV3.Events
                 {
                     if (lastSessionPhase == SessionPhase.Green || lastSessionPhase == SessionPhase.Finished || lastSessionPhase == SessionPhase.Checkered)
                     {
-                        playFinishMessage(sessionType, finishPosition, numCars, now);
+                        playFinishMessage(sessionType, finishPosition, numCars, now, false);
                     }
                     else
                     {
@@ -71,7 +71,7 @@ namespace CrewChiefV3.Events
             }
         }
 
-        public void playFinishMessage(SessionType sessionType, int position, int numCars, DateTime now)
+        public void playFinishMessage(SessionType sessionType, int position, int numCars, DateTime now, Boolean isDisqualified)
         {
             if (lastFinishMessageTime.Add(TimeSpan.FromSeconds(2)) < now)
             {
@@ -84,7 +84,11 @@ namespace CrewChiefV3.Events
                 else if (sessionType == SessionType.Race)
                 {
                     Boolean isLast = position == numCars;
-                    if (position == 1)
+                    if (isDisqualified) 
+                    {
+                        audioPlayer.queueClip(new QueuedMessage(Penalties.folderDisqualified, 0, null));
+                    }
+                    else if (position == 1)
                     {
                         audioPlayer.queueClip(new QueuedMessage(folderWonRace, 0, null));
                     }

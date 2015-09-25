@@ -25,7 +25,7 @@ namespace CrewChiefV3.Events
 
         private String folderOneLapToServeDriveThrough = "penalties/penalty_one_lap_left_drivethrough";
 
-        private String folderDisqualified = "penalties/penalty_disqualified";
+        public static String folderDisqualified = "penalties/penalty_disqualified";
 
         private String folderPitNowStopGo = "penalties/pit_now_stop_go";
 
