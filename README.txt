@@ -7,7 +7,7 @@ Version 3.0.0: Major internal rework and rewiring; added project cars; loads and
 
 Quick start
 -----------
-You need to install .net 4 or above to use the app. Download the CrewChiefV3_with_sounds.zip file, extract it somewhere (anywhere, the app's not fussy), and run the enclosed CrewChiefV3.exe. Select a game from the list at the top right. Click the "Start Application" button. Then fire up the game and be amazed at my poor voice acting.
+You need to install .net 4 or above to use the app. Download the CrewChiefV3.0.0_with_sounds.zip file, extract it somewhere (anywhere, the app's not fussy), and run the enclosed CrewChiefV3.exe. Select a game from the list at the top right. Click the "Start Application" button. Then fire up the game and be amazed at my poor voice acting.
 
 
 Running with voice recognition
@@ -33,7 +33,7 @@ I've not finished implementing this but currently the app understands and respon
 "do I still have a penalty / do I have a penalty / have I served my penalty"
 "do I have to pit / do I need to pit / do I have a mandatory pit stop / do I have a mandatory stop / do I have to make a pit stop"
 "where's [opponent driver last name]"
-"who's [ahead / behind]" (this one only works if you have the driver name recording)
+"who's [ahead / behind]" (this one only works if you have the driver name recording for that driver)
 
 
 Other button assignments
@@ -61,10 +61,11 @@ This can be used in conjunction with the launch_pcars / launch_raceroom / [game]
 
 Updating the app
 ----------------
-The app, the voice recognition packs, and the sound pack are all separate. To install a new version simply download the CrewChiefV3_with_no_sounds and unzip it over the top of your existing installation. If the sound pack also needs to be updated, when you run the app you'll get an error in the console window telling you to update the sound pack. To do this, download the latest sound pack and replace the existing one with this new one. 
+The app, the voice recognition packs, and the sound pack, and the driver names pack are all available separately. To install a new version simply download the CrewChiefV3.x.y_no_sounds and unzip it over the top of your existing installation. If the sound pack also needs to be updated, when you run the app you'll get an error in the console window telling you to update the sound pack. To do this, download the latest sound pack and replace the existing one with this new one. If you want to update your driver names, you can download the latest driver_names pack and unzip this into your install directory, overwriting the /sounds/driver_names folder. At the time of writing, I plan to keep adding to the driver_names package, making it a single ever-growing set of names, rather than releasing names in small chunks. But that might change.
 
 At the time of writing, the sound pack can be downloaded here  : [to be done]
-the application can be downloaded here                         : [to be done]
-the full app with sounds can be downloaded here                : [to be done]
+the application (with no sounds) can be downloaded here        : [to be done]
+the full app with sounds & driver names can be downloaded here : [to be done]
+the latest driver names can be downloaded here                 : https://drive.google.com/file/d/0B4KQS820QNFbVmZjR3g2aVlWb2c/view?usp=sharing
 the 64bit speech recognition installers can be downloaded here : https://drive.google.com/file/d/0B4KQS820QNFbY05tVnhiNVFnYkU/view?usp=sharing
 the 32bit speech recognition installers can be downloaded here : https://drive.google.com/file/d/0B4KQS820QNFbRVJrVjU4X1NxSEU/view?usp=sharing
