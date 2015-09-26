@@ -36,8 +36,7 @@ namespace CrewChiefV3.PCars
         private float maxClosingSpeed = UserSettings.GetUserSettings().getFloat("max_closing_speed_for_spotter");
 
         // don't activate the spotter unless this many seconds have elapsed (race starts are messy)
-        //private int timeAfterRaceStartToActivate = UserSettings.GetUserSettings().getInt("time_after_race_start_for_spotter");
-        private int timeAfterRaceStartToActivate = 2;
+        private int timeAfterRaceStartToActivate = UserSettings.GetUserSettings().getInt("time_after_race_start_for_spotter");
 
         // say "still there" every 3 seconds
         private TimeSpan repeatHoldFrequency = TimeSpan.FromSeconds(UserSettings.GetUserSettings().getInt("spotter_hold_repeat_frequency"));
