@@ -2,6 +2,9 @@ CrewChief version 3.
 
 Changelog
 ---------
+
+Version 3.0.1: Minor spotter tweak to minimise the inappropriate 'clear' calls; changed prac / qual session end detection method
+
 Version 3.0.0: Major internal rework and rewiring; added project cars; loads and loads of other stuff
 
 
