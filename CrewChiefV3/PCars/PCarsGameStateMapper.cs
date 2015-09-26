@@ -139,8 +139,8 @@ namespace CrewChiefV3.PCars
             Boolean leaderHasFinished = previousGameState != null && previousGameState.SessionData.LeaderHasFinishedRace;
             currentGameState.SessionData.LeaderHasFinishedRace = leaderHasFinished;
             currentGameState.SessionData.IsDisqualified = shared.mRaceState == (int)eRaceState.RACESTATE_DISQUALIFIED;
-            currentGameState.SessionData.SessionPhase = mapToSessionPhase(currentGameState.SessionData.SessionType, 
-                shared.mSessionState, shared.mRaceState, shared.mNumParticipants, leaderHasFinished, lastSessionPhase, lastSessionTimeRemaining);
+            currentGameState.SessionData.SessionPhase = mapToSessionPhase(currentGameState.SessionData.SessionType,
+                shared.mSessionState, shared.mRaceState, shared.mNumParticipants, leaderHasFinished, lastSessionPhase, lastSessionTimeRemaining, lastSessionRunTime);
             float sessionTimeRemaining = -1;
             int numberOfLapsInSession = (int)shared.mLapsInEvent;
             if (shared.mEventTimeRemaining > 0)
@@ -761,7 +761,7 @@ namespace CrewChiefV3.PCars
          * states
          */
         private SessionPhase mapToSessionPhase(SessionType sessionType, uint sessionState, uint raceState, int numParticipants,
-            Boolean leaderHasFinishedRace, SessionPhase previousSessionPhase, float sessionTimeRemaining)
+            Boolean leaderHasFinishedRace, SessionPhase previousSessionPhase, float sessionTimeRemaining, float sessionRunTime)
         {
             if (numParticipants < 1)
             {
@@ -803,15 +803,10 @@ namespace CrewChiefV3.PCars
             }
             else if (sessionType == SessionType.Practice || sessionType == SessionType.Qualify)
             {
-                if (raceState == (uint)eRaceState.RACESTATE_FINISHED ||
-                    raceState == (uint)eRaceState.RACESTATE_DNF ||
-                    raceState == (uint)eRaceState.RACESTATE_DISQUALIFIED ||
-                    raceState == (uint)eRaceState.RACESTATE_RETIRED ||
-                    raceState == (uint)eRaceState.RACESTATE_INVALID ||
-                    raceState == (uint)eRaceState.RACESTATE_MAX || 
-                    ((raceState == (uint)eRaceState.RACESTATE_NOT_STARTED || raceState == (uint)eRaceState.RACESTATE_INVALID) &&
-                        previousSessionPhase == SessionPhase.Green && sessionTimeRemaining < 1))
+                // yeah yeah....
+                if (sessionRunTime > 0 && sessionTimeRemaining <= 1)
                 {
+                    Console.WriteLine(sessionTimeRemaining);
                     return SessionPhase.Finished;
                 } 
                 else if (raceState == (uint)eRaceState.RACESTATE_RACING) 
