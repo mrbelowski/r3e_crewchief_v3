@@ -3,6 +3,8 @@ CrewChief version 3.
 Changelog
 ---------
 
+Version 3.1.0: Added 'opponent deltas' mode. This can be toggled with a button or voice command and when enabled, the time delta front and behind it read when you cross the line (the one behind is read when the guy behind crosses the line actually). These messages will still play even if you've disabled other updates ('Kimi mode'). This version requires a new sound pack.
+
 Version 3.0.2: Fixed 32bit Project Cars
 
 Version 3.0.1: Minor spotter tweak to minimise the inappropriate 'clear' calls; changed prac / qual session end detection method
@@ -39,11 +41,12 @@ I've not finished implementing this but currently the app understands and respon
 "do I have to pit / do I need to pit / do I have a mandatory pit stop / do I have a mandatory stop / do I have to make a pit stop"
 "where's [opponent driver last name]"
 "who's [ahead / behind]" (this one only works if you have the driver name recording for that driver)
+"tell me the gaps / don't tell me the gaps" (switch on and off 'deltas' mode where the time deltas in front and behind get read out on each lap. Note that these messages will play even if you have disabled messages)
 
 
 Other button assignments
 ------------------------
-You can assign the 'toggle spotter on/off' and 'toggle race updates on/off' to separate buttons if you want to be able to toggle the spotter function and toggle the crew chief's updates on or off during the race. This doesn't require voice recognition to be installed - simply run the app, assign a button to one or both of these functions, and when in-race pressing that button will toggle the spotter or crew chief on and off.
+You can assign the 'toggle spotter on/off', 'toggle race updates on/off' and 'toggle opponent deltas' to separate buttons if you want to be able to toggle the spotter function and toggle the crew chief's updates on or off during the race. This doesn't require voice recognition to be installed - simply run the app, assign a button to one or both of these functions, and when in-race pressing that button will toggle the spotter / crew chief / opponent deltas on and off.
 
 
 Properties
