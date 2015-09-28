@@ -14,7 +14,7 @@ namespace CrewChiefV3
 {
     class AudioPlayer
     {
-        public static float minimumSoundPackVersion = 30f;
+        public static float minimumSoundPackVersion = 31f;
 
         private CrewChief crewChief;
 
@@ -533,7 +533,7 @@ namespace CrewChiefV3
                     QueuedMessage queuedMessage = (QueuedMessage)queueToPlay[key];
                     if (isImmediateMessages || queuedMessage.dueTime <= milliseconds)
                     {
-                        if ((isImmediateMessages || !keepQuiet) && queuedMessage.canBePlayed &&
+                        if ((isImmediateMessages || !keepQuiet || queuedMessage.playEvenWhenSilenced) && queuedMessage.canBePlayed &&
                             queuedMessage.isMessageStillValid(key, crewChief.currentGameState) &&
                             !keysToPlay.Contains(key) && (!queuedMessage.gapFiller || playGapFillerMessage(queueToPlay)) &&
                             (queuedMessage.expiryTime == 0 || queuedMessage.expiryTime > milliseconds))

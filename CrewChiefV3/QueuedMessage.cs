@@ -63,6 +63,7 @@ namespace CrewChiefV3
         public AbstractEvent abstractEvent;
         public String messageName;
         public List<String> messageFolders;
+        public Boolean playEvenWhenSilenced;
 
         // some snapshot of pertentent data at the point of creation, 
         // which can be validated before it actually gets played. E.g.

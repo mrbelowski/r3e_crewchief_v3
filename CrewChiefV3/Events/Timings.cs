@@ -142,9 +142,10 @@ namespace CrewChiefV3.Events
             {
                 gapsBehind.Clear();
             }
-            if (currentGameState.SessionData.IsNewSector && !currentGameState.PitData.InPitlane)
+            if (!currentGameState.PitData.InPitlane && enableGapMessages)
             {
-                if (enableGapMessages)
+                if (isRace && !CrewChief.readOpponentDeltasForEveryLap && 
+                    currentGameState.SessionData.IsNewSector)
                 {
                     sectorsSinceLastGapAheadReport++;
                     sectorsSinceLastGapBehindReport++;
@@ -163,109 +164,111 @@ namespace CrewChiefV3.Events
                         gapBehindStatus = getGapStatus(gapsBehind, gapBehindAtLastReport);
                     }
 
-                    if (isRace && !CrewChief.readOpponentDeltasForEveryLap)
-                    {
-                        // Play which ever is the smaller gap, but we're not interested if the gap is < 0.5 or > 20 seconds or hasn't changed:
-                        Boolean playGapInFront = gapInFrontStatus != GapStatus.NONE &&
-                            (gapBehindStatus == GapStatus.NONE || (gapsInFront.Count() > 0 && gapsBehind.Count() > 0 && gapsInFront[0] < gapsBehind[0]));
+                    // Play which ever is the smaller gap, but we're not interested if the gap is < 0.5 or > 20 seconds or hasn't changed:
+                    Boolean playGapInFront = gapInFrontStatus != GapStatus.NONE &&
+                        (gapBehindStatus == GapStatus.NONE || (gapsInFront.Count() > 0 && gapsBehind.Count() > 0 && gapsInFront[0] < gapsBehind[0]));
 
-                        Boolean playGapBehind = !playGapInFront && gapBehindStatus != GapStatus.NONE;
-                        if (playGapInFront)
+                    Boolean playGapBehind = !playGapInFront && gapBehindStatus != GapStatus.NONE;
+                    if (playGapInFront)
+                    {
+                        if (gapInFrontStatus == GapStatus.CLOSE)
                         {
-                            if (gapInFrontStatus == GapStatus.CLOSE)
+                            if (sectorsSinceLastCloseCarAheadReport >= sectorsUntilNextCloseCarAheadReport)
                             {
-                                if (sectorsSinceLastCloseCarAheadReport >= sectorsUntilNextCloseCarAheadReport)
-                                {
-                                    sectorsSinceLastCloseCarAheadReport = 0;
-                                    sectorsUntilNextCloseCarAheadReport = rand.Next(5, 7);
-                                    audioPlayer.queueClip(new QueuedMessage(folderBeingHeldUp, 0, this));
-                                    gapInFrontAtLastReport = gapsInFront[0];
-                                }
-                            }
-                            else if (gapInFrontStatus != GapStatus.NONE && sectorsSinceLastGapAheadReport >= sectorsUntilNextGapAheadReport)
-                            {
-                                sectorsSinceLastGapAheadReport = 0;
-                                sectorsUntilNextGapAheadReport = rand.Next(2, 4);
-                                TimeSpan gapInFront = TimeSpan.FromMilliseconds(gapsInFront[0] * 1000);
-                                Boolean readGap = gapInFront.Seconds > 0 || gapInFront.Milliseconds > 50;
-                                if (readGap)
-                                {
-                                    if (gapInFrontStatus == GapStatus.INCREASING)
-                                    {
-                                        audioPlayer.queueClip(new QueuedMessage("Timings/gap_in_front",
-                                            MessageContents(folderTheGapTo, currentGameState.getOpponentAtPosition(currentGameState.SessionData.Position - 1), folderAheadIsIncreasing,
-                                            gapInFront, folderSeconds), MessageContents(folderGapInFrontIncreasing, gapInFront, folderSeconds), 0, this));
-                                    }
-                                    else if (gapInFrontStatus == GapStatus.DECREASING)
-                                    {
-                                        audioPlayer.queueClip(new QueuedMessage("Timings/gap_in_front",
-                                            MessageContents(folderYoureReeling, currentGameState.getOpponentAtPosition(currentGameState.SessionData.Position - 1),
-                                            folderInTheGapIsNow, gapInFront, folderSeconds), MessageContents(folderGapInFrontDecreasing, gapInFront, folderSeconds), 0, this));
-                                    }
-                                }
+                                sectorsSinceLastCloseCarAheadReport = 0;
+                                sectorsUntilNextCloseCarAheadReport = rand.Next(5, 7);
+                                audioPlayer.queueClip(new QueuedMessage(folderBeingHeldUp, 0, this));
                                 gapInFrontAtLastReport = gapsInFront[0];
                             }
                         }
-                        else if (playGapBehind)
+                        else if (gapInFrontStatus != GapStatus.NONE && sectorsSinceLastGapAheadReport >= sectorsUntilNextGapAheadReport)
                         {
-                            if (gapBehindStatus == GapStatus.CLOSE)
+                            sectorsSinceLastGapAheadReport = 0;
+                            sectorsUntilNextGapAheadReport = rand.Next(2, 4);
+                            TimeSpan gapInFront = TimeSpan.FromMilliseconds(gapsInFront[0] * 1000);
+                            Boolean readGap = gapInFront.Seconds > 0 || gapInFront.Milliseconds > 50;
+                            if (readGap)
                             {
-                                if (sectorsSinceLastCloseCarBehindReport >= sectorsUntilNextCloseCarBehindReport)
+                                if (gapInFrontStatus == GapStatus.INCREASING)
                                 {
-                                    sectorsSinceLastCloseCarBehindReport = 0;
-                                    sectorsUntilNextCloseCarBehindReport = rand.Next(5, 7);
-                                    audioPlayer.queueClip(new QueuedMessage(folderBeingPressured, 0, this));
-                                    gapBehindAtLastReport = gapsInFront[0];
+                                    audioPlayer.queueClip(new QueuedMessage("Timings/gap_in_front",
+                                        MessageContents(folderTheGapTo, currentGameState.getOpponentAtPosition(currentGameState.SessionData.Position - 1), folderAheadIsIncreasing,
+                                        gapInFront, folderSeconds), MessageContents(folderGapInFrontIncreasing, gapInFront, folderSeconds), 0, this));
+                                }
+                                else if (gapInFrontStatus == GapStatus.DECREASING)
+                                {
+                                    audioPlayer.queueClip(new QueuedMessage("Timings/gap_in_front",
+                                        MessageContents(folderYoureReeling, currentGameState.getOpponentAtPosition(currentGameState.SessionData.Position - 1),
+                                        folderInTheGapIsNow, gapInFront, folderSeconds), MessageContents(folderGapInFrontDecreasing, gapInFront, folderSeconds), 0, this));
                                 }
                             }
-                            else if (gapBehindStatus != GapStatus.NONE && sectorsSinceLastGapBehindReport >= sectorsUntilNextGapBehindReport)
-                            {
-                                sectorsSinceLastGapBehindReport = 0;
-                                sectorsUntilNextGapBehindReport = rand.Next(2, 4);
-                                TimeSpan gapBehind = TimeSpan.FromMilliseconds(gapsBehind[0] * 1000);
-                                Boolean readGap = gapBehind.Seconds > 0 || gapBehind.Milliseconds > 50;
-                                if (readGap)
-                                {
-                                    if (gapBehindStatus == GapStatus.INCREASING)
-                                    {
-                                        audioPlayer.queueClip(new QueuedMessage("Timings/gap_behind",
-                                           MessageContents(folderTheGapTo, currentGameState.getOpponentAtPosition(currentGameState.SessionData.Position + 1),
-                                           folderBehindIsIncreasing, gapBehind, folderSeconds), MessageContents(folderGapBehindIncreasing, gapBehind, folderSeconds), 0, this));
-                                    }
-                                    else if (gapBehindStatus == GapStatus.DECREASING)
-                                    {
-                                        audioPlayer.queueClip(new QueuedMessage("Timings/gap_behind",
-                                            MessageContents(currentGameState.getOpponentAtPosition(currentGameState.SessionData.Position + 1), folderIsReelingYouIn, gapBehind, folderSeconds),
-                                            MessageContents(folderGapBehindDecreasing, gapBehind, folderSeconds), 0, this));
-                                    }
-                                }
-                                gapInFrontAtLastReport = gapsInFront[0];
-                            }
+                            gapInFrontAtLastReport = gapsInFront[0];
                         }
                     }
-                    else if (isRace && CrewChief.readOpponentDeltasForEveryLap && currentGameState.SessionData.CompletedLaps > 0)
+                    else if (playGapBehind)
                     {
-                        if (currentGameState.SessionData.Position > 1 && currentGameState.SessionData.IsNewLap) 
-                        {                            
-                            if (currentGapInFront > 0.05)
+                        if (gapBehindStatus == GapStatus.CLOSE)
+                        {
+                            if (sectorsSinceLastCloseCarBehindReport >= sectorsUntilNextCloseCarBehindReport)
                             {
-                                TimeSpan gap = TimeSpan.FromSeconds(currentGapInFront);
-                                audioPlayer.queueClip(new QueuedMessage("Timings/gap_ahead", MessageContents(folderTheGapTo,
-                                    currentGameState.getOpponentAtPosition(currentGameState.SessionData.Position - 1), folderAheadIsNow, gap, folderSeconds),
-                                    MessageContents(folderGapInFrontIsNow, gap, folderSeconds), 0, this));
+                                sectorsSinceLastCloseCarBehindReport = 0;
+                                sectorsUntilNextCloseCarBehindReport = rand.Next(5, 7);
+                                audioPlayer.queueClip(new QueuedMessage(folderBeingPressured, 0, this));
+                                gapBehindAtLastReport = gapsInFront[0];
                             }
                         }
-                        if (!currentGameState.isLast())
+                        else if (gapBehindStatus != GapStatus.NONE && sectorsSinceLastGapBehindReport >= sectorsUntilNextGapBehindReport)
                         {
-                            if (!playedGapBehindForThisLap && currentGapBehind > 0.05 &&
-                                currentGameState.SessionData.LapTimeCurrent >= currentGapBehind)
+                            sectorsSinceLastGapBehindReport = 0;
+                            sectorsUntilNextGapBehindReport = rand.Next(2, 4);
+                            TimeSpan gapBehind = TimeSpan.FromMilliseconds(gapsBehind[0] * 1000);
+                            Boolean readGap = gapBehind.Seconds > 0 || gapBehind.Milliseconds > 50;
+                            if (readGap)
                             {
-                                playedGapBehindForThisLap = true;
-                                TimeSpan gap = TimeSpan.FromSeconds(currentGapBehind);
-                                audioPlayer.queueClip(new QueuedMessage("Timings/gap_behind", MessageContents(folderTheGapTo,
-                                    currentGameState.getOpponentAtPosition(currentGameState.SessionData.Position + 1), folderBehindIsNow, gap, folderSeconds),
-                                    MessageContents(folderGapBehindIsNow, gap, folderSeconds), 0, this));
+                                if (gapBehindStatus == GapStatus.INCREASING)
+                                {
+                                    audioPlayer.queueClip(new QueuedMessage("Timings/gap_behind",
+                                        MessageContents(folderTheGapTo, currentGameState.getOpponentAtPosition(currentGameState.SessionData.Position + 1),
+                                        folderBehindIsIncreasing, gapBehind, folderSeconds), MessageContents(folderGapBehindIncreasing, gapBehind, folderSeconds), 0, this));
+                                }
+                                else if (gapBehindStatus == GapStatus.DECREASING)
+                                {
+                                    audioPlayer.queueClip(new QueuedMessage("Timings/gap_behind",
+                                        MessageContents(currentGameState.getOpponentAtPosition(currentGameState.SessionData.Position + 1), folderIsReelingYouIn, gapBehind, folderSeconds),
+                                        MessageContents(folderGapBehindDecreasing, gapBehind, folderSeconds), 0, this));
+                                }
                             }
+                            gapInFrontAtLastReport = gapsInFront[0];
+                        }
+                    }
+                }
+                if (isRace && CrewChief.readOpponentDeltasForEveryLap && currentGameState.SessionData.CompletedLaps > 0)
+                {
+                    if (currentGameState.SessionData.Position > 1 && currentGameState.SessionData.IsNewLap) 
+                    {                            
+                        if (currentGapInFront > 0.05)
+                        {
+                            TimeSpan gap = TimeSpan.FromSeconds(currentGapInFront);
+                            QueuedMessage message = new QueuedMessage("Timings/gap_ahead", MessageContents(folderTheGapTo,
+                                currentGameState.getOpponentAtPosition(currentGameState.SessionData.Position - 1), folderAheadIsNow, gap, folderSeconds),
+                                MessageContents(folderGapInFrontIsNow, gap, folderSeconds), 0, this);
+                            message.playEvenWhenSilenced = true;
+                            audioPlayer.queueClip(message);
+                        }
+                    }
+                    if (!currentGameState.isLast())
+                    {
+                        if (!playedGapBehindForThisLap && currentGapBehind > 0.05 && currentGameState.SessionData.LapTimeCurrent > 0 &&
+                            currentGameState.SessionData.LapTimeCurrent >= currentGapBehind && 
+                            currentGameState.SessionData.LapTimeCurrent <= currentGapBehind + CrewChief._timeInterval.TotalSeconds)
+                        {
+                            playedGapBehindForThisLap = true;
+                            TimeSpan gap = TimeSpan.FromSeconds(currentGapBehind);
+                            QueuedMessage message = new QueuedMessage("Timings/gap_behind", MessageContents(folderTheGapTo,
+                                currentGameState.getOpponentAtPosition(currentGameState.SessionData.Position + 1), folderBehindIsNow, gap, folderSeconds),
+                                MessageContents(folderGapBehindIsNow, gap, folderSeconds), 0, this);
+                            message.playEvenWhenSilenced = true;
+                            audioPlayer.queueClip(message);
                         }
                     }
                 }

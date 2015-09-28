@@ -150,7 +150,7 @@ namespace CrewChiefV3
             {
                 readOpponentDeltasForEveryLap = true;
             }
-            audioPlayer.queueClip(new QueuedMessage(AudioPlayer.folderAcknowlegeDisableKeepQuiet, 0, null));
+            audioPlayer.playClipImmediately(new QueuedMessage(AudioPlayer.folderAcknowlegeDisableKeepQuiet, 0, null));
         }
 
         public void disableDeltasMode()
@@ -159,7 +159,7 @@ namespace CrewChiefV3
             {
                 readOpponentDeltasForEveryLap = false;
             }
-            audioPlayer.queueClip(new QueuedMessage(AudioPlayer.folderAcknowlegeOK, 0, null));
+            audioPlayer.playClipImmediately(new QueuedMessage(AudioPlayer.folderAcknowlegeOK, 0, null));
         }
 
         public void toggleSpotterMode()
