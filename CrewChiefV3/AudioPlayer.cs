@@ -14,7 +14,7 @@ namespace CrewChiefV3
 {
     class AudioPlayer
     {
-        public static float minimumSoundPackVersion = 3.0f;
+        public static float minimumSoundPackVersion = 30f;
 
         private CrewChief crewChief;
 
