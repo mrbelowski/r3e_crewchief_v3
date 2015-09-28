@@ -23,7 +23,7 @@ namespace CrewChiefV3
 
         private GameDefinition gameDefinition;
 
-        public static Boolean readOpponentDeltasForEveryLap = true;
+        public static Boolean readOpponentDeltasForEveryLap = false;
         private Boolean keepQuietEnabled = false;
         private Boolean spotterEnabled = UserSettings.GetUserSettings().getBoolean("enable_spotter");
 
