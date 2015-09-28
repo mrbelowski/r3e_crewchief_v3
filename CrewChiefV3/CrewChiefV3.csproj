@@ -79,6 +79,7 @@
     <Compile Include="Events\AbstractEvent.cs" />
     <Compile Include="AudioPlayer.cs" />
     <Compile Include="ControllerConfiguration.cs" />
+    <Compile Include="Events\CommonDataContainers.cs" />
     <Compile Include="Events\SessionEndMessages.cs" />
     <Compile Include="Events\Opponents.cs" />
     <Compile Include="Events\FlagsMonitor.cs" />

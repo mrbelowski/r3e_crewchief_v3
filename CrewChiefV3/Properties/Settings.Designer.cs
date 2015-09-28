@@ -715,5 +715,41 @@ namespace CrewChiefV3.Properties {
                 this["last_game_definition"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("-1")]
+        public int TOGGLE_READ_OPPONENT_DELTAS_button_index {
+            get {
+                return ((int)(this["TOGGLE_READ_OPPONENT_DELTAS_button_index"]));
+            }
+            set {
+                this["TOGGLE_READ_OPPONENT_DELTAS_button_index"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string TOGGLE_READ_OPPONENT_DELTAS_device_guid {
+            get {
+                return ((string)(this["TOGGLE_READ_OPPONENT_DELTAS_device_guid"]));
+            }
+            set {
+                this["TOGGLE_READ_OPPONENT_DELTAS_device_guid"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string TOGGLE_READ_OPPONENT_DELTAS_device_type {
+            get {
+                return ((string)(this["TOGGLE_READ_OPPONENT_DELTAS_device_type"]));
+            }
+            set {
+                this["TOGGLE_READ_OPPONENT_DELTAS_device_type"] = value;
+            }
+        }
     }
 }

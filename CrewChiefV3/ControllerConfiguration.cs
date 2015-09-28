@@ -20,6 +20,7 @@ namespace CrewChiefV3
         public static String CHANNEL_OPEN_FUNCTION = "Talk to crew chief";
         public static String TOGGLE_RACE_UPDATES_FUNCTION = "Toggle race updates on/off"; 
         public static String TOGGLE_SPOTTER_FUNCTION = "Toggle spotter on/off";
+        public static String TOGGLE_READ_OPPONENT_DELTAS = "Toggle opponent deltas on/off for each lap";
         
         // yuk...
         public Dictionary<String, int> buttonAssignmentIndexes = new Dictionary<String, int>();
@@ -45,7 +46,8 @@ namespace CrewChiefV3
         {
             addButtonAssignment(CHANNEL_OPEN_FUNCTION);
             addButtonAssignment(TOGGLE_RACE_UPDATES_FUNCTION);
-            addButtonAssignment(TOGGLE_SPOTTER_FUNCTION);
+            addButtonAssignment(TOGGLE_SPOTTER_FUNCTION); 
+            addButtonAssignment(TOGGLE_READ_OPPONENT_DELTAS);
             controllers = getControllers();
         }
 
@@ -67,6 +69,7 @@ namespace CrewChiefV3
         {
             pollForButtonClicks(buttonAssignments[buttonAssignmentIndexes[TOGGLE_RACE_UPDATES_FUNCTION]]);
             pollForButtonClicks(buttonAssignments[buttonAssignmentIndexes[TOGGLE_SPOTTER_FUNCTION]]);
+            pollForButtonClicks(buttonAssignments[buttonAssignmentIndexes[TOGGLE_READ_OPPONENT_DELTAS]]);
             if (channelOpenIsToggle) 
             {
                 pollForButtonClicks(buttonAssignments[buttonAssignmentIndexes[CHANNEL_OPEN_FUNCTION]]);
@@ -138,6 +141,10 @@ namespace CrewChiefV3
                 {
                     actionId = "TOGGLE_SPOTTER_FUNCTION";
                 }
+                else if (buttonAssignment.action == TOGGLE_READ_OPPONENT_DELTAS)
+                {
+                    actionId = "TOGGLE_READ_OPPONENT_DELTAS";
+                }
 
                 if (buttonAssignment.controller != null && buttonAssignment.joystick != null && buttonAssignment.buttonIndex != -1)
                 {
@@ -174,6 +181,13 @@ namespace CrewChiefV3
             if (toggleSpotterFunctionButtonIndex != -1 && toggleSpotterFunctionDeviceGuid.Length > 0)
             {
                 loadAssignment(parent, TOGGLE_SPOTTER_FUNCTION, toggleSpotterFunctionButtonIndex, toggleSpotterFunctionDeviceGuid);
+            }
+
+            int toggleOpponentDeltasButtonIndex = UserSettings.GetUserSettings().getInt("TOGGLE_READ_OPPONENT_DELTAS_button_index");
+            String toggleOpponentDeltasDeviceGuid = UserSettings.GetUserSettings().getString("TOGGLE_READ_OPPONENT_DELTAS_device_guid");
+            if (toggleSpotterFunctionButtonIndex != -1 && toggleSpotterFunctionDeviceGuid.Length > 0)
+            {
+                loadAssignment(parent, TOGGLE_READ_OPPONENT_DELTAS, toggleOpponentDeltasButtonIndex, toggleOpponentDeltasDeviceGuid);
             }
         }
 

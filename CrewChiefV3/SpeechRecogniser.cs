@@ -36,11 +36,13 @@ namespace CrewChiefV3
         private static String KEEP_QUIET = "keep quiet";
         private static String SHUT_UP = "shut up";
         private static String I_KNOW_WHAT_IM_DOING = "I know what I'm doing";
-        private static String LEAVE_ME_ALONE = "leave me alone";        
+        private static String LEAVE_ME_ALONE = "leave me alone";
+        private static String DONT_TELL_ME_THE_GAPS = "don't tell me the gaps";
 
         private static String KEEP_ME_UPDATED = "keep me updated";
         private static String KEEP_ME_INFORMED = "keep me informed";
         private static String KEEP_ME_POSTED = "keep me posted";
+        private static String TELL_ME_THE_GAPS = "tell me the gaps";
 
         private static String HOW_LONGS_LEFT = "how long's left";
         private static String HOW_MANY_LAPS_LEFT = "how many laps left";
@@ -146,14 +148,14 @@ namespace CrewChiefV3
                 Grammar g2 = new Grammar(gb2);
 
                 Choices info3 = new Choices();
-                info3.Add(new string[] { KEEP_QUIET, SHUT_UP, I_KNOW_WHAT_IM_DOING, LEAVE_ME_ALONE });
+                info3.Add(new string[] { KEEP_QUIET, SHUT_UP, I_KNOW_WHAT_IM_DOING, LEAVE_ME_ALONE, DONT_TELL_ME_THE_GAPS });
                 GrammarBuilder gb3 = new GrammarBuilder();
                 gb3.Culture = cultureInfo;
                 gb3.Append(info3);
                 Grammar g3 = new Grammar(gb3);
 
                 Choices info4 = new Choices();
-                info4.Add(new string[] { KEEP_ME_INFORMED, KEEP_ME_POSTED, KEEP_ME_UPDATED });
+                info4.Add(new string[] { KEEP_ME_INFORMED, KEEP_ME_POSTED, KEEP_ME_UPDATED, TELL_ME_THE_GAPS });
                 GrammarBuilder gb4 = new GrammarBuilder();
                 gb4.Culture = cultureInfo;
                 gb4.Append(info4);
@@ -318,6 +320,14 @@ namespace CrewChiefV3
                 recognisedSpeech.Contains(LEAVE_ME_ALONE))
             {
                 crewChief.enableKeepQuietMode();
+            }
+            else if (recognisedSpeech.Contains(DONT_TELL_ME_THE_GAPS))
+            {
+                crewChief.disableDeltasMode();
+            }
+            else if (recognisedSpeech.Contains(TELL_ME_THE_GAPS))
+            {
+                crewChief.enableDeltasMode();
             }
             else if (recognisedSpeech.Contains(AERO) ||
                recognisedSpeech.Contains(BODY_WORK) ||

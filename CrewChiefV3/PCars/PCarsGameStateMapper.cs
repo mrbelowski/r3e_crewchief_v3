@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using CrewChiefV3.GameState;
+using CrewChiefV3.Events;
 
 /**
  * Maps memory mapped file to a local game-agnostic representation.
@@ -675,6 +676,7 @@ namespace CrewChiefV3.PCars
             opponentData.Speed = speed;
             opponentData.Position = racePosition;
             opponentData.WorldPosition = currentWorldPosition;
+            opponentData.IsNewLap = false;
             if (opponentData.CurrentSectorNumber != sector)
             {
                 opponentData.CurrentSectorNumber = sector;
@@ -687,8 +689,10 @@ namespace CrewChiefV3.PCars
                         opponentData.ApproximateLastLapTime = sessionRunningTime - opponentData.SessionTimeAtEndOfLastSector3;
                         opponentData.SessionTimeAtEndOfLastSector3 = sessionRunningTime;
                         opponentData.LapsCompletedAtEndOfLastSector3 = completedLaps;
+
+                        opponentData.LapIsValid = true;
+                        opponentData.IsNewLap = true;
                     }
-                    opponentData.LapIsValid = true;
                 }
                 else if (opponentData.CurrentSectorNumber == 2)
                 {

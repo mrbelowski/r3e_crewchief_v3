@@ -293,6 +293,8 @@ namespace CrewChiefV3.GameState
         public float Speed = 0;
 
         public float[] WorldPosition;
+
+        public Boolean IsNewLap = false;
         
         // TODO: the logic in this method is bascially bollocks
         public OpponentDelta getTimeDifferenceToPlayer(SessionData playerSessionData)

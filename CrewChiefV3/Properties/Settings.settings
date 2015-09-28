@@ -176,5 +176,14 @@
     <Setting Name="last_game_definition" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
+    <Setting Name="TOGGLE_READ_OPPONENT_DELTAS_button_index" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">-1</Value>
+    </Setting>
+    <Setting Name="TOGGLE_READ_OPPONENT_DELTAS_device_guid" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="TOGGLE_READ_OPPONENT_DELTAS_device_type" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
   </Settings>
 </SettingsFile>

@@ -23,6 +23,7 @@ namespace CrewChiefV3
 
         private GameDefinition gameDefinition;
 
+        public static Boolean readOpponentDeltasForEveryLap = false;
         private Boolean keepQuietEnabled = false;
         private Boolean spotterEnabled = UserSettings.GetUserSettings().getBoolean("enable_spotter");
 
@@ -141,6 +142,24 @@ namespace CrewChiefV3
             {
                 enableKeepQuietMode();
             }
+        }
+
+        public void enableDeltasMode()
+        {
+            if (!readOpponentDeltasForEveryLap)
+            {
+                readOpponentDeltasForEveryLap = true;
+            }
+            audioPlayer.queueClip(new QueuedMessage(AudioPlayer.folderAcknowlegeDisableKeepQuiet, 0, null));
+        }
+
+        public void disableDeltasMode()
+        {
+            if (readOpponentDeltasForEveryLap)
+            {
+                readOpponentDeltasForEveryLap = false;
+            }
+            audioPlayer.queueClip(new QueuedMessage(AudioPlayer.folderAcknowlegeOK, 0, null));
         }
 
         public void toggleSpotterMode()

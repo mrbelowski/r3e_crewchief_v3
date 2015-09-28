@@ -237,6 +237,12 @@ namespace CrewChiefV3
                         crewChief.toggleSpotterMode();
                         nextPollWait = 1000;
                     }
+                    else if (controllerConfiguration.hasOutstandingClick(ControllerConfiguration.TOGGLE_READ_OPPONENT_DELTAS))
+                    {
+                        Console.WriteLine("Toggling read opponent deltas mode");
+                        crewChief.toggleSpotterMode();
+                        nextPollWait = 1000;
+                    }
                     else if (crewChief.speechRecogniser.initialised && voiceOption == VoiceOptionEnum.TOGGLE && 
                         controllerConfiguration.hasOutstandingClick(ControllerConfiguration.CHANNEL_OPEN_FUNCTION))
                     {

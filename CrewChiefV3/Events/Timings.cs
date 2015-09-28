@@ -12,14 +12,18 @@ namespace CrewChiefV3.Events
     {
         public static String folderGapInFrontIncreasing = "timings/gap_in_front_increasing";
         public static String folderGapInFrontDecreasing = "timings/gap_in_front_decreasing";
+        public static String folderGapInFrontIsNow = "timings/gap_in_front_is_now";
 
         public static String folderGapBehindIncreasing = "timings/gap_behind_increasing";
         public static String folderGapBehindDecreasing = "timings/gap_behind_decreasing";
+        public static String folderGapBehindIsNow = "timings/gap_behind_is_now";
 
         // for when we have a driver name...
         public static String folderTheGapTo = "timings/the_gap_to";   // "the gap to..."
         public static String folderAheadIsIncreasing = "timings/ahead_is_increasing"; // [bob] "ahead is increasing, it's now..."
         public static String folderBehindIsIncreasing = "timings/behind_is_increasing"; // [bob] "behind is increasing, it's now..."
+        public static String folderAheadIsNow = "timings/ahead_is_now"; // [bob] "ahead is increasing, it's now..."
+        public static String folderBehindIsNow = "timings/behind_is_now"; // [bob] "behind is increasing, it's now..."
 
         public static String folderYoureReeling = "timings/youre_reeling";    // "you're reeling..."
         public static String folderInTheGapIsNow = "timings/in_the_gap_is_now";  // [bob] "in, the gap is now..."
@@ -76,6 +80,12 @@ namespace CrewChiefV3.Events
         private float[] lastSectorDeltaLeader = new float[] { -1, -1, -1 };
         private float[] lastSectorDeltaSelf = new float[] { -1, -1, -1 };
 
+        private long ticksWhenOpponentAheadCrossedLine;
+
+        private long ticksWhenOpponentBehindCrossedLine;
+
+        private Boolean carBehindNewLap;
+
         public Timings(AudioPlayer audioPlayer)
         {
             this.audioPlayer = audioPlayer;
@@ -105,6 +115,9 @@ namespace CrewChiefV3.Events
             lastSectorDeltaCarBehind = new float[] { -1, -1, -1 };
             lastSectorDeltaLeader = new float[] { -1, -1, -1 };
             lastSectorDeltaSelf = new float[] { -1, -1, -1 };
+            ticksWhenOpponentAheadCrossedLine = -1;
+            ticksWhenOpponentBehindCrossedLine = -1;
+            carBehindNewLap = false;
         }
 
         protected override void triggerInternal(GameStateData previousGameState, GameStateData currentGameState)
@@ -114,6 +127,30 @@ namespace CrewChiefV3.Events
             isRace = currentGameState.SessionData.SessionType == SessionType.Race;
             currentGapInFront = currentGameState.SessionData.TimeDeltaFront;
             currentGapBehind = currentGameState.SessionData.TimeDeltaBehind;
+
+            if (isRace && CrewChief.readOpponentDeltasForEveryLap) {
+                if (!isLeading)
+                {
+                    OpponentData carInFront = currentGameState.getOpponentAtPosition(currentGameState.SessionData.Position - 1);
+                    if (carInFront != null && carInFront.IsNewLap)
+                    {
+                        ticksWhenOpponentAheadCrossedLine = currentGameState.Ticks;
+                    }
+                }
+                if (!isLast)
+                {
+                    OpponentData carInBehind = currentGameState.getOpponentAtPosition(currentGameState.SessionData.Position + 1);
+                    if (carInBehind != null && carInBehind.IsNewLap)
+                    {
+                        ticksWhenOpponentBehindCrossedLine = currentGameState.Ticks;
+                        carBehindNewLap = true;
+                    }
+                    else
+                    {
+                        carBehindNewLap = false;
+                    }
+                }
+            }
 
             if (gapsInFront == null || gapsBehind == null)
             {
@@ -148,7 +185,7 @@ namespace CrewChiefV3.Events
                         gapBehindStatus = getGapStatus(gapsBehind, gapBehindAtLastReport);
                     }
 
-                    if (isRace)
+                    if (isRace && !CrewChief.readOpponentDeltasForEveryLap)
                     {
                         // Play which ever is the smaller gap, but we're not interested if the gap is < 0.5 or > 20 seconds or hasn't changed:
                         Boolean playGapInFront = gapInFrontStatus != GapStatus.NONE &&
@@ -225,6 +262,33 @@ namespace CrewChiefV3.Events
                                     }
                                 }
                                 gapInFrontAtLastReport = gapsInFront[0];
+                            }
+                        }
+                    }
+                    else if (isRace && CrewChief.readOpponentDeltasForEveryLap)
+                    {
+                        if (currentGameState.SessionData.Position > 1 && currentGameState.SessionData.IsNewLap && ticksWhenOpponentAheadCrossedLine != -1)
+                        {
+                            float gapAhead = (currentGameState.Ticks - ticksWhenOpponentAheadCrossedLine) / TimeSpan.TicksPerSecond;
+                            ticksWhenOpponentAheadCrossedLine = -1;
+                            if (gapAhead > 0.05)
+                            {
+                                TimeSpan gap = TimeSpan.FromSeconds(gapAhead);
+                                audioPlayer.queueClip(new QueuedMessage("Timings/gap_ahead", MessageContents(folderTheGapTo,
+                                    currentGameState.getOpponentAtPosition(currentGameState.SessionData.Position - 1), folderAheadIsNow, gap, folderSeconds), 
+                                    MessageContents(folderGapInFrontIsNow, gap, folderSeconds), 0, this));
+                            }
+                        }
+                        else if (!currentGameState.isLast() && carBehindNewLap && ticksWhenOpponentBehindCrossedLine != -1)
+                        {
+                            float gapBehind = (currentGameState.Ticks - ticksWhenOpponentBehindCrossedLine) / TimeSpan.TicksPerSecond;
+                            ticksWhenOpponentBehindCrossedLine = -1;
+                            if (gapBehind > 0.05)
+                            {
+                                TimeSpan gap = TimeSpan.FromSeconds(gapBehind);
+                                audioPlayer.queueClip(new QueuedMessage("Timings/gap_behind", MessageContents(folderTheGapTo,
+                                    currentGameState.getOpponentAtPosition(currentGameState.SessionData.Position + 1), folderBehindIsNow, gap, folderSeconds),
+                                    MessageContents(folderGapBehindIsNow, gap, folderSeconds), 0, this));  
                             }
                         }
                     }
