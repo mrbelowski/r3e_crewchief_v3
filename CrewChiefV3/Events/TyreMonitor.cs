@@ -41,10 +41,10 @@ namespace CrewChiefV3.Events
         private String folderWornRights = "tyre_monitor/worn_rights";
         private String folderWornAllRound = "tyre_monitor/worn_all_round";
 
-        private String folderLapsOnCurrentTyresIntro = "tyre_monitor/laps_on_current_tyres_intro";
-        private String folderLapsOnCurrentTyresOutro = "tyre_monitor/laps_on_current_tyres_outro";
-        private String folderMinutesOnCurrentTyresIntro = "tyre_monitor/minutes_on_current_tyres_intro";
-        private String folderMinutesOnCurrentTyresOutro = "tyre_monitor/minutes_on_current_tyres_outro";
+        public static String folderLapsOnCurrentTyresIntro = "tyre_monitor/laps_on_current_tyres_intro";
+        public static String folderLapsOnCurrentTyresOutro = "tyre_monitor/laps_on_current_tyres_outro";
+        public static String folderMinutesOnCurrentTyresIntro = "tyre_monitor/minutes_on_current_tyres_intro";
+        public static String folderMinutesOnCurrentTyresOutro = "tyre_monitor/minutes_on_current_tyres_outro";
 
         private static float maxColdTemp = UserSettings.GetUserSettings().getFloat("max_cold_tyre_temp");
         private static float maxGoodTemp = UserSettings.GetUserSettings().getFloat("max_good_tyre_temp");

@@ -35,10 +35,10 @@ namespace CrewChiefV3.Events
         private String folderMandatoryPitStopsPitNow = "mandatory_pit_stops/pit_now";
 
         // for voice responses
-        private String folderMandatoryPitStopsYesStopOnLap = "mandatory_pit_stops/yes_stop_on_lap";
-        private String folderMandatoryPitStopsYesStopAfter = "mandatory_pit_stops/yes_stop_after";
-        private String folderMandatoryPitStopsMinutes = "mandatory_pit_stops/minutes";
-        private String folderMandatoryPitStopsMissedStop = "mandatory_pit_stops/missed_stop";
+        public static String folderMandatoryPitStopsYesStopOnLap = "mandatory_pit_stops/yes_stop_on_lap";
+        public static String folderMandatoryPitStopsYesStopAfter = "mandatory_pit_stops/yes_stop_after";
+        public static String folderMandatoryPitStopsMinutes = "mandatory_pit_stops/minutes";
+        public static String folderMandatoryPitStopsMissedStop = "mandatory_pit_stops/missed_stop";
 
 
         private int pitWindowOpenLap;

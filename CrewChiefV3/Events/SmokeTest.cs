@@ -86,7 +86,17 @@ namespace CrewChiefV3.Events
             audioPlayer.queueClip(new QueuedMessage("opponents_5",
                                     MessageContents(Opponents.folderTheLeader, opponent4, Opponents.folderIsPitting), 0, this));
             audioPlayer.queueClip(new QueuedMessage("opponents_1",
-                                    MessageContents(opponent3, Opponents.folderIsNowLeading), 0, this));*/
+                                    MessageContents(opponent3, Opponents.folderIsNowLeading), 0, this));
+
+            audioPlayer.queueClip(new QueuedMessage("Fuel/estimate", MessageContents(
+                                        Fuel.folderWeEstimate, QueuedMessage.folderNameNumbersStub + 12, Fuel.folderMinutesRemaining), 0, this));
+            
+            audioPlayer.queueClip(new QueuedMessage("laptime", MessageContents(LapTimes.folderLapTimeIntro, 
+                TimeSpan.FromSeconds(currentGameState.SessionData.LapTimePrevious)), 0, this));
+            audioPlayer.queueClip(new QueuedMessage("yesBoxAfter", MessageContents(MandatoryPitStops.folderMandatoryPitStopsYesStopAfter,
+                QueuedMessage.folderNameNumbersStub + 10, MandatoryPitStops.folderMandatoryPitStopsMinutes), 0, null));
+            audioPlayer.queueClip(new QueuedMessage("laps_on_current_tyres", MessageContents(TyreMonitor.folderLapsOnCurrentTyresIntro,
+                QueuedMessage.folderNameNumbersStub + 5, TyreMonitor.folderLapsOnCurrentTyresOutro), 0, this));*/
         }
     }
 }

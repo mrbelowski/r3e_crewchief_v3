@@ -45,10 +45,10 @@ namespace CrewChiefV3.PCars
             (uint)eTerrain.TERRAIN_LOW_GRIP_ROAD, (uint)eTerrain.TERRAIN_MARBLES,(uint)eTerrain.TERRAIN_PAVEMENT,
             (uint)eTerrain.TERRAIN_ROAD, (uint)eTerrain.TERRAIN_RUMBLE_STRIPS, (uint)eTerrain.TERRAIN_SAND_ROAD};
 
-        private float trivialDamageThreshold = 0.05f;
-        private float minorDamageThreshold = 0.15f;
-        private float severeDamageThreshold = 0.3f;
-        private float destroyedDamageThreshold = 0.99f;
+        private float trivialDamageThreshold = 0.02f;
+        private float minorDamageThreshold = 0.10f;
+        private float severeDamageThreshold = 0.2f;
+        private float destroyedDamageThreshold = 0.70f;
 
         // tyres in PCars are worn out when the wear level is > ?
         private float wornOutTyreWearLevel = 0.50f;

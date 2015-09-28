@@ -12,7 +12,7 @@ namespace CrewChiefV3.Events
 
         // for qualifying:
         // "that was a 1:34.2, you're now 0.4 seconds off the pace"
-        private String folderLapTimeIntro = "lap_times/time_intro";   // this might be a blank wav file
+        public static String folderLapTimeIntro = "lap_times/time_intro";
         private String folderGapIntro = "lap_times/gap_intro";
         private String folderGapOutroOffPace = "lap_times/gap_outro_off_pace";
         // "that was a 1:34.2, you're fastest in your class"

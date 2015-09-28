@@ -8,33 +8,33 @@ namespace CrewChiefV3.Events
 {
     class Fuel : AbstractEvent
     {
-        private String folderOneLapEstimate = "fuel/one_lap_fuel";
+        public static String folderOneLapEstimate = "fuel/one_lap_fuel";
 
-        private String folderTwoLapsEstimate = "fuel/two_laps_fuel";
+        public static String folderTwoLapsEstimate = "fuel/two_laps_fuel";
 
-        private String folderThreeLapsEstimate = "fuel/three_laps_fuel";
+        public static String folderThreeLapsEstimate = "fuel/three_laps_fuel";
 
-        private String folderFourLapsEstimate = "fuel/four_laps_fuel";
+        public static String folderFourLapsEstimate = "fuel/four_laps_fuel";
 
-        private String folderHalfDistanceGoodFuel = "fuel/half_distance_good_fuel";
+        public static String folderHalfDistanceGoodFuel = "fuel/half_distance_good_fuel";
 
-        private String folderHalfDistanceLowFuel = "fuel/half_distance_low_fuel";
+        public static String folderHalfDistanceLowFuel = "fuel/half_distance_low_fuel";
 
-        private String folderHalfTankWarning = "fuel/half_tank_warning";
+        public static String folderHalfTankWarning = "fuel/half_tank_warning";
 
-        private String folderTenMinutesFuel = "fuel/ten_minutes_fuel";
+        public static String folderTenMinutesFuel = "fuel/ten_minutes_fuel";
 
-        private String folderTwoMinutesFuel = "fuel/two_minutes_fuel";
+        public static String folderTwoMinutesFuel = "fuel/two_minutes_fuel";
 
-        private String folderFiveMinutesFuel = "fuel/five_minutes_fuel";
+        public static String folderFiveMinutesFuel = "fuel/five_minutes_fuel";
 
-        private String folderMinutesRemaining = "fuel/minutes_remaining";
+        public static String folderMinutesRemaining = "fuel/minutes_remaining";
 
-        private String folderLapsRemaining = "fuel/laps_remaining";
+        public static String folderLapsRemaining = "fuel/laps_remaining";
 
-        private String folderWeEstimate = "fuel/we_estimate";
+        public static String folderWeEstimate = "fuel/we_estimate";
 
-        private String folderPlentyOfFuel = "fuel/plenty_of_fuel";
+        public static String folderPlentyOfFuel = "fuel/plenty_of_fuel";
 
         private float averageUsagePerLap;
 
