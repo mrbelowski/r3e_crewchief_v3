@@ -3,6 +3,8 @@ CrewChief version 3.
 Changelog
 ---------
 
+Version 3.0.2: Fixed 32bit Project Cars
+
 Version 3.0.1: Minor spotter tweak to minimise the inappropriate 'clear' calls; changed prac / qual session end detection method
 
 Version 3.0.0: Major internal rework and rewiring; added project cars; loads and loads of other stuff
@@ -80,6 +82,10 @@ I made this because I wanted to make it and I enjoy making stuff. Working with t
 If you use it and like it and it becomes a regular and positive part of your sim racing, I'd be grateful if you would consider making a small donation. If only to stop my wife from complaining at me.
 
 My paypal address is jim.britton@yahoo.co.uk
+
+Or you can use this to donate directly:
+
+https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=LW33XFXP4DPZE
 
 Would be great to recoup some of the investment in making this, but the most important thing is that the app is used 'in anger' and enjoyed as part of the sim racing experience. To this end, I'm always on the lookout for bug reports and feature suggestions.
 
