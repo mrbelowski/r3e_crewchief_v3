@@ -19,6 +19,7 @@ namespace CrewChiefV3
         public static String FUEL = "fuel";
         public static String TYRE_WEAR = "tyre wear";
         public static String TYRE_TEMPS = "tyre temps";
+        public static String BRAKE_TEMPS = "brake temps";
         public static String AERO = "aero";
         public static String BODY_WORK = "body work";
         public static String TRANSMISSION = "transmission";
@@ -132,7 +133,7 @@ namespace CrewChiefV3
             try
             {
                 Choices info1 = new Choices();
-                info1.Add(new string[] { FUEL, TYRE_WEAR, TYRE_TEMPS, AERO, BODY_WORK, TRANSMISSION, ENGINE, PACE, ENGINE_TEMPS });
+                info1.Add(new string[] { FUEL, TYRE_WEAR, TYRE_TEMPS, BRAKE_TEMPS, AERO, BODY_WORK, TRANSMISSION, ENGINE, PACE, ENGINE_TEMPS });
                 GrammarBuilder gb1 = new GrammarBuilder();
                 gb1.Culture = cultureInfo;
                 gb1.Append("how is my");
@@ -364,7 +365,8 @@ namespace CrewChiefV3
                 return CrewChief.getEvent("LapTimes");
             }
             else if (recognisedSpeech.Contains(TYRE_TEMPS) ||
-                recognisedSpeech.Contains(TYRE_WEAR))
+                recognisedSpeech.Contains(TYRE_WEAR) ||
+                recognisedSpeech.Contains(BRAKE_TEMPS))
             {
                 return CrewChief.getEvent("TyreMonitor");
             }

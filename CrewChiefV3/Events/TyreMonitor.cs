@@ -9,17 +9,51 @@ namespace CrewChiefV3.Events
 {
     class TyreMonitor : AbstractEvent
     {
-        private String folderHotLeftFront = "tyre_monitor/hot_left_front";
-        private String folderHotLeftRear = "tyre_monitor/hot_left_rear";
-        private String folderHotRightFront = "tyre_monitor/hot_right_front";
-        private String folderHotRightRear = "tyre_monitor/hot_right_rear";
-        private String folderHotFronts = "tyre_monitor/hot_fronts";
-        private String folderHotRears = "tyre_monitor/hot_rears";
-        private String folderHotLefts = "tyre_monitor/hot_lefts";
-        private String folderHotRights = "tyre_monitor/hot_rights";
-        private String folderHotAllRound = "tyre_monitor/hot_all_round";
-        private String folderGoodTemps = "tyre_monitor/good_temps";
+        // tyre temp messages...
+        private String folderColdFrontTyres = "tyre_monitor/cold_front_tyres";
+        private String folderColdRearTyres = "tyre_monitor/cold_rear_tyres";
+        private String folderColdLeftTyres = "tyre_monitor/cold_left_tyres";
+        private String folderColdRightTyres = "tyre_monitor/cold_right_tyres";
+        private String folderColdTyresAllRound = "tyre_monitor/cold_tyres_all_round";
 
+        private String folderHotLeftFrontTyre = "tyre_monitor/hot_left_front_tyre";
+        private String folderHotLeftRearTyre = "tyre_monitor/hot_left_rear_tyre";
+        private String folderHotRightFrontTyre = "tyre_monitor/hot_right_front_tyre";
+        private String folderHotRightRearTyre = "tyre_monitor/hot_right_rear_tyre";
+        private String folderHotFrontTyres = "tyre_monitor/hot_front_tyres";
+        private String folderHotRearTyres = "tyre_monitor/hot_rear_tyres";
+        private String folderHotLeftTyres = "tyre_monitor/hot_left_tyres";
+        private String folderHotRightTyres = "tyre_monitor/hot_right_tyres";
+        private String folderHotTyresAllRound = "tyre_monitor/hot_tyres_all_round";
+
+        private String folderCookingLeftFrontTyre = "tyre_monitor/cooking_left_front_tyre";
+        private String folderCookingLeftRearTyre = "tyre_monitor/cooking_left_rear_tyre";
+        private String folderCookingRightFrontTyre = "tyre_monitor/cooking_right_front_tyre";
+        private String folderCookingRightRearTyre = "tyre_monitor/cooking_right_rear_tyre";
+        private String folderCookingFrontTyres = "tyre_monitor/cooking_front_tyres";
+        private String folderCookingRearTyres = "tyre_monitor/cooking_rear_tyres";
+        private String folderCookingLeftTyres = "tyre_monitor/cooking_left_tyres";
+        private String folderCookingRightTyres = "tyre_monitor/cooking_right_tyres";
+        private String folderCookingTyresAllRound = "tyre_monitor/cooking_tyres_all_round";
+
+        private String folderGoodTyreTemps = "tyre_monitor/good_tyre_temps";
+
+
+        // brake temp messages...
+        private String folderColdFrontBrakes = "tyre_monitor/cold_front_brakes";
+        private String folderColdRearBrakes = "tyre_monitor/cold_rear_brakes";
+        private String folderHotFrontBrakes = "tyre_monitor/hot_front_brakes";
+        private String folderHotRearBrakes = "tyre_monitor/hot_rear_brakes";
+        private String folderCookingFrontBrakes = "tyre_monitor/hot_front_brakes";
+        private String folderCookingRearBrakes = "tyre_monitor/hot_rear_brakes";
+
+        private String folderColdBrakesAllRound = "tyre_monitor/cold_brakes_all_round";
+        private String folderGoodBrakeTemps = "tyre_monitor/good_brake_temps";
+        private String folderHotBrakesAllRound = "tyre_monitor/hot_brakes_all_round";
+        private String folderCookingBrakesAllRound = "tyre_monitor/cooking_brakes_all_round";      
+
+
+        // tyre condition messages...
         private String folderKnackeredLeftFront = "tyre_monitor/knackered_left_front";
         private String folderKnackeredLeftRear = "tyre_monitor/knackered_left_rear";
         private String folderKnackeredRightFront = "tyre_monitor/knackered_right_front";
@@ -29,6 +63,7 @@ namespace CrewChiefV3.Events
         private String folderKnackeredLefts = "tyre_monitor/knackered_lefts";
         private String folderKnackeredRights = "tyre_monitor/knackered_rights";
         private String folderKnackeredAllRound = "tyre_monitor/knackered_all_round";
+
         private String folderGoodWear = "tyre_monitor/good_wear";
 
         private String folderWornLeftFront = "tyre_monitor/worn_left_front";
@@ -46,37 +81,21 @@ namespace CrewChiefV3.Events
         public static String folderMinutesOnCurrentTyresIntro = "tyre_monitor/minutes_on_current_tyres_intro";
         public static String folderMinutesOnCurrentTyresOutro = "tyre_monitor/minutes_on_current_tyres_outro";
 
-        private static float maxColdTemp = UserSettings.GetUserSettings().getFloat("max_cold_tyre_temp");
-        private static float maxGoodTemp = UserSettings.GetUserSettings().getFloat("max_good_tyre_temp");
         private static Boolean enableTyreTempWarnings = UserSettings.GetUserSettings().getBoolean("enable_tyre_temp_warnings");
+        private static Boolean enableBrakeTempWarnings = UserSettings.GetUserSettings().getBoolean("enable_brake_temp_warnings");
         private static Boolean enableTyreWearWarnings = UserSettings.GetUserSettings().getBoolean("enable_tyre_wear_warnings");
 
-        private int tyreTempMessageDelay = 0;
-
         private int lapsIntoSessionBeforeTempMessage = 2;
-
-        private TyreTemps lastLapTyreTemps;
-        private TyreTemps thisLapTyreTemps;
-
-        private TyreTempStatus lastReportedStatus;
-
+        
         private Boolean checkedTempsAtSector3;
 
         // -1 means we only check at the end of the lap
         private int checkAtSector = -1;
 
-        private TyreWearStatus lastReportedKnackeredTyreStatus;
-        private TyreWearStatus lastReportedWornTyreStatus;
-
         private Boolean reportedTyreWearForCurrentPitEntry;
 
         private Boolean reportedEstimatedTimeLeft;
-
-        private TyreCondition leftFrontCondition;
-        private TyreCondition rightFrontCondition;
-        private TyreCondition leftRearCondition;
-        private TyreCondition rightRearCondition;
-
+        
         private float leftFrontWearPercent;
         private float rightFrontWearPercent;
         private float leftRearWearPercent;
@@ -86,6 +105,18 @@ namespace CrewChiefV3.Events
         private int lapsInSession;
         private float timeInSession;
         private float timeElapsed;
+
+        private CornerData currentTyreConditionStatus;
+
+        private CornerData currentTyreTempStatus;
+
+        private CornerData currentBrakeTempStatus;
+
+        private List<MessageFragment> lastTyreTempMessage = null;
+
+        private List<MessageFragment> lastBrakeTempMessage = null;
+        
+        private List<MessageFragment> lastTyreConditionMessage = null;
         
         public TyreMonitor(AudioPlayer audioPlayer)
         {
@@ -94,16 +125,7 @@ namespace CrewChiefV3.Events
 
         public override void clearState()
         {
-            lastLapTyreTemps = null;
-            thisLapTyreTemps = null;
-            lastReportedStatus = TyreTempStatus.NO_DATA;
-            lastReportedKnackeredTyreStatus = TyreWearStatus.NOT_TRIGGERED;
-            lastReportedWornTyreStatus = TyreWearStatus.NOT_TRIGGERED;
             checkedTempsAtSector3 = false;
-            leftFrontCondition = TyreCondition.UNKNOWN;
-            rightFrontCondition = TyreCondition.UNKNOWN;
-            leftRearCondition = TyreCondition.UNKNOWN;
-            rightRearCondition = TyreCondition.UNKNOWN;
             reportedTyreWearForCurrentPitEntry = false;
             reportedEstimatedTimeLeft = false;
             leftFrontWearPercent = 0;
@@ -114,46 +136,26 @@ namespace CrewChiefV3.Events
             lapsInSession = 0;
             timeInSession = 0;
             timeElapsed = 0;
-        }
-
-        
-        private void checkTemps(TyreTemps tyreTempsToCheck)
-        {
-            // only give a message if we've completed more than the minimum laps here
-            if (tyreTempsToCheck != null)
-            {
-                tyreTempsToCheck.displayAverages();
-                TyreTempStatus tempsStatus = tyreTempsToCheck.getAverageTempStatus();
-                if (tempsStatus != lastReportedStatus)
-                {
-                    String messageFolder = getMessage(tempsStatus);
-                    if (messageFolder != null)
-                    {
-                        Console.WriteLine("Reporting tyre temp status: " + tempsStatus);
-                        audioPlayer.queueClip(new QueuedMessage(messageFolder, tyreTempMessageDelay, this));
-                    }
-                    lastReportedStatus = tempsStatus;
-                }
-                else
-                {
-                    Console.WriteLine("No tyre temp status change: " + tempsStatus);
-                }
-            }
+            currentTyreConditionStatus = new CornerData();
+            currentTyreTempStatus = new CornerData();
+            currentBrakeTempStatus = new CornerData();
+            lastTyreTempMessage = null;
+            lastBrakeTempMessage = null;
+            lastTyreConditionMessage = null;
         }
 
         override protected void triggerInternal(GameStateData previousGameState, GameStateData currentGameState)
         {
             if (currentGameState.TyreData.TireWearActive)
             {
-                leftFrontCondition = currentGameState.TyreData.FrontLeftCondition;
-                rightFrontCondition = currentGameState.TyreData.FrontRightCondition;
-                leftRearCondition = currentGameState.TyreData.RearLeftCondition;
-                rightRearCondition = currentGameState.TyreData.RearRightCondition;
-
                 leftFrontWearPercent = currentGameState.TyreData.FrontLeftPercentWear;
                 leftRearWearPercent = currentGameState.TyreData.RearLeftPercentWear;
                 rightFrontWearPercent = currentGameState.TyreData.FrontRightPercentWear;
                 rightRearWearPercent = currentGameState.TyreData.RearRightPercentWear;
+
+                currentTyreConditionStatus = currentGameState.TyreData.TyreConditionStatus;
+                currentTyreTempStatus = currentGameState.TyreData.TyreTempStatus;
+                currentBrakeTempStatus = currentGameState.TyreData.BrakeTempStatus;
 
                 completedLaps = currentGameState.SessionData.CompletedLaps;
                 lapsInSession = currentGameState.SessionData.SessionNumberOfLaps;
@@ -164,7 +166,7 @@ namespace CrewChiefV3.Events
                 {
                     if (currentGameState.SessionData.SessionType == SessionType.Race && enableTyreWearWarnings && !reportedTyreWearForCurrentPitEntry)
                     {
-                        playTyreWearMessages(true, true);
+                        reportCurrentTyreConditionStatus(true, true);
                         reportedTyreWearForCurrentPitEntry = true;
                     }
                 }
@@ -174,7 +176,7 @@ namespace CrewChiefV3.Events
                 }
                 if (currentGameState.SessionData.IsNewLap && !currentGameState.PitData.InPitlane && enableTyreWearWarnings && !currentGameState.SessionData.LeaderHasFinishedRace)
                 {
-                    playTyreWearMessages(true, false);
+                    reportCurrentTyreConditionStatus(true, false);
                 }
                 if (!currentGameState.PitData.InPitlane && !reportedEstimatedTimeLeft && enableTyreWearWarnings && !currentGameState.SessionData.LeaderHasFinishedRace)
                 {
@@ -191,32 +193,110 @@ namespace CrewChiefV3.Events
             }
             if (currentGameState.SessionData.IsNewLap)
             {
-                lastLapTyreTemps = thisLapTyreTemps;    // this might still be null
-                thisLapTyreTemps = new TyreTemps();
-                updateTyreTemps(currentGameState.TyreData, thisLapTyreTemps);
-                if (!currentGameState.PitData.InPitlane && enableTyreTempWarnings && !checkedTempsAtSector3 &&
+                if (!currentGameState.PitData.InPitlane && !checkedTempsAtSector3 &&
                     currentGameState.SessionData.CompletedLaps >= lapsIntoSessionBeforeTempMessage && !currentGameState.SessionData.LeaderHasFinishedRace)
                 {
-                    checkTemps(lastLapTyreTemps);
+                    if (enableTyreTempWarnings)
+                    {
+                        reportCurrentTyreTempStatus(false);
+                    }
+                    if (enableBrakeTempWarnings)
+                    {
+                        reportCurrentBrakeTempStatus(false);
+                    }
                 }
                 checkedTempsAtSector3 = false;                                                       
             }
             else
             {
-                if (thisLapTyreTemps == null)
-                {
-                    thisLapTyreTemps = new TyreTemps();
-                }
-                updateTyreTemps(currentGameState.TyreData, thisLapTyreTemps);
-                if (enableTyreTempWarnings && checkAtSector > 0 && currentGameState.SessionData.IsNewSector && currentGameState.SessionData.SectorNumber == checkAtSector)
+                if (checkAtSector > 0 && currentGameState.SessionData.IsNewSector && currentGameState.SessionData.SectorNumber == checkAtSector)
                 {
                     checkedTempsAtSector3 = true;
                     if (!currentGameState.PitData.InPitlane && currentGameState.SessionData.CompletedLaps >= lapsIntoSessionBeforeTempMessage && !currentGameState.SessionData.LeaderHasFinishedRace)
                     {
-                        checkTemps(thisLapTyreTemps);
+                        if (enableTyreTempWarnings)
+                        {
+                            reportCurrentTyreTempStatus(false);
+                        }
+                        if (enableBrakeTempWarnings)
+                        {
+                            reportCurrentBrakeTempStatus(false);
+                        }
                     }
                 }
             }
+        }
+
+        private void reportCurrentTyreTempStatus(Boolean playImmediately)
+        {
+            List<MessageFragment> messageContents = new List<MessageFragment>();
+            addTyreTempWarningMessages(currentTyreTempStatus.getCornersForStatus(TyreTemp.COLD), TyreTemp.COLD, messageContents);
+            addTyreTempWarningMessages(currentTyreTempStatus.getCornersForStatus(TyreTemp.HOT), TyreTemp.HOT, messageContents);
+            addTyreTempWarningMessages(currentTyreTempStatus.getCornersForStatus(TyreTemp.COOKING), TyreTemp.COOKING, messageContents);
+            if (messageContents.Count == 0)
+            {
+                messageContents.Add(MessageFragment.Text(folderGoodTyreTemps));
+            }            
+
+            if (playImmediately)
+            {
+                audioPlayer.openChannel();
+                audioPlayer.playClipImmediately(new QueuedMessage("tyre_temps", messageContents, 0, this));
+                audioPlayer.closeChannel();
+            }
+            else if (!messagesHaveSameContent(lastTyreTempMessage, messageContents))
+            {
+                audioPlayer.queueClip(new QueuedMessage("tyre_temps", messageContents, 0, this));
+            }
+            lastTyreTempMessage = messageContents;
+        }
+
+        private void reportCurrentBrakeTempStatus(Boolean playImmediately)
+        {
+            List<MessageFragment> messageContents = new List<MessageFragment>();
+            addBrakeTempWarningMessages(currentBrakeTempStatus.getCornersForStatus(BrakeTemp.COLD), BrakeTemp.COLD, messageContents);
+            addBrakeTempWarningMessages(currentBrakeTempStatus.getCornersForStatus(BrakeTemp.HOT), BrakeTemp.HOT, messageContents);
+            addBrakeTempWarningMessages(currentBrakeTempStatus.getCornersForStatus(BrakeTemp.COOKING), BrakeTemp.COOKING, messageContents);
+            if (messageContents.Count == 0)
+            {
+                messageContents.Add(MessageFragment.Text(folderGoodBrakeTemps));
+            }
+
+            if (playImmediately)
+            {
+                audioPlayer.openChannel();
+                audioPlayer.playClipImmediately(new QueuedMessage("brake_temps", messageContents, 0, this));
+                audioPlayer.closeChannel();
+            }
+            else if(!messagesHaveSameContent(lastBrakeTempMessage, messageContents))
+            {
+                audioPlayer.queueClip(new QueuedMessage("brake_temps", messageContents, 0, this));
+            } 
+            lastBrakeTempMessage = messageContents;
+        }
+
+        private void reportCurrentTyreConditionStatus(Boolean playImmediately, Boolean playEvenIfUnchanged)
+        {
+            List<MessageFragment> messageContents = new List<MessageFragment>();
+            addTyreConditionWarningMessages(currentTyreConditionStatus.getCornersForStatus(TyreCondition.MINOR_WEAR), TyreCondition.MINOR_WEAR, messageContents);
+            addTyreConditionWarningMessages(currentTyreConditionStatus.getCornersForStatus(TyreCondition.MAJOR_WEAR), TyreCondition.MAJOR_WEAR, messageContents);
+            addTyreConditionWarningMessages(currentTyreConditionStatus.getCornersForStatus(TyreCondition.WORN_OUT), TyreCondition.WORN_OUT, messageContents);
+            if (messageContents.Count == 0)
+            {
+                messageContents.Add(MessageFragment.Text(folderGoodWear));
+            }
+
+            if (playImmediately)
+            {
+                audioPlayer.openChannel();
+                audioPlayer.playClipImmediately(new QueuedMessage("tyre_condition", messageContents, 0, this));
+                audioPlayer.closeChannel();
+            }
+            else if (playEvenIfUnchanged || !messagesHaveSameContent(lastTyreConditionMessage, messageContents))
+            {
+                audioPlayer.queueClip(new QueuedMessage("tyre_condition", messageContents, 0, this));
+            }
+            lastTyreConditionMessage = messageContents;
         }
 
         private void playEstimatedTypeLifeMinutes(int minutesRemainingOnTheseTyres, Boolean immediate)
@@ -329,22 +409,24 @@ namespace CrewChiefV3.Events
         {
             if (voiceMessage.Contains(SpeechRecogniser.TYRE_TEMPS))
             {
-                Boolean gotData = false;
-                if (thisLapTyreTemps != null)
+                if (currentTyreTempStatus != null)
                 {
-                    TyreTempStatus status = thisLapTyreTemps.getCurrentTempStatus();
-                    String messageFolder = getMessage(status);
-                    if (messageFolder != null)
-                    {
-                        Console.WriteLine("Tyre temp status is: " + status);
-                        thisLapTyreTemps.displayCurrent();
-                        gotData = true;
-                        audioPlayer.openChannel();
-                        audioPlayer.playClipImmediately(new QueuedMessage(messageFolder, 0, this));
-                        audioPlayer.closeChannel();
-                    }
+                    reportCurrentTyreTempStatus(true);
                 }
-                if (!gotData)
+                else
+                {
+                    audioPlayer.openChannel();
+                    audioPlayer.playClipImmediately(new QueuedMessage(AudioPlayer.folderNoData, 0, this));
+                    audioPlayer.closeChannel();
+                }
+            } 
+            else if (voiceMessage.Contains(SpeechRecogniser.BRAKE_TEMPS))
+            {
+                if (currentBrakeTempStatus != null)
+                {
+                    reportCurrentBrakeTempStatus(true);
+                }
+                else
                 {
                     audioPlayer.openChannel();
                     audioPlayer.playClipImmediately(new QueuedMessage(AudioPlayer.folderNoData, 0, this));
@@ -353,407 +435,337 @@ namespace CrewChiefV3.Events
             }
             else if (voiceMessage.Contains(SpeechRecogniser.TYRE_WEAR))
             {
-                playTyreWearMessages(false, true);
-                reportEstimatedTyreLife(10, true);
-                audioPlayer.closeChannel();
-            }
-        }
-
-        private void playTyreWearMessages(Boolean isQueuedMessage, Boolean playGoodWearMessage)
-        {
-            TyreWearStatus knackeredTyres = getKnackeredTyreWearStatus();
-            TyreWearStatus wornTyres = getWornTyreWearStatus();
-            if (knackeredTyres == TyreWearStatus.NOT_TRIGGERED && wornTyres == TyreWearStatus.NOT_TRIGGERED)
-            {
-                if (playGoodWearMessage)
+                if (currentTyreConditionStatus != null)
                 {
-                    if (isQueuedMessage)
-                    {
-                        audioPlayer.queueClip(new QueuedMessage(folderGoodWear, 1, this));
-                    }
-                    else
-                    {
-                        audioPlayer.openChannel();
-                        audioPlayer.playClipImmediately(new QueuedMessage(folderGoodWear, 0, this));
-                    }
-                }
-            }
-            else
-            {
-                lastReportedKnackeredTyreStatus = knackeredTyres;
-                lastReportedWornTyreStatus = wornTyres;
-                reportTyreWearStatus(knackeredTyres, isQueuedMessage);
-                reportTyreWearStatus(wornTyres, isQueuedMessage);
-            }
-        }
-
-        private TyreWearStatus getKnackeredTyreWearStatus()
-        {
-            if (leftFrontCondition == TyreCondition.WORN_OUT && leftRearCondition == TyreCondition.WORN_OUT &&
-                rightFrontCondition == TyreCondition.WORN_OUT && rightRearCondition == TyreCondition.WORN_OUT)
-            {
-                // all knackered
-                return TyreWearStatus.KNACKERED_ALL_ROUND;
-            }
-            else if (leftFrontCondition == TyreCondition.WORN_OUT && rightFrontCondition == TyreCondition.WORN_OUT)
-            {
-                // knackered fronts
-                return TyreWearStatus.KNACKERED_FRONTS;
-            }
-            else if (leftRearCondition == TyreCondition.WORN_OUT && rightRearCondition == TyreCondition.WORN_OUT)
-            {
-                // knackered rears
-                return TyreWearStatus.KNACKERED_REARS;
-            }
-            else if (leftFrontCondition == TyreCondition.WORN_OUT && leftRearCondition == TyreCondition.WORN_OUT)
-            {
-                // knackered lefts
-                return TyreWearStatus.KNACKERED_LEFTS;
-            }
-            else if (rightFrontCondition == TyreCondition.WORN_OUT && rightRearCondition == TyreCondition.WORN_OUT)
-            {
-                // knackered rights
-                return TyreWearStatus.KNACKERED_RIGHTS;
-            }
-            else if (leftFrontCondition == TyreCondition.WORN_OUT)
-            {
-                // knackered left front
-                return TyreWearStatus.KNACKERED_LEFT_FRONT;
-            }
-            else if (leftRearCondition == TyreCondition.WORN_OUT)
-            {
-                // knackered left rear
-                return TyreWearStatus.KNACKERED_LEFT_REAR;
-            }
-            else if (rightFrontCondition == TyreCondition.WORN_OUT)
-            {
-                // knackered right front
-                return TyreWearStatus.KNACKERED_RIGHT_FRONT;
-            }
-            else if (rightRearCondition == TyreCondition.WORN_OUT)
-            {
-                // knackered right rear
-                return TyreWearStatus.KNACKERED_RIGHT_REAR;
-            }
-            else
-            {
-                return TyreWearStatus.NOT_TRIGGERED;
-            }
-        }
-
-        private TyreWearStatus getWornTyreWearStatus()
-        {
-            if (leftFrontCondition == TyreCondition.MAJOR_WEAR && leftRearCondition == TyreCondition.MAJOR_WEAR &&
-                rightFrontCondition == TyreCondition.MAJOR_WEAR && rightRearCondition == TyreCondition.MAJOR_WEAR)
-            {
-                // all worn
-                return TyreWearStatus.WORN_ALL_ROUND;
-            }
-            else if (leftFrontCondition == TyreCondition.MAJOR_WEAR && rightFrontCondition == TyreCondition.MAJOR_WEAR)
-            {
-                // worn fronts
-                return TyreWearStatus.WORN_FRONTS;
-            }
-            else if (leftRearCondition == TyreCondition.MAJOR_WEAR && rightRearCondition == TyreCondition.MAJOR_WEAR)
-            {
-                // worn rears
-                return TyreWearStatus.WORN_REARS;
-            }
-            else if (leftFrontCondition == TyreCondition.MAJOR_WEAR && leftRearCondition == TyreCondition.MAJOR_WEAR)
-            {
-                // worn lefts
-                return TyreWearStatus.WORN_LEFTS;
-            }
-            else if (rightFrontCondition == TyreCondition.MAJOR_WEAR && rightRearCondition == TyreCondition.MAJOR_WEAR)
-            {
-                // worn rights
-                return TyreWearStatus.WORN_RIGHTS;
-            }
-            else if (leftFrontCondition == TyreCondition.MAJOR_WEAR)
-            {
-                // worn left front
-                return TyreWearStatus.WORN_LEFT_FRONT;
-            }
-            else if (leftRearCondition == TyreCondition.MAJOR_WEAR)
-            {
-                // worn left rear
-                return TyreWearStatus.WORN_LEFT_REAR;
-            }
-            else if (rightFrontCondition == TyreCondition.MAJOR_WEAR)
-            {
-                // worn right front
-                return TyreWearStatus.WORN_RIGHT_FRONT;
-            }
-            else if (rightRearCondition == TyreCondition.MAJOR_WEAR)
-            {
-                // worn right rear
-                return TyreWearStatus.WORN_RIGHT_REAR;
-            }
-            else
-            {
-                return TyreWearStatus.NOT_TRIGGERED;
-            }
-        }
-
-        private void reportTyreWearStatus(TyreWearStatus tyreWearStatus, Boolean isQueuedMessage)
-        {
-            String clipToPlay = null;
-            switch (tyreWearStatus)
-            {
-                case TyreWearStatus.KNACKERED_ALL_ROUND:
-                    clipToPlay = folderKnackeredAllRound;
-                    break;
-                case TyreWearStatus.KNACKERED_FRONTS:
-                    clipToPlay = folderKnackeredFronts;
-                    break;
-                case TyreWearStatus.KNACKERED_REARS:
-                    clipToPlay = folderKnackeredRears;
-                    break;
-                case TyreWearStatus.KNACKERED_LEFTS:
-                    clipToPlay = folderKnackeredLefts;
-                    break;
-                case TyreWearStatus.KNACKERED_RIGHTS:
-                    clipToPlay = folderKnackeredRights;
-                    break;
-                case TyreWearStatus.KNACKERED_LEFT_FRONT:
-                    clipToPlay = folderKnackeredLeftFront;
-                    break;
-                case TyreWearStatus.KNACKERED_LEFT_REAR:
-                    clipToPlay = folderKnackeredLeftRear;
-                    break;
-                case TyreWearStatus.KNACKERED_RIGHT_FRONT:
-                    clipToPlay = folderKnackeredRightFront;
-                    break;
-                case TyreWearStatus.KNACKERED_RIGHT_REAR:
-                    clipToPlay = folderKnackeredRightRear;
-                    break;
-                case TyreWearStatus.WORN_ALL_ROUND:
-                    clipToPlay = folderWornAllRound;
-                    break;
-                case TyreWearStatus.WORN_FRONTS:
-                    clipToPlay = folderWornFronts;
-                    break;
-                case TyreWearStatus.WORN_REARS:
-                    clipToPlay = folderWornRears;
-                    break;
-                case TyreWearStatus.WORN_LEFTS:
-                    clipToPlay = folderWornLefts;
-                    break;
-                case TyreWearStatus.WORN_RIGHTS:
-                    clipToPlay = folderWornRights;
-                    break;
-                case TyreWearStatus.WORN_LEFT_FRONT:
-                    clipToPlay = folderWornLeftFront;
-                    break;
-                case TyreWearStatus.WORN_LEFT_REAR:
-                    clipToPlay = folderWornLeftRear;
-                    break;
-                case TyreWearStatus.WORN_RIGHT_FRONT:
-                    clipToPlay = folderWornRightFront;
-                    break;
-                case TyreWearStatus.WORN_RIGHT_REAR:
-                    clipToPlay = folderWornRightRear;
-                    break;
-            }
-            if (clipToPlay != null)
-            {
-                if (isQueuedMessage)
-                {
-                    audioPlayer.queueClip(new QueuedMessage(clipToPlay, 0, this));
+                    reportCurrentTyreConditionStatus(true, true);
                 }
                 else
                 {
-                    audioPlayer.playClipImmediately(new QueuedMessage(clipToPlay, 0, this));
+                    audioPlayer.openChannel();
+                    audioPlayer.playClipImmediately(new QueuedMessage(AudioPlayer.folderNoData, 0, this));
                     audioPlayer.closeChannel();
                 }
             }
         }
 
-        private String getMessage(TyreTempStatus tempStatus)
+        private void addTyreTempWarningMessages(CornerData.Corners corners, TyreTemp tyreTemp, List<MessageFragment> messageContents)
         {
-            switch (tempStatus)
+            switch (corners)
             {
-                case TyreTempStatus.GOOD:
-                    return folderGoodTemps;
-                case TyreTempStatus.HOT_ALL_ROUND:
-                    return folderHotAllRound;
-                case TyreTempStatus.HOT_FRONTS:
-                    return folderHotFronts;
-                case TyreTempStatus.HOT_REARS:
-                    return folderHotRears;
-                case TyreTempStatus.HOT_LEFTS:
-                    return folderHotLefts;
-                case TyreTempStatus.HOT_RIGHTS:
-                    return folderHotRights;
-                case TyreTempStatus.HOT_LEFT_FRONT:
-                    return folderHotLeftFront;
-                case TyreTempStatus.HOT_LEFT_REAR:
-                    return folderHotLeftRear;
-                case TyreTempStatus.HOT_RIGHT_FRONT:
-                    return folderHotRightFront;
-                case TyreTempStatus.HOT_RIGHT_REAR:
-                    return folderHotRightRear;
-            }
-            return null;
-        }
-
-        private void updateTyreTemps(TyreData tyreData, TyreTemps tyreTemps)
-        {
-            tyreTemps.addSample((tyreData.FrontLeft_LeftTemp + tyreData.FrontLeft_CenterTemp + tyreData.FrontLeft_RightTemp) / 3,
-                (tyreData.FrontRight_LeftTemp + tyreData.FrontRight_CenterTemp + tyreData.FrontRight_RightTemp) / 3,
-                (tyreData.RearLeft_LeftTemp + tyreData.RearLeft_CenterTemp + tyreData.RearLeft_RightTemp) / 3,
-                (tyreData.RearRight_LeftTemp + tyreData.RearRight_CenterTemp + tyreData.RearRight_RightTemp) / 3);
-        }
-
-        private class TyreTemps
-        {
-            // these are for the average temp over a single lap
-            private float totalLeftFrontTemp = 0;
-            private float totalRightFrontTemp = 0;
-            private float totalLeftRearTemp = 0;
-            private float totalRightRearTemp = 0;
-
-            // these are the instantaneous tyre temps
-            public float currentLeftFrontTemp = 0;
-            public float currentRightFrontTemp = 0;
-            public float currentLeftRearTemp = 0;
-            public float currentRightRearTemp = 0;
-
-            private int tyreTempSamples = 0;
-
-            public TyreTemps()
-            {
-
-            }
-            public void displayAverages()
-            {
-                Console.WriteLine("Average temps: " + getAverageTempStatus() + "\nleft front: " + getLeftFrontAverage() + " right front: " + getRightFrontAverage() +
-                    "\nleft rear: " + getLeftRearAverage() + " right rear: " + getRightRearAverage());
-            }
-            public void displayCurrent()
-            {
-                Console.WriteLine("Current temps: " + getCurrentTempStatus() + "\nleft front: " + currentLeftFrontTemp + " right front: " + currentRightFrontTemp +
-                    "\nleft rear: " + currentLeftRearTemp + " right rear: " + currentRightRearTemp);
-            }
-            public void addSample(float leftFrontTemp, float rightFrontTemp, float leftRearTemp, float rightRearTemp)
-            {
-                tyreTempSamples++;
-                totalLeftFrontTemp += leftFrontTemp;
-                totalRightFrontTemp += rightFrontTemp;
-                totalLeftRearTemp += leftRearTemp;
-                totalRightRearTemp += rightRearTemp;
-
-                currentLeftFrontTemp = leftFrontTemp;
-                currentRightFrontTemp = rightFrontTemp;
-                currentLeftRearTemp = leftRearTemp;
-                currentRightRearTemp = rightRearTemp;
-            }
-            public float getLeftFrontAverage()
-            {
-                if (tyreTempSamples == 0)
-                {
-                    return 0;
-                }
-                return totalLeftFrontTemp / tyreTempSamples;
-            }
-            public float getLeftRearAverage()
-            {
-                if (tyreTempSamples == 0)
-                {
-                    return 0;
-                }
-                return totalLeftRearTemp / tyreTempSamples;
-            }
-            public float getRightFrontAverage()
-            {
-                if (tyreTempSamples == 0)
-                {
-                    return 0;
-                }
-                return totalRightFrontTemp / tyreTempSamples;
-            }
-            public float getRightRearAverage()
-            {
-                if (tyreTempSamples == 0)
-                {
-                    return 0;
-                }
-                return totalRightRearTemp / tyreTempSamples;
-            }
-
-            public TyreTempStatus getAverageTempStatus()
-            {
-                return getStatus(getLeftFrontAverage(), getRightFrontAverage(), getLeftRearAverage(), getRightRearAverage());
-            }
-
-            public TyreTempStatus getCurrentTempStatus()
-            {
-                return getStatus(currentLeftFrontTemp, currentRightFrontTemp, currentLeftRearTemp, currentRightRearTemp);
-            }
-
-            private TyreTempStatus getStatus(float leftFrontTemp, float rightFrontTemp, float leftRearTemp, float rightRearTemp)
-            {
-                if (leftFrontTemp < maxColdTemp && leftRearTemp < maxColdTemp &&
-                    rightFrontTemp < maxColdTemp && rightRearTemp < maxColdTemp)
-                {
-                    return TyreTempStatus.COLD;
-                }
-                if (leftFrontTemp > maxGoodTemp && leftRearTemp > maxGoodTemp &&
-                    rightFrontTemp > maxGoodTemp && rightRearTemp > maxGoodTemp)
-                {
-                    return TyreTempStatus.HOT_ALL_ROUND;
-                }
-                else if (leftFrontTemp > maxGoodTemp && rightFrontTemp > maxGoodTemp)
-                {
-                    return TyreTempStatus.HOT_FRONTS;
-                }
-                else if (leftRearTemp > maxGoodTemp && rightRearTemp > maxGoodTemp)
-                {
-                    return TyreTempStatus.HOT_REARS;
-                }
-                else if (leftFrontTemp > maxGoodTemp && leftRearTemp > maxGoodTemp)
-                {
-                    return TyreTempStatus.HOT_LEFTS;
-                }
-                else if (rightFrontTemp > maxGoodTemp && rightRearTemp > maxGoodTemp)
-                {
-                    return TyreTempStatus.HOT_RIGHTS;
-                }
-                else if (leftFrontTemp > maxGoodTemp)
-                {
-                    return TyreTempStatus.HOT_LEFT_FRONT;
-                }
-                else if (leftRearTemp > maxGoodTemp)
-                {
-                    return TyreTempStatus.HOT_LEFT_REAR;
-                }
-                else if (rightFrontTemp > maxGoodTemp)
-                {
-                    return TyreTempStatus.HOT_RIGHT_FRONT;
-                }
-                else if (rightRearTemp > maxGoodTemp)
-                {
-                    return TyreTempStatus.HOT_RIGHT_REAR;
-                }
-                else
-                {
-                    return TyreTempStatus.GOOD;
-                }
+                case CornerData.Corners.ALL:
+                    switch (tyreTemp)
+                    {
+                        case TyreTemp.COLD:
+                            messageContents.Add(MessageFragment.Text(folderColdTyresAllRound));
+                            break;
+                        case TyreTemp.HOT:
+                            messageContents.Add(MessageFragment.Text(folderHotTyresAllRound));
+                            break;
+                        case TyreTemp.COOKING:
+                            messageContents.Add(MessageFragment.Text(folderCookingTyresAllRound));
+                            break;
+                        default:
+                            break;
+                    }
+                    break;
+                case CornerData.Corners.FRONTS:
+                    switch (tyreTemp)
+                    {
+                        case TyreTemp.COLD:
+                            messageContents.Add(MessageFragment.Text(folderColdFrontTyres));
+                            break;
+                        case TyreTemp.HOT:
+                            messageContents.Add(MessageFragment.Text(folderHotFrontTyres));
+                            break;
+                        case TyreTemp.COOKING:
+                            messageContents.Add(MessageFragment.Text(folderCookingFrontTyres));
+                            break;
+                        default:
+                            break;
+                    }
+                    break;
+                case CornerData.Corners.REARS:
+                    switch (tyreTemp)
+                    {
+                        case TyreTemp.COLD:
+                            messageContents.Add(MessageFragment.Text(folderColdRearTyres));
+                            break;
+                        case TyreTemp.HOT:
+                            messageContents.Add(MessageFragment.Text(folderHotRearTyres));
+                            break;
+                        case TyreTemp.COOKING:
+                            messageContents.Add(MessageFragment.Text(folderCookingRearTyres));
+                            break;
+                        default:
+                            break;
+                    }
+                    break;
+                case CornerData.Corners.LEFTS:
+                    switch (tyreTemp)
+                    {
+                        case TyreTemp.COLD:
+                            messageContents.Add(MessageFragment.Text(folderColdLeftTyres));
+                            break;
+                        case TyreTemp.HOT:
+                            messageContents.Add(MessageFragment.Text(folderHotLeftTyres));
+                            break;
+                        case TyreTemp.COOKING:
+                            messageContents.Add(MessageFragment.Text(folderCookingLeftTyres));
+                            break;
+                        default:
+                            break;
+                    }
+                    break;
+                case CornerData.Corners.RIGHTS:
+                    switch (tyreTemp)
+                    {
+                        case TyreTemp.COLD:
+                            messageContents.Add(MessageFragment.Text(folderColdRightTyres));
+                            break;
+                        case TyreTemp.HOT:
+                            messageContents.Add(MessageFragment.Text(folderHotRightTyres));
+                            break;
+                        case TyreTemp.COOKING:
+                            messageContents.Add(MessageFragment.Text(folderCookingRightTyres));
+                            break;
+                        default:
+                            break;
+                    }
+                    break;
+                case CornerData.Corners.FRONT_LEFT:
+                    switch (tyreTemp)
+                    {
+                        case TyreTemp.HOT:
+                            messageContents.Add(MessageFragment.Text(folderHotLeftFrontTyre));
+                            break;
+                        case TyreTemp.COOKING:
+                            messageContents.Add(MessageFragment.Text(folderCookingLeftFrontTyre));
+                            break;
+                        default:
+                            break;
+                    }
+                    break;
+                case CornerData.Corners.FRONT_RIGHT:
+                    switch (tyreTemp)
+                    {
+                        case TyreTemp.HOT:
+                            messageContents.Add(MessageFragment.Text(folderHotRightFrontTyre));
+                            break;
+                        case TyreTemp.COOKING:
+                            messageContents.Add(MessageFragment.Text(folderCookingRightFrontTyre));
+                            break;
+                        default:
+                            break;
+                    }
+                    break;
+                case CornerData.Corners.REAR_LEFT:
+                    switch (tyreTemp)
+                    {
+                        case TyreTemp.HOT:
+                            messageContents.Add(MessageFragment.Text(folderHotLeftRearTyre));
+                            break;
+                        case TyreTemp.COOKING:
+                            messageContents.Add(MessageFragment.Text(folderCookingLeftRearTyre));
+                            break;
+                        default:
+                            break;
+                    }
+                    break;
+                case CornerData.Corners.REAR_RIGHT:
+                    switch (tyreTemp)
+                    {
+                        case TyreTemp.HOT:
+                            messageContents.Add(MessageFragment.Text(folderHotRightRearTyre));
+                            break;
+                        case TyreTemp.COOKING:
+                            messageContents.Add(MessageFragment.Text(folderCookingRightRearTyre));
+                            break;
+                        default:
+                            break;
+                    }
+                    break;
             }
         }
 
-        private enum TyreTempStatus
+        private void addTyreConditionWarningMessages(CornerData.Corners corners, TyreCondition tyreCondition, List<MessageFragment> messageContents)
         {
-            HOT_LEFT_FRONT, HOT_RIGHT_FRONT, HOT_LEFT_REAR, HOT_RIGHT_REAR,
-            HOT_FRONTS, HOT_REARS, HOT_LEFTS, HOT_RIGHTS, HOT_ALL_ROUND, GOOD, COLD, NO_DATA
+            switch (corners)
+            {
+                case CornerData.Corners.ALL:
+                    switch (tyreCondition)
+                    {
+                        case TyreCondition.MAJOR_WEAR:
+                            messageContents.Add(MessageFragment.Text(folderWornAllRound));
+                            break;
+                        case TyreCondition.WORN_OUT:
+                            messageContents.Add(MessageFragment.Text(folderKnackeredAllRound));
+                            break;
+                        default:
+                            break;
+                    }
+                    break;
+                case CornerData.Corners.FRONTS:
+                    switch (tyreCondition)
+                    {
+                        case TyreCondition.MAJOR_WEAR:
+                            messageContents.Add(MessageFragment.Text(folderWornFronts));
+                            break;
+                        case TyreCondition.WORN_OUT:
+                            messageContents.Add(MessageFragment.Text(folderKnackeredFronts));
+                            break;
+                        default:
+                            break;
+                    }
+                    break;
+                case CornerData.Corners.REARS:
+                    switch (tyreCondition)
+                    {
+                        case TyreCondition.MAJOR_WEAR:
+                            messageContents.Add(MessageFragment.Text(folderWornRears));
+                            break;
+                        case TyreCondition.WORN_OUT:
+                            messageContents.Add(MessageFragment.Text(folderKnackeredRears));
+                            break;
+                        default:
+                            break;
+                    }
+                    break;
+                case CornerData.Corners.LEFTS:
+                    switch (tyreCondition)
+                    {
+                        case TyreCondition.MAJOR_WEAR:
+                            messageContents.Add(MessageFragment.Text(folderWornLefts));
+                            break;
+                        case TyreCondition.WORN_OUT:
+                            messageContents.Add(MessageFragment.Text(folderKnackeredLefts));
+                            break;
+                        default:
+                            break;
+                    }
+                    break;
+                case CornerData.Corners.RIGHTS:
+                    switch (tyreCondition)
+                    {
+                        case TyreCondition.MAJOR_WEAR:
+                            messageContents.Add(MessageFragment.Text(folderWornRights));
+                            break;
+                        case TyreCondition.WORN_OUT:
+                            messageContents.Add(MessageFragment.Text(folderKnackeredRights));
+                            break;
+                        default:
+                            break;
+                    }
+                    break;
+                case CornerData.Corners.FRONT_LEFT:
+                    switch (tyreCondition)
+                    {
+                        case TyreCondition.MAJOR_WEAR:
+                            messageContents.Add(MessageFragment.Text(folderWornLeftFront));
+                            break;
+                        case TyreCondition.WORN_OUT:
+                            messageContents.Add(MessageFragment.Text(folderKnackeredLeftFront));
+                            break;
+                        default:
+                            break;
+                    }
+                    break;
+                case CornerData.Corners.FRONT_RIGHT:
+                    switch (tyreCondition)
+                    {
+                        case TyreCondition.MAJOR_WEAR:
+                            messageContents.Add(MessageFragment.Text(folderWornRightFront));
+                            break;
+                        case TyreCondition.WORN_OUT:
+                            messageContents.Add(MessageFragment.Text(folderKnackeredRightFront));
+                            break;
+                        default:
+                            break;
+                    }
+                    break;
+                case CornerData.Corners.REAR_LEFT:
+                    switch (tyreCondition)
+                    {
+                        case TyreCondition.MAJOR_WEAR:
+                            messageContents.Add(MessageFragment.Text(folderWornLeftRear));
+                            break;
+                        case TyreCondition.WORN_OUT:
+                            messageContents.Add(MessageFragment.Text(folderKnackeredLeftRear));
+                            break;
+                        default:
+                            break;
+                    }
+                    break;
+                case CornerData.Corners.REAR_RIGHT:
+                    switch (tyreCondition)
+                    {
+                        case TyreCondition.MAJOR_WEAR:
+                            messageContents.Add(MessageFragment.Text(folderWornRightRear));
+                            break;
+                        case TyreCondition.WORN_OUT:
+                            messageContents.Add(MessageFragment.Text(folderKnackeredRightRear));
+                            break;
+                        default:
+                            break;
+                    }
+                    break;
+            }
         }
 
-        private enum TyreWearStatus
+        private void addBrakeTempWarningMessages(CornerData.Corners corners, BrakeTemp brakeTemp, List<MessageFragment> messageContents)
         {
-            KNACKERED_LEFT_FRONT, KNACKERED_RIGHT_FRONT, KNACKERED_LEFT_REAR, KNACKERED_RIGHT_REAR,
-            KNACKERED_FRONTS, KNACKERED_REARS, KNACKERED_LEFTS, KNACKERED_RIGHTS, KNACKERED_ALL_ROUND,
-            WORN_LEFT_FRONT, WORN_RIGHT_FRONT, WORN_LEFT_REAR, WORN_RIGHT_REAR,
-            WORN_FRONTS, WORN_REARS, WORN_LEFTS, WORN_RIGHTS, WORN_ALL_ROUND, NOT_TRIGGERED
+            switch (corners)
+            {
+                case CornerData.Corners.ALL:
+                    switch (brakeTemp)
+                    {
+                        case BrakeTemp.COLD:
+                            messageContents.Add(MessageFragment.Text(folderColdBrakesAllRound));
+                            break;
+                        case BrakeTemp.HOT:
+                            messageContents.Add(MessageFragment.Text(folderHotBrakesAllRound));
+                            break;
+                        case BrakeTemp.COOKING:
+                            messageContents.Add(MessageFragment.Text(folderCookingBrakesAllRound));
+                            break;
+                        default:
+                            break;
+                    }
+                    break;
+                case CornerData.Corners.FRONTS:
+                    switch (brakeTemp)
+                    {
+                        case BrakeTemp.COLD:
+                            messageContents.Add(MessageFragment.Text(folderColdFrontBrakes));
+                            break;
+                        case BrakeTemp.HOT:
+                            messageContents.Add(MessageFragment.Text(folderHotFrontBrakes));
+                            break;
+                        case BrakeTemp.COOKING:
+                            messageContents.Add(MessageFragment.Text(folderCookingFrontBrakes));
+                            break;
+                        default:
+                            break;
+                    }
+                    break;
+                case CornerData.Corners.REARS:
+                    switch (brakeTemp)
+                    {
+                        case BrakeTemp.COLD:
+                            messageContents.Add(MessageFragment.Text(folderColdRearBrakes));
+                            break;
+                        case BrakeTemp.HOT:
+                            messageContents.Add(MessageFragment.Text(folderHotRearBrakes));
+                            break;
+                        case BrakeTemp.COOKING:
+                            messageContents.Add(MessageFragment.Text(folderCookingRearBrakes));
+                            break;
+                        default:
+                            break;
+                    }
+                    break;
+                default:
+                    break;
+            }
         }
     }
 }

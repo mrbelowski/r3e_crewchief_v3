@@ -298,7 +298,7 @@ namespace CrewChiefV3.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("97")]
+        [global::System.Configuration.DefaultSettingValueAttribute("100")]
         public float max_good_tyre_temp {
             get {
                 return ((float)(this["max_good_tyre_temp"]));
@@ -749,6 +749,66 @@ namespace CrewChiefV3.Properties {
             }
             set {
                 this["TOGGLE_READ_OPPONENT_DELTAS_device_type"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("120")]
+        public float max_hot_tyre_temp {
+            get {
+                return ((float)(this["max_hot_tyre_temp"]));
+            }
+            set {
+                this["max_hot_tyre_temp"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("80")]
+        public float max_cold_brake_temp {
+            get {
+                return ((float)(this["max_cold_brake_temp"]));
+            }
+            set {
+                this["max_cold_brake_temp"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("500")]
+        public float max_good_brake_temp {
+            get {
+                return ((float)(this["max_good_brake_temp"]));
+            }
+            set {
+                this["max_good_brake_temp"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("800")]
+        public float max_hot_brake_temp {
+            get {
+                return ((float)(this["max_hot_brake_temp"]));
+            }
+            set {
+                this["max_hot_brake_temp"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool enable_brake_temp_warnings {
+            get {
+                return ((bool)(this["enable_brake_temp_warnings"]));
+            }
+            set {
+                this["enable_brake_temp_warnings"] = value;
             }
         }
     }

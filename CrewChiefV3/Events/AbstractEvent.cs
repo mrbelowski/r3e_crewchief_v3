@@ -117,5 +117,47 @@ namespace CrewChiefV3.Events
             // common checks here?
             triggerInternal(previousGameState, currentGameState);
         }
+
+        public Boolean messagesHaveSameContent(List<MessageFragment> messages1, List<MessageFragment> messages2)
+        {
+            if (messages1 == null && messages2 == null) 
+            {
+                return true;
+            }
+            if ((messages1 == null && messages2 != null) || (messages1 != null && messages2 == null) ||
+                messages1.Count != messages2.Count)
+            {
+                return false;
+            }
+            foreach (MessageFragment m1Fragment in messages1)
+            {
+                Boolean foundMatch = false;
+                foreach (MessageFragment m2Fragment in messages2)
+                {
+                    if (m1Fragment.type == MessageFragment.FragmentType.Text && m2Fragment.type == MessageFragment.FragmentType.Text && m1Fragment.text.Equals(m2Fragment.text))
+                    {
+                        foundMatch = true;
+                        break;
+                    }
+                    else if (m1Fragment.type == MessageFragment.FragmentType.Time && m2Fragment.type == MessageFragment.FragmentType.Time && m1Fragment.time.Equals(m2Fragment.time))
+                    {
+                        foundMatch = true;
+                        break;
+                    }
+                    else if (m1Fragment.type == MessageFragment.FragmentType.Opponent && m2Fragment.type == MessageFragment.FragmentType.Opponent && 
+                        ((m1Fragment.opponent == null && m2Fragment.opponent == null) || 
+                            (m1Fragment.opponent != null && m2Fragment.opponent != null && m1Fragment.opponent.DriverRawName.Equals(m2Fragment.opponent.DriverRawName))))
+                    {
+                        foundMatch = true;
+                        break;
+                    }
+                }
+                if (!foundMatch)
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
     }
 }

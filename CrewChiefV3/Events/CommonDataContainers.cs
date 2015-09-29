@@ -9,7 +9,7 @@ namespace CrewChiefV3.Events
 {
     public class CornerData {
         
-        public Dictionary<Enum, Corners> cornersData = new Dictionary<Enum, Corners>();
+        public Dictionary<Enum, Corners> cornersForEachStatus = new Dictionary<Enum, Corners>();
 
         public class EnumWithThresholds
         {
@@ -26,11 +26,24 @@ namespace CrewChiefV3.Events
 
         public enum Corners
         {
-            FRONT_LEFT, FRONT_RIGHT, REAR_LEFT, REAR_RIGHT, FRONTS, REARS, LEFTS, RIGHTS, ALL
+            FRONT_LEFT, FRONT_RIGHT, REAR_LEFT, REAR_RIGHT, FRONTS, REARS, LEFTS, RIGHTS, ALL, NONE
         }
 
-        public void setCorners(List<EnumWithThresholds> enumsWithThresholds, float leftFrontValue, float rightFrontValue, float leftRearValue, float rightRearValue)
+        public Corners getCornersForStatus(Enum status)
         {
+            if (cornersForEachStatus.ContainsKey(status))
+            {
+                return cornersForEachStatus[status];
+            }
+            else
+            {
+                return Corners.NONE;
+            }
+        }
+
+        public static CornerData getCornerData(List<EnumWithThresholds> enumsWithThresholds, float leftFrontValue, float rightFrontValue, float leftRearValue, float rightRearValue)
+        {
+            CornerData cornerData = new CornerData();
             foreach (EnumWithThresholds enumWithThresholds in enumsWithThresholds)
             {
                 if (leftFrontValue >= enumWithThresholds.lowerThreshold && leftFrontValue < enumWithThresholds.upperThreshold)
@@ -41,50 +54,51 @@ namespace CrewChiefV3.Events
                             rightRearValue >= enumWithThresholds.lowerThreshold && rightRearValue < enumWithThresholds.upperThreshold)
                         {
                             // it's 'whatever' all around
-                            cornersData.Add(enumWithThresholds.e, Corners.ALL);
+                            cornerData.cornersForEachStatus.Add(enumWithThresholds.e, Corners.ALL);
                         }
                         else
                         {
                             // front sides
-                            cornersData.Add(enumWithThresholds.e, Corners.FRONTS);
+                            cornerData.cornersForEachStatus.Add(enumWithThresholds.e, Corners.FRONTS);
                         }
                     }
                     else if (leftRearValue >= enumWithThresholds.lowerThreshold && leftRearValue < enumWithThresholds.upperThreshold)
                     {
-                        cornersData.Add(enumWithThresholds.e, Corners.LEFTS);
+                        cornerData.cornersForEachStatus.Add(enumWithThresholds.e, Corners.LEFTS);
                     }
                     else
                     {
-                        cornersData.Add(enumWithThresholds.e, Corners.FRONT_LEFT);
+                        cornerData.cornersForEachStatus.Add(enumWithThresholds.e, Corners.FRONT_LEFT);
                     }
                 }
                 else if (rightFrontValue >= enumWithThresholds.lowerThreshold && rightFrontValue < enumWithThresholds.upperThreshold)
                 {
                     if (rightRearValue >= enumWithThresholds.lowerThreshold && rightRearValue < enumWithThresholds.upperThreshold)
                     {
-                        cornersData.Add(enumWithThresholds.e, Corners.RIGHTS);
+                        cornerData.cornersForEachStatus.Add(enumWithThresholds.e, Corners.RIGHTS);
                     }
                     else
                     {
-                        cornersData.Add(enumWithThresholds.e, Corners.FRONT_RIGHT);
+                        cornerData.cornersForEachStatus.Add(enumWithThresholds.e, Corners.FRONT_RIGHT);
                     }
                 }
                 else if (leftRearValue >= enumWithThresholds.lowerThreshold && leftRearValue < enumWithThresholds.upperThreshold)
                 {
                     if (rightRearValue >= enumWithThresholds.lowerThreshold && rightRearValue < enumWithThresholds.upperThreshold)
                     {
-                        cornersData.Add(enumWithThresholds.e, Corners.REARS);
+                        cornerData.cornersForEachStatus.Add(enumWithThresholds.e, Corners.REARS);
                     }
                     else
                     {
-                        cornersData.Add(enumWithThresholds.e, Corners.REAR_LEFT);
+                        cornerData.cornersForEachStatus.Add(enumWithThresholds.e, Corners.REAR_LEFT);
                     }
                 }
                 else if (rightRearValue >= enumWithThresholds.lowerThreshold && rightRearValue < enumWithThresholds.upperThreshold)
                 {
-                    cornersData.Add(enumWithThresholds.e, Corners.REAR_RIGHT);
+                    cornerData.cornersForEachStatus.Add(enumWithThresholds.e, Corners.REAR_RIGHT);
                 }
             }
+            return cornerData;
         }
     }
 }

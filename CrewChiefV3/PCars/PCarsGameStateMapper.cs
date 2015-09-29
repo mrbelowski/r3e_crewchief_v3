@@ -31,6 +31,21 @@ namespace CrewChiefV3.PCars
             }
         }
 
+        private static float maxColdTyreTemp = UserSettings.GetUserSettings().getFloat("max_cold_tyre_temp");
+        private static float maxGoodTyreTemp = UserSettings.GetUserSettings().getFloat("max_good_tyre_temp"); 
+        private static float maxHotTyreTemp = UserSettings.GetUserSettings().getFloat("max_hot_tyre_temp");
+
+        private static float maxColdBrakeTemp = UserSettings.GetUserSettings().getFloat("max_cold_brake_temp");
+        private static float maxGoodBrakeTemp = UserSettings.GetUserSettings().getFloat("max_good_brake_temp");
+        private static float maxHotBrakeTemp = UserSettings.GetUserSettings().getFloat("max_hot_brake_temp");
+
+        private List<CornerData.EnumWithThresholds> suspensionDamageThresholds = new List<CornerData.EnumWithThresholds>();
+        private List<CornerData.EnumWithThresholds> tyreWearThresholds = new List<CornerData.EnumWithThresholds>();
+        private List<CornerData.EnumWithThresholds> tyreTempThresholds = new List<CornerData.EnumWithThresholds>();
+        private List<CornerData.EnumWithThresholds> brakeTempThresholds = new List<CornerData.EnumWithThresholds>();
+        private List<CornerData.EnumWithThresholds> brakeDamageThresholds = new List<CornerData.EnumWithThresholds>();
+
+
         // for each opponent, this is a list of his x/y locations + the time the location was recorded (in ticks). This is used to detect pit entry, so is
         // populated only during sector 3 and cleared at sector 1
         private Dictionary<int, List<LocationAndTime>> OpponentWorldPositions = new Dictionary<int, List<LocationAndTime>>();
@@ -54,12 +69,48 @@ namespace CrewChiefV3.PCars
         // tyres in PCars are worn out when the wear level is > ?
         private float wornOutTyreWearLevel = 0.50f;
 
-        private float scrubbedTyreWearPercent = 5f;
-        private float minorTyreWearPercent = 30f;
-        private float majorTyreWearPercent = 50f;
-        private float wornOutTyreWearPercent = 90f;
+        private float scrubbedTyreWearPercent = 1f;
+        private float minorTyreWearPercent = 20f;
+        private float majorTyreWearPercent = 40f;
+        private float wornOutTyreWearPercent = 80f;
 
         private TimeSpan minimumSessionParticipationTime = TimeSpan.FromSeconds(6);
+
+        public PCarsGameStateMapper()
+        {
+            CornerData.EnumWithThresholds damageNone = new CornerData.EnumWithThresholds(DamageLevel.NONE, -10000, trivialDamageThreshold);
+            CornerData.EnumWithThresholds damageTrivial = new CornerData.EnumWithThresholds(DamageLevel.TRIVIAL, trivialDamageThreshold, minorDamageThreshold);
+            CornerData.EnumWithThresholds damageMinor = new CornerData.EnumWithThresholds(DamageLevel.MINOR, trivialDamageThreshold, severeDamageThreshold);
+            CornerData.EnumWithThresholds damageMajor = new CornerData.EnumWithThresholds(DamageLevel.MAJOR, severeDamageThreshold, destroyedDamageThreshold);
+            CornerData.EnumWithThresholds damageDestroyed = new CornerData.EnumWithThresholds(DamageLevel.DESTROYED, destroyedDamageThreshold, 10000);
+            suspensionDamageThresholds.Add(damageNone);
+            suspensionDamageThresholds.Add(damageTrivial);
+            suspensionDamageThresholds.Add(damageMinor);
+            suspensionDamageThresholds.Add(damageMajor);
+            suspensionDamageThresholds.Add(damageDestroyed);
+
+            brakeDamageThresholds.Add(damageNone);
+            brakeDamageThresholds.Add(damageTrivial);
+            brakeDamageThresholds.Add(damageMinor);
+            brakeDamageThresholds.Add(damageMajor);
+            brakeDamageThresholds.Add(damageDestroyed);
+
+            tyreWearThresholds.Add(new CornerData.EnumWithThresholds(TyreCondition.NEW, -10000, scrubbedTyreWearPercent));
+            tyreWearThresholds.Add(new CornerData.EnumWithThresholds(TyreCondition.SCRUBBED, scrubbedTyreWearPercent, minorTyreWearPercent));
+            tyreWearThresholds.Add(new CornerData.EnumWithThresholds(TyreCondition.MINOR_WEAR, minorTyreWearPercent, majorTyreWearPercent));
+            tyreWearThresholds.Add(new CornerData.EnumWithThresholds(TyreCondition.MAJOR_WEAR, majorTyreWearPercent, wornOutTyreWearPercent));
+            tyreWearThresholds.Add(new CornerData.EnumWithThresholds(TyreCondition.WORN_OUT, wornOutTyreWearPercent, 10000));
+
+            tyreTempThresholds.Add(new CornerData.EnumWithThresholds(TyreTemp.COLD, -10000, maxColdTyreTemp));
+            tyreTempThresholds.Add(new CornerData.EnumWithThresholds(TyreTemp.WARM, maxColdTyreTemp, maxGoodTyreTemp));
+            tyreTempThresholds.Add(new CornerData.EnumWithThresholds(TyreTemp.HOT, maxGoodTyreTemp, maxHotTyreTemp));
+            tyreTempThresholds.Add(new CornerData.EnumWithThresholds(TyreTemp.COOKING, maxHotTyreTemp, 10000));
+
+            brakeTempThresholds.Add(new CornerData.EnumWithThresholds(BrakeTemp.COLD, -10000, maxColdBrakeTemp));
+            brakeTempThresholds.Add(new CornerData.EnumWithThresholds(BrakeTemp.WARM, maxColdBrakeTemp, maxGoodBrakeTemp));
+            brakeTempThresholds.Add(new CornerData.EnumWithThresholds(BrakeTemp.HOT, maxGoodBrakeTemp, maxHotBrakeTemp));
+            brakeTempThresholds.Add(new CornerData.EnumWithThresholds(BrakeTemp.COOKING, maxHotBrakeTemp, 10000));
+        }
 
         public void versionCheck(Object memoryMappedFileStruct)
         {
@@ -555,10 +606,10 @@ namespace CrewChiefV3.PCars
             currentGameState.CarDamageData.OverallAeroDamage = mapToDamageLevel(shared.mAeroDamage);
             currentGameState.CarDamageData.OverallEngineDamage = mapToDamageLevel(shared.mEngineDamage);
             currentGameState.CarDamageData.OverallTransmissionDamage = DamageLevel.UNKNOWN;
-            currentGameState.CarDamageData.LeftFrontSuspensionDamage = mapToDamageLevel(shared.mSuspensionDamage[0]);
-            currentGameState.CarDamageData.RightFrontSuspensionDamage = mapToDamageLevel(shared.mSuspensionDamage[1]);
-            currentGameState.CarDamageData.LeftRearSuspensionDamage = mapToDamageLevel(shared.mSuspensionDamage[2]);
-            currentGameState.CarDamageData.RightRearSuspensionDamage = mapToDamageLevel(shared.mSuspensionDamage[3]);
+            currentGameState.CarDamageData.SuspensionDamageStatus = CornerData.getCornerData(suspensionDamageThresholds,
+                shared.mSuspensionDamage[0], shared.mSuspensionDamage[1], shared.mSuspensionDamage[2], shared.mSuspensionDamage[3]);
+            currentGameState.CarDamageData.BrakeDamageStatus = CornerData.getCornerData(brakeDamageThresholds,
+                shared.mBrakeDamage[0], shared.mBrakeDamage[1], shared.mBrakeDamage[2], shared.mBrakeDamage[3]);
 
             currentGameState.EngineData.EngineOilPressure = shared.mOilPressureKPa; // todo: units conversion
             currentGameState.EngineData.EngineOilTemp = shared.mOilTempCelsius;
@@ -589,7 +640,6 @@ namespace CrewChiefV3.PCars
             currentGameState.TyreData.FrontLeftTyreType = tyreType;
             currentGameState.TyreData.FrontLeftPressure = -1; // not in the block
             currentGameState.TyreData.FrontLeftPercentWear = Math.Min(100, shared.mTyreWear[0] * 100 / wornOutTyreWearLevel);
-            currentGameState.TyreData.FrontLeftCondition = getTyreCondition(currentGameState.TyreData.FrontLeftPercentWear);
 
             currentGameState.TyreData.FrontRight_CenterTemp = shared.mTyreTreadTemp[1] - 273;
             currentGameState.TyreData.FrontRight_LeftTemp = shared.mTyreTreadTemp[1] - 273;
@@ -597,7 +647,6 @@ namespace CrewChiefV3.PCars
             currentGameState.TyreData.FrontRightTyreType = tyreType;
             currentGameState.TyreData.FrontRightPressure = -1; // not in the block
             currentGameState.TyreData.FrontRightPercentWear = Math.Min(100, shared.mTyreWear[1] * 100 / wornOutTyreWearLevel);
-            currentGameState.TyreData.FrontRightCondition = getTyreCondition(currentGameState.TyreData.FrontRightPercentWear);
 
             currentGameState.TyreData.RearLeft_CenterTemp = shared.mTyreTreadTemp[2] - 273;
             currentGameState.TyreData.RearLeft_LeftTemp = shared.mTyreTreadTemp[2] - 273;
@@ -605,7 +654,6 @@ namespace CrewChiefV3.PCars
             currentGameState.TyreData.RearLeftTyreType = tyreType;
             currentGameState.TyreData.RearLeftPressure = -1; // not in the block
             currentGameState.TyreData.RearLeftPercentWear = Math.Min(100, shared.mTyreWear[2] * 100 / wornOutTyreWearLevel);
-            currentGameState.TyreData.RearLeftCondition = getTyreCondition(currentGameState.TyreData.RearLeftPercentWear);
 
             currentGameState.TyreData.RearRight_CenterTemp = shared.mTyreTreadTemp[3] - 273;
             currentGameState.TyreData.RearRight_LeftTemp = shared.mTyreTreadTemp[3] - 273;
@@ -613,7 +661,13 @@ namespace CrewChiefV3.PCars
             currentGameState.TyreData.RearRightTyreType = tyreType;
             currentGameState.TyreData.RearRightPressure = -1; // not in the block
             currentGameState.TyreData.RearRightPercentWear = Math.Min(100, shared.mTyreWear[3] * 100 / wornOutTyreWearLevel);
-            currentGameState.TyreData.RearRightCondition = getTyreCondition(currentGameState.TyreData.RearRightPercentWear);
+
+            currentGameState.TyreData.TyreConditionStatus = CornerData.getCornerData(tyreWearThresholds, currentGameState.TyreData.FrontLeftPercentWear, 
+                currentGameState.TyreData.FrontRightPercentWear, currentGameState.TyreData.RearLeftPercentWear, currentGameState.TyreData.RearRightPercentWear);
+
+            currentGameState.TyreData.TyreTempStatus = CornerData.getCornerData(tyreTempThresholds, shared.mTyreTreadTemp[0], shared.mTyreTreadTemp[1], shared.mTyreTreadTemp[2], shared.mTyreTreadTemp[3]);
+            currentGameState.TyreData.BrakeTempStatus = CornerData.getCornerData(brakeTempThresholds, shared.mBrakeTempCelsius[0], shared.mBrakeTempCelsius[1], shared.mBrakeTempCelsius[2], shared.mBrakeTempCelsius[3]);
+            
 
             // improvised cut track warnings...
             if (incrementCutTrackCountWhenLeavingRacingSurface)

@@ -72,7 +72,7 @@
       <Value Profile="(Default)">70</Value>
     </Setting>
     <Setting Name="max_good_tyre_temp" Type="System.Single" Scope="User">
-      <Value Profile="(Default)">97</Value>
+      <Value Profile="(Default)">100</Value>
     </Setting>
     <Setting Name="play_cut_track_warnings" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
@@ -184,6 +184,21 @@
     </Setting>
     <Setting Name="TOGGLE_READ_OPPONENT_DELTAS_device_type" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="max_hot_tyre_temp" Type="System.Single" Scope="User">
+      <Value Profile="(Default)">120</Value>
+    </Setting>
+    <Setting Name="max_cold_brake_temp" Type="System.Single" Scope="User">
+      <Value Profile="(Default)">80</Value>
+    </Setting>
+    <Setting Name="max_good_brake_temp" Type="System.Single" Scope="User">
+      <Value Profile="(Default)">500</Value>
+    </Setting>
+    <Setting Name="max_hot_brake_temp" Type="System.Single" Scope="User">
+      <Value Profile="(Default)">800</Value>
+    </Setting>
+    <Setting Name="enable_brake_temp_warnings" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
     </Setting>
   </Settings>
 </SettingsFile>

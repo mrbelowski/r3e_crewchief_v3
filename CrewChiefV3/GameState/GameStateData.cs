@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CrewChiefV3.Events;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -32,6 +33,14 @@ namespace CrewChiefV3.GameState
     public enum TyreCondition
     {
         UNKNOWN, NEW, SCRUBBED, MINOR_WEAR, MAJOR_WEAR, WORN_OUT
+    }
+    public enum TyreTemp
+    {
+        UNKNOWN, COLD, WARM, HOT, COOKING
+    }
+    public enum BrakeTemp
+    {
+        UNKNOWN, COLD, WARM, HOT, COOKING
     }
     public enum DamageLevel
     {
@@ -99,22 +108,10 @@ namespace CrewChiefV3.GameState
         public DamageLevel OverallEngineDamage = DamageLevel.UNKNOWN;
 
         public DamageLevel OverallAeroDamage = DamageLevel.UNKNOWN;
-        
-        public DamageLevel LeftFrontSuspensionDamage = DamageLevel.UNKNOWN;
 
-        public DamageLevel LeftRearSuspensionDamage = DamageLevel.UNKNOWN;
+        public CornerData SuspensionDamageStatus = new CornerData();
 
-        public DamageLevel RightFrontSuspensionDamage = DamageLevel.UNKNOWN;
-
-        public DamageLevel RightRearSuspensionDamage = DamageLevel.UNKNOWN;
-
-        public DamageLevel LeftFrontBrakeDamage = DamageLevel.UNKNOWN;
-
-        public DamageLevel LeftRearBrakeDamage = DamageLevel.UNKNOWN;
-
-        public DamageLevel RightFrontBrakeDamage = DamageLevel.UNKNOWN;
-
-        public DamageLevel RightRearBrakeDamage = DamageLevel.UNKNOWN;
+        public CornerData BrakeDamageStatus = new CornerData();
 
     }
 
@@ -442,11 +439,6 @@ namespace CrewChiefV3.GameState
         public Single RearRight_CenterTemp = 0;
         public Single RearRight_RightTemp = 0;
 
-        public TyreCondition FrontLeftCondition = TyreCondition.UNKNOWN;
-        public TyreCondition FrontRightCondition = TyreCondition.UNKNOWN;
-        public TyreCondition RearLeftCondition = TyreCondition.UNKNOWN;
-        public TyreCondition RearRightCondition = TyreCondition.UNKNOWN;
-
         public float FrontLeftPercentWear = 0;
         public float FrontRightPercentWear = 0;
         public float RearLeftPercentWear = 0;
@@ -456,6 +448,12 @@ namespace CrewChiefV3.GameState
         public Single FrontRightPressure = 0;
         public Single RearLeftPressure = 0;
         public Single RearRightPressure = 0;
+
+        public CornerData TyreTempStatus = new CornerData();
+
+        public CornerData TyreConditionStatus = new CornerData();
+
+        public CornerData BrakeTempStatus = new CornerData();
     }
 
     public class GameStateData
