@@ -3,11 +3,11 @@ CrewChief version 3.
 Changelog
 ---------
 
-Version 3.1.0: Added 'opponent deltas' mode. This can be toggled with a button or voice command and when enabled, the time delta front and behind it read when you cross the line (the one behind is read when the guy behind crosses the line actually). These messages will still play even if you've disabled other updates ('Kimi mode'); reworked damage reporting to include suspension and brake damage, and missing wheels; added brake temperature monitoring; enhanced tyre temperature and wear monitoring. This version requires a new sound pack.
+Version 3.1.0: Added 'opponent deltas' mode. This can be toggled with a button or voice command and when enabled, the time delta front and behind it read when you cross the line (the one behind is read when the guy behind crosses the line actually). These messages will still play even if you've disabled other updates ('Kimi mode'); reworked damage reporting to include suspension and brake damage (PCars), and missing wheels (PCars); added brake temperature monitoring; enhanced tyre temperature and wear monitoring. This version requires a new sound pack.
 
 Version 3.0.2: Fixed 32bit Project Cars
 
-Version 3.0.1: Minor spotter tweak to minimise the inappropriate 'clear' calls; changed prac / qual session end detection method
+Version 3.0.1: Minor spotter tweak to minimise the inappropriate 'clear' calls for PCars; changed prac / qual session end detection method
 
 Version 3.0.0: Major internal rework and rewiring; added project cars; loads and loads of other stuff
 

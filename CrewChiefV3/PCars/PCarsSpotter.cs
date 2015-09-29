@@ -86,9 +86,17 @@ namespace CrewChiefV3.PCars
 
         private Boolean reportedOverlapRight = false;
 
+        private Boolean wasInMiddle = false;
+
         private enum Side {
             right, left, none
         }
+
+        private Dictionary<int, Side> lastKnownOpponentState = new Dictionary<int, Side>();
+
+        private Dictionary<int, int> lastKnownOpponentStateUseCounter = new Dictionary<int, int>();
+
+        private int maxSavedStateReuse = 10;
 
         private enum NextMessageType
         {
@@ -113,6 +121,8 @@ namespace CrewChiefV3.PCars
             timeToStartSpotting = DateTime.Now;
             this.reportedOverlapLeft = false;
             this.reportedOverlapRight = false;
+            lastKnownOpponentState.Clear();
+            lastKnownOpponentStateUseCounter.Clear();
             audioPlayer.closeChannel();
         }
 
@@ -156,7 +166,6 @@ namespace CrewChiefV3.PCars
             if (enabled && currentState.mParticipantData.Count() > 1 && currentState.mViewedParticipantIndex >= 0)
             {
                 pCarsAPIParticipantStruct playerData = currentState.mParticipantData[currentState.mViewedParticipantIndex];
-                Boolean playerIsInQuickNDirtyCheckZone = playerData.mCurrentLapDistance < trackLengthToUse;
 
                 if (currentSpeed > minSpeedForSpotterToOperate && currentState.mPitMode == (uint) ePitMode.PIT_MODE_NONE)
                 {
@@ -171,37 +180,81 @@ namespace CrewChiefV3.PCars
                         }
                         if (i != currentState.mViewedParticipantIndex)
                         {
-                            //Console.WriteLine("speed = "+ currentState.mSpeed + " time ahead = " + currentState.mSplitTimeAhead + " time behind = " + currentState.mSplitTimeBehind);
                             pCarsAPIParticipantStruct opponentData = currentState.mParticipantData[i];
-                            pCarsAPIParticipantStruct opponentDataLastState = lastState.mParticipantData[i];
-                            if (opponentData.mIsActive && opponentData.mWorldPosition[0] != 0 && opponentData.mWorldPosition[2] != 0)
-                            {
-                                // if we think this opponent car isn't even on the same 10 metre chunk of track to us, ignore it
-                                Boolean opponentIsInQuickNDirtyCheckZone = opponentData.mCurrentLapDistance < trackLengthToUse &&
-                                    opponentDataLastState.mCurrentLapDistance < trackLengthToUse;
-                                if (opponentIsInQuickNDirtyCheckZone) 
+                            if (opponentData.mIsActive) {
+                                if (opponentData.mWorldPosition[0] != 0 && opponentData.mWorldPosition[2] != 0 &&
+                                        opponentData.mWorldPosition[0] != -1 && opponentData.mWorldPosition[2] != -1)
                                 {
-                                    if (playerIsInQuickNDirtyCheckZone &&
-                                        Math.Abs(playerData.mCurrentLapDistance - opponentData.mCurrentLapDistance) > 10)
+                                    // note that we can't use the player or opponent lap distance for anything here - it's full of rubbish
+                                    Side side = getSide(currentState.mOrientation[1], playerData.mWorldPosition, opponentData.mWorldPosition);
+                                    if (side == Side.left)
                                     {
-                                        continue;
+                                        carsOnLeft++;
+                                        if (lastKnownOpponentState.ContainsKey(i))
+                                        {
+                                            lastKnownOpponentState[i] = Side.left;
+                                        }
+                                        else
+                                        {
+                                            lastKnownOpponentState.Add(i, Side.left);
+                                        }
                                     }
-                                    // this car is close to use, so check its speed relative to ours
-                                    // this check looks sane enough, but the speed often comes out as zero, not sure why yet...
-                                    /*float approxOpponentSpeed = 1000 * (opponentData.mCurrentLapDistance - opponentDataLastState.mCurrentLapDistance) / (float)CrewChief.spotterInterval.TotalMilliseconds;
-                                    if (Math.Abs(currentSpeed - approxOpponentSpeed) > maxClosingSpeed)
+                                    else if (side == Side.right)
                                     {
-                                        continue;
-                                    }*/
+                                        carsOnRight++;
+                                        if (lastKnownOpponentState.ContainsKey(i))
+                                        {
+                                            lastKnownOpponentState[i] = Side.right;
+                                        }
+                                        else
+                                        {
+                                            lastKnownOpponentState.Add(i, Side.right);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        if (lastKnownOpponentState.ContainsKey(i))
+                                        {
+                                            lastKnownOpponentState[i] = Side.none;
+                                        }
+                                        else
+                                        {
+                                            lastKnownOpponentState.Add(i, Side.none);
+                                        }
+                                    }
                                 }
-                                Side side = getSide(currentState.mOrientation[1], playerData.mWorldPosition, opponentData.mWorldPosition);
-                                if (side == Side.left)
+                                else
                                 {
-                                    carsOnLeft++;
-                                }
-                                else if (side == Side.right)
-                                {
-                                    carsOnRight++;
+                                    // zero position data, use the last known state
+                                    if (lastKnownOpponentState.ContainsKey(i)) {
+                                        int lastStateUseCount = 1;
+                                        if (lastKnownOpponentStateUseCounter.ContainsKey(i))
+                                        {
+                                            lastStateUseCount = lastKnownOpponentStateUseCounter[i] + 1;
+                                        }
+                                        else
+                                        {
+                                            lastKnownOpponentStateUseCounter.Add(i, 0);
+                                        }
+                                        if (lastStateUseCount < maxSavedStateReuse)
+                                        {
+                                            lastKnownOpponentStateUseCounter[i] = lastStateUseCount;
+                                            if (lastKnownOpponentState[i] == Side.left)
+                                            {
+                                                carsOnLeft++;
+                                            }
+                                            else if (lastKnownOpponentState[i] == Side.right)
+                                            {
+                                                carsOnRight++;
+                                            }
+                                        }
+                                        else
+                                        {
+                                            // we've used too many saved states for this missing opponent position
+                                            lastKnownOpponentState.Remove(i);
+                                            lastKnownOpponentStateUseCounter.Remove(i);
+                                        }
+                                    }
                                 }
                             }                            
                         }                        
@@ -319,6 +372,7 @@ namespace CrewChiefV3.PCars
                             nextMessageDue = now.Add(repeatHoldFrequency);
                             reportedOverlapLeft = true;
                             reportedOverlapRight = true;
+                            wasInMiddle = true;
                             break;
                         case NextMessageType.carLeft:
                             audioPlayer.holdOpenChannel(true);
@@ -367,44 +421,75 @@ namespace CrewChiefV3.PCars
                             audioPlayer.closeChannel();
                             reportedOverlapLeft = false;
                             reportedOverlapRight = false;
+                            wasInMiddle = false;
                             break;
                         case NextMessageType.clearLeft:
                             if (reportedOverlapLeft)
                             {
-                                QueuedMessage clearLeftMessage = new QueuedMessage(folderClearLeft, 0, null);
-                                clearLeftMessage.expiryTime = (DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + clearMessageExpiresAfter;
-                                audioPlayer.removeImmediateClip(folderCarLeft);
-                                audioPlayer.removeImmediateClip(folderStillThere);
-                                audioPlayer.removeImmediateClip(folderCarRight);
-                                audioPlayer.removeImmediateClip(folderInTheMiddle);
-                                audioPlayer.removeImmediateClip(folderClearRight);
-                                audioPlayer.removeImmediateClip(folderClearAllRound);
-                                audioPlayer.playClipImmediately(clearLeftMessage);                                
-                                nextMessageType = NextMessageType.none;                                
-                            }
-                            if (carsOnRightCount == 0)
-                            {
-                                audioPlayer.closeChannel();
+                                if (carsOnRightCount == 0 && wasInMiddle)
+                                {
+                                    QueuedMessage clearAllRoundMessage = new QueuedMessage(folderClearAllRound, 0, null);
+                                    clearAllRoundMessage.expiryTime = (DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + clearMessageExpiresAfter;
+                                    audioPlayer.removeImmediateClip(folderCarLeft);
+                                    audioPlayer.removeImmediateClip(folderStillThere);
+                                    audioPlayer.removeImmediateClip(folderCarRight);
+                                    audioPlayer.removeImmediateClip(folderInTheMiddle);
+                                    audioPlayer.removeImmediateClip(folderClearRight);
+                                    audioPlayer.removeImmediateClip(folderClearLeft);
+                                    audioPlayer.playClipImmediately(clearAllRoundMessage);
+                                    nextMessageType = NextMessageType.none;   
+                                    audioPlayer.closeChannel();
+                                    reportedOverlapRight = false;
+                                    wasInMiddle = false;
+                                }
+                                else
+                                {
+                                    QueuedMessage clearLeftMessage = new QueuedMessage(folderClearLeft, 0, null);
+                                    clearLeftMessage.expiryTime = (DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + clearMessageExpiresAfter;
+                                    audioPlayer.removeImmediateClip(folderCarLeft);
+                                    audioPlayer.removeImmediateClip(folderStillThere);
+                                    audioPlayer.removeImmediateClip(folderCarRight);
+                                    audioPlayer.removeImmediateClip(folderInTheMiddle);
+                                    audioPlayer.removeImmediateClip(folderClearRight);
+                                    audioPlayer.removeImmediateClip(folderClearAllRound);
+                                    audioPlayer.playClipImmediately(clearLeftMessage);
+                                    nextMessageType = NextMessageType.none;         
+                                }                                                       
                             }
                             reportedOverlapLeft = false;
                             break;
                         case NextMessageType.clearRight:
                             if (reportedOverlapRight)
                             {
-                                QueuedMessage clearRightMessage = new QueuedMessage(folderClearRight, 0, null);
-                                clearRightMessage.expiryTime = (DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + clearMessageExpiresAfter;
-                                audioPlayer.removeImmediateClip(folderCarLeft);
-                                audioPlayer.removeImmediateClip(folderStillThere);
-                                audioPlayer.removeImmediateClip(folderCarRight);
-                                audioPlayer.removeImmediateClip(folderInTheMiddle);
-                                audioPlayer.removeImmediateClip(folderClearLeft);
-                                audioPlayer.removeImmediateClip(folderClearAllRound);
-                                audioPlayer.playClipImmediately(clearRightMessage);                                
-                                nextMessageType = NextMessageType.none;
-                            }
-                            if (carsOnLeftCount == 0)
-                            {
-                                audioPlayer.closeChannel();
+                                if (carsOnLeftCount == 0 && wasInMiddle)
+                                {
+                                    QueuedMessage clearAllRoundMessage = new QueuedMessage(folderClearAllRound, 0, null);
+                                    clearAllRoundMessage.expiryTime = (DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + clearMessageExpiresAfter;
+                                    audioPlayer.removeImmediateClip(folderCarLeft);
+                                    audioPlayer.removeImmediateClip(folderStillThere);
+                                    audioPlayer.removeImmediateClip(folderCarRight);
+                                    audioPlayer.removeImmediateClip(folderInTheMiddle);
+                                    audioPlayer.removeImmediateClip(folderClearLeft);
+                                    audioPlayer.removeImmediateClip(folderClearRight);
+                                    audioPlayer.playClipImmediately(clearAllRoundMessage);
+                                    nextMessageType = NextMessageType.none;
+                                    audioPlayer.closeChannel();
+                                    reportedOverlapLeft = false;
+                                    wasInMiddle = false;
+                                }
+                                else
+                                {
+                                    QueuedMessage clearRightMessage = new QueuedMessage(folderClearRight, 0, null);
+                                    clearRightMessage.expiryTime = (DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + clearMessageExpiresAfter;
+                                    audioPlayer.removeImmediateClip(folderCarLeft);
+                                    audioPlayer.removeImmediateClip(folderStillThere);
+                                    audioPlayer.removeImmediateClip(folderCarRight);
+                                    audioPlayer.removeImmediateClip(folderInTheMiddle);
+                                    audioPlayer.removeImmediateClip(folderClearLeft);
+                                    audioPlayer.removeImmediateClip(folderClearAllRound);
+                                    audioPlayer.playClipImmediately(clearRightMessage);
+                                    nextMessageType = NextMessageType.none;
+                                }
                             }
                             reportedOverlapRight = false;
                             break;
