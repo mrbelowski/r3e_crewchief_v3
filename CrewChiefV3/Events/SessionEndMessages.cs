@@ -24,15 +24,13 @@ namespace CrewChiefV3.Events
 
         private AudioPlayer audioPlayer;
 
-        private DateTime lastFinishMessageTime = DateTime.MinValue;
-
         public SessionEndMessages(AudioPlayer audioPlayer)
         {
             this.audioPlayer = audioPlayer;
         }
 
         public void trigger(float sessionRunningTime, SessionType sessionType, SessionPhase lastSessionPhase, 
-            int finishPosition, int numCars, int completedLaps, DateTime now, Boolean isDisqualified)
+            int finishPosition, int numCars, int completedLaps, Boolean isDisqualified)
         {
             if (sessionType == SessionType.Race)
             {
@@ -41,7 +39,7 @@ namespace CrewChiefV3.Events
                     if (lastSessionPhase == SessionPhase.Finished)
                     {
                         // only play session end message for races if we've actually finished, not restarted
-                        playFinishMessage(sessionType, finishPosition, numCars, now, isDisqualified);
+                        playFinishMessage(sessionType, finishPosition, numCars, isDisqualified);
                     }
                     else
                     {
@@ -59,7 +57,7 @@ namespace CrewChiefV3.Events
                 {
                     if (lastSessionPhase == SessionPhase.Green || lastSessionPhase == SessionPhase.Finished || lastSessionPhase == SessionPhase.Checkered)
                     {
-                        playFinishMessage(sessionType, finishPosition, numCars, now, false);
+                        playFinishMessage(sessionType, finishPosition, numCars, false);
                     }
                     else
                     {
@@ -73,63 +71,59 @@ namespace CrewChiefV3.Events
             }
         }
 
-        public void playFinishMessage(SessionType sessionType, int position, int numCars, DateTime now, Boolean isDisqualified)
+        public void playFinishMessage(SessionType sessionType, int position, int numCars, Boolean isDisqualified)
         {
-            if (lastFinishMessageTime.Add(TimeSpan.FromSeconds(2)) < now)
+            audioPlayer.suspendPearlsOfWisdom();
+            if (position < 1)
             {
-                audioPlayer.suspendPearlsOfWisdom();
-                lastFinishMessageTime = now;
-                if (position < 1)
+                Console.WriteLine("Session finished but position is < 1");
+            }
+            else if (sessionType == SessionType.Race)
+            {
+                Boolean isLast = position == numCars;
+                if (isDisqualified) 
                 {
-                    Console.WriteLine("Session finished but position is < 1");
+                    audioPlayer.queueClip(new QueuedMessage(sessionEndMessageIdentifier, AbstractEvent.MessageContents(
+                        Penalties.folderDisqualified), 0, null));
                 }
-                else if (sessionType == SessionType.Race)
+                else if (position == 1)
                 {
-                    Boolean isLast = position == numCars;
-                    if (isDisqualified) 
-                    {
-                        audioPlayer.queueClip(new QueuedMessage(sessionEndMessageIdentifier, AbstractEvent.MessageContents(
-                            Penalties.folderDisqualified), 0, null));
-                    }
-                    else if (position == 1)
-                    {
-                        audioPlayer.queueClip(new QueuedMessage(sessionEndMessageIdentifier, AbstractEvent.MessageContents(
-                            folderWonRace), 0, null));
-                    }
-                    else if (position < 4)
-                    {
-                        audioPlayer.queueClip(new QueuedMessage(sessionEndMessageIdentifier, AbstractEvent.MessageContents(
-                            folderPodiumFinish), 0, null));
-                    }
-                    else if (position >= 4 && !isLast)
-                    {
-                        audioPlayer.queueClip(new QueuedMessage(sessionEndMessageIdentifier, AbstractEvent.MessageContents(
-                            Position.folderStub + position, folderFinishedRace), 0, null));
-                    }
-                    else if (isLast)
-                    {
-                        audioPlayer.queueClip(new QueuedMessage(sessionEndMessageIdentifier, 
-                            AbstractEvent.MessageContents(folderFinishedRaceLast), 0, null));
-                    }
+                    audioPlayer.queueClip(new QueuedMessage(sessionEndMessageIdentifier, AbstractEvent.MessageContents(
+                        folderWonRace), 0, null));
+                }
+                else if (position < 4)
+                {
+                    audioPlayer.queueClip(new QueuedMessage(sessionEndMessageIdentifier, AbstractEvent.MessageContents(
+                        folderPodiumFinish), 0, null));
+                }
+                else if (position >= 4 && !isLast)
+                {
+                    audioPlayer.queueClip(new QueuedMessage(sessionEndMessageIdentifier, AbstractEvent.MessageContents(
+                        Position.folderStub + position, folderFinishedRace), 0, null));
+                }
+                else if (isLast)
+                {
+                    audioPlayer.queueClip(new QueuedMessage(sessionEndMessageIdentifier, 
+                        AbstractEvent.MessageContents(folderFinishedRaceLast), 0, null));
+                }
+            }
+            else
+            {
+                if (sessionType == SessionType.Qualify && position == 1)
+                {
+                    audioPlayer.queueClip(new QueuedMessage(folderEndOfSessionPole, 0, null));
                 }
                 else
                 {
-                    if (sessionType == SessionType.Qualify && position == 1)
+                    if (position > 24)
                     {
-                        audioPlayer.queueClip(new QueuedMessage(folderEndOfSessionPole, 0, null));
+                        audioPlayer.queueClip(new QueuedMessage(sessionEndMessageIdentifier, AbstractEvent.MessageContents(folderEndOfSession,
+                        Position.folderStub, QueuedMessage.folderNameNumbersStub + position), 0, null));
                     }
                     else
                     {
-                        if (position > 24)
-                        {
-                            audioPlayer.queueClip(new QueuedMessage(sessionEndMessageIdentifier, AbstractEvent.MessageContents(folderEndOfSession,
-                            Position.folderStub, QueuedMessage.folderNameNumbersStub + position), 0, null));
-                        }
-                        else
-                        {
-                            audioPlayer.queueClip(new QueuedMessage(sessionEndMessageIdentifier, AbstractEvent.MessageContents(folderEndOfSession,
-                            Position.folderStub + position), 0, null));
-                        }
+                        audioPlayer.queueClip(new QueuedMessage(sessionEndMessageIdentifier, AbstractEvent.MessageContents(folderEndOfSession,
+                        Position.folderStub + position), 0, null));
                     }
                 }
             }
