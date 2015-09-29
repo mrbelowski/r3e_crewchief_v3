@@ -80,8 +80,6 @@ namespace CrewChiefV3.Events
         private float[] lastSectorDeltaLeader = new float[] { -1, -1, -1 };
         private float[] lastSectorDeltaSelf = new float[] { -1, -1, -1 };
         
-        private Boolean carBehindNewLap;
-
         private Boolean playedGapBehindForThisLap;
 
         public Timings(AudioPlayer audioPlayer)
@@ -113,7 +111,6 @@ namespace CrewChiefV3.Events
             lastSectorDeltaCarBehind = new float[] { -1, -1, -1 };
             lastSectorDeltaLeader = new float[] { -1, -1, -1 };
             lastSectorDeltaSelf = new float[] { -1, -1, -1 };
-            carBehindNewLap = false;
             playedGapBehindForThisLap = false;
         }
 
