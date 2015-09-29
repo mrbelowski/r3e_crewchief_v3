@@ -63,7 +63,7 @@ namespace CrewChiefV3.PCars
 
         private float trivialDamageThreshold = 0.02f;
         private float minorDamageThreshold = 0.10f;
-        private float severeDamageThreshold = 0.2f;
+        private float severeDamageThreshold = 0.35f;
         private float destroyedDamageThreshold = 0.70f;
 
         // tyres in PCars are worn out when the wear level is > ?
