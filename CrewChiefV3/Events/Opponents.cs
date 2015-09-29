@@ -128,6 +128,8 @@ namespace CrewChiefV3.Events
                 if (currentGameState.SessionData.HasLeadChanged)
                 {
                     leaderLastLaps.Clear();
+                    String name = currentGameState.getOpponentAtPosition(1) != null ? currentGameState.getOpponentAtPosition(1).DriverRawName : "no data";
+                    Console.WriteLine("Lead change, current leader is " + name + " laps completed = " + currentGameState.SessionData.CompletedLaps);
                     if (currentGameState.SessionData.Position > 1 && previousGameState.SessionData.Position > 1 && currentGameState.Now > nextLeadChangeMessage)
                     {
                         audioPlayer.queueClip(new QueuedMessage("new_leader", MessageContents(currentGameState.getOpponentAtPosition(1), folderIsNowLeading), 0, this));

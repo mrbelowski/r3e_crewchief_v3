@@ -746,8 +746,6 @@ namespace CrewChiefV3.PCars
                 {
                     if (completedLaps == opponentData.CompletedLaps + 1)
                     {
-                        Console.WriteLine("Opponent " + opponentData.DriverRawName + " has just completed a lap - valid = " + opponentData.LapIsValid +
-                            " SessionTimeAtEndOfLastSector3 = " + opponentData.SessionTimeAtEndOfLastSector3);
                         opponentData.ApproximateLastLapTime = sessionRunningTime - opponentData.SessionTimeAtEndOfLastSector3;
                         opponentData.SessionTimeAtEndOfLastSector3 = sessionRunningTime;
                         opponentData.LapsCompletedAtEndOfLastSector3 = completedLaps;
