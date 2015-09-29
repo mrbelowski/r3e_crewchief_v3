@@ -9,6 +9,7 @@ using CrewChiefV3.Events;
 using System.Windows.Media;
 using System.Collections.Specialized;
 using CrewChiefV3.GameState;
+using System.Collections;
 
 namespace CrewChiefV3
 {
@@ -834,7 +835,17 @@ namespace CrewChiefV3
             }
             lock (queuedClips)
             {
-                queuedClips.Clear();
+                ArrayList keysToPurge = new ArrayList(queuedClips.Keys);
+                foreach (String keyStr in keysToPurge) {
+                    if (!keyStr.Contains(SessionEndMessages.sessionEndMessageIdentifier))
+                    {
+                        queuedClips.Remove(keyStr);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Not purging session end message");
+                    }
+                }
             }
             lock (immediateClips)
             {
