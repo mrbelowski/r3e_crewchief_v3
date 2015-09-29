@@ -329,7 +329,7 @@ namespace CrewChiefV3.Events
             {
                 return new Tuple<Component, DamageLevel>(Component.BRAKES, DamageLevel.MAJOR);
             }
-            if (maxBrakeDamage == DamageLevel.MAJOR)
+            if (aeroDamage == DamageLevel.MAJOR)
             {
                 return new Tuple<Component, DamageLevel>(Component.AERO, DamageLevel.MAJOR);
             }
@@ -349,7 +349,7 @@ namespace CrewChiefV3.Events
             {
                 return new Tuple<Component, DamageLevel>(Component.BRAKES, DamageLevel.MINOR);
             }
-            if (maxBrakeDamage == DamageLevel.MINOR)
+            if (aeroDamage == DamageLevel.MINOR)
             {
                 return new Tuple<Component, DamageLevel>(Component.AERO, DamageLevel.MINOR);
             }
@@ -369,7 +369,7 @@ namespace CrewChiefV3.Events
             {
                 return new Tuple<Component, DamageLevel>(Component.BRAKES, DamageLevel.TRIVIAL);
             }
-            if (maxBrakeDamage == DamageLevel.TRIVIAL)
+            if (aeroDamage == DamageLevel.TRIVIAL)
             {
                 return new Tuple<Component, DamageLevel>(Component.AERO, DamageLevel.TRIVIAL);
             }

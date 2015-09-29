@@ -456,6 +456,10 @@ namespace CrewChiefV3.PCars
                                     nextMessageType = NextMessageType.none;         
                                 }                                                       
                             }
+                            if (carsOnRightCount == 0)
+                            {
+                                audioPlayer.closeChannel();
+                            }
                             reportedOverlapLeft = false;
                             break;
                         case NextMessageType.clearRight:
@@ -490,6 +494,10 @@ namespace CrewChiefV3.PCars
                                     audioPlayer.playClipImmediately(clearRightMessage);
                                     nextMessageType = NextMessageType.none;
                                 }
+                            }
+                            if (carsOnLeftCount == 0)
+                            {
+                                audioPlayer.closeChannel();
                             }
                             reportedOverlapRight = false;
                             break;
