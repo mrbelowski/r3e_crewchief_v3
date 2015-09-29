@@ -671,7 +671,9 @@ namespace CrewChiefV3.PCars
             currentGameState.TyreData.TyreConditionStatus = CornerData.getCornerData(tyreWearThresholds, currentGameState.TyreData.FrontLeftPercentWear, 
                 currentGameState.TyreData.FrontRightPercentWear, currentGameState.TyreData.RearLeftPercentWear, currentGameState.TyreData.RearRightPercentWear);
 
-            currentGameState.TyreData.TyreTempStatus = CornerData.getCornerData(tyreTempThresholds, shared.mTyreTreadTemp[0], shared.mTyreTreadTemp[1], shared.mTyreTreadTemp[2], shared.mTyreTreadTemp[3]);
+            currentGameState.TyreData.TyreTempStatus = CornerData.getCornerData(tyreTempThresholds,
+                currentGameState.TyreData.FrontLeft_CenterTemp, currentGameState.TyreData.FrontRight_CenterTemp,
+                currentGameState.TyreData.RearLeft_CenterTemp, currentGameState.TyreData.RearRight_CenterTemp);
             currentGameState.TyreData.BrakeTempStatus = CornerData.getCornerData(brakeTempThresholds, shared.mBrakeTempCelsius[0], shared.mBrakeTempCelsius[1], shared.mBrakeTempCelsius[2], shared.mBrakeTempCelsius[3]);
             
 
