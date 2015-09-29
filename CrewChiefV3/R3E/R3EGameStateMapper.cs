@@ -527,6 +527,11 @@ namespace CrewChiefV3.RaceRoom
             currentGameState.TyreData.BrakeTempStatus = CornerData.getCornerData(brakeTempThresholds, shared.BrakeTemperatures.FrontLeft, 
                 shared.BrakeTemperatures.FrontRight, shared.BrakeTemperatures.RearLeft, shared.BrakeTemperatures.RearRight);
             
+            currentGameState.TyreData.LeftFrontBrakeTemp = shared.BrakeTemperatures.FrontLeft;
+            currentGameState.TyreData.RightFrontBrakeTemp = shared.BrakeTemperatures.FrontRight;
+            currentGameState.TyreData.LeftRearBrakeTemp = shared.BrakeTemperatures.RearLeft;
+            currentGameState.TyreData.RightRearBrakeTemp = shared.BrakeTemperatures.RearRight;
+
             return currentGameState;
         }
         

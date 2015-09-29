@@ -458,6 +458,12 @@ namespace CrewChiefV3.GameState
         public CornerData TyreConditionStatus = new CornerData();
 
         public CornerData BrakeTempStatus = new CornerData();
+
+        public Single LeftFrontBrakeTemp = 0;
+        public Single RightFrontBrakeTemp = 0;
+        public Single LeftRearBrakeTemp = 0;
+        public Single RightRearBrakeTemp = 0;
+
     }
 
     public class GameStateData

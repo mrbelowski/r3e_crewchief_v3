@@ -90,7 +90,7 @@ namespace CrewChiefV3.Events
         private Boolean checkedTempsAtSector3;
 
         // -1 means we only check at the end of the lap
-        private int checkAtSector = -1;
+        private int checkAtSector = 2;
 
         private Boolean reportedTyreWearForCurrentPitEntry;
 
@@ -117,6 +117,8 @@ namespace CrewChiefV3.Events
         private List<MessageFragment> lastBrakeTempMessage = null;
         
         private List<MessageFragment> lastTyreConditionMessage = null;
+
+        private float peakBrakeTempForLap = 0;
         
         public TyreMonitor(AudioPlayer audioPlayer)
         {
@@ -142,6 +144,17 @@ namespace CrewChiefV3.Events
             lastTyreTempMessage = null;
             lastBrakeTempMessage = null;
             lastTyreConditionMessage = null;
+            peakBrakeTempForLap = 0;
+        }
+
+        private Boolean isBrakeTempPeakForLap(float leftFront, float rightFront, float leftRear, float rightRear) 
+        {
+            if (leftFront > peakBrakeTempForLap || rightFront > peakBrakeTempForLap || 
+                leftRear > peakBrakeTempForLap || rightRear > peakBrakeTempForLap) {
+                peakBrakeTempForLap = Math.Max(leftFront, Math.Max(rightFront, Math.Max(leftRear, rightRear)));
+                return true;
+            }
+            return false;
         }
 
         override protected void triggerInternal(GameStateData previousGameState, GameStateData currentGameState)
@@ -155,7 +168,12 @@ namespace CrewChiefV3.Events
 
                 currentTyreConditionStatus = currentGameState.TyreData.TyreConditionStatus;
                 currentTyreTempStatus = currentGameState.TyreData.TyreTempStatus;
-                currentBrakeTempStatus = currentGameState.TyreData.BrakeTempStatus;
+                if (isBrakeTempPeakForLap(currentGameState.TyreData.LeftFrontBrakeTemp, 
+                    currentGameState.TyreData.RightFrontBrakeTemp, currentGameState.TyreData.LeftRearBrakeTemp,
+                    currentGameState.TyreData.RightRearBrakeTemp))
+                {
+                    currentBrakeTempStatus = currentGameState.TyreData.BrakeTempStatus;
+                }
 
                 completedLaps = currentGameState.SessionData.CompletedLaps;
                 lapsInSession = currentGameState.SessionData.SessionNumberOfLaps;
@@ -204,6 +222,7 @@ namespace CrewChiefV3.Events
                     {
                         reportCurrentBrakeTempStatus(false);
                     }
+                    peakBrakeTempForLap = 0;
                 }
                 checkedTempsAtSector3 = false;                                                       
             }
@@ -222,6 +241,7 @@ namespace CrewChiefV3.Events
                         {
                             reportCurrentBrakeTempStatus(false);
                         }
+                        peakBrakeTempForLap = 0;
                     }
                 }
             }

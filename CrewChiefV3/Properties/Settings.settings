@@ -189,13 +189,13 @@
       <Value Profile="(Default)">120</Value>
     </Setting>
     <Setting Name="max_cold_brake_temp" Type="System.Single" Scope="User">
-      <Value Profile="(Default)">80</Value>
+      <Value Profile="(Default)">150</Value>
     </Setting>
     <Setting Name="max_good_brake_temp" Type="System.Single" Scope="User">
-      <Value Profile="(Default)">500</Value>
+      <Value Profile="(Default)">700</Value>
     </Setting>
     <Setting Name="max_hot_brake_temp" Type="System.Single" Scope="User">
-      <Value Profile="(Default)">800</Value>
+      <Value Profile="(Default)">850</Value>
     </Setting>
     <Setting Name="enable_brake_temp_warnings" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
