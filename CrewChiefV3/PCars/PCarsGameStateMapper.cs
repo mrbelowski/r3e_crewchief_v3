@@ -142,22 +142,7 @@ namespace CrewChiefV3.PCars
             currentGameState.SessionData.SectorNumber = (int)viewedParticipant.mCurrentSector;
             currentGameState.SessionData.Position = (int)viewedParticipant.mRacePosition;
             currentGameState.SessionData.IsNewSector = previousGameState == null || viewedParticipant.mCurrentSector != previousGameState.SessionData.SectorNumber;
-            if (currentGameState.SessionData.IsNewSector)
-            {
-                if (currentGameState.SessionData.SectorNumber == 1)
-                {
-                    currentGameState.SessionData.SessionTimeAtEndOfLastSector3 = currentGameState.SessionData.SessionRunningTime;
-                }
-                else if (currentGameState.SessionData.SectorNumber == 2)
-                {
-                    currentGameState.SessionData.SessionTimeAtEndOfLastSector1 = currentGameState.SessionData.SessionRunningTime;
-                }
-                if (currentGameState.SessionData.SectorNumber == 3)
-                {
-                    currentGameState.SessionData.SessionTimeAtEndOfLastSector2 = currentGameState.SessionData.SessionRunningTime;
-                }
-            }
-            
+                        
             currentGameState.PositionAndMotionData.DistanceRoundTrack = viewedParticipant.mCurrentLapDistance;
           
             
@@ -361,6 +346,9 @@ namespace CrewChiefV3.PCars
                     currentGameState.SessionData.HasMandatoryPitStop = previousGameState.SessionData.HasMandatoryPitStop;
                     currentGameState.OpponentData = previousGameState.OpponentData;
                     currentGameState.PitData.IsRefuellingAllowed = previousGameState.PitData.IsRefuellingAllowed;
+                    currentGameState.SessionData.SessionTimeAtEndOfLastSector1 = previousGameState.SessionData.SessionTimeAtEndOfLastSector1;
+                    currentGameState.SessionData.SessionTimeAtEndOfLastSector2 = previousGameState.SessionData.SessionTimeAtEndOfLastSector2;
+                    currentGameState.SessionData.SessionTimeAtEndOfLastSector3 = previousGameState.SessionData.SessionTimeAtEndOfLastSector3;
                 }                
             }            
             
@@ -373,6 +361,21 @@ namespace CrewChiefV3.PCars
             else
             {
                 currentGameState.SessionData.SessionRunningTime = (float)(currentGameState.Now - currentGameState.SessionData.SessionStartTime).TotalSeconds;
+            }
+            if (currentGameState.SessionData.IsNewSector)
+            {
+                if (currentGameState.SessionData.SectorNumber == 1)
+                {
+                    currentGameState.SessionData.SessionTimeAtEndOfLastSector3 = currentGameState.SessionData.SessionRunningTime;
+                }
+                else if (currentGameState.SessionData.SectorNumber == 2)
+                {
+                    currentGameState.SessionData.SessionTimeAtEndOfLastSector1 = currentGameState.SessionData.SessionRunningTime;
+                }
+                if (currentGameState.SessionData.SectorNumber == 3)
+                {
+                    currentGameState.SessionData.SessionTimeAtEndOfLastSector2 = currentGameState.SessionData.SessionRunningTime;
+                }
             }
             currentGameState.SessionData.Flag = mapToFlagEnum(shared.mHighestFlagColour);
             currentGameState.SessionData.NumCars = shared.mNumParticipants;
