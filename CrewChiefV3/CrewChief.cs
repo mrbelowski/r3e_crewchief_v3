@@ -260,12 +260,14 @@ namespace CrewChiefV3
         public Boolean Run(String filenameToRun, Boolean dumpToFile)
         {
             loadDataFromFile = false;
+            audioPlayer.mute = false;
             if (filenameToRun != null && System.Diagnostics.Debugger.IsAttached)
             {
                 loadDataFromFile = true;
                 spotterEnabled = false;
                 _timeInterval = TimeSpan.Zero;
                 dumpToFile = false;
+                audioPlayer.mute = true;
             }
             if (dumpToFile)
             {

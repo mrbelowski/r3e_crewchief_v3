@@ -14,6 +14,7 @@ namespace CrewChiefV3
 {
     class AudioPlayer
     {
+        public Boolean mute = false;
         public static float minimumSoundPackVersion = 31f;
 
         private CrewChief crewChief;
@@ -672,7 +673,10 @@ namespace CrewChiefV3
                                 List<SoundPlayer> clipsList = clips[eventName];
                                 int index = random.Next(0, clipsList.Count);
                                 SoundPlayer clip = clipsList[index];
-                                clip.PlaySync();
+                                if (!mute)
+                                {
+                                    clip.PlaySync();
+                                }
                             }
                         }
                         else
@@ -682,7 +686,10 @@ namespace CrewChiefV3
                                 List<SoundPlayer> clipsList = clips[message];
                                 int index = random.Next(0, clipsList.Count);
                                 SoundPlayer clip = clipsList[index];
-                                clip.PlaySync();
+                                if (!mute)
+                                {
+                                    clip.PlaySync();
+                                }
                             }
                             if (playedMessagesCount.ContainsKey(eventName))
                             {
@@ -722,7 +729,7 @@ namespace CrewChiefV3
             if (!channelOpen)
             {
                 channelOpen = true;                
-                if (getBackgroundVolume() > 0 && loadNewBackground && backgroundToLoad != null)
+                if (getBackgroundVolume() > 0 && loadNewBackground && backgroundToLoad != null && !mute)
                 {
                     Console.WriteLine("Setting background sounds file to  " + backgroundToLoad);
                     String path = Path.Combine(backgroundFilesPath, backgroundToLoad);
@@ -772,7 +779,10 @@ namespace CrewChiefV3
                     List<SoundPlayer> bleeps = clips[bleepName];
                     int bleepIndex = random.Next(0, bleeps.Count);
                     Console.WriteLine("*** Opening channel, using bleep " + bleepName + " at position " + bleepIndex);
-                    bleeps[bleepIndex].PlaySync();                    
+                    if (!mute)
+                    {
+                        bleeps[bleepIndex].PlaySync();
+                    }
                 }
             }
         }
@@ -786,9 +796,12 @@ namespace CrewChiefV3
                 {
                     List<SoundPlayer> bleeps = clips["end_bleep"];
                     int bleepIndex = random.Next(0, bleeps.Count);
-                    bleeps[bleepIndex].PlaySync();
+                    if (!mute)
+                    {
+                        bleeps[bleepIndex].PlaySync();
+                    }
                 }
-                if (getBackgroundVolume() > 0)
+                if (getBackgroundVolume() > 0 && !mute)
                 {
                     if (!backgroundPlayerInitialised)
                     {
