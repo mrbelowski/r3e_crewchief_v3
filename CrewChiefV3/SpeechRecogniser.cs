@@ -24,6 +24,8 @@ namespace CrewChiefV3
         public static String BODY_WORK = "body work";
         public static String TRANSMISSION = "transmission";
         public static String ENGINE = "engine";
+        public static String SUSPENSION = "suspension";
+        public static String BRAKES = "brakes";
         public static String ENGINE_TEMPS = "engine temps";
         public static String GAP_IN_FRONT = "gap in front";
         public static String GAP_AHEAD = "gap ahead";
@@ -133,7 +135,7 @@ namespace CrewChiefV3
             try
             {
                 Choices info1 = new Choices();
-                info1.Add(new string[] { FUEL, TYRE_WEAR, TYRE_TEMPS, BRAKE_TEMPS, AERO, BODY_WORK, TRANSMISSION, ENGINE, PACE, ENGINE_TEMPS });
+                info1.Add(new string[] { FUEL, TYRE_WEAR, TYRE_TEMPS, BRAKE_TEMPS, AERO, BODY_WORK, TRANSMISSION, ENGINE, SUSPENSION, BRAKES, PACE, ENGINE_TEMPS });
                 GrammarBuilder gb1 = new GrammarBuilder();
                 gb1.Culture = cultureInfo;
                 gb1.Append("how is my");
@@ -333,7 +335,9 @@ namespace CrewChiefV3
             else if (recognisedSpeech.Contains(AERO) ||
                recognisedSpeech.Contains(BODY_WORK) ||
                recognisedSpeech.Contains(TRANSMISSION) ||
-               recognisedSpeech.Contains(ENGINE))
+               recognisedSpeech.Contains(ENGINE) ||
+               recognisedSpeech.Contains(SUSPENSION) ||
+               recognisedSpeech.Contains(BRAKES))
             {
                 return CrewChief.getEvent("DamageReporting");
             }

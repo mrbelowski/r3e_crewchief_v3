@@ -112,7 +112,6 @@ namespace CrewChiefV3.GameState
         public CornerData SuspensionDamageStatus = new CornerData();
 
         public CornerData BrakeDamageStatus = new CornerData();
-
     }
 
     public class SessionData
@@ -413,6 +412,11 @@ namespace CrewChiefV3.GameState
 
     public class TyreData
     {
+        public Boolean LeftFrontAttached = true;
+        public Boolean RightFrontAttached = true;
+        public Boolean LeftRearAttached = true;
+        public Boolean RightRearAttached = true;
+
         public Boolean TireWearActive = false;
 
         // true if all tyres are the same type

@@ -632,6 +632,12 @@ namespace CrewChiefV3.PCars
             //------------------------ Tyre data -----------------------          
             currentGameState.TyreData.HasMatchedTyreTypes = true;
             currentGameState.TyreData.TireWearActive = true;
+
+            currentGameState.TyreData.LeftFrontAttached = (shared.mTyreFlags[0] & 1) == 0;
+            currentGameState.TyreData.RightFrontAttached = (shared.mTyreFlags[1] & 1) == 0;
+            currentGameState.TyreData.LeftRearAttached = (shared.mTyreFlags[2] & 1) == 0;
+            currentGameState.TyreData.RightRearAttached = (shared.mTyreFlags[3] & 1) == 0;
+
             TyreType tyreType = TyreType.Unknown;
 
             currentGameState.TyreData.FrontLeft_CenterTemp = shared.mTyreTreadTemp[0] - 273;

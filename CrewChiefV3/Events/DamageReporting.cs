@@ -8,36 +8,72 @@ namespace CrewChiefV3.Events
 {
     class DamageReporting : AbstractEvent
     {
-
         private String folderMinorTransmissionDamage = "damage_reporting/minor_transmission_damage";
         private String folderMinorEngineDamage = "damage_reporting/minor_engine_damage";
         private String folderMinorAeroDamage = "damage_reporting/minor_aero_damage";
+        private String folderMinorSuspensionDamage = "damage_reporting/minor_suspension_damage";
+        private String folderMinorBrakeDamage = "damage_reporting/minor_brake_damage";
 
         private String folderSevereTransmissionDamage = "damage_reporting/severe_transmission_damage";
         private String folderSevereEngineDamage = "damage_reporting/severe_engine_damage";
         private String folderSevereAeroDamage = "damage_reporting/severe_aero_damage";
+        private String folderSevereBrakeDamage = "damage_reporting/severe_brake_damage";
+        private String folderSevereSuspensionDamage = "damage_reporting/severe_suspension_damage";
 
         private String folderBustedTransmission = "damage_reporting/busted_transmission";
         private String folderBustedEngine = "damage_reporting/busted_engine";
+        private String folderBustedSuspension = "damage_reporting/busted_suspension";
+        private String folderBustedBrakes = "damage_reporting/busted_brakes";
 
         private String folderNoTransmissionDamage = "damage_reporting/no_transmission_damage";
         private String folderNoEngineDamage = "damage_reporting/no_engine_damage";
-        private String folderNoAeroDamage = "damage_reporting/no_aero_damage";
+        private String folderNoAeroDamage = "damage_reporting/no_aero_damage"; 
+        private String folderNoSuspensionDamage = "damage_reporting/no_suspension_damage"; 
+        private String folderNoBrakeDamage = "damage_reporting/no_brake_damage";
         private String folderJustAScratch = "damage_reporting/trivial_aero_damage";
+
+        private String folderMissingWheel = "damage_reporting/missing_wheel";
 
         Boolean playedMinorTransmissionDamage;
         Boolean playedMinorEngineDamage;
-        Boolean playedMinorAeroDamage;
+        Boolean playedMinorAeroDamage; 
+        Boolean playedMinorSuspensionDamage; 
+        Boolean playedMinorBrakeDamage;
         Boolean playedSevereTransmissionDamage;
         Boolean playedSevereEngineDamage;
         Boolean playedSevereAeroDamage;
+        Boolean playedSevereSuspensionDamage;
+        Boolean playedSevereBrakeDamage;
         Boolean playedBustedTransmission;
         Boolean playedBustedEngine;
+        Boolean playedBustedSuspension;
+        Boolean playedBustedBrakes;
         
         DamageLevel engineDamage;
         DamageLevel trannyDamage;
         DamageLevel aeroDamage;
+        DamageLevel maxSuspensionDamage;
+        DamageLevel maxBrakeDamage;
 
+        private Component worstComponent = Component.NONE;
+
+        private DamageLevel worstDamageLevel = DamageLevel.NONE;
+
+        private Boolean isMissingWheel = false;
+
+        private Component lastReportedComponent = Component.NONE;
+
+        private DamageLevel lastReportedDamageLevel = DamageLevel.NONE;
+
+        private TimeSpan timeToWaitForDamageToSettle = TimeSpan.FromSeconds(3);
+
+        private DateTime timeWhenDamageLastChanged = DateTime.MinValue;
+
+        private enum Component
+        {
+            ENGINE, TRANNY, AERO, SUSPENSION, BRAKES, NONE
+        }
+        
         public DamageReporting(AudioPlayer audioPlayer)
         {
             this.audioPlayer = audioPlayer;
@@ -47,9 +83,107 @@ namespace CrewChiefV3.Events
         {
             playedMinorTransmissionDamage = false; playedMinorEngineDamage = false; playedMinorAeroDamage = false; playedSevereAeroDamage = false;
             playedSevereTransmissionDamage = false; playedSevereEngineDamage = false; playedBustedTransmission = false; playedBustedEngine = false;
+            playedBustedBrakes = false; playedBustedSuspension = false; playedMinorBrakeDamage = false; playedMinorSuspensionDamage = false;
+            playedSevereBrakeDamage = false; playedSevereSuspensionDamage = false;
+
             engineDamage = DamageLevel.NONE;
             trannyDamage = DamageLevel.NONE;
             aeroDamage = DamageLevel.NONE;
+            maxSuspensionDamage = DamageLevel.NONE;
+            maxBrakeDamage = DamageLevel.NONE;
+            worstComponent = Component.NONE;
+            worstDamageLevel = DamageLevel.NONE;
+            lastReportedComponent = Component.NONE;
+            lastReportedDamageLevel = DamageLevel.NONE;
+            timeWhenDamageLastChanged = DateTime.MinValue;
+            isMissingWheel = false;
+        }
+
+        private void playWorstDamage()
+        {
+            if (worstComponent == Component.ENGINE)
+            {
+                if (worstDamageLevel == DamageLevel.DESTROYED)
+                {
+                    audioPlayer.queueClip(new QueuedMessage(folderBustedEngine, 0, this));
+                }
+                else if (worstDamageLevel == DamageLevel.MAJOR)
+                {
+                    audioPlayer.queueClip(new QueuedMessage(folderSevereEngineDamage, 5, this));
+                }
+                else if (worstDamageLevel == DamageLevel.MINOR)
+                {
+                    audioPlayer.queueClip(new QueuedMessage(folderMinorEngineDamage, 5, this));
+                }
+            }
+            else if (worstComponent == Component.TRANNY)
+            {
+                if (worstDamageLevel == DamageLevel.DESTROYED)
+                {
+                    audioPlayer.queueClip(new QueuedMessage(folderBustedTransmission, 0, this));
+                }
+                else if (worstDamageLevel == DamageLevel.MAJOR)
+                {
+                    audioPlayer.queueClip(new QueuedMessage(folderSevereTransmissionDamage, 5, this));
+                }
+                else if (worstDamageLevel == DamageLevel.MINOR)
+                {
+                    audioPlayer.queueClip(new QueuedMessage(folderMinorTransmissionDamage, 5, this));
+                }
+            }
+            else if (worstComponent == Component.SUSPENSION)
+            {
+                if (worstDamageLevel == DamageLevel.DESTROYED)
+                {
+                    audioPlayer.queueClip(new QueuedMessage(folderBustedSuspension, 0, this));
+                }
+                else if (isMissingWheel)
+                {
+                    audioPlayer.queueClip(new QueuedMessage(folderMissingWheel, 5, this));
+                }
+                else if (worstDamageLevel == DamageLevel.MAJOR)
+                {
+                    audioPlayer.queueClip(new QueuedMessage(folderSevereSuspensionDamage, 5, this));
+                }
+                else if (worstDamageLevel == DamageLevel.MINOR)
+                {
+                    audioPlayer.queueClip(new QueuedMessage(folderMinorSuspensionDamage, 5, this));
+                }
+            }
+            else if (worstComponent == Component.BRAKES)
+            {
+                if (worstDamageLevel == DamageLevel.DESTROYED)
+                {
+                    audioPlayer.queueClip(new QueuedMessage(folderBustedBrakes, 0, this));
+                }
+                else if (worstDamageLevel == DamageLevel.MAJOR)
+                {
+                    audioPlayer.queueClip(new QueuedMessage(folderSevereBrakeDamage, 5, this));
+                }
+                else if (worstDamageLevel == DamageLevel.MINOR)
+                {
+                    audioPlayer.queueClip(new QueuedMessage(folderMinorBrakeDamage, 5, this));
+                }
+            }
+            else if (worstComponent == Component.AERO)
+            {
+                if (worstDamageLevel == DamageLevel.DESTROYED)
+                {
+                    audioPlayer.queueClip(new QueuedMessage(folderSevereAeroDamage, 0, this));
+                }
+                else if (worstDamageLevel == DamageLevel.MAJOR)
+                {
+                    audioPlayer.queueClip(new QueuedMessage(folderSevereAeroDamage, 5, this));
+                }
+                else if (worstDamageLevel == DamageLevel.MINOR)
+                {
+                    audioPlayer.queueClip(new QueuedMessage(folderMinorAeroDamage, 5, this));
+                }
+                else if (worstDamageLevel == DamageLevel.TRIVIAL)
+                {
+                    audioPlayer.queueClip(new QueuedMessage(folderJustAScratch, 5, this));
+                }
+            }
         }
 
         override protected void triggerInternal(GameStateData previousGameState, GameStateData currentGameState)
@@ -59,68 +193,59 @@ namespace CrewChiefV3.Events
                 aeroDamage = currentGameState.CarDamageData.OverallAeroDamage;
                 trannyDamage = currentGameState.CarDamageData.OverallTransmissionDamage;
                 engineDamage = currentGameState.CarDamageData.OverallEngineDamage;
-                if (!playedBustedEngine && engineDamage == DamageLevel.DESTROYED)
+                if (currentGameState.CarDamageData.BrakeDamageStatus.hasValueAtLevel(DamageLevel.DESTROYED))
                 {
-                    playedBustedEngine = true;
-                    playedSevereEngineDamage = true;
-                    playedMinorEngineDamage = true;
-                    // if we've busted our engine, don't moan about other damage
-                    playedBustedTransmission = true;
-                    playedSevereTransmissionDamage = true;
-                    playedMinorTransmissionDamage = true;
-                    playedSevereAeroDamage = true;
-                    playedMinorAeroDamage = true;
-                    audioPlayer.queueClip(new QueuedMessage(folderBustedEngine, 0, this));
-                    audioPlayer.removeQueuedClip(folderSevereEngineDamage);
+                    maxBrakeDamage = DamageLevel.DESTROYED;
                 }
-                else if (!playedSevereEngineDamage && engineDamage == DamageLevel.MAJOR)
+                else if (currentGameState.CarDamageData.BrakeDamageStatus.hasValueAtLevel(DamageLevel.MAJOR))
                 {
-                    playedSevereEngineDamage = true;
-                    playedMinorEngineDamage = true;
-                    audioPlayer.queueClip(new QueuedMessage(folderSevereEngineDamage, 5, this));
-                    audioPlayer.removeQueuedClip(folderMinorEngineDamage);
+                    maxBrakeDamage = DamageLevel.MAJOR;
                 }
-                else if (!playedMinorEngineDamage && engineDamage == DamageLevel.MINOR)
+                else if (currentGameState.CarDamageData.BrakeDamageStatus.hasValueAtLevel(DamageLevel.MINOR))
                 {
-                    playedMinorEngineDamage = true;
-                    audioPlayer.queueClip(new QueuedMessage(folderMinorEngineDamage, 5, this));
+                    maxBrakeDamage = DamageLevel.MINOR;
+                }
+                else if (currentGameState.CarDamageData.BrakeDamageStatus.hasValueAtLevel(DamageLevel.TRIVIAL))
+                {
+                    maxBrakeDamage = DamageLevel.TRIVIAL;
                 }
 
-                if (!playedBustedTransmission && trannyDamage == DamageLevel.DESTROYED)
+                if (currentGameState.CarDamageData.SuspensionDamageStatus.hasValueAtLevel(DamageLevel.DESTROYED))
                 {
-                    playedBustedTransmission = true;
-                    playedSevereTransmissionDamage = true;
-                    playedMinorTransmissionDamage = true;
-                    // if we've busted out transmission, don't moan about aero
-                    playedSevereAeroDamage = true;
-                    playedMinorAeroDamage = true;
-                    audioPlayer.queueClip(new QueuedMessage(folderBustedTransmission, 5, this));
-                    audioPlayer.removeQueuedClip(folderSevereTransmissionDamage);
+                    maxSuspensionDamage = DamageLevel.DESTROYED;
                 }
-                else if (!playedSevereTransmissionDamage && trannyDamage == DamageLevel.MAJOR)
+                else if (currentGameState.CarDamageData.SuspensionDamageStatus.hasValueAtLevel(DamageLevel.MAJOR))
                 {
-                    playedSevereTransmissionDamage = true;
-                    playedMinorTransmissionDamage = true;
-                    audioPlayer.queueClip(new QueuedMessage(folderSevereTransmissionDamage, 5, this));
-                    audioPlayer.removeQueuedClip(folderMinorTransmissionDamage);
+                    maxSuspensionDamage = DamageLevel.MAJOR;
                 }
-                else if (!playedMinorTransmissionDamage && trannyDamage == DamageLevel.MINOR)
+                else if (currentGameState.CarDamageData.SuspensionDamageStatus.hasValueAtLevel(DamageLevel.MINOR))
                 {
-                    playedMinorTransmissionDamage = true;
-                    audioPlayer.queueClip(new QueuedMessage(folderMinorTransmissionDamage, 5, this));
+                    maxSuspensionDamage = DamageLevel.MINOR;
                 }
+                else if (currentGameState.CarDamageData.SuspensionDamageStatus.hasValueAtLevel(DamageLevel.TRIVIAL))
+                {
+                    maxSuspensionDamage = DamageLevel.TRIVIAL;
+                }
+                isMissingWheel = !currentGameState.PitData.InPitlane && (!currentGameState.TyreData.LeftFrontAttached || !currentGameState.TyreData.RightFrontAttached ||
+                        !currentGameState.TyreData.LeftRearAttached || !currentGameState.TyreData.RightRearAttached);
 
-                if (!playedSevereAeroDamage && aeroDamage == DamageLevel.MAJOR)
+                Tuple<Component, DamageLevel> worstDamage = getWorstDamage();
+                if (worstDamage.Item1 != lastReportedComponent || worstDamage.Item2 != lastReportedDamageLevel)
                 {
-                    playedSevereAeroDamage = true;
-                    playedMinorAeroDamage = true;
-                    audioPlayer.queueClip(new QueuedMessage(folderSevereAeroDamage, 5, this));
-                    audioPlayer.removeQueuedClip(folderMinorAeroDamage);
-                }
-                else if (!playedMinorAeroDamage && aeroDamage == DamageLevel.MINOR)
-                {
-                    playedMinorAeroDamage = true;
-                    audioPlayer.queueClip(new QueuedMessage(folderMinorAeroDamage, 5, this));
+                    // the damage has changed since we last reported it
+                    if (worstDamage.Item1 != worstComponent || worstDamage.Item2 != worstDamageLevel)
+                    {
+                        // start the clock ticking and set the current damage to be the worst damage
+                        timeWhenDamageLastChanged = currentGameState.Now;
+                        worstComponent = worstDamage.Item1;
+                        worstDamageLevel = worstDamage.Item2;
+                    } 
+                    else if (timeWhenDamageLastChanged.Add(timeToWaitForDamageToSettle) < currentGameState.Now)
+                    {
+                        lastReportedComponent = worstComponent;
+                        lastReportedDamageLevel = worstDamageLevel;
+                        playWorstDamage();
+                    }                 
                 }
             }
         }
@@ -208,6 +333,145 @@ namespace CrewChiefV3.Events
                     audioPlayer.closeChannel();
                 }
             }
+            if (voiceMessage.Contains(SpeechRecogniser.SUSPENSION))
+            {
+                if (maxSuspensionDamage == DamageLevel.NONE)
+                {
+                    audioPlayer.openChannel();
+                    audioPlayer.playClipImmediately(new QueuedMessage(folderNoSuspensionDamage, 0, null));
+                    audioPlayer.closeChannel();
+                }
+                else if (maxSuspensionDamage == DamageLevel.DESTROYED)
+                {
+                    audioPlayer.openChannel();
+                    audioPlayer.playClipImmediately(new QueuedMessage(folderBustedSuspension, 0, null));
+                    audioPlayer.closeChannel();
+                }
+                else if (maxSuspensionDamage == DamageLevel.MAJOR)
+                {
+                    audioPlayer.openChannel();
+                    audioPlayer.playClipImmediately(new QueuedMessage(folderSevereSuspensionDamage, 0, null));
+                    audioPlayer.closeChannel();
+                }
+                else if (maxSuspensionDamage == DamageLevel.MINOR)
+                {
+                    audioPlayer.openChannel();
+                    audioPlayer.playClipImmediately(new QueuedMessage(folderMinorSuspensionDamage, 0, null));
+                    audioPlayer.closeChannel();
+                }
+            }
+            if (voiceMessage.Contains(SpeechRecogniser.BRAKES))
+            {
+                if (maxSuspensionDamage == DamageLevel.NONE)
+                {
+                    audioPlayer.openChannel();
+                    audioPlayer.playClipImmediately(new QueuedMessage(folderNoBrakeDamage, 0, null));
+                    audioPlayer.closeChannel();
+                }
+                else if (maxSuspensionDamage == DamageLevel.DESTROYED)
+                {
+                    audioPlayer.openChannel();
+                    audioPlayer.playClipImmediately(new QueuedMessage(folderBustedBrakes, 0, null));
+                    audioPlayer.closeChannel();
+                }
+                else if (maxSuspensionDamage == DamageLevel.MAJOR)
+                {
+                    audioPlayer.openChannel();
+                    audioPlayer.playClipImmediately(new QueuedMessage(folderSevereBrakeDamage, 0, null));
+                    audioPlayer.closeChannel();
+                }
+                else if (maxSuspensionDamage == DamageLevel.MINOR)
+                {
+                    audioPlayer.openChannel();
+                    audioPlayer.playClipImmediately(new QueuedMessage(folderMinorBrakeDamage, 0, null));
+                    audioPlayer.closeChannel();
+                }
+            }
+        }
+
+        private Tuple<Component, DamageLevel> getWorstDamage()
+        {
+            if (engineDamage == DamageLevel.DESTROYED)
+            {
+                return new Tuple<Component, DamageLevel>(Component.ENGINE, DamageLevel.DESTROYED);
+            }
+            if (trannyDamage == DamageLevel.DESTROYED)
+            {
+                return new Tuple<Component, DamageLevel>(Component.TRANNY, DamageLevel.DESTROYED);
+            }
+            if (maxSuspensionDamage == DamageLevel.DESTROYED)
+            {
+                return new Tuple<Component, DamageLevel>(Component.SUSPENSION, DamageLevel.DESTROYED);
+            }
+            if (maxBrakeDamage == DamageLevel.DESTROYED)
+            {
+                return new Tuple<Component, DamageLevel>(Component.BRAKES, DamageLevel.DESTROYED);
+            }
+            if (aeroDamage == DamageLevel.DESTROYED)
+            {
+                return new Tuple<Component, DamageLevel>(Component.AERO, DamageLevel.DESTROYED);
+            }
+            if (engineDamage == DamageLevel.MAJOR)
+            {
+                return new Tuple<Component, DamageLevel>(Component.ENGINE, DamageLevel.MAJOR);
+            }
+            if (trannyDamage == DamageLevel.MAJOR)
+            {
+                return new Tuple<Component, DamageLevel>(Component.TRANNY, DamageLevel.MAJOR);
+            }
+            if (maxSuspensionDamage == DamageLevel.MAJOR)
+            {
+                return new Tuple<Component, DamageLevel>(Component.SUSPENSION, DamageLevel.MAJOR);
+            }
+            if (maxBrakeDamage == DamageLevel.MAJOR)
+            {
+                return new Tuple<Component, DamageLevel>(Component.BRAKES, DamageLevel.MAJOR);
+            }
+            if (maxBrakeDamage == DamageLevel.MAJOR)
+            {
+                return new Tuple<Component, DamageLevel>(Component.AERO, DamageLevel.MAJOR);
+            }
+            if (engineDamage == DamageLevel.MINOR)
+            {
+                return new Tuple<Component, DamageLevel>(Component.ENGINE, DamageLevel.MINOR);
+            }
+            if (trannyDamage == DamageLevel.MINOR)
+            {
+                return new Tuple<Component, DamageLevel>(Component.TRANNY, DamageLevel.MINOR);
+            }
+            if (maxSuspensionDamage == DamageLevel.MINOR)
+            {
+                return new Tuple<Component, DamageLevel>(Component.SUSPENSION, DamageLevel.MINOR);
+            }
+            if (maxBrakeDamage == DamageLevel.MINOR)
+            {
+                return new Tuple<Component, DamageLevel>(Component.BRAKES, DamageLevel.MINOR);
+            }
+            if (maxBrakeDamage == DamageLevel.MINOR)
+            {
+                return new Tuple<Component, DamageLevel>(Component.AERO, DamageLevel.MINOR);
+            }
+            if (engineDamage == DamageLevel.TRIVIAL)
+            {
+                return new Tuple<Component, DamageLevel>(Component.ENGINE, DamageLevel.TRIVIAL);
+            }
+            if (trannyDamage == DamageLevel.TRIVIAL)
+            {
+                return new Tuple<Component, DamageLevel>(Component.TRANNY, DamageLevel.TRIVIAL);
+            }
+            if (maxSuspensionDamage == DamageLevel.TRIVIAL)
+            {
+                return new Tuple<Component, DamageLevel>(Component.SUSPENSION, DamageLevel.TRIVIAL);
+            }
+            if (maxBrakeDamage == DamageLevel.TRIVIAL)
+            {
+                return new Tuple<Component, DamageLevel>(Component.BRAKES, DamageLevel.TRIVIAL);
+            }
+            if (maxBrakeDamage == DamageLevel.TRIVIAL)
+            {
+                return new Tuple<Component, DamageLevel>(Component.AERO, DamageLevel.TRIVIAL);
+            }
+            return new Tuple<Component, DamageLevel>(Component.NONE, DamageLevel.NONE);
         }
     }
 }

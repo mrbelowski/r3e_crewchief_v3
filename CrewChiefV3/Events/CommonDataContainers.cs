@@ -41,6 +41,11 @@ namespace CrewChiefV3.Events
             }
         }
 
+        public Boolean hasValueAtLevel(Enum e)
+        {
+            return cornersForEachStatus.ContainsKey(e) && cornersForEachStatus[e] != Corners.NONE;
+        }
+
         public static CornerData getCornerData(List<EnumWithThresholds> enumsWithThresholds, float leftFrontValue, float rightFrontValue, float leftRearValue, float rightRearValue)
         {
             CornerData cornerData = new CornerData();
