@@ -15,6 +15,7 @@ namespace CrewChiefV3
 {
     class AudioPlayer
     {
+        public Boolean disablePearlsOfWisdom = false;   // used for the last 2 laps / 3 minutes of a race session only
         public Boolean mute = false;
         public static float minimumSoundPackVersion = 31f;
 
@@ -29,6 +30,9 @@ namespace CrewChiefV3
         public static String folderNoData = "acknowledge/no_data";
         public static String folderYes = "acknowledge/yes";
         public static String folderNo = "acknowledge/no";
+        public static String folderDeltasEnabled = "acknowledge/deltasEnabled";
+        public static String folderDeltasDisabled = "acknowledge/deltasDisabled";
+
 
         private Boolean allowPearlsOnNextPlay = true;
 
@@ -551,11 +555,20 @@ namespace CrewChiefV3
                 }
                 if (keysToPlay.Count > 0)
                 {
-                    if (keysToPlay.Count == 1 && clipIsPearlOfWisdom(keysToPlay[0]) && hasPearlJustBeenPlayed())
+                    if (keysToPlay.Count == 1 && clipIsPearlOfWisdom(keysToPlay[0]))
                     {
-                        Console.WriteLine("Rejecting pearl of wisdom " + keysToPlay[0] +
-                            " because one has been played in the last " + minTimeBetweenPearlsOfWisdom + " seconds");
-                        soundsProcessed.Add(keysToPlay[0]);
+                        if (hasPearlJustBeenPlayed())
+                        {
+                            Console.WriteLine("Rejecting pearl of wisdom " + keysToPlay[0] +
+                                " because one has been played in the last " + minTimeBetweenPearlsOfWisdom + " seconds");
+                            soundsProcessed.Add(keysToPlay[0]);
+                        }
+                        else if (disablePearlsOfWisdom)
+                        {
+                            Console.WriteLine("Rejecting pearl of wisdom " + keysToPlay[0] +
+                                   " because pearls have been disabled for the last phase of the race");
+                            soundsProcessed.Add(keysToPlay[0]);
+                        }
                     }
                     else
                     {
@@ -666,6 +679,12 @@ namespace CrewChiefV3
                             {
                                 Console.WriteLine("Rejecting pearl of wisdom " + eventName +
                                     " because they've been temporarily disabled");
+                                continue;
+                            }
+                            else if (disablePearlsOfWisdom)
+                            {
+                                Console.WriteLine("Rejecting pearl of wisdom " + eventName +
+                                       " because pearls have been disabled for the last phase of the race");
                                 continue;
                             }
                             else

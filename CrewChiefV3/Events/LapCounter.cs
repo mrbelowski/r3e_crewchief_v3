@@ -81,6 +81,7 @@ namespace CrewChiefV3.Events
                     audioPlayer.closeChannel();
                     playedGreenGreenGreen = true;
                 }
+                audioPlayer.disablePearlsOfWisdom = false;
             }
             if (currentGameState.SessionData.SessionType == SessionType.Race && currentGameState.SessionData.IsNewLap && currentGameState.SessionData.CompletedLaps > 0)
             {
@@ -131,6 +132,8 @@ namespace CrewChiefV3.Events
                     {
                         Console.WriteLine("2 laps left but position is < 1");
                     }
+                    // 2 laps left, so prevent any further pearls of wisdom being added
+
                 }
             }
         }

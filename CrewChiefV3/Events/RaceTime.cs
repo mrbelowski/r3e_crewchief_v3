@@ -133,6 +133,11 @@ namespace CrewChiefV3.Events
                         audioPlayer.queueClip(new QueuedMessage(folderLastLap, 0, this), pearlType, 0.7);
                     }
                 }
+                if (currentGameState.SessionData.SessionRunningTime > 60 && timeLeft / 60 < 3 && timeLeft / 60 > 2.9)
+                {
+                    // disable pearls for the last part of the race
+                    audioPlayer.disablePearlsOfWisdom = true;
+                }
                 if (currentGameState.SessionData.SessionRunningTime > 60 && !played2mins && timeLeft / 60 < 2 && timeLeft / 60 > 1.9)
                 {
                     played2mins = true;

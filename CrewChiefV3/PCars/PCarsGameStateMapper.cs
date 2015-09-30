@@ -445,7 +445,8 @@ namespace CrewChiefV3.PCars
                                 
                                 if (currentOpponentRacePosition == 1 && (currentGameState.SessionData.SessionNumberOfLaps > 0 && 
                                         currentGameState.SessionData.SessionNumberOfLaps == currentOpponentLapsCompleted) ||
-                                        (currentGameState.SessionData.SessionRunTime > 0 && previousOpponentData.CompletedLaps < currentOpponentLapsCompleted))
+                                        (currentGameState.SessionData.SessionRunTime > 0 && currentGameState.SessionData.SessionTimeRemaining < 1 &&
+                                        previousOpponentData.CompletedLaps < currentOpponentLapsCompleted))
                                 {
                                     currentGameState.SessionData.LeaderHasFinishedRace = true;
                                 }
@@ -877,7 +878,6 @@ namespace CrewChiefV3.PCars
                 // yeah yeah....
                 if (sessionRunTime > 0 && sessionTimeRemaining <= 1)
                 {
-                    Console.WriteLine(sessionTimeRemaining);
                     return SessionPhase.Finished;
                 } 
                 else if (raceState == (uint)eRaceState.RACESTATE_RACING) 

@@ -162,7 +162,7 @@ namespace CrewChiefV3
             {
                 readOpponentDeltasForEveryLap = true;
             }
-            audioPlayer.playClipImmediately(new QueuedMessage(AudioPlayer.folderAcknowlegeDisableKeepQuiet, 0, null));
+            audioPlayer.playClipImmediately(new QueuedMessage(AudioPlayer.folderDeltasEnabled, 0, null));
         }
 
         public void disableDeltasMode()
@@ -171,7 +171,7 @@ namespace CrewChiefV3
             {
                 readOpponentDeltasForEveryLap = false;
             }
-            audioPlayer.playClipImmediately(new QueuedMessage(AudioPlayer.folderAcknowlegeOK, 0, null));
+            audioPlayer.playClipImmediately(new QueuedMessage(AudioPlayer.folderDeltasDisabled, 0, null));
         }
 
         public void toggleSpotterMode()
@@ -371,6 +371,7 @@ namespace CrewChiefV3
                                     previousGameState.SessionData.IsDisqualified);
                                 audioPlayer.closeChannel();
                                 sessionFinished = true;
+                                audioPlayer.disablePearlsOfWisdom = false;
                                 if (loadDataFromFile)
                                 {
                                     Thread.Sleep(2000);
@@ -379,13 +380,13 @@ namespace CrewChiefV3
                             float prevTime = previousGameState == null ? 0 : previousGameState.SessionData.SessionRunningTime;
                             if (currentGameState.SessionData.IsNewSession)
                             {
+                                audioPlayer.disablePearlsOfWisdom = false;
                                 displayNewSessionInfo(currentGameState);
                                 sessionFinished = false;
                                 if (!stateCleared)
                                 {
                                     Console.WriteLine("Clearing game state...");
                                     audioPlayer.purgeQueues();
-                                    // TODO: make the session end messages survive a purge
                                     audioPlayer.closeChannel();
                                     foreach (KeyValuePair<String, AbstractEvent> entry in eventsList)
                                     {
@@ -467,6 +468,7 @@ namespace CrewChiefV3
             previousGameState = null;
             sessionFinished = false;
             audioPlayer.stopMonitor();
+            audioPlayer.disablePearlsOfWisdom = false;
             if (gameDataReader != null && gameDataReader.dumpToFile)
             {
                 gameDataReader.DumpRawGameData();
