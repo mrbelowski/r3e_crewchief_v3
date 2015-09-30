@@ -88,8 +88,8 @@ namespace CrewChiefV3.Events
         private int lapsIntoSessionBeforeTempMessage = 2;
         
 
-        // 1 or 2 for checking at sector1 / 2 lines. Anything else and we check at the end of the lap
-        private int checkAtSector = 1;
+        // 2 or 3 for checking at start of sector 2 or 3. Anything else and we check at the end of the lap
+        private int checkAtSector = 2;
 
         private Boolean reportedTyreWearForCurrentPitEntry;
 
@@ -244,7 +244,7 @@ namespace CrewChiefV3.Events
                 audioPlayer.playClipImmediately(new QueuedMessage("tyre_temps", messageContents, 0, this));
                 audioPlayer.closeChannel();
             }
-            else if (lastTyreTempMessage != null && !messagesHaveSameContent(lastTyreTempMessage, messageContents))
+            else if (lastTyreTempMessage == null || !messagesHaveSameContent(lastTyreTempMessage, messageContents))
             {
                 audioPlayer.queueClip(new QueuedMessage("tyre_temps", messageContents, 0, this));
             }
@@ -268,7 +268,7 @@ namespace CrewChiefV3.Events
                 audioPlayer.playClipImmediately(new QueuedMessage("brake_temps", messageContents, 0, this));
                 audioPlayer.closeChannel();
             }
-            else if (lastBrakeTempMessage != null && !messagesHaveSameContent(lastBrakeTempMessage, messageContents))
+            else if (lastBrakeTempMessage == null || !messagesHaveSameContent(lastBrakeTempMessage, messageContents))
             {
                 audioPlayer.queueClip(new QueuedMessage("brake_temps", messageContents, 0, this));
             }

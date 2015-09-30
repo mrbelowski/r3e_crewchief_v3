@@ -177,10 +177,6 @@ namespace CrewChiefV3.Events
                 minDamageToReport = (DamageLevel)Math.Max((int)engineDamage, Math.Max((int)trannyDamage, Math.Max((int)maxSuspensionDamage, Math.Max((int)maxBrakeDamage, (int) aeroDamage))));
 
                 Tuple<Component, DamageLevel> worstUnreportedDamage = getWorstUnreportedDamage();
-                if (worstUnreportedDamage != null)
-                {
-                    Console.WriteLine("Worst damage: " + worstUnreportedDamage.Item1 + " : " + worstUnreportedDamage.Item2);
-                }
                 if (worstUnreportedDamage != null && worstUnreportedDamage.Item2 >= minDamageToReport)
                 {
                     if (damageToReportNext == null || worstUnreportedDamage.Item1 != damageToReportNext.Item1 || worstUnreportedDamage.Item2 != damageToReportNext.Item2)

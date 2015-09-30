@@ -349,6 +349,7 @@ namespace CrewChiefV3.PCars
                     currentGameState.SessionData.SessionTimeAtEndOfLastSector1 = previousGameState.SessionData.SessionTimeAtEndOfLastSector1;
                     currentGameState.SessionData.SessionTimeAtEndOfLastSector2 = previousGameState.SessionData.SessionTimeAtEndOfLastSector2;
                     currentGameState.SessionData.SessionTimeAtEndOfLastSector3 = previousGameState.SessionData.SessionTimeAtEndOfLastSector3;
+                    currentGameState.PenaltiesData.CutTrackWarnings = previousGameState.PenaltiesData.CutTrackWarnings;
                 }                
             }            
             
@@ -695,6 +696,10 @@ namespace CrewChiefV3.PCars
                 {
                     currentGameState.PenaltiesData.CutTrackWarnings = previousGameState.PenaltiesData.CutTrackWarnings + 1;
                 }
+            }
+            if (previousGameState != null && previousGameState.SessionData.CurrentLapIsValid && !currentGameState.SessionData.CurrentLapIsValid)
+            {
+                currentGameState.PenaltiesData.CutTrackWarnings = previousGameState.PenaltiesData.CutTrackWarnings + 1;
             }
 
             return currentGameState;
