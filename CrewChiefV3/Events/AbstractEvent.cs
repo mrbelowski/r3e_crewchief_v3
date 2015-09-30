@@ -79,7 +79,7 @@ namespace CrewChiefV3.Events
 
         public virtual List<SessionPhase> applicableSessionPhases
         {
-            get { return new List<SessionPhase> { SessionPhase.Green }; }
+            get { return new List<SessionPhase> { SessionPhase.Green, SessionPhase.Countdown }; }
         }
 
         // this is called on each 'tick' - the event subtype should
