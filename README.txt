@@ -2,6 +2,8 @@ CrewChief version 3.
 
 Changelog
 ---------
+Version 3.2.1: Fixed missing tyre & brake temp updates; more damage handling improvements; reinstated PCars cut-track warnings (still not working very well); don't play flag messages in the pit lane; some other fixes and tweaks. No new sound pack for this version.
+
 Version 3.2.0: Fixed button mapping for deltas-only mode; added separate sound files for deltas on / off confirmation; disabled pearls-of-wisdom for the last part of the race; fixed session time remaining issue in qual and practice; added a few new pearls of wisdom. This version requires a new sound pack.
 
 Version 3.1.1: Fixed gap code for opponents not directly ahead or behind - now the response to "where's Bob?" should read the time gap correctly. No new sound pack for this version.
