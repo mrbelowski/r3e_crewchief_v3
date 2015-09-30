@@ -74,11 +74,15 @@ namespace CrewChiefV3.Events
                 if (!currentGameState.SessionData.IsRacingSameCarInFront)
                 {
                     carAheadLastLaps.Clear();
-                    if (currentGameState.SessionData.Position > 2 && currentGameState.Now > nextCarAheadChangeMessage && !currentGameState.PitData.InPitlane)
+                    if (currentGameState.SessionData.Position > 2 && currentGameState.Now > nextCarAheadChangeMessage && !currentGameState.PitData.InPitlane
+                        && currentGameState.SessionData.CompletedLaps > 0)
                     {
-                        audioPlayer.queueClip(new QueuedMessage("new_car_ahead", MessageContents(folderNextCarIs,
-                            currentGameState.getOpponentAtPosition(currentGameState.SessionData.Position - 1)), 0, this));
-                        nextCarAheadChangeMessage = currentGameState.Now.Add(TimeSpan.FromSeconds(30));
+                        OpponentData opponentData = currentGameState.getOpponentAtPosition(currentGameState.SessionData.Position - 1);
+                        if (opponentData != null && !opponentData.IsEnteringPits)
+                        {
+                            audioPlayer.queueClip(new QueuedMessage("new_car_ahead", MessageContents(folderNextCarIs, opponentData), 0, this));
+                            nextCarAheadChangeMessage = currentGameState.Now.Add(TimeSpan.FromSeconds(30));
+                        }                        
                     }
                 }
                 else if (currentGameState.SessionData.Position > 1)
@@ -159,18 +163,18 @@ namespace CrewChiefV3.Events
 
                 if (currentGameState.PitData.LeaderIsPitting)
                 {
-                    audioPlayer.queueClip(new QueuedMessage("leader_is_pitting", MessageContents(folderTheLeader, currentGameState.getOpponentAtPosition(1), folderIsPitting), 
-                        MessageContents(folderLeaderIsPitting), 0, this));
+                    audioPlayer.queueClip(new QueuedMessage("leader_is_pitting", MessageContents(folderTheLeader, currentGameState.getOpponentAtPositionWhenStartingSector3(1), 
+                        folderIsPitting), MessageContents(folderLeaderIsPitting), 0, this));
                 }
-                if (currentGameState.PitData.CarInFrontIsPitting)
+                if (currentGameState.PitData.CarInFrontIsPitting && currentGameState.SessionData.TimeDeltaFront > 5)
                 {
-                    audioPlayer.queueClip(new QueuedMessage("car_in_front_is_pitting", MessageContents(currentGameState.getOpponentAtPosition(currentGameState.SessionData.Position - 1), 
-                        folderAheadIsPitting), MessageContents(folderCarAheadIsPitting), 0, this));
+                    audioPlayer.queueClip(new QueuedMessage("car_in_front_is_pitting", MessageContents(currentGameState.getOpponentAtPositionWhenStartingSector3(
+                        currentGameState.SessionData.Position - 1), folderAheadIsPitting), MessageContents(folderCarAheadIsPitting), 0, this));
                 }
-                if (currentGameState.PitData.CarBehindIsPitting)
+                if (currentGameState.PitData.CarBehindIsPitting && currentGameState.SessionData.TimeDeltaBehind > 5)
                 {
-                    audioPlayer.queueClip(new QueuedMessage("car_behind_is_pitting", MessageContents(currentGameState.getOpponentAtPosition(currentGameState.SessionData.Position + 1), 
-                        folderBehindIsPitting), MessageContents(folderCarBehindIsPitting), 0, this));
+                    audioPlayer.queueClip(new QueuedMessage("car_behind_is_pitting", MessageContents(currentGameState.getOpponentAtPositionWhenStartingSector3(
+                        currentGameState.SessionData.Position + 1), folderBehindIsPitting), MessageContents(folderCarBehindIsPitting), 0, this));
                 }
             }
         }

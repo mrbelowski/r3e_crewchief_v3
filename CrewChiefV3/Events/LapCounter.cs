@@ -24,7 +24,6 @@ namespace CrewChiefV3.Events
 
         private String folderTwoLeftTopThree = "lap_counter/two_to_go_top_three";
         
-        Boolean playedGreenGreenGreen;
         Boolean playedGetReady;
 
         public Boolean playedFinished;
@@ -45,7 +44,6 @@ namespace CrewChiefV3.Events
 
         public override void clearState()
         {
-            playedGreenGreenGreen = false;
             playedGetReady = false;
             playedFinished = false;
         }
@@ -69,18 +67,15 @@ namespace CrewChiefV3.Events
                     (previousGameState.SessionData.SessionPhase == SessionPhase.Formation ||
                      previousGameState.SessionData.SessionPhase == SessionPhase.Countdown)))
             {*/
-            if (!playedGreenGreenGreen && previousGameState != null &&
+            if (previousGameState != null &&
                 currentGameState.SessionData.SessionType == SessionType.Race &&
-                currentGameState.SessionData.SessionPhase == SessionPhase.Green)
+                currentGameState.SessionData.SessionPhase == SessionPhase.Green && 
+                (previousGameState.SessionData.SessionPhase == SessionPhase.Formation ||
+                 previousGameState.SessionData.SessionPhase == SessionPhase.Countdown))
             {
-                if (previousGameState.SessionData.SessionPhase == SessionPhase.Formation ||
-                 previousGameState.SessionData.SessionPhase == SessionPhase.Countdown)
-                {
-                    audioPlayer.openChannel();
-                    audioPlayer.playClipImmediately(new QueuedMessage(folderGreenGreenGreen, 0, this));
-                    audioPlayer.closeChannel();
-                    playedGreenGreenGreen = true;
-                }
+                audioPlayer.openChannel();
+                audioPlayer.playClipImmediately(new QueuedMessage(folderGreenGreenGreen, 0, this));
+                audioPlayer.closeChannel();
                 audioPlayer.disablePearlsOfWisdom = false;
             }
             if (currentGameState.SessionData.SessionType == SessionType.Race && currentGameState.SessionData.IsNewLap && currentGameState.SessionData.CompletedLaps > 0)

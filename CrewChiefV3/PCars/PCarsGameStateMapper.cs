@@ -609,7 +609,7 @@ namespace CrewChiefV3.PCars
             currentGameState.CarDamageData.DamageEnabled = true;    // no way to tell if it's disabled from the shared memory
             currentGameState.CarDamageData.OverallAeroDamage = mapToDamageLevel(shared.mAeroDamage);
             currentGameState.CarDamageData.OverallEngineDamage = mapToDamageLevel(shared.mEngineDamage);
-            currentGameState.CarDamageData.OverallTransmissionDamage = DamageLevel.UNKNOWN;
+            currentGameState.CarDamageData.OverallTransmissionDamage = DamageLevel.NONE;
             currentGameState.CarDamageData.SuspensionDamageStatus = CornerData.getCornerData(suspensionDamageThresholds,
                 shared.mSuspensionDamage[0], shared.mSuspensionDamage[1], shared.mSuspensionDamage[2], shared.mSuspensionDamage[3]);
             currentGameState.CarDamageData.BrakeDamageStatus = CornerData.getCornerData(brakeDamageThresholds,

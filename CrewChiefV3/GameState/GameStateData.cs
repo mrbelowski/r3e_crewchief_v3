@@ -44,7 +44,7 @@ namespace CrewChiefV3.GameState
     }
     public enum DamageLevel
     {
-        UNKNOWN, NONE, TRIVIAL, MINOR, MAJOR, DESTROYED
+        UNKNOWN = 0, NONE = 1, TRIVIAL = 2, MINOR = 3, MAJOR = 4, DESTROYED = 5
     }
     public enum FlagEnum
     {
@@ -528,6 +528,21 @@ namespace CrewChiefV3.GameState
             {
                 return null;
             }
+        }
+
+        public OpponentData getOpponentAtPositionWhenStartingSector3(int position)
+        {
+            if (OpponentData != null && OpponentData.Count != 0)
+            {
+                foreach (KeyValuePair<int, OpponentData> entry in OpponentData)
+                {
+                    if (entry.Value.PositionAtSector3 == position)
+                    {
+                        return entry.Value;
+                    }
+                }
+            }
+            return null;
         }
 
         public int getOpponentIdInFront()

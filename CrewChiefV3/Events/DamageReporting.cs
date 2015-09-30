@@ -39,20 +39,18 @@ namespace CrewChiefV3.Events
         private DamageLevel aeroDamage;
         private DamageLevel maxSuspensionDamage;
         private DamageLevel maxBrakeDamage;
-
-        private Component worstComponent = Component.NONE;
-
-        private DamageLevel worstDamageLevel = DamageLevel.NONE;
-
+        
         private Boolean isMissingWheel = false;
-
-        private Component lastReportedComponent = Component.NONE;
-
-        private DamageLevel lastReportedDamageLevel = DamageLevel.NONE;
 
         private TimeSpan timeToWaitForDamageToSettle = TimeSpan.FromSeconds(3);
 
         private DateTime timeWhenDamageLastChanged = DateTime.MinValue;
+
+        private Tuple<Component, DamageLevel> damageToReportNext = null;
+
+        private Dictionary<Component, DamageLevel> reportedDamagesLevels = new Dictionary<Component, DamageLevel>();
+
+        private DamageLevel minDamageToReport = DamageLevel.TRIVIAL;
 
         private enum Component
         {
@@ -71,12 +69,44 @@ namespace CrewChiefV3.Events
             aeroDamage = DamageLevel.NONE;
             maxSuspensionDamage = DamageLevel.NONE;
             maxBrakeDamage = DamageLevel.NONE;
-            worstComponent = Component.NONE;
-            worstDamageLevel = DamageLevel.NONE;
-            lastReportedComponent = Component.NONE;
-            lastReportedDamageLevel = DamageLevel.NONE;
             timeWhenDamageLastChanged = DateTime.MinValue;
             isMissingWheel = false;
+            damageToReportNext = null;
+            reportedDamagesLevels.Clear();
+            minDamageToReport = DamageLevel.TRIVIAL;
+        }
+
+        private Boolean hasBeenReported(Component component, DamageLevel damageLevel)
+        {
+            foreach (KeyValuePair<Component, DamageLevel> componentAndDamageAlreadyReported in reportedDamagesLevels)
+            {
+                if (component == componentAndDamageAlreadyReported.Key && componentAndDamageAlreadyReported.Value == damageLevel)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        // used when damage level decreases
+        private void resetReportedDamage(Component component, DamageLevel newDamageLevel)
+        {
+            if (reportedDamagesLevels.ContainsKey(component))
+            {
+                reportedDamagesLevels[component] = newDamageLevel;
+            }
+        }
+
+        private DamageLevel getLastReportedDamageLevel(Component component)
+        {
+            if (reportedDamagesLevels.ContainsKey(component))
+            {
+                return reportedDamagesLevels[component];
+            }
+            else
+            {
+                return DamageLevel.NONE;
+            }
         }
 
         override protected void triggerInternal(GameStateData previousGameState, GameStateData currentGameState)
@@ -119,30 +149,59 @@ namespace CrewChiefV3.Events
                 {
                     maxSuspensionDamage = DamageLevel.TRIVIAL;
                 }
+
                 isMissingWheel = !currentGameState.PitData.InPitlane && (!currentGameState.TyreData.LeftFrontAttached || !currentGameState.TyreData.RightFrontAttached ||
                         !currentGameState.TyreData.LeftRearAttached || !currentGameState.TyreData.RightRearAttached);
 
-                Tuple<Component, DamageLevel> worstDamage = getWorstDamage();
-                if (worstDamage.Item1 != lastReportedComponent || worstDamage.Item2 != lastReportedDamageLevel)
-                {                    
-                    // the damage has changed since we last reported it
-                    if (worstDamage.Item1 != worstComponent || worstDamage.Item2 != worstDamageLevel)
+                if (engineDamage < getLastReportedDamageLevel(Component.ENGINE))
+                {
+                    resetReportedDamage(Component.ENGINE, engineDamage);
+                } 
+                if (trannyDamage < getLastReportedDamageLevel(Component.TRANNY))
+                {
+                    resetReportedDamage(Component.TRANNY, trannyDamage);
+                } 
+                if (maxSuspensionDamage < getLastReportedDamageLevel(Component.SUSPENSION))
+                {
+                    resetReportedDamage(Component.SUSPENSION, maxSuspensionDamage);
+                } 
+                if (maxBrakeDamage < getLastReportedDamageLevel(Component.BRAKES))
+                {
+                    resetReportedDamage(Component.BRAKES, maxBrakeDamage);
+                } 
+                if (aeroDamage < getLastReportedDamageLevel(Component.AERO))
+                {
+                    resetReportedDamage(Component.AERO, aeroDamage);
+                }
+
+                minDamageToReport = (DamageLevel)Math.Max((int)engineDamage, Math.Max((int)trannyDamage, Math.Max((int)maxSuspensionDamage, Math.Max((int)maxBrakeDamage, (int) aeroDamage))));
+
+                Tuple<Component, DamageLevel> worstUnreportedDamage = getWorstUnreportedDamage();
+                if (worstUnreportedDamage != null)
+                {
+                    Console.WriteLine("Worst damage: " + worstUnreportedDamage.Item1 + " : " + worstUnreportedDamage.Item2);
+                }
+                if (worstUnreportedDamage != null && worstUnreportedDamage.Item2 >= minDamageToReport)
+                {
+                    if (damageToReportNext == null || worstUnreportedDamage.Item1 != damageToReportNext.Item1 || worstUnreportedDamage.Item2 != damageToReportNext.Item2)
                     {
-                        Console.WriteLine("damage has changed...");
-                        Console.WriteLine(worstDamage.Item1 + ", " + worstDamage.Item2);
-                        // start the clock ticking and set the current damage to be the worst damage
                         timeWhenDamageLastChanged = currentGameState.Now;
-                        worstComponent = worstDamage.Item1;
-                        worstDamageLevel = worstDamage.Item2;
-                    } 
+                        damageToReportNext = worstUnreportedDamage;
+                    }
                     else if (timeWhenDamageLastChanged.Add(timeToWaitForDamageToSettle) < currentGameState.Now)
                     {
                         Console.WriteLine("reporting ...");
-                        Console.WriteLine(worstDamage.Item1 + ", " + worstDamage.Item2);
-                        lastReportedComponent = worstComponent;
-                        lastReportedDamageLevel = worstDamageLevel;
-                        playWorstDamage();
-                    }                 
+                        Console.WriteLine(damageToReportNext.Item1 + ", " + damageToReportNext.Item2);
+                        if (reportedDamagesLevels.ContainsKey(damageToReportNext.Item1))
+                        {
+                            reportedDamagesLevels[damageToReportNext.Item1] = damageToReportNext.Item2;
+                        }
+                        else
+                        {
+                            reportedDamagesLevels.Add(damageToReportNext.Item1, damageToReportNext.Item2);
+                        }
+                        playDamageToReport();
+                    }
                 }
             }
         }
@@ -291,173 +350,133 @@ namespace CrewChiefV3.Events
             }
         }
 
-        private Tuple<Component, DamageLevel> getWorstDamage()
+        private Tuple<Component, DamageLevel> getWorstUnreportedDamage()
         {
-            if (engineDamage == DamageLevel.DESTROYED)
+            List<Tuple<Component, DamageLevel>> componentsWithMoreDamage = new List<Tuple<Component, DamageLevel>>();
+            if (engineDamage > getLastReportedDamageLevel(Component.ENGINE))
             {
-                return new Tuple<Component, DamageLevel>(Component.ENGINE, DamageLevel.DESTROYED);
+                componentsWithMoreDamage.Add(new Tuple<Component, DamageLevel> (Component.ENGINE, engineDamage));
             }
-            if (trannyDamage == DamageLevel.DESTROYED)
+            if (trannyDamage > getLastReportedDamageLevel(Component.TRANNY))
             {
-                return new Tuple<Component, DamageLevel>(Component.TRANNY, DamageLevel.DESTROYED);
+                componentsWithMoreDamage.Add(new Tuple<Component, DamageLevel>(Component.TRANNY, trannyDamage));
             }
-            if (maxSuspensionDamage == DamageLevel.DESTROYED)
+            if (maxSuspensionDamage > getLastReportedDamageLevel(Component.SUSPENSION))
             {
-                return new Tuple<Component, DamageLevel>(Component.SUSPENSION, DamageLevel.DESTROYED);
+                componentsWithMoreDamage.Add(new Tuple<Component, DamageLevel>(Component.SUSPENSION, maxSuspensionDamage));
             }
-            if (maxBrakeDamage == DamageLevel.DESTROYED)
+            if (maxBrakeDamage > getLastReportedDamageLevel(Component.BRAKES))
             {
-                return new Tuple<Component, DamageLevel>(Component.BRAKES, DamageLevel.DESTROYED);
+                componentsWithMoreDamage.Add(new Tuple<Component, DamageLevel>(Component.BRAKES, maxBrakeDamage));
             }
-            if (aeroDamage == DamageLevel.DESTROYED)
+            if (aeroDamage > getLastReportedDamageLevel(Component.AERO))
             {
-                return new Tuple<Component, DamageLevel>(Component.AERO, DamageLevel.DESTROYED);
+                componentsWithMoreDamage.Add(new Tuple<Component, DamageLevel>(Component.AERO, aeroDamage));
             }
-            if (engineDamage == DamageLevel.MAJOR)
+            if (componentsWithMoreDamage.Count == 0)
             {
-                return new Tuple<Component, DamageLevel>(Component.ENGINE, DamageLevel.MAJOR);
+                return null;
             }
-            if (trannyDamage == DamageLevel.MAJOR)
+            else if (componentsWithMoreDamage.Count == 1)
             {
-                return new Tuple<Component, DamageLevel>(Component.TRANNY, DamageLevel.MAJOR);
+                return componentsWithMoreDamage[0];
             }
-            if (maxSuspensionDamage == DamageLevel.MAJOR)
+            else
             {
-                return new Tuple<Component, DamageLevel>(Component.SUSPENSION, DamageLevel.MAJOR);
+                Tuple<Component, DamageLevel> worstUnreported = componentsWithMoreDamage[0];
+                for (int i = 1; i < componentsWithMoreDamage.Count; i++)
+                {
+                    if (componentsWithMoreDamage[i].Item2 > worstUnreported.Item2)
+                    {
+                        worstUnreported = componentsWithMoreDamage[i];
+                    }
+                }
+                return worstUnreported;
             }
-            if (maxBrakeDamage == DamageLevel.MAJOR)
-            {
-                return new Tuple<Component, DamageLevel>(Component.BRAKES, DamageLevel.MAJOR);
-            }
-            if (aeroDamage == DamageLevel.MAJOR)
-            {
-                return new Tuple<Component, DamageLevel>(Component.AERO, DamageLevel.MAJOR);
-            }
-            if (engineDamage == DamageLevel.MINOR)
-            {
-                return new Tuple<Component, DamageLevel>(Component.ENGINE, DamageLevel.MINOR);
-            }
-            if (trannyDamage == DamageLevel.MINOR)
-            {
-                return new Tuple<Component, DamageLevel>(Component.TRANNY, DamageLevel.MINOR);
-            }
-            if (maxSuspensionDamage == DamageLevel.MINOR)
-            {
-                return new Tuple<Component, DamageLevel>(Component.SUSPENSION, DamageLevel.MINOR);
-            }
-            if (maxBrakeDamage == DamageLevel.MINOR)
-            {
-                return new Tuple<Component, DamageLevel>(Component.BRAKES, DamageLevel.MINOR);
-            }
-            if (aeroDamage == DamageLevel.MINOR)
-            {
-                return new Tuple<Component, DamageLevel>(Component.AERO, DamageLevel.MINOR);
-            }
-            if (engineDamage == DamageLevel.TRIVIAL)
-            {
-                return new Tuple<Component, DamageLevel>(Component.ENGINE, DamageLevel.TRIVIAL);
-            }
-            if (trannyDamage == DamageLevel.TRIVIAL)
-            {
-                return new Tuple<Component, DamageLevel>(Component.TRANNY, DamageLevel.TRIVIAL);
-            }
-            if (maxSuspensionDamage == DamageLevel.TRIVIAL)
-            {
-                return new Tuple<Component, DamageLevel>(Component.SUSPENSION, DamageLevel.TRIVIAL);
-            }
-            if (maxBrakeDamage == DamageLevel.TRIVIAL)
-            {
-                return new Tuple<Component, DamageLevel>(Component.BRAKES, DamageLevel.TRIVIAL);
-            }
-            if (aeroDamage == DamageLevel.TRIVIAL)
-            {
-                return new Tuple<Component, DamageLevel>(Component.AERO, DamageLevel.TRIVIAL);
-            }
-            return new Tuple<Component, DamageLevel>(Component.NONE, DamageLevel.NONE);
         }
 
-        private void playWorstDamage()
+        private void playDamageToReport()
         {
             Boolean playMissingWheel = isMissingWheel;            
-            if (worstComponent == Component.ENGINE)
+            if (damageToReportNext.Item1 == Component.ENGINE)
             {
-                if (worstDamageLevel == DamageLevel.DESTROYED)
+                if (damageToReportNext.Item2 == DamageLevel.DESTROYED)
                 {
                     audioPlayer.queueClip(new QueuedMessage(folderBustedEngine, 0, this));
                     playMissingWheel = false;
                 }
-                else if (worstDamageLevel == DamageLevel.MAJOR)
+                else if (damageToReportNext.Item2 == DamageLevel.MAJOR)
                 {
                     audioPlayer.queueClip(new QueuedMessage(folderSevereEngineDamage, 0, this));
                 }
-                else if (worstDamageLevel == DamageLevel.MINOR)
+                else if (damageToReportNext.Item2 == DamageLevel.MINOR)
                 {
                     audioPlayer.queueClip(new QueuedMessage(folderMinorEngineDamage, 0, this));
                 }
             }
-            else if (worstComponent == Component.TRANNY)
+            else if (damageToReportNext.Item1 == Component.TRANNY)
             {
-                if (worstDamageLevel == DamageLevel.DESTROYED)
+                if (damageToReportNext.Item2 == DamageLevel.DESTROYED)
                 {
                     audioPlayer.queueClip(new QueuedMessage(folderBustedTransmission, 0, this));
                     playMissingWheel = false;
                 }
-                else if (worstDamageLevel == DamageLevel.MAJOR)
+                else if (damageToReportNext.Item2 == DamageLevel.MAJOR)
                 {
                     audioPlayer.queueClip(new QueuedMessage(folderSevereTransmissionDamage, 0, this));
                 }
-                else if (worstDamageLevel == DamageLevel.MINOR)
+                else if (damageToReportNext.Item2 == DamageLevel.MINOR)
                 {
                     audioPlayer.queueClip(new QueuedMessage(folderMinorTransmissionDamage, 0, this));
                 }
             }
-            else if (worstComponent == Component.SUSPENSION)
+            else if (damageToReportNext.Item1 == Component.SUSPENSION)
             {
-                if (worstDamageLevel == DamageLevel.DESTROYED)
+                if (damageToReportNext.Item2 == DamageLevel.DESTROYED)
                 {
                     audioPlayer.queueClip(new QueuedMessage(folderBustedSuspension, 0, this));
                     playMissingWheel = false;
                 }
-                else if (worstDamageLevel == DamageLevel.MAJOR)
+                else if (damageToReportNext.Item2 == DamageLevel.MAJOR)
                 {
                     audioPlayer.queueClip(new QueuedMessage(folderSevereSuspensionDamage, 0, this));
                 }
-                else if (worstDamageLevel == DamageLevel.MINOR && !isMissingWheel)
+                else if (damageToReportNext.Item2 == DamageLevel.MINOR && !isMissingWheel)
                 {
                     audioPlayer.queueClip(new QueuedMessage(folderMinorSuspensionDamage, 0, this));
                 }
             }
-            else if (worstComponent == Component.BRAKES)
+            else if (damageToReportNext.Item1 == Component.BRAKES)
             {
-                if (worstDamageLevel == DamageLevel.DESTROYED)
+                if (damageToReportNext.Item2 == DamageLevel.DESTROYED)
                 {
                     audioPlayer.queueClip(new QueuedMessage(folderBustedBrakes, 0, this));
                     playMissingWheel = false;
                 }
-                else if (worstDamageLevel == DamageLevel.MAJOR)
+                else if (damageToReportNext.Item2 == DamageLevel.MAJOR)
                 {
                     audioPlayer.queueClip(new QueuedMessage(folderSevereBrakeDamage, 0, this));
                 }
-                else if (worstDamageLevel == DamageLevel.MINOR)
+                else if (damageToReportNext.Item2 == DamageLevel.MINOR)
                 {
                     audioPlayer.queueClip(new QueuedMessage(folderMinorBrakeDamage, 0, this));
                 }
             }
-            else if (worstComponent == Component.AERO)
+            else if (damageToReportNext.Item1 == Component.AERO)
             {
-                if (worstDamageLevel == DamageLevel.DESTROYED)
+                if (damageToReportNext.Item2 == DamageLevel.DESTROYED)
                 {
                     audioPlayer.queueClip(new QueuedMessage(folderSevereAeroDamage, 0, this));
                 }
-                else if (worstDamageLevel == DamageLevel.MAJOR)
+                else if (damageToReportNext.Item2 == DamageLevel.MAJOR)
                 {
                     audioPlayer.queueClip(new QueuedMessage(folderSevereAeroDamage, 0, this));
                 }
-                else if (worstDamageLevel == DamageLevel.MINOR)
+                else if (damageToReportNext.Item2 == DamageLevel.MINOR)
                 {
                     audioPlayer.queueClip(new QueuedMessage(folderMinorAeroDamage, 0, this));
                 }
-                else if (worstDamageLevel == DamageLevel.TRIVIAL)
+                else if (damageToReportNext.Item2 == DamageLevel.TRIVIAL)
                 {
                     audioPlayer.queueClip(new QueuedMessage(folderJustAScratch, 0, this));
                 }

@@ -87,10 +87,9 @@ namespace CrewChiefV3.Events
 
         private int lapsIntoSessionBeforeTempMessage = 2;
         
-        private Boolean checkedTempsAtSector3;
 
-        // -1 means we only check at the end of the lap
-        private int checkAtSector = 2;
+        // 1 or 2 for checking at sector1 / 2 lines. Anything else and we check at the end of the lap
+        private int checkAtSector = 1;
 
         private Boolean reportedTyreWearForCurrentPitEntry;
 
@@ -127,7 +126,6 @@ namespace CrewChiefV3.Events
 
         public override void clearState()
         {
-            checkedTempsAtSector3 = false;
             reportedTyreWearForCurrentPitEntry = false;
             reportedEstimatedTimeLeft = false;
             leftFrontWearPercent = 0;
@@ -208,30 +206,12 @@ namespace CrewChiefV3.Events
                 {
                     reportedEstimatedTimeLeft = true;
                 }
-            }
-            if (currentGameState.SessionData.IsNewLap)
-            {
-                if (!currentGameState.PitData.InPitlane && !checkedTempsAtSector3 &&
-                    currentGameState.SessionData.CompletedLaps >= lapsIntoSessionBeforeTempMessage && !currentGameState.SessionData.LeaderHasFinishedRace)
+
+                if (!currentGameState.SessionData.LeaderHasFinishedRace && 
+                    ((checkAtSector != 1 && checkAtSector != 2 && currentGameState.SessionData.IsNewLap) ||
+                    ((currentGameState.SessionData.IsNewSector && currentGameState.SessionData.SectorNumber == checkAtSector))))
                 {
-                    if (enableTyreTempWarnings)
-                    {
-                        reportCurrentTyreTempStatus(false);
-                    }
-                    if (enableBrakeTempWarnings)
-                    {
-                        reportCurrentBrakeTempStatus(false);
-                    }
-                    peakBrakeTempForLap = 0;
-                }
-                checkedTempsAtSector3 = false;                                                       
-            }
-            else
-            {
-                if (checkAtSector > 0 && currentGameState.SessionData.IsNewSector && currentGameState.SessionData.SectorNumber == checkAtSector)
-                {
-                    checkedTempsAtSector3 = true;
-                    if (!currentGameState.PitData.InPitlane && currentGameState.SessionData.CompletedLaps >= lapsIntoSessionBeforeTempMessage && !currentGameState.SessionData.LeaderHasFinishedRace)
+                    if (!currentGameState.PitData.InPitlane && currentGameState.SessionData.CompletedLaps >= lapsIntoSessionBeforeTempMessage)
                     {
                         if (enableTyreTempWarnings)
                         {
@@ -241,8 +221,8 @@ namespace CrewChiefV3.Events
                         {
                             reportCurrentBrakeTempStatus(false);
                         }
-                        peakBrakeTempForLap = 0;
                     }
+                    peakBrakeTempForLap = 0;
                 }
             }
         }
