@@ -144,6 +144,18 @@ namespace CrewChiefV3
             }
         }
 
+        public void toggleReadOpponentDeltasMode()
+        {
+            if (readOpponentDeltasForEveryLap)
+            {
+                disableDeltasMode();
+            }
+            else
+            {
+                enableDeltasMode();
+            }
+        }
+
         public void enableDeltasMode()
         {
             if (!readOpponentDeltasForEveryLap)

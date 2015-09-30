@@ -183,11 +183,11 @@ namespace CrewChiefV3
                 loadAssignment(parent, TOGGLE_SPOTTER_FUNCTION, toggleSpotterFunctionButtonIndex, toggleSpotterFunctionDeviceGuid);
             }
 
-            int toggleOpponentDeltasButtonIndex = UserSettings.GetUserSettings().getInt("TOGGLE_READ_OPPONENT_DELTAS_button_index");
-            String toggleOpponentDeltasDeviceGuid = UserSettings.GetUserSettings().getString("TOGGLE_READ_OPPONENT_DELTAS_device_guid");
-            if (toggleSpotterFunctionButtonIndex != -1 && toggleSpotterFunctionDeviceGuid.Length > 0)
+            int toggleReadOpponentDeltasButtonIndex = UserSettings.GetUserSettings().getInt("TOGGLE_READ_OPPONENT_DELTAS_button_index");
+            String toggleReadOpponentDeltasDeviceGuid = UserSettings.GetUserSettings().getString("TOGGLE_READ_OPPONENT_DELTAS_device_guid");
+            if (toggleReadOpponentDeltasButtonIndex != -1 && toggleReadOpponentDeltasDeviceGuid.Length > 0)
             {
-                loadAssignment(parent, TOGGLE_READ_OPPONENT_DELTAS, toggleOpponentDeltasButtonIndex, toggleOpponentDeltasDeviceGuid);
+                loadAssignment(parent, TOGGLE_READ_OPPONENT_DELTAS, toggleReadOpponentDeltasButtonIndex, toggleReadOpponentDeltasDeviceGuid);
             }
         }
 

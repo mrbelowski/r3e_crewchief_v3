@@ -240,7 +240,7 @@ namespace CrewChiefV3
                     else if (controllerConfiguration.hasOutstandingClick(ControllerConfiguration.TOGGLE_READ_OPPONENT_DELTAS))
                     {
                         Console.WriteLine("Toggling read opponent deltas mode");
-                        crewChief.toggleSpotterMode();
+                        crewChief.toggleReadOpponentDeltasMode();
                         nextPollWait = 1000;
                     }
                     else if (crewChief.speechRecogniser.initialised && voiceOption == VoiceOptionEnum.TOGGLE && 
