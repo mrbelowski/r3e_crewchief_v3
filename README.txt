@@ -2,6 +2,8 @@ CrewChief version 3.
 
 Changelog
 ---------
+Version 3.2.0: Fixed button mapping for deltas-only mode; added separate sound files for deltas on / off confirmation; disabled pearls-of-wisdom for the last part of the race; fixed session time remaining issue in qual and practice; added a few new pearls of wisdom. This version requires a new sound pack.
+
 Version 3.1.1: Fixed gap code for opponents not directly ahead or behind - now the response to "where's Bob?" should read the time gap correctly. No new sound pack for this version.
 
 Version 3.1.0: Added 'opponent deltas' mode. This can be toggled with a button or voice command and when enabled, the time delta front and behind it read when you cross the line (the one behind is read when the guy behind crosses the line actually). These messages will still play even if you've disabled other updates ('Kimi mode'); reworked damage reporting to include suspension and brake damage (PCars), and missing wheels (PCars); added brake temperature monitoring; enhanced tyre temperature and wear monitoring; additions to the spotter to make it cope better with noisy data. This version requires a new sound pack.
