@@ -105,7 +105,8 @@ namespace CrewChiefV3.Events
 
         override protected void triggerInternal(GameStateData previousGameState, GameStateData currentGameState)
         {
-            if (currentGameState.SessionData.SessionType == SessionType.Race && currentGameState.FuelData.FuelUseActive)
+            if (currentGameState.SessionData.SessionType == SessionType.Race && currentGameState.FuelData.FuelUseActive &&
+                (currentGameState.SessionData.SessionPhase == SessionPhase.Green || currentGameState.SessionData.SessionPhase == SessionPhase.Checkered))
             {
                 fuelUseActive = true;
                 currentFuel = currentGameState.FuelData.FuelLeft;
