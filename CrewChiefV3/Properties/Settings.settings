@@ -23,12 +23,6 @@
     <Setting Name="enable_spotter" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
-    <Setting Name="max_safe_water_temp" Type="System.Single" Scope="User">
-      <Value Profile="(Default)">95</Value>
-    </Setting>
-    <Setting Name="max_safe_oil_temp" Type="System.Single" Scope="User">
-      <Value Profile="(Default)">120</Value>
-    </Setting>
     <Setting Name="log_temps" Type="System.Boolean" Scope="Application">
       <Value Profile="(Default)">False</Value>
     </Setting>
@@ -67,12 +61,6 @@
     </Setting>
     <Setting Name="pearls_of_wisdom_likelihood" Type="System.Single" Scope="User">
       <Value Profile="(Default)">0.7</Value>
-    </Setting>
-    <Setting Name="max_cold_tyre_temp" Type="System.Single" Scope="User">
-      <Value Profile="(Default)">70</Value>
-    </Setting>
-    <Setting Name="max_good_tyre_temp" Type="System.Single" Scope="User">
-      <Value Profile="(Default)">100</Value>
     </Setting>
     <Setting Name="play_cut_track_warnings" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
@@ -184,18 +172,6 @@
     </Setting>
     <Setting Name="TOGGLE_READ_OPPONENT_DELTAS_device_type" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
-    </Setting>
-    <Setting Name="max_hot_tyre_temp" Type="System.Single" Scope="User">
-      <Value Profile="(Default)">120</Value>
-    </Setting>
-    <Setting Name="max_cold_brake_temp" Type="System.Single" Scope="User">
-      <Value Profile="(Default)">150</Value>
-    </Setting>
-    <Setting Name="max_good_brake_temp" Type="System.Single" Scope="User">
-      <Value Profile="(Default)">700</Value>
-    </Setting>
-    <Setting Name="max_hot_brake_temp" Type="System.Single" Scope="User">
-      <Value Profile="(Default)">850</Value>
     </Setting>
     <Setting Name="enable_brake_temp_warnings" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>

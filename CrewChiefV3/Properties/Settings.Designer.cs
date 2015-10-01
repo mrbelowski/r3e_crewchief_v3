@@ -107,30 +107,6 @@ namespace CrewChiefV3.Properties {
             }
         }
         
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("95")]
-        public float max_safe_water_temp {
-            get {
-                return ((float)(this["max_safe_water_temp"]));
-            }
-            set {
-                this["max_safe_water_temp"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("120")]
-        public float max_safe_oil_temp {
-            get {
-                return ((float)(this["max_safe_oil_temp"]));
-            }
-            set {
-                this["max_safe_oil_temp"] = value;
-            }
-        }
-        
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("False")]
@@ -281,30 +257,6 @@ namespace CrewChiefV3.Properties {
             }
             set {
                 this["pearls_of_wisdom_likelihood"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("70")]
-        public float max_cold_tyre_temp {
-            get {
-                return ((float)(this["max_cold_tyre_temp"]));
-            }
-            set {
-                this["max_cold_tyre_temp"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("100")]
-        public float max_good_tyre_temp {
-            get {
-                return ((float)(this["max_good_tyre_temp"]));
-            }
-            set {
-                this["max_good_tyre_temp"] = value;
             }
         }
         
@@ -749,54 +701,6 @@ namespace CrewChiefV3.Properties {
             }
             set {
                 this["TOGGLE_READ_OPPONENT_DELTAS_device_type"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("120")]
-        public float max_hot_tyre_temp {
-            get {
-                return ((float)(this["max_hot_tyre_temp"]));
-            }
-            set {
-                this["max_hot_tyre_temp"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("150")]
-        public float max_cold_brake_temp {
-            get {
-                return ((float)(this["max_cold_brake_temp"]));
-            }
-            set {
-                this["max_cold_brake_temp"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("700")]
-        public float max_good_brake_temp {
-            get {
-                return ((float)(this["max_good_brake_temp"]));
-            }
-            set {
-                this["max_good_brake_temp"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("850")]
-        public float max_hot_brake_temp {
-            get {
-                return ((float)(this["max_hot_brake_temp"]));
-            }
-            set {
-                this["max_hot_brake_temp"] = value;
             }
         }
         
