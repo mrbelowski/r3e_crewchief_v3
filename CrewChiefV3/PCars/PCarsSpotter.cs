@@ -98,6 +98,8 @@ namespace CrewChiefV3.PCars
 
         private int maxSavedStateReuse = 10;
 
+        private static float intervalSeconds = CrewChief.spotterIntervalMilliSeconds / 1000;
+
         private enum NextMessageType
         {
             none, clearLeft, clearRight, clearAllRound, carLeft, carRight, threeWide, stillThere
@@ -166,6 +168,11 @@ namespace CrewChiefV3.PCars
             if (enabled && currentState.mParticipantData.Count() > 1 && currentState.mViewedParticipantIndex >= 0)
             {
                 pCarsAPIParticipantStruct playerData = currentState.mParticipantData[currentState.mViewedParticipantIndex];
+                if (playerData.mWorldPosition[0] == 0 || playerData.mWorldPosition[2] == 0 || playerData.mWorldPosition[0] == -1 || playerData.mWorldPosition[2] == -1)
+                {
+                    return;
+                }
+                pCarsAPIParticipantStruct previousPlayerData = lastState.mParticipantData[currentState.mViewedParticipantIndex];
 
                 if (currentSpeed > minSpeedForSpotterToOperate && currentState.mPitMode == (uint) ePitMode.PIT_MODE_NONE)
                 {
@@ -185,45 +192,48 @@ namespace CrewChiefV3.PCars
                             if (opponentData.mIsActive) {
                                 if (opponentData.mWorldPosition[0] != 0 && opponentData.mWorldPosition[2] != 0 &&
                                         opponentData.mWorldPosition[0] != -1 && opponentData.mWorldPosition[2] != -1 &&
-                                    opponentIsRacing(opponentData, previousOpponentData))
+                                    previousOpponentData.mWorldPosition[0] != 0 && previousOpponentData.mWorldPosition[2] != 0 &&
+                                        previousOpponentData.mWorldPosition[0] != -1 && previousOpponentData.mWorldPosition[2] != -1)
                                 {
-                                    // note that we can't use the player or opponent lap distance for anything here - it's full of rubbish
-                                    Side side = getSide(currentState.mOrientation[1], playerData.mWorldPosition, opponentData.mWorldPosition);
-                                    if (side == Side.left)
-                                    {
-                                        carsOnLeft++;
-                                        if (lastKnownOpponentState.ContainsKey(i))
+                                    if (opponentIsRacing(opponentData, previousOpponentData, playerData, previousPlayerData)) {
+                                        // note that we can't use the player or opponent lap distance for anything here - it's full of rubbish
+                                        Side side = getSide(currentState.mOrientation[1], playerData.mWorldPosition, opponentData.mWorldPosition);
+                                        if (side == Side.left)
                                         {
-                                            lastKnownOpponentState[i] = Side.left;
+                                            carsOnLeft++;
+                                            if (lastKnownOpponentState.ContainsKey(i))
+                                            {
+                                                lastKnownOpponentState[i] = Side.left;
+                                            }
+                                            else
+                                            {
+                                                lastKnownOpponentState.Add(i, Side.left);
+                                            }
+                                        }
+                                        else if (side == Side.right)
+                                        {
+                                            carsOnRight++;
+                                            if (lastKnownOpponentState.ContainsKey(i))
+                                            {
+                                                lastKnownOpponentState[i] = Side.right;
+                                            }
+                                            else
+                                            {
+                                                lastKnownOpponentState.Add(i, Side.right);
+                                            }
                                         }
                                         else
                                         {
-                                            lastKnownOpponentState.Add(i, Side.left);
+                                            if (lastKnownOpponentState.ContainsKey(i))
+                                            {
+                                                lastKnownOpponentState[i] = Side.none;
+                                            }
+                                            else
+                                            {
+                                                lastKnownOpponentState.Add(i, Side.none);
+                                            }
                                         }
-                                    }
-                                    else if (side == Side.right)
-                                    {
-                                        carsOnRight++;
-                                        if (lastKnownOpponentState.ContainsKey(i))
-                                        {
-                                            lastKnownOpponentState[i] = Side.right;
-                                        }
-                                        else
-                                        {
-                                            lastKnownOpponentState.Add(i, Side.right);
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (lastKnownOpponentState.ContainsKey(i))
-                                        {
-                                            lastKnownOpponentState[i] = Side.none;
-                                        }
-                                        else
-                                        {
-                                            lastKnownOpponentState.Add(i, Side.none);
-                                        }
-                                    }
+                                    }                                    
                                 }
                                 else
                                 {
@@ -286,11 +296,25 @@ namespace CrewChiefV3.PCars
             }
         }
 
-        private Boolean opponentIsRacing(pCarsAPIParticipantStruct opponentData, pCarsAPIParticipantStruct previousOpponentData)
+        private Boolean opponentIsRacing(pCarsAPIParticipantStruct opponentData, pCarsAPIParticipantStruct previousOpponentData,
+            pCarsAPIParticipantStruct playerData, pCarsAPIParticipantStruct previousPlayerData)
         {
-            float deltaX = Math.Abs(opponentData.mWorldPosition[0] - previousOpponentData.mWorldPosition[0]);
-            float deltaY = Math.Abs(opponentData.mWorldPosition[2] - previousOpponentData.mWorldPosition[2]);
-            return (deltaX > 1 || deltaY > 1) && deltaX < maxClosingSpeed && deltaY < maxClosingSpeed;
+            float opponentVelocityX = Math.Abs(opponentData.mWorldPosition[0] - previousOpponentData.mWorldPosition[0]) / intervalSeconds;
+            float opponentVelocityY = Math.Abs(opponentData.mWorldPosition[2] - previousOpponentData.mWorldPosition[2]) / intervalSeconds;
+            // hard code this - if the opponent car is going < 2mph on both axis we're not interested
+            if (opponentVelocityX < 2 && opponentVelocityY < 2)
+            {
+                return false;
+            }
+
+            float playerVelocityX = Math.Abs(playerData.mWorldPosition[0] - previousPlayerData.mWorldPosition[0]) / intervalSeconds;
+            float playerVelocityY = Math.Abs(playerData.mWorldPosition[2] - previousPlayerData.mWorldPosition[2]) / intervalSeconds;
+
+            if (Math.Abs(playerVelocityX - opponentVelocityX) > maxClosingSpeed || Math.Abs(playerVelocityY - opponentVelocityY) > maxClosingSpeed)
+            {
+                return false;
+            }
+            return true;
         }
         
         // TODO: "clear all round" will never play here unless both sides go clear during the same update, which is really unlikely

@@ -29,7 +29,9 @@ namespace CrewChiefV3
 
         public static TimeSpan _timeInterval = TimeSpan.FromMilliseconds(UserSettings.GetUserSettings().getInt("update_interval"));
 
-        public static TimeSpan spotterInterval = TimeSpan.FromMilliseconds(UserSettings.GetUserSettings().getInt("spotter_update_interval"));
+        public static int spotterIntervalMilliSeconds = UserSettings.GetUserSettings().getInt("spotter_update_interval");
+
+        public static TimeSpan spotterInterval = TimeSpan.FromMilliseconds(spotterIntervalMilliSeconds);
         
         private static Dictionary<String, AbstractEvent> eventsList = new Dictionary<String, AbstractEvent>();
 
