@@ -155,7 +155,8 @@ namespace CrewChiefV3.PCars
             }
             // this check looks a bit funky... whe we start a practice session, the raceState is not_started
             // until we cross the line for the first time. Which is retarded really.
-            if (currentState.mRaceState == (int)eRaceState.RACESTATE_INVALID || now < timeToStartSpotting || currentState.mSessionState == (int)eSessionState.SESSION_FORMATIONLAP)
+            if (currentState.mRaceState == (int)eRaceState.RACESTATE_INVALID || now < timeToStartSpotting ||
+                (currentState.mSessionState == (int)eSessionState.SESSION_RACE && currentState.mRaceState == (int) eRaceState.RACESTATE_NOT_STARTED))
             {
                 return;
             }
@@ -235,7 +236,7 @@ namespace CrewChiefV3.PCars
                                 }
                                 else
                                 {
-                                    // zero usable position data, use the last known state
+                                    // no usable position data, use the last known state
                                     if (lastKnownOpponentState.ContainsKey(i)) {
                                         int lastStateUseCount = 1;
                                         if (lastKnownOpponentStateUseCounter.ContainsKey(i))
