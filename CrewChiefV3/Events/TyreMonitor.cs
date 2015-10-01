@@ -89,7 +89,6 @@ namespace CrewChiefV3.Events
         
 
         // check at start of which sector (1=s/f line)
-        private int checkTyresAtSector = 2;
         private int checkBrakesAtSector = 3;
 
         private Boolean reportedTyreWearForCurrentPitEntry;
@@ -210,9 +209,7 @@ namespace CrewChiefV3.Events
 
                 if (enableTyreTempWarnings && !currentGameState.SessionData.LeaderHasFinishedRace &&
                     !currentGameState.PitData.InPitlane &&
-                    currentGameState.SessionData.CompletedLaps >= lapsIntoSessionBeforeTempMessage && 
-                    ((checkTyresAtSector == 1 && currentGameState.SessionData.IsNewLap) ||
-                    ((currentGameState.SessionData.IsNewSector && currentGameState.SessionData.SectorNumber == checkTyresAtSector))))
+                    currentGameState.SessionData.CompletedLaps >= lapsIntoSessionBeforeTempMessage && currentGameState.SessionData.IsNewLap)
                 {
                     reportCurrentTyreTempStatus(false);
                 }

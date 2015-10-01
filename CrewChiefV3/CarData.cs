@@ -10,25 +10,26 @@ namespace CrewChiefV3
     public class CarData
     {
         // some temperatures - maybe externalise these
-        private static float maxColdRoadTyreTemp = 50;
-        private static float maxWarmRoadTyreTemp = 80;
-        private static float maxHotRoadTyreTemp = 100;
+        // These are the peaks. If the tyre exceeds these temps even for one tick over a lap, we'll warn about it. This is why they look so high
+        private static float maxColdRoadTyreTempPeak = 70;
+        private static float maxWarmRoadTyreTempPeak = 95;
+        private static float maxHotRoadTyreTempPeak = 115;
 
-        private static float maxColdUnknownRaceTyreTemp = 70;
-        private static float maxWarmUnknownRaceTyreTemp = 100;
-        private static float maxHotUnknownRaceTyreTemp = 120;
+        private static float maxColdUnknownRaceTyreTempPeak = 80;
+        private static float maxWarmUnknownRaceTyreTempPeak = 115;
+        private static float maxHotUnknownRaceTyreTempPeak = 135;
 
-        private static float maxColdDtmOptionTyreTemp = 60;
-        private static float maxWarmDtmOptionTyreTemp = 95;
-        private static float maxHotDtmOptionTyreTemp = 110;
+        private static float maxColdDtmOptionTyreTempPeak = 70;
+        private static float maxWarmDtmOptionTyreTempPeak = 110;
+        private static float maxHotDtmOptionTyreTempPeak = 125;
 
-        private static float maxColdDtmPrimeTyreTemp = 75;
-        private static float maxWarmDtmPrimeTyreTemp = 110;
-        private static float maxHotDtmPrimeTyreTemp = 130;
+        private static float maxColdDtmPrimeTyreTempPeak = 85;
+        private static float maxWarmDtmPrimeTyreTempPeak = 115;
+        private static float maxHotDtmPrimeTyreTempPeak = 135;
 
-        private static float maxColdBiasPlyTyreTemp = 70;
-        private static float maxWarmBiasPlyTyreTemp = 90;
-        private static float maxHotBiasPlyTyreTemp = 110;
+        private static float maxColdBiasPlyTyreTempPeak = 80;
+        private static float maxWarmBiasPlyTyreTempPeak = 100;
+        private static float maxHotBiasPlyTyreTempPeak = 120;
 
 
         private static float maxColdIronRoadBrakeTemp = 80;
@@ -136,38 +137,38 @@ namespace CrewChiefV3
 
             
             List<CornerData.EnumWithThresholds> roadTyreTempsThresholds = new List<CornerData.EnumWithThresholds>();
-            roadTyreTempsThresholds.Add(new CornerData.EnumWithThresholds(TyreTemp.COLD, -10000, maxColdRoadTyreTemp));
-            roadTyreTempsThresholds.Add(new CornerData.EnumWithThresholds(TyreTemp.WARM, maxColdRoadTyreTemp, maxWarmRoadTyreTemp));
-            roadTyreTempsThresholds.Add(new CornerData.EnumWithThresholds(TyreTemp.HOT, maxWarmRoadTyreTemp, maxHotRoadTyreTemp));
-            roadTyreTempsThresholds.Add(new CornerData.EnumWithThresholds(TyreTemp.COOKING, maxHotRoadTyreTemp, 10000));
+            roadTyreTempsThresholds.Add(new CornerData.EnumWithThresholds(TyreTemp.COLD, -10000, maxColdRoadTyreTempPeak));
+            roadTyreTempsThresholds.Add(new CornerData.EnumWithThresholds(TyreTemp.WARM, maxColdRoadTyreTempPeak, maxWarmRoadTyreTempPeak));
+            roadTyreTempsThresholds.Add(new CornerData.EnumWithThresholds(TyreTemp.HOT, maxWarmRoadTyreTempPeak, maxHotRoadTyreTempPeak));
+            roadTyreTempsThresholds.Add(new CornerData.EnumWithThresholds(TyreTemp.COOKING, maxHotRoadTyreTempPeak, 10000));
             tyreTempThresholds.Add(TyreType.Road, roadTyreTempsThresholds);
 
             List<CornerData.EnumWithThresholds> unknownRaceTyreTempsThresholds = new List<CornerData.EnumWithThresholds>();
-            unknownRaceTyreTempsThresholds.Add(new CornerData.EnumWithThresholds(TyreTemp.COLD, -10000, maxColdUnknownRaceTyreTemp));
-            unknownRaceTyreTempsThresholds.Add(new CornerData.EnumWithThresholds(TyreTemp.WARM, maxColdUnknownRaceTyreTemp, maxWarmUnknownRaceTyreTemp));
-            unknownRaceTyreTempsThresholds.Add(new CornerData.EnumWithThresholds(TyreTemp.HOT, maxWarmUnknownRaceTyreTemp, maxHotUnknownRaceTyreTemp));
-            unknownRaceTyreTempsThresholds.Add(new CornerData.EnumWithThresholds(TyreTemp.COOKING, maxHotUnknownRaceTyreTemp, 10000));
+            unknownRaceTyreTempsThresholds.Add(new CornerData.EnumWithThresholds(TyreTemp.COLD, -10000, maxColdUnknownRaceTyreTempPeak));
+            unknownRaceTyreTempsThresholds.Add(new CornerData.EnumWithThresholds(TyreTemp.WARM, maxColdUnknownRaceTyreTempPeak, maxWarmUnknownRaceTyreTempPeak));
+            unknownRaceTyreTempsThresholds.Add(new CornerData.EnumWithThresholds(TyreTemp.HOT, maxWarmUnknownRaceTyreTempPeak, maxHotUnknownRaceTyreTempPeak));
+            unknownRaceTyreTempsThresholds.Add(new CornerData.EnumWithThresholds(TyreTemp.COOKING, maxHotUnknownRaceTyreTempPeak, 10000));
             tyreTempThresholds.Add(TyreType.Unknown_Race, unknownRaceTyreTempsThresholds);
 
             List<CornerData.EnumWithThresholds> dtmOptionTyreTempsThresholds = new List<CornerData.EnumWithThresholds>();
-            dtmOptionTyreTempsThresholds.Add(new CornerData.EnumWithThresholds(TyreTemp.COLD, -10000, maxColdDtmOptionTyreTemp));
-            dtmOptionTyreTempsThresholds.Add(new CornerData.EnumWithThresholds(TyreTemp.WARM, maxColdDtmOptionTyreTemp, maxWarmDtmOptionTyreTemp));
-            dtmOptionTyreTempsThresholds.Add(new CornerData.EnumWithThresholds(TyreTemp.HOT, maxWarmDtmOptionTyreTemp, maxHotDtmOptionTyreTemp));
-            dtmOptionTyreTempsThresholds.Add(new CornerData.EnumWithThresholds(TyreTemp.COOKING, maxHotDtmOptionTyreTemp, 10000));
+            dtmOptionTyreTempsThresholds.Add(new CornerData.EnumWithThresholds(TyreTemp.COLD, -10000, maxColdDtmOptionTyreTempPeak));
+            dtmOptionTyreTempsThresholds.Add(new CornerData.EnumWithThresholds(TyreTemp.WARM, maxColdDtmOptionTyreTempPeak, maxWarmDtmOptionTyreTempPeak));
+            dtmOptionTyreTempsThresholds.Add(new CornerData.EnumWithThresholds(TyreTemp.HOT, maxWarmDtmOptionTyreTempPeak, maxHotDtmOptionTyreTempPeak));
+            dtmOptionTyreTempsThresholds.Add(new CornerData.EnumWithThresholds(TyreTemp.COOKING, maxHotDtmOptionTyreTempPeak, 10000));
             tyreTempThresholds.Add(TyreType.DTM_Option, dtmOptionTyreTempsThresholds);
 
             List<CornerData.EnumWithThresholds> dtmPrimeTyreTempsThresholds = new List<CornerData.EnumWithThresholds>();
-            dtmPrimeTyreTempsThresholds.Add(new CornerData.EnumWithThresholds(TyreTemp.COLD, -10000, maxColdDtmPrimeTyreTemp));
-            dtmPrimeTyreTempsThresholds.Add(new CornerData.EnumWithThresholds(TyreTemp.WARM, maxColdDtmPrimeTyreTemp, maxWarmDtmPrimeTyreTemp));
-            dtmPrimeTyreTempsThresholds.Add(new CornerData.EnumWithThresholds(TyreTemp.HOT, maxWarmDtmPrimeTyreTemp, maxHotDtmPrimeTyreTemp));
-            dtmPrimeTyreTempsThresholds.Add(new CornerData.EnumWithThresholds(TyreTemp.COOKING, maxHotDtmPrimeTyreTemp, 10000));
+            dtmPrimeTyreTempsThresholds.Add(new CornerData.EnumWithThresholds(TyreTemp.COLD, -10000, maxColdDtmPrimeTyreTempPeak));
+            dtmPrimeTyreTempsThresholds.Add(new CornerData.EnumWithThresholds(TyreTemp.WARM, maxColdDtmPrimeTyreTempPeak, maxWarmDtmPrimeTyreTempPeak));
+            dtmPrimeTyreTempsThresholds.Add(new CornerData.EnumWithThresholds(TyreTemp.HOT, maxWarmDtmPrimeTyreTempPeak, maxHotDtmPrimeTyreTempPeak));
+            dtmPrimeTyreTempsThresholds.Add(new CornerData.EnumWithThresholds(TyreTemp.COOKING, maxHotDtmPrimeTyreTempPeak, 10000));
             tyreTempThresholds.Add(TyreType.DTM_Prime, dtmPrimeTyreTempsThresholds);
 
             List<CornerData.EnumWithThresholds> biasPlyTyreTempsThresholds = new List<CornerData.EnumWithThresholds>();
-            biasPlyTyreTempsThresholds.Add(new CornerData.EnumWithThresholds(TyreTemp.COLD, -10000, maxColdBiasPlyTyreTemp));
-            biasPlyTyreTempsThresholds.Add(new CornerData.EnumWithThresholds(TyreTemp.WARM, maxColdBiasPlyTyreTemp, maxWarmBiasPlyTyreTemp));
-            biasPlyTyreTempsThresholds.Add(new CornerData.EnumWithThresholds(TyreTemp.HOT, maxWarmBiasPlyTyreTemp, maxHotBiasPlyTyreTemp));
-            biasPlyTyreTempsThresholds.Add(new CornerData.EnumWithThresholds(TyreTemp.COOKING, maxHotBiasPlyTyreTemp, 10000));
+            biasPlyTyreTempsThresholds.Add(new CornerData.EnumWithThresholds(TyreTemp.COLD, -10000, maxColdBiasPlyTyreTempPeak));
+            biasPlyTyreTempsThresholds.Add(new CornerData.EnumWithThresholds(TyreTemp.WARM, maxColdBiasPlyTyreTempPeak, maxWarmBiasPlyTyreTempPeak));
+            biasPlyTyreTempsThresholds.Add(new CornerData.EnumWithThresholds(TyreTemp.HOT, maxWarmBiasPlyTyreTempPeak, maxHotBiasPlyTyreTempPeak));
+            biasPlyTyreTempsThresholds.Add(new CornerData.EnumWithThresholds(TyreTemp.COOKING, maxHotBiasPlyTyreTempPeak, 10000));
             tyreTempThresholds.Add(TyreType.Bias_Ply, biasPlyTyreTempsThresholds);
 
             List<CornerData.EnumWithThresholds> ironRoadBrakeTempsThresholds = new List<CornerData.EnumWithThresholds>();

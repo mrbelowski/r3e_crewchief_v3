@@ -2,6 +2,8 @@ CrewChief version 3.
 
 Changelog
 ---------
+Version 3.2.2: Spotter additions to disregard cars which aren't moving, or who's closing speed is too high; fixes to rolling starts; added distinct car classes each with their own brake and engine temp thresholds; added temp thresholds for different tyre types; added some more race start sounds.
+
 Version 3.2.1: Fixed missing tyre & brake temp updates; more damage handling improvements; reinstated PCars cut-track warnings (still not working very well); don't play flag messages in the pit lane; some other fixes and tweaks. No new sound pack for this version.
 
 Version 3.2.0: Fixed button mapping for deltas-only mode; added separate sound files for deltas on / off confirmation; disabled pearls-of-wisdom for the last part of the race; fixed session time remaining issue in qual and practice; added a few new pearls of wisdom. This version requires a new sound pack.

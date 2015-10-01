@@ -488,36 +488,73 @@ namespace CrewChiefV3.RaceRoom
             currentGameState.TyreData.FrontLeft_CenterTemp = shared.TireTemp.FrontLeft_Center;
             currentGameState.TyreData.FrontLeft_LeftTemp = shared.TireTemp.FrontLeft_Left;
             currentGameState.TyreData.FrontLeft_RightTemp = shared.TireTemp.FrontLeft_Right;
+            float frontLeftTemp = (currentGameState.TyreData.FrontLeft_CenterTemp + currentGameState.TyreData.FrontLeft_LeftTemp + currentGameState.TyreData.FrontLeft_RightTemp) / 3;
             currentGameState.TyreData.FrontLeftTyreType = tyreType;
             currentGameState.TyreData.FrontLeftPressure = shared.TirePressure.FrontLeft;
             currentGameState.TyreData.FrontLeftPercentWear = getTyreWearPercentage(shared.CarDamage.TireFrontLeft);
+            if (currentGameState.SessionData.IsNewLap)
+            {
+                currentGameState.TyreData.PeakFrontLeftTemperatureForLap = frontLeftTemp;
+            }
+            else if (previousGameState == null || frontLeftTemp > previousGameState.TyreData.PeakFrontLeftTemperatureForLap)
+            {
+                currentGameState.TyreData.PeakFrontLeftTemperatureForLap = frontLeftTemp;
+            }
 
             currentGameState.TyreData.FrontRight_CenterTemp = shared.TireTemp.FrontRight_Center;
             currentGameState.TyreData.FrontRight_LeftTemp = shared.TireTemp.FrontRight_Left;
             currentGameState.TyreData.FrontRight_RightTemp = shared.TireTemp.FrontRight_Right;
+            float frontRightTemp = (currentGameState.TyreData.FrontRight_CenterTemp + currentGameState.TyreData.FrontRight_LeftTemp + currentGameState.TyreData.FrontRight_RightTemp) / 3;
             currentGameState.TyreData.FrontRightTyreType = tyreType;
             currentGameState.TyreData.FrontRightPressure = shared.TirePressure.FrontRight;
             currentGameState.TyreData.FrontRightPercentWear = getTyreWearPercentage(shared.CarDamage.TireFrontRight);
+            if (currentGameState.SessionData.IsNewLap)
+            {
+                currentGameState.TyreData.PeakFrontRightTemperatureForLap = frontRightTemp;
+            }
+            else if (previousGameState == null || frontRightTemp > previousGameState.TyreData.PeakFrontRightTemperatureForLap)
+            {
+                currentGameState.TyreData.PeakFrontRightTemperatureForLap = frontRightTemp;
+            }
 
             currentGameState.TyreData.RearLeft_CenterTemp = shared.TireTemp.RearLeft_Center;
             currentGameState.TyreData.RearLeft_LeftTemp = shared.TireTemp.RearLeft_Left;
             currentGameState.TyreData.RearLeft_RightTemp = shared.TireTemp.RearLeft_Right;
+            float rearLeftTemp = (currentGameState.TyreData.RearLeft_CenterTemp + currentGameState.TyreData.RearLeft_LeftTemp + currentGameState.TyreData.RearLeft_RightTemp) / 3;
             currentGameState.TyreData.RearLeftTyreType = tyreType;
             currentGameState.TyreData.RearLeftPressure = shared.TirePressure.RearLeft;
             currentGameState.TyreData.RearLeftPercentWear = getTyreWearPercentage(shared.CarDamage.TireRearLeft);
+            if (currentGameState.SessionData.IsNewLap)
+            {
+                currentGameState.TyreData.PeakRearLeftTemperatureForLap = rearLeftTemp;
+            }
+            else if (previousGameState == null || rearLeftTemp > previousGameState.TyreData.PeakRearLeftTemperatureForLap)
+            {
+                currentGameState.TyreData.PeakRearLeftTemperatureForLap = rearLeftTemp;
+            }
 
             currentGameState.TyreData.RearRight_CenterTemp = shared.TireTemp.RearRight_Center;
             currentGameState.TyreData.RearRight_LeftTemp = shared.TireTemp.RearRight_Left;
             currentGameState.TyreData.RearRight_RightTemp = shared.TireTemp.RearRight_Right;
+            float rearRightTemp = (currentGameState.TyreData.RearRight_CenterTemp + currentGameState.TyreData.RearRight_LeftTemp + currentGameState.TyreData.RearRight_RightTemp) / 3;
             currentGameState.TyreData.RearRightTyreType = tyreType;
             currentGameState.TyreData.RearRightPressure = shared.TirePressure.RearRight;
             currentGameState.TyreData.RearRightPercentWear = getTyreWearPercentage(shared.CarDamage.TireRearRight);
+            if (currentGameState.SessionData.IsNewLap)
+            {
+                currentGameState.TyreData.PeakRearRightTemperatureForLap = rearRightTemp;
+            }
+            else if (previousGameState == null || rearRightTemp > previousGameState.TyreData.PeakRearRightTemperatureForLap)
+            {
+                currentGameState.TyreData.PeakRearRightTemperatureForLap = rearRightTemp;
+            }
+
+            currentGameState.TyreData.TyreConditionStatus = CornerData.getCornerData(tyreWearThresholds, currentGameState.TyreData.FrontLeftPercentWear,
+                currentGameState.TyreData.FrontRightPercentWear, currentGameState.TyreData.RearLeftPercentWear, currentGameState.TyreData.RearRightPercentWear);
 
             currentGameState.TyreData.TyreTempStatus = CornerData.getCornerData(CarData.tyreTempThresholds[tyreType],
-                (currentGameState.TyreData.FrontLeft_CenterTemp + currentGameState.TyreData.FrontLeft_LeftTemp + currentGameState.TyreData.FrontLeft_RightTemp) / 3,
-                (currentGameState.TyreData.FrontRight_CenterTemp + currentGameState.TyreData.FrontRight_LeftTemp + currentGameState.TyreData.FrontRight_RightTemp) / 3,
-                (currentGameState.TyreData.RearLeft_CenterTemp + currentGameState.TyreData.RearLeft_LeftTemp + currentGameState.TyreData.RearLeft_RightTemp) / 3,
-                (currentGameState.TyreData.RearRight_CenterTemp + currentGameState.TyreData.RearRight_LeftTemp + currentGameState.TyreData.RearRight_RightTemp) / 3);
+                currentGameState.TyreData.PeakFrontLeftTemperatureForLap, currentGameState.TyreData.PeakFrontRightTemperatureForLap,
+                currentGameState.TyreData.PeakRearLeftTemperatureForLap, currentGameState.TyreData.PeakRearRightTemperatureForLap);
 
             // TODO: the brake temp thresholds here are for 'iron race brakes'. We don't know what kind of car the player is driving...
             List<CornerData.EnumWithThresholds> brakeTempThresholdsToUse;

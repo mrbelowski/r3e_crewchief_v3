@@ -451,6 +451,11 @@ namespace CrewChiefV3.GameState
         public Single RearRight_CenterTemp = 0;
         public Single RearRight_RightTemp = 0;
 
+        public Single PeakFrontLeftTemperatureForLap = 0;
+        public Single PeakFrontRightTemperatureForLap = 0;
+        public Single PeakRearLeftTemperatureForLap = 0;
+        public Single PeakRearRightTemperatureForLap = 0;
+
         public float FrontLeftPercentWear = 0;
         public float FrontRightPercentWear = 0;
         public float RearLeftPercentWear = 0;
