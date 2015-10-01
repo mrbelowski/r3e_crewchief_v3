@@ -12,13 +12,13 @@ namespace CrewChiefV3.Events
         private String folderHotWater = "engine_monitor/hot_water";
         private String folderHotOil = "engine_monitor/hot_oil";
         private String folderHotOilAndWater = "engine_monitor/hot_oil_and_water";
-
-        private static float maxSafeWaterTemp = UserSettings.GetUserSettings().getFloat("max_safe_water_temp");
-        private static float maxSafeOilTemp = UserSettings.GetUserSettings().getFloat("max_safe_oil_temp");
-
+        
         EngineStatus lastStatusMessage;
 
         EngineData engineData;
+
+        float maxSafeOilTemp = 0;
+        float maxSafeWaterTemp = 0;
 
         // record engine data for 60 seconds then report changes
         double statusMonitorWindowLength = 60;
@@ -35,6 +35,8 @@ namespace CrewChiefV3.Events
             lastStatusMessage = EngineStatus.ALL_CLEAR;
             engineData = new EngineData();
             gameTimeAtLastStatusCheck = 0;
+            maxSafeOilTemp = 0;
+            maxSafeWaterTemp = 0;
         }
 
         override protected void triggerInternal(GameStateData previousGameState, GameStateData currentGameState)
@@ -43,6 +45,12 @@ namespace CrewChiefV3.Events
             {
                 clearState();
             }
+            if (maxSafeWaterTemp == 0) {
+                maxSafeWaterTemp = currentGameState.carClass.maxSafeWaterTemp;
+            }
+            if (maxSafeOilTemp == 0) {
+                maxSafeOilTemp = currentGameState.carClass.maxSafeOilTemp;
+            }
             if (currentGameState.SessionData.SessionRunningTime > 60 * currentGameState.EngineData.MinutesIntoSessionBeforeMonitoring)
             {
                 engineData.addSample(currentGameState.EngineData.EngineOilTemp, currentGameState.EngineData.EngineWaterTemp, 
@@ -50,7 +58,7 @@ namespace CrewChiefV3.Events
 
                 if (currentGameState.SessionData.SessionRunningTime > gameTimeAtLastStatusCheck + statusMonitorWindowLength)
                 {
-                    EngineStatus currentEngineStatus = engineData.getEngineStatusFromAverage();
+                    EngineStatus currentEngineStatus = engineData.getEngineStatusFromAverage(maxSafeWaterTemp, maxSafeOilTemp);
                     if (currentEngineStatus != lastStatusMessage)
                     {
                         switch (currentEngineStatus)
@@ -93,7 +101,7 @@ namespace CrewChiefV3.Events
             if (engineData != null)
             {
                 gotData = true;
-                EngineStatus currentEngineStatus = engineData.getEngineStatusFromCurrent();
+                EngineStatus currentEngineStatus = engineData.getEngineStatusFromCurrent(maxSafeWaterTemp, maxSafeOilTemp);
                 audioPlayer.openChannel();
                 switch (currentEngineStatus)
                 {
@@ -161,10 +169,10 @@ namespace CrewChiefV3.Events
                 this.currentWaterTemp = engineWaterTemp;
                 this.currentOilPressure = engineOilPressure;
             }
-            public EngineStatus getEngineStatusFromAverage()
+            public EngineStatus getEngineStatusFromAverage(float maxSafeWaterTemp, float maxSafeOilTemp)
             {
                 // TODO: detect a sudden drop in oil pressure without triggering false positives caused by stalling the engine
-                if (samples > 10)
+                if (samples > 10 && maxSafeOilTemp > 0 && maxSafeWaterTemp > 0)
                 {
                     float averageOilTemp = cumulativeOilTemp / samples;
                     float averageWaterTemp = cumulativeWaterTemp / samples;
@@ -185,20 +193,23 @@ namespace CrewChiefV3.Events
                 return EngineStatus.ALL_CLEAR;
                 // low oil pressure not implemented
             }
-            public EngineStatus getEngineStatusFromCurrent()
+            public EngineStatus getEngineStatusFromCurrent(float maxSafeWaterTemp, float maxSafeOilTemp)
             {
-                if (currentOilTemp > maxSafeOilTemp && currentWaterTemp > maxSafeWaterTemp)
+                if (maxSafeOilTemp > 0 && maxSafeWaterTemp > 0)
                 {
-                    return EngineStatus.HOT_OIL_AND_WATER;
-                }
-                else if (currentWaterTemp > maxSafeWaterTemp)
-                {
-                    return EngineStatus.HOT_WATER;
-                }
-                else if (currentOilTemp > maxSafeOilTemp)
-                {
-                    return EngineStatus.HOT_OIL;
-                }
+                    if (currentOilTemp > maxSafeOilTemp && currentWaterTemp > maxSafeWaterTemp)
+                    {
+                        return EngineStatus.HOT_OIL_AND_WATER;
+                    }
+                    else if (currentWaterTemp > maxSafeWaterTemp)
+                    {
+                        return EngineStatus.HOT_WATER;
+                    }
+                    else if (currentOilTemp > maxSafeOilTemp)
+                    {
+                        return EngineStatus.HOT_OIL;
+                    }
+                }                
                 return EngineStatus.ALL_CLEAR;
             }
         }

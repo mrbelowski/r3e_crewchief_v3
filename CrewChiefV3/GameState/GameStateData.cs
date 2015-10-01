@@ -88,6 +88,7 @@ namespace CrewChiefV3.GameState
         public Single EngineOilPressure = 0;
 
         public int MinutesIntoSessionBeforeMonitoring = 0;
+        
     }
 
     public class FuelData
@@ -478,6 +479,8 @@ namespace CrewChiefV3.GameState
         public long Ticks;
 
         public DateTime Now;
+
+        public CarData.CarClass carClass;
 
         public EngineData EngineData = new EngineData();
 

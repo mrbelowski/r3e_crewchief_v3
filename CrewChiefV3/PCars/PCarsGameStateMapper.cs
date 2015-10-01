@@ -141,6 +141,7 @@ namespace CrewChiefV3.PCars
             int lastSessionNumberOfLaps = 0;
             float lastSessionRunTime = 0;
             float lastSessionTimeRemaining = 0;
+            CarData.CarClass carClass = CarData.getDefaultCarClass();
             if (previousGameState != null)
             {
                 lastSessionPhase = previousGameState.SessionData.SessionPhase;
@@ -153,7 +154,13 @@ namespace CrewChiefV3.PCars
                 lastSessionNumberOfLaps = previousGameState.SessionData.SessionNumberOfLaps;
                 lastSessionRunTime = previousGameState.SessionData.SessionRunTime;
                 lastSessionTimeRemaining = previousGameState.SessionData.SessionTimeRemaining;
+                if (previousGameState.carClass != null)
+                {
+                    carClass = previousGameState.carClass;
+                }
             }
+
+            currentGameState.carClass = carClass;
 
             // current session data
             currentGameState.SessionData.SessionType = mapToSessionType(shared);
@@ -251,9 +258,10 @@ namespace CrewChiefV3.PCars
                         opponentSlotId++;
                     }
                 }
-                brakeTempThresholdsForPlayersCar = CarData.getBrakeTempThresholds(shared.mCarClassName, shared.mCarName);
+                currentGameState.carClass = CarData.getCarClass(shared.mCarClassName);
+                brakeTempThresholdsForPlayersCar = CarData.getBrakeTempThresholds(carClass, shared.mCarName);
                 // no tyre data in the block so get the default tyre types for this car
-                defaultTyreTypeForPlayersCar = CarData.getDefaultTyreType(shared.mCarClassName, shared.mCarName);
+                defaultTyreTypeForPlayersCar = CarData.getDefaultTyreType(carClass, shared.mCarName);
             }
             else
             {

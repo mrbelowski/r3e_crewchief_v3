@@ -14,14 +14,6 @@ namespace CrewChiefV3.RaceRoom
     {
         private TimeSpan minimumSessionParticipationTime = TimeSpan.FromSeconds(6);
 
-        private static float maxColdTyreTemp = UserSettings.GetUserSettings().getFloat("max_cold_tyre_temp");
-        private static float maxGoodTyreTemp = UserSettings.GetUserSettings().getFloat("max_good_tyre_temp");
-        private static float maxHotTyreTemp = UserSettings.GetUserSettings().getFloat("max_hot_tyre_temp");
-
-        private static float maxColdBrakeTemp = UserSettings.GetUserSettings().getFloat("max_cold_brake_temp");
-        private static float maxGoodBrakeTemp = UserSettings.GetUserSettings().getFloat("max_good_brake_temp");
-        private static float maxHotBrakeTemp = UserSettings.GetUserSettings().getFloat("max_hot_brake_temp");
-
         private List<CornerData.EnumWithThresholds> suspensionDamageThresholds = new List<CornerData.EnumWithThresholds>();
         private List<CornerData.EnumWithThresholds> tyreWearThresholds = new List<CornerData.EnumWithThresholds>();
         private List<CornerData.EnumWithThresholds> brakeDamageThresholds = new List<CornerData.EnumWithThresholds>();
@@ -106,13 +98,19 @@ namespace CrewChiefV3.RaceRoom
             Boolean isCarRunning = CheckIsCarRunning(shared);
 
             SessionPhase lastSessionPhase = SessionPhase.Unavailable;
+            CarData.CarClass carClass = CarData.getDefaultCarClass();
             float lastSessionRunningTime = 0;
             if (previousGameState != null)
             {
                 lastSessionPhase = previousGameState.SessionData.SessionPhase;
                 lastSessionRunningTime = previousGameState.SessionData.SessionRunningTime;
+                if (previousGameState.carClass == null)
+                {
+                    carClass = previousGameState.carClass;
+                }
             }
 
+            currentGameState.carClass = carClass;
             currentGameState.SessionData.SessionType = mapToSessionType(shared);
             currentGameState.SessionData.SessionRunningTime = (float)shared.Player.GameSimulationTime;
             currentGameState.ControlData.ControlType = mapToControlType(shared.ControlType); // TODO: the rest of the control data
@@ -136,6 +134,7 @@ namespace CrewChiefV3.RaceRoom
                 currentGameState.SessionData.EventIndex = shared.EventIndex;
                 currentGameState.SessionData.SessionIteration = shared.SessionIteration;
                 currentGameState.SessionData.SessionStartTime = currentGameState.Now;
+                currentGameState.carClass = CarData.getCarClass(null);  // TODO: change this null to the actual class identifier
             }
             else
             {
@@ -169,6 +168,13 @@ namespace CrewChiefV3.RaceRoom
                         baselineEngineDataSamples = 0;
                         baselineEngineDataOilTemp = 0;
                         baselineEngineDataWaterTemp = 0;
+
+                        // no car class info in the block, but if we've got DTM tyres on we can use that
+                        if ((int)RaceRoomConstant.TireType.DTM_Option == shared.TireType || (int)RaceRoomConstant.TireType.Prime == shared.TireType)
+                        {
+                            Console.WriteLine("Using DTM (TC3) car class data");
+                            currentGameState.carClass = CarData.getCarClassFromEnum(CarData.CarClassEnum.TC3);
+                        }
                         Console.WriteLine("SessionType " + currentGameState.SessionData.SessionType);
                         Console.WriteLine("SessionPhase " + currentGameState.SessionData.SessionPhase);
                         Console.WriteLine("EventIndex " + currentGameState.SessionData.EventIndex);

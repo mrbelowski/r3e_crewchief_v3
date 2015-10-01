@@ -7,7 +7,7 @@ using System.Text;
 
 namespace CrewChiefV3
 {
-    class CarData
+    public class CarData
     {
         // some temperatures - maybe externalise these
         private static float maxColdRoadTyreTemp = 50;
@@ -207,29 +207,50 @@ namespace CrewChiefV3
                 {
                     if (carClass.classNames.Contains(carClassName))
                     {
+                        Console.WriteLine("Using car class " + carClass.carClassEnum + " for class name " + carClassName);
                         return carClass;
                     }
                 }
             }
+            CarClass defaultClass = getDefaultCarClass();
+            String className = carClassName == null ? "null" : carClassName;
+            Console.WriteLine("Using default car class " + defaultClass.carClassEnum + " for class name " + className);
+            return defaultClass;
+        }
+
+        public static CarClass getCarClassFromEnum(CarClassEnum carClassEnum) 
+        {
+            foreach (CarClass carClass in carClasses)
+            {
+                if (carClass.carClassEnum == carClassEnum)
+                {
+                    return carClass;
+                }
+            }
+            return getDefaultCarClass();
+        }
+
+        public static CarClass getDefaultCarClass()
+        {
             return carClasses[0];
         }
 
-        public static List<CornerData.EnumWithThresholds> getBrakeTempThresholds(String carClassName, String carName)
+        public static List<CornerData.EnumWithThresholds> getBrakeTempThresholds(CarClass carClass, String carName)
         {
             if (carName!= null && brakeTypesPerCarName.ContainsKey(carName))
             {
                 return brakeTempThresholds[brakeTypesPerCarName[carName]];
             }
-            return brakeTempThresholds[getCarClass(carClassName).brakeType];
+            return brakeTempThresholds[carClass.brakeType];
         }
 
-        public static TyreType getDefaultTyreType(String carClassName, String carName)
+        public static TyreType getDefaultTyreType(CarClass carClass, String carName)
         {
             if (carName != null && defaultTyreTypesPerCarName.ContainsKey(carName))
             {
                 return defaultTyreTypesPerCarName[carName];
             }
-            return getCarClass(carClassName).defaultTyreType;
+            return carClass.defaultTyreType;
         }
     }
 }
