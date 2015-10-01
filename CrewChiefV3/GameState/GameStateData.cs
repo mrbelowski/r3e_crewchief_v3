@@ -28,7 +28,7 @@ namespace CrewChiefV3.GameState
     public enum TyreType
     {
         // separate enum for compound & weather, and prime / option?
-        Hard, Medium, Soft, Wet, Intermediate, DTM_Prime, DTM_Option, Road, Unknown_Race
+        Hard, Medium, Soft, Wet, Intermediate, DTM_Prime, DTM_Option, Road, Bias_Ply, Unknown_Race
     }
 
     public enum BrakeType

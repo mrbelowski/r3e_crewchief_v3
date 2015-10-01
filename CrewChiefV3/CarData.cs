@@ -26,6 +26,10 @@ namespace CrewChiefV3
         private static float maxWarmDtmPrimeTyreTemp = 110;
         private static float maxHotDtmPrimeTyreTemp = 130;
 
+        private static float maxColdBiasPlyTyreTemp = 70;
+        private static float maxWarmBiasPlyTyreTemp = 90;
+        private static float maxHotBiasPlyTyreTemp = 110;
+
 
         private static float maxColdIronRoadBrakeTemp = 80;
         private static float maxWarmIronRoadBrakeTemp = 300;
@@ -117,10 +121,8 @@ namespace CrewChiefV3
             carClasses.Add(new CarClass(CarClassEnum.FF, new String[] { "F5" }, BrakeType.Iron_Race, TyreType.Road, maxRoadSafeWaterTemp, maxRoadSafeOilTemp));   // formula ford
 
             // here we assume the old race cars (pre-radial tyres) will race on bias ply tyres
-            carClasses.Add(new CarClass(CarClassEnum.VINTAGE_RACE_SLICKS, new String[] { 
-                "Vintage F1 B", "Vintage F1 C" }, BrakeType.Iron_Race, TyreType.Unknown_Race, maxRaceSafeWaterTemp, maxRaceSafeOilTemp));
-            carClasses.Add(new CarClass(CarClassEnum.VINTAGE_RACE_BIAS_PLY, new String[] { 
-                "Vintage F1 A", "Vintage GT", "Historic Touring 2", "Vintage GT3" }, BrakeType.Iron_Race, TyreType.Road, maxRaceSafeWaterTemp, maxRaceSafeOilTemp));
+            carClasses.Add(new CarClass(CarClassEnum.VINTAGE_RACE_SLICKS, new String[] { "Vintage F1 B", "Vintage F1 C" }, BrakeType.Iron_Race, TyreType.Unknown_Race, maxRaceSafeWaterTemp, maxRaceSafeOilTemp));
+            carClasses.Add(new CarClass(CarClassEnum.VINTAGE_RACE_BIAS_PLY, new String[] { "Vintage F1 A", "Vintage GT", "Historic Touring 2", "Vintage GT3" }, BrakeType.Iron_Race, TyreType.Bias_Ply, maxRaceSafeWaterTemp, maxRaceSafeOilTemp));
 
             carClasses.Add(new CarClass(CarClassEnum.STOCK_CAR, new String[] { "Vintage Stockcar" }, BrakeType.Iron_Race, TyreType.Unknown_Race, maxRaceSafeWaterTemp, maxRaceSafeOilTemp));
             carClasses.Add(new CarClass(CarClassEnum.TRANS_AM, new String[] { "Trans-Am" }, BrakeType.Iron_Race, TyreType.Unknown_Race, maxRaceSafeWaterTemp, maxRaceSafeOilTemp));
@@ -160,6 +162,13 @@ namespace CrewChiefV3
             dtmPrimeTyreTempsThresholds.Add(new CornerData.EnumWithThresholds(TyreTemp.HOT, maxWarmDtmPrimeTyreTemp, maxHotDtmPrimeTyreTemp));
             dtmPrimeTyreTempsThresholds.Add(new CornerData.EnumWithThresholds(TyreTemp.COOKING, maxHotDtmPrimeTyreTemp, 10000));
             tyreTempThresholds.Add(TyreType.DTM_Prime, dtmPrimeTyreTempsThresholds);
+
+            List<CornerData.EnumWithThresholds> biasPlyTyreTempsThresholds = new List<CornerData.EnumWithThresholds>();
+            biasPlyTyreTempsThresholds.Add(new CornerData.EnumWithThresholds(TyreTemp.COLD, -10000, maxColdBiasPlyTyreTemp));
+            biasPlyTyreTempsThresholds.Add(new CornerData.EnumWithThresholds(TyreTemp.WARM, maxColdBiasPlyTyreTemp, maxWarmBiasPlyTyreTemp));
+            biasPlyTyreTempsThresholds.Add(new CornerData.EnumWithThresholds(TyreTemp.HOT, maxWarmBiasPlyTyreTemp, maxHotBiasPlyTyreTemp));
+            biasPlyTyreTempsThresholds.Add(new CornerData.EnumWithThresholds(TyreTemp.COOKING, maxHotBiasPlyTyreTemp, 10000));
+            tyreTempThresholds.Add(TyreType.Bias_Ply, biasPlyTyreTempsThresholds);
 
             List<CornerData.EnumWithThresholds> ironRoadBrakeTempsThresholds = new List<CornerData.EnumWithThresholds>();
             ironRoadBrakeTempsThresholds.Add(new CornerData.EnumWithThresholds(TyreTemp.COLD, -10000, maxColdIronRoadBrakeTemp));
