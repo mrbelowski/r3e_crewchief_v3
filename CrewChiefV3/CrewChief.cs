@@ -356,8 +356,17 @@ namespace CrewChiefV3
                             rawGameData = gameDataReader.ReadGameData();
                         }
                         gameStateMapper.versionCheck(rawGameData);
+
+                        GameStateData nextGameState = null;
+                        try
+                        {
+                            nextGameState = gameStateMapper.mapToGameStateData(rawGameData, currentGameState);
+                        }
+                        catch (Exception e)
+                        {
+                            Console.WriteLine("Error mapping game data: ", e.StackTrace);
+                        }
                         
-                        GameStateData nextGameState = gameStateMapper.mapToGameStateData(rawGameData, currentGameState);
                         if (nextGameState != null)
                         {
                             previousGameState = currentGameState;
