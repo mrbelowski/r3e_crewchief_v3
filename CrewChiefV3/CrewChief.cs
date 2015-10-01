@@ -312,6 +312,7 @@ namespace CrewChiefV3
             int threadSleepTime = ((int)_timeInterval.Milliseconds / 10) + 1;
             Console.WriteLine("Polling for shared data every " + _timeInterval.Milliseconds + "ms, pausing " + threadSleepTime + "ms between invocations");
             Boolean sessionFinished = false;
+
             while (running)
             {
                 DateTime now = DateTime.Now;

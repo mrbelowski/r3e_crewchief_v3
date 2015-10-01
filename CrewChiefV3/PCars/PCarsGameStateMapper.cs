@@ -55,10 +55,25 @@ namespace CrewChiefV3.PCars
             (uint)eTerrain.TERRAIN_LOW_GRIP_ROAD, (uint)eTerrain.TERRAIN_MARBLES,(uint)eTerrain.TERRAIN_PAVEMENT,
             (uint)eTerrain.TERRAIN_ROAD, (uint)eTerrain.TERRAIN_RUMBLE_STRIPS, (uint)eTerrain.TERRAIN_SAND_ROAD};
 
-        private float trivialDamageThreshold = 0.02f;
-        private float minorDamageThreshold = 0.10f;
-        private float severeDamageThreshold = 0.35f;
-        private float destroyedDamageThreshold = 0.70f;
+        private float trivialEngineDamageThreshold = 0.02f;
+        private float minorEngineDamageThreshold = 0.10f;
+        private float severeEngineDamageThreshold = 0.35f;
+        private float destroyedEngineDamageThreshold = 0.80f;
+
+        private float trivialSuspensionDamageThreshold = 0.02f;
+        private float minorSuspensionDamageThreshold = 0.10f;
+        private float severeSuspensionDamageThreshold = 0.35f;
+        private float destroyedSuspensionDamageThreshold = 0.60f;
+
+        private float trivialBrakeDamageThreshold = 0.1f;
+        private float minorBrakeDamageThreshold = 0.25f;
+        private float severeBrakeDamageThreshold = 0.5f;
+        private float destroyedBrakeDamageThreshold = 0.90f;
+
+        private float trivialAeroDamageThreshold = 0.1f;
+        private float minorAeroDamageThreshold = 0.25f;
+        private float severeAeroDamageThreshold = 0.5f;
+        private float destroyedAeroDamageThreshold = 0.90f;
 
         // tyres in PCars are worn out when the wear level is > ?
         private float wornOutTyreWearLevel = 0.50f;
@@ -72,22 +87,27 @@ namespace CrewChiefV3.PCars
 
         public PCarsGameStateMapper()
         {
-            CornerData.EnumWithThresholds damageNone = new CornerData.EnumWithThresholds(DamageLevel.NONE, -10000, trivialDamageThreshold);
-            CornerData.EnumWithThresholds damageTrivial = new CornerData.EnumWithThresholds(DamageLevel.TRIVIAL, trivialDamageThreshold, minorDamageThreshold);
-            CornerData.EnumWithThresholds damageMinor = new CornerData.EnumWithThresholds(DamageLevel.MINOR, trivialDamageThreshold, severeDamageThreshold);
-            CornerData.EnumWithThresholds damageMajor = new CornerData.EnumWithThresholds(DamageLevel.MAJOR, severeDamageThreshold, destroyedDamageThreshold);
-            CornerData.EnumWithThresholds damageDestroyed = new CornerData.EnumWithThresholds(DamageLevel.DESTROYED, destroyedDamageThreshold, 10000);
-            suspensionDamageThresholds.Add(damageNone);
-            suspensionDamageThresholds.Add(damageTrivial);
-            suspensionDamageThresholds.Add(damageMinor);
-            suspensionDamageThresholds.Add(damageMajor);
-            suspensionDamageThresholds.Add(damageDestroyed);
+            CornerData.EnumWithThresholds suspensionDamageNone = new CornerData.EnumWithThresholds(DamageLevel.NONE, -10000, trivialSuspensionDamageThreshold);
+            CornerData.EnumWithThresholds suspensionDamageTrivial = new CornerData.EnumWithThresholds(DamageLevel.TRIVIAL, trivialSuspensionDamageThreshold, minorSuspensionDamageThreshold);
+            CornerData.EnumWithThresholds suspensionDamageMinor = new CornerData.EnumWithThresholds(DamageLevel.MINOR, trivialSuspensionDamageThreshold, severeSuspensionDamageThreshold);
+            CornerData.EnumWithThresholds suspensionDamageMajor = new CornerData.EnumWithThresholds(DamageLevel.MAJOR, severeSuspensionDamageThreshold, destroyedSuspensionDamageThreshold);
+            CornerData.EnumWithThresholds suspensionDamageDestroyed = new CornerData.EnumWithThresholds(DamageLevel.DESTROYED, destroyedSuspensionDamageThreshold, 10000);
+            suspensionDamageThresholds.Add(suspensionDamageNone);
+            suspensionDamageThresholds.Add(suspensionDamageTrivial);
+            suspensionDamageThresholds.Add(suspensionDamageMinor);
+            suspensionDamageThresholds.Add(suspensionDamageMajor);
+            suspensionDamageThresholds.Add(suspensionDamageDestroyed);
 
-            brakeDamageThresholds.Add(damageNone);
-            brakeDamageThresholds.Add(damageTrivial);
-            brakeDamageThresholds.Add(damageMinor);
-            brakeDamageThresholds.Add(damageMajor);
-            brakeDamageThresholds.Add(damageDestroyed);
+            CornerData.EnumWithThresholds brakeDamageNone = new CornerData.EnumWithThresholds(DamageLevel.NONE, -10000, trivialBrakeDamageThreshold);
+            CornerData.EnumWithThresholds brakeDamageTrivial = new CornerData.EnumWithThresholds(DamageLevel.TRIVIAL, trivialBrakeDamageThreshold, minorBrakeDamageThreshold);
+            CornerData.EnumWithThresholds brakeDamageMinor = new CornerData.EnumWithThresholds(DamageLevel.MINOR, trivialBrakeDamageThreshold, severeBrakeDamageThreshold);
+            CornerData.EnumWithThresholds brakeDamageMajor = new CornerData.EnumWithThresholds(DamageLevel.MAJOR, severeBrakeDamageThreshold, destroyedBrakeDamageThreshold);
+            CornerData.EnumWithThresholds brakeDamageDestroyed = new CornerData.EnumWithThresholds(DamageLevel.DESTROYED, destroyedBrakeDamageThreshold, 10000);
+            brakeDamageThresholds.Add(brakeDamageNone);
+            brakeDamageThresholds.Add(brakeDamageTrivial);
+            brakeDamageThresholds.Add(brakeDamageMinor);
+            brakeDamageThresholds.Add(brakeDamageMajor);
+            brakeDamageThresholds.Add(brakeDamageDestroyed);
 
             tyreWearThresholds.Add(new CornerData.EnumWithThresholds(TyreCondition.NEW, -10000, scrubbedTyreWearPercent));
             tyreWearThresholds.Add(new CornerData.EnumWithThresholds(TyreCondition.SCRUBBED, scrubbedTyreWearPercent, minorTyreWearPercent));
@@ -619,8 +639,8 @@ namespace CrewChiefV3.PCars
                 Console.WriteLine("Has requested pitstop");
             }
             currentGameState.CarDamageData.DamageEnabled = true;    // no way to tell if it's disabled from the shared memory
-            currentGameState.CarDamageData.OverallAeroDamage = mapToDamageLevel(shared.mAeroDamage);
-            currentGameState.CarDamageData.OverallEngineDamage = mapToDamageLevel(shared.mEngineDamage);
+            currentGameState.CarDamageData.OverallAeroDamage = mapToAeroDamageLevel(shared.mAeroDamage);
+            currentGameState.CarDamageData.OverallEngineDamage = mapToEngineDamageLevel(shared.mEngineDamage);
             currentGameState.CarDamageData.OverallTransmissionDamage = DamageLevel.NONE;
             currentGameState.CarDamageData.SuspensionDamageStatus = CornerData.getCornerData(suspensionDamageThresholds,
                 shared.mSuspensionDamage[0], shared.mSuspensionDamage[1], shared.mSuspensionDamage[2], shared.mSuspensionDamage[3]);
@@ -748,24 +768,47 @@ namespace CrewChiefV3.PCars
             return currentGameState;
         }
 
-        private DamageLevel mapToDamageLevel(float damage)
+        private DamageLevel mapToAeroDamageLevel(float aeroDamage)
         {
-            if (damage >= destroyedDamageThreshold)
+            if (aeroDamage >= destroyedAeroDamageThreshold)
             {
                 return DamageLevel.DESTROYED;
-            } 
-            else if (damage >= severeDamageThreshold)
+            }
+            else if (aeroDamage >= severeAeroDamageThreshold)
             {
                 return DamageLevel.MAJOR;
-            } 
-            else if (damage >= minorDamageThreshold)
+            }
+            else if (aeroDamage >= minorAeroDamageThreshold)
             {
                 return DamageLevel.MINOR;
-            } 
-            else if (damage >= trivialDamageThreshold)
+            }
+            else if (aeroDamage >= trivialAeroDamageThreshold)
             {
                 return DamageLevel.TRIVIAL;
             } 
+            else
+            {
+                return DamageLevel.NONE;
+            }
+        }
+        private DamageLevel mapToEngineDamageLevel(float engineDamage)
+        {
+            if (engineDamage >= destroyedEngineDamageThreshold)
+            {
+                return DamageLevel.DESTROYED;
+            }
+            else if (engineDamage >= severeEngineDamageThreshold)
+            {
+                return DamageLevel.MAJOR;
+            }
+            else if (engineDamage >= minorEngineDamageThreshold)
+            {
+                return DamageLevel.MINOR;
+            }
+            else if (engineDamage >= trivialEngineDamageThreshold)
+            {
+                return DamageLevel.TRIVIAL;
+            }
             else
             {
                 return DamageLevel.NONE;
