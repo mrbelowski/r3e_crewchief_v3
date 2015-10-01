@@ -316,7 +316,7 @@ namespace CrewChiefV3.PCars
 
             if (Math.Abs(playerVelocityX - opponentVelocityX) > maxClosingSpeed || Math.Abs(playerVelocityY - opponentVelocityY) > maxClosingSpeed)
             {
-                Console.WriteLine("high closing speed: x = " + (playerVelocityX - opponentVelocityX) + " y = " + (playerVelocityY - opponentVelocityY));
+               // Console.WriteLine("high closing speed: x = " + (playerVelocityX - opponentVelocityX) + " y = " + (playerVelocityY - opponentVelocityY));
                 return false;
             }
             return true;
