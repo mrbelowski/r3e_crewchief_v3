@@ -126,13 +126,13 @@ namespace CrewChiefV3.Events
                         pitWindowOpenLap = currentGameState.SessionData.PitWindowStart;
                         pitWindowClosedLap = currentGameState.SessionData.PitWindowEnd;
                         // DTM specific stuff...
-                        if (currentGameState.TyreData.HasMatchedTyreTypes && currentGameState.TyreData.FrontLeftTyreType == TyreType.Option)
+                        if (currentGameState.TyreData.HasMatchedTyreTypes && currentGameState.TyreData.FrontLeftTyreType == TyreType.DTM_Option)
                         {
                             onOptions = true;
                             // when we've completed half distance - 1 laps, we need to come in at the end of the current lap
                             tyreChangeLap = (int)Math.Floor((double)currentGameState.SessionData.SessionNumberOfLaps / 2d) - 1;
                         }
-                        else if (currentGameState.TyreData.HasMatchedTyreTypes && currentGameState.TyreData.FrontLeftTyreType == TyreType.Prime)
+                        else if (currentGameState.TyreData.HasMatchedTyreTypes && currentGameState.TyreData.FrontLeftTyreType == TyreType.DTM_Prime)
                         {
                             onPrimes = true;
                             tyreChangeLap = (int)Math.Floor((double)currentGameState.SessionData.SessionNumberOfLaps / 2d);

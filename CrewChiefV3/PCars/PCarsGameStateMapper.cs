@@ -31,19 +31,13 @@ namespace CrewChiefV3.PCars
             }
         }
 
-        private static float maxColdTyreTemp = UserSettings.GetUserSettings().getFloat("max_cold_tyre_temp");
-        private static float maxGoodTyreTemp = UserSettings.GetUserSettings().getFloat("max_good_tyre_temp"); 
-        private static float maxHotTyreTemp = UserSettings.GetUserSettings().getFloat("max_hot_tyre_temp");
-
-        private static float maxColdBrakeTemp = UserSettings.GetUserSettings().getFloat("max_cold_brake_temp");
-        private static float maxGoodBrakeTemp = UserSettings.GetUserSettings().getFloat("max_good_brake_temp");
-        private static float maxHotBrakeTemp = UserSettings.GetUserSettings().getFloat("max_hot_brake_temp");
-
         private List<CornerData.EnumWithThresholds> suspensionDamageThresholds = new List<CornerData.EnumWithThresholds>();
         private List<CornerData.EnumWithThresholds> tyreWearThresholds = new List<CornerData.EnumWithThresholds>();
-        private List<CornerData.EnumWithThresholds> tyreTempThresholds = new List<CornerData.EnumWithThresholds>();
-        private List<CornerData.EnumWithThresholds> brakeTempThresholds = new List<CornerData.EnumWithThresholds>();
         private List<CornerData.EnumWithThresholds> brakeDamageThresholds = new List<CornerData.EnumWithThresholds>();
+
+        // these are set when we start a new session, from the car name / class
+        private TyreType defaultTyreTypeForPlayersCar = TyreType.Unknown_Race;
+        private List<CornerData.EnumWithThresholds> brakeTempThresholdsForPlayersCar = null;
 
 
         // for each opponent, this is a list of his x/y locations + the time the location was recorded (in ticks). This is used to detect pit entry, so is
@@ -100,16 +94,6 @@ namespace CrewChiefV3.PCars
             tyreWearThresholds.Add(new CornerData.EnumWithThresholds(TyreCondition.MINOR_WEAR, minorTyreWearPercent, majorTyreWearPercent));
             tyreWearThresholds.Add(new CornerData.EnumWithThresholds(TyreCondition.MAJOR_WEAR, majorTyreWearPercent, wornOutTyreWearPercent));
             tyreWearThresholds.Add(new CornerData.EnumWithThresholds(TyreCondition.WORN_OUT, wornOutTyreWearPercent, 10000));
-
-            tyreTempThresholds.Add(new CornerData.EnumWithThresholds(TyreTemp.COLD, -10000, maxColdTyreTemp));
-            tyreTempThresholds.Add(new CornerData.EnumWithThresholds(TyreTemp.WARM, maxColdTyreTemp, maxGoodTyreTemp));
-            tyreTempThresholds.Add(new CornerData.EnumWithThresholds(TyreTemp.HOT, maxGoodTyreTemp, maxHotTyreTemp));
-            tyreTempThresholds.Add(new CornerData.EnumWithThresholds(TyreTemp.COOKING, maxHotTyreTemp, 10000));
-
-            brakeTempThresholds.Add(new CornerData.EnumWithThresholds(BrakeTemp.COLD, -10000, maxColdBrakeTemp));
-            brakeTempThresholds.Add(new CornerData.EnumWithThresholds(BrakeTemp.WARM, maxColdBrakeTemp, maxGoodBrakeTemp));
-            brakeTempThresholds.Add(new CornerData.EnumWithThresholds(BrakeTemp.HOT, maxGoodBrakeTemp, maxHotBrakeTemp));
-            brakeTempThresholds.Add(new CornerData.EnumWithThresholds(BrakeTemp.COOKING, maxHotBrakeTemp, 10000));
         }
 
         public void versionCheck(Object memoryMappedFileStruct)
@@ -267,6 +251,9 @@ namespace CrewChiefV3.PCars
                         opponentSlotId++;
                     }
                 }
+                brakeTempThresholdsForPlayersCar = CarData.getBrakeTempThresholds(shared.mCarClassName, shared.mCarName);
+                // no tyre data in the block so get the default tyre types for this car
+                defaultTyreTypeForPlayersCar = CarData.getDefaultTyreType(shared.mCarClassName, shared.mCarName);
             }
             else
             {
@@ -643,44 +630,43 @@ namespace CrewChiefV3.PCars
             currentGameState.TyreData.LeftRearAttached = (shared.mTyreFlags[2] & 1) == 1;
             currentGameState.TyreData.RightRearAttached = (shared.mTyreFlags[3] & 1) == 1;
 
-            TyreType tyreType = TyreType.Unknown;
-
             currentGameState.TyreData.FrontLeft_CenterTemp = shared.mTyreTreadTemp[0] - 273;
             currentGameState.TyreData.FrontLeft_LeftTemp = shared.mTyreTreadTemp[0] - 273;
             currentGameState.TyreData.FrontLeft_RightTemp = shared.mTyreTreadTemp[0] - 273;
-            currentGameState.TyreData.FrontLeftTyreType = tyreType;
+            currentGameState.TyreData.FrontLeftTyreType = defaultTyreTypeForPlayersCar;
             currentGameState.TyreData.FrontLeftPressure = -1; // not in the block
             currentGameState.TyreData.FrontLeftPercentWear = Math.Min(100, shared.mTyreWear[0] * 100 / wornOutTyreWearLevel);
 
             currentGameState.TyreData.FrontRight_CenterTemp = shared.mTyreTreadTemp[1] - 273;
             currentGameState.TyreData.FrontRight_LeftTemp = shared.mTyreTreadTemp[1] - 273;
             currentGameState.TyreData.FrontRight_RightTemp = shared.mTyreTreadTemp[1] - 273;
-            currentGameState.TyreData.FrontRightTyreType = tyreType;
+            currentGameState.TyreData.FrontRightTyreType = defaultTyreTypeForPlayersCar;
             currentGameState.TyreData.FrontRightPressure = -1; // not in the block
             currentGameState.TyreData.FrontRightPercentWear = Math.Min(100, shared.mTyreWear[1] * 100 / wornOutTyreWearLevel);
 
             currentGameState.TyreData.RearLeft_CenterTemp = shared.mTyreTreadTemp[2] - 273;
             currentGameState.TyreData.RearLeft_LeftTemp = shared.mTyreTreadTemp[2] - 273;
             currentGameState.TyreData.RearLeft_RightTemp = shared.mTyreTreadTemp[2] - 273;
-            currentGameState.TyreData.RearLeftTyreType = tyreType;
+            currentGameState.TyreData.RearLeftTyreType = defaultTyreTypeForPlayersCar;
             currentGameState.TyreData.RearLeftPressure = -1; // not in the block
             currentGameState.TyreData.RearLeftPercentWear = Math.Min(100, shared.mTyreWear[2] * 100 / wornOutTyreWearLevel);
 
             currentGameState.TyreData.RearRight_CenterTemp = shared.mTyreTreadTemp[3] - 273;
             currentGameState.TyreData.RearRight_LeftTemp = shared.mTyreTreadTemp[3] - 273;
             currentGameState.TyreData.RearRight_RightTemp = shared.mTyreTreadTemp[3] - 273;
-            currentGameState.TyreData.RearRightTyreType = tyreType;
+            currentGameState.TyreData.RearRightTyreType = defaultTyreTypeForPlayersCar;
             currentGameState.TyreData.RearRightPressure = -1; // not in the block
             currentGameState.TyreData.RearRightPercentWear = Math.Min(100, shared.mTyreWear[3] * 100 / wornOutTyreWearLevel);
 
             currentGameState.TyreData.TyreConditionStatus = CornerData.getCornerData(tyreWearThresholds, currentGameState.TyreData.FrontLeftPercentWear, 
                 currentGameState.TyreData.FrontRightPercentWear, currentGameState.TyreData.RearLeftPercentWear, currentGameState.TyreData.RearRightPercentWear);
 
-            currentGameState.TyreData.TyreTempStatus = CornerData.getCornerData(tyreTempThresholds,
+            currentGameState.TyreData.TyreTempStatus = CornerData.getCornerData(CarData.tyreTempThresholds[defaultTyreTypeForPlayersCar],
                 currentGameState.TyreData.FrontLeft_CenterTemp, currentGameState.TyreData.FrontRight_CenterTemp,
                 currentGameState.TyreData.RearLeft_CenterTemp, currentGameState.TyreData.RearRight_CenterTemp);
 
-            currentGameState.TyreData.BrakeTempStatus = CornerData.getCornerData(brakeTempThresholds, shared.mBrakeTempCelsius[0], shared.mBrakeTempCelsius[1], shared.mBrakeTempCelsius[2], shared.mBrakeTempCelsius[3]);
+            currentGameState.TyreData.BrakeTempStatus = CornerData.getCornerData(brakeTempThresholdsForPlayersCar, 
+                shared.mBrakeTempCelsius[0], shared.mBrakeTempCelsius[1], shared.mBrakeTempCelsius[2], shared.mBrakeTempCelsius[3]);
             currentGameState.TyreData.LeftFrontBrakeTemp = shared.mBrakeTempCelsius[0];
             currentGameState.TyreData.RightFrontBrakeTemp = shared.mBrakeTempCelsius[1];
             currentGameState.TyreData.LeftRearBrakeTemp = shared.mBrakeTempCelsius[2];

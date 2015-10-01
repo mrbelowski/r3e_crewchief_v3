@@ -28,8 +28,15 @@ namespace CrewChiefV3.GameState
     public enum TyreType
     {
         // separate enum for compound & weather, and prime / option?
-        Hard, Medium, Soft, Wet, Intermediate, Prime, Option, Unknown
+        Hard, Medium, Soft, Wet, Intermediate, DTM_Prime, DTM_Option, Road, Unknown_Race
     }
+
+    public enum BrakeType
+    {
+        // pretty coarse grained here.
+        Iron_Road, Iron_Race, Ceramic, Carbon
+    }
+
     public enum TyreCondition
     {
         UNKNOWN, NEW, SCRUBBED, MINOR_WEAR, MAJOR_WEAR, WORN_OUT
@@ -422,10 +429,10 @@ namespace CrewChiefV3.GameState
         // true if all tyres are the same type
         public Boolean HasMatchedTyreTypes = true;
 
-        public TyreType FrontLeftTyreType = TyreType.Unknown;
-        public TyreType FrontRightTyreType = TyreType.Unknown;
-        public TyreType RearLeftTyreType = TyreType.Unknown;
-        public TyreType RearRightTyreType = TyreType.Unknown;
+        public TyreType FrontLeftTyreType = TyreType.Unknown_Race;
+        public TyreType FrontRightTyreType = TyreType.Unknown_Race;
+        public TyreType RearLeftTyreType = TyreType.Unknown_Race;
+        public TyreType RearRightTyreType = TyreType.Unknown_Race;
 
         public Single FrontLeft_LeftTemp = 0;
         public Single FrontLeft_CenterTemp = 0;

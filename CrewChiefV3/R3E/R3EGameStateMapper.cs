@@ -24,8 +24,6 @@ namespace CrewChiefV3.RaceRoom
 
         private List<CornerData.EnumWithThresholds> suspensionDamageThresholds = new List<CornerData.EnumWithThresholds>();
         private List<CornerData.EnumWithThresholds> tyreWearThresholds = new List<CornerData.EnumWithThresholds>();
-        private List<CornerData.EnumWithThresholds> tyreTempThresholds = new List<CornerData.EnumWithThresholds>();
-        private List<CornerData.EnumWithThresholds> brakeTempThresholds = new List<CornerData.EnumWithThresholds>();
         private List<CornerData.EnumWithThresholds> brakeDamageThresholds = new List<CornerData.EnumWithThresholds>();
 
         // tyres in R3E only go down to 0.9
@@ -87,16 +85,6 @@ namespace CrewChiefV3.RaceRoom
             tyreWearThresholds.Add(new CornerData.EnumWithThresholds(TyreCondition.MINOR_WEAR, minorTyreWearPercent, majorTyreWearPercent));
             tyreWearThresholds.Add(new CornerData.EnumWithThresholds(TyreCondition.MAJOR_WEAR, majorTyreWearPercent, wornOutTyreWearPercent));
             tyreWearThresholds.Add(new CornerData.EnumWithThresholds(TyreCondition.WORN_OUT, wornOutTyreWearPercent, 10000));
-
-            tyreTempThresholds.Add(new CornerData.EnumWithThresholds(TyreTemp.COLD, -10000, maxColdTyreTemp));
-            tyreTempThresholds.Add(new CornerData.EnumWithThresholds(TyreTemp.WARM, maxColdTyreTemp, maxGoodTyreTemp));
-            tyreTempThresholds.Add(new CornerData.EnumWithThresholds(TyreTemp.HOT, maxGoodTyreTemp, maxHotTyreTemp));
-            tyreTempThresholds.Add(new CornerData.EnumWithThresholds(TyreTemp.COOKING, maxHotTyreTemp, 10000));
-
-            brakeTempThresholds.Add(new CornerData.EnumWithThresholds(BrakeTemp.COLD, -10000, maxColdBrakeTemp));
-            brakeTempThresholds.Add(new CornerData.EnumWithThresholds(BrakeTemp.WARM, maxColdBrakeTemp, maxGoodBrakeTemp));
-            brakeTempThresholds.Add(new CornerData.EnumWithThresholds(BrakeTemp.HOT, maxGoodBrakeTemp, maxHotBrakeTemp));
-            brakeTempThresholds.Add(new CornerData.EnumWithThresholds(BrakeTemp.COOKING, maxHotBrakeTemp, 10000));
         }
 
         public void versionCheck(Object memoryMappedFileStruct)
@@ -519,12 +507,21 @@ namespace CrewChiefV3.RaceRoom
             currentGameState.TyreData.RearRightPressure = shared.TirePressure.RearRight;
             currentGameState.TyreData.RearRightPercentWear = getTyreWearPercentage(shared.CarDamage.TireRearRight);
 
-            currentGameState.TyreData.TyreTempStatus = CornerData.getCornerData(tyreTempThresholds,
+            currentGameState.TyreData.TyreTempStatus = CornerData.getCornerData(CarData.tyreTempThresholds[tyreType],
                 (currentGameState.TyreData.FrontLeft_CenterTemp + currentGameState.TyreData.FrontLeft_LeftTemp + currentGameState.TyreData.FrontLeft_RightTemp) / 3,
                 (currentGameState.TyreData.FrontRight_CenterTemp + currentGameState.TyreData.FrontRight_LeftTemp + currentGameState.TyreData.FrontRight_RightTemp) / 3,
                 (currentGameState.TyreData.RearLeft_CenterTemp + currentGameState.TyreData.RearLeft_LeftTemp + currentGameState.TyreData.RearLeft_RightTemp) / 3,
                 (currentGameState.TyreData.RearRight_CenterTemp + currentGameState.TyreData.RearRight_LeftTemp + currentGameState.TyreData.RearRight_RightTemp) / 3);
-            currentGameState.TyreData.BrakeTempStatus = CornerData.getCornerData(brakeTempThresholds, shared.BrakeTemperatures.FrontLeft, 
+
+            // TODO: the brake temp thresholds here are for 'iron race brakes'. We don't know what kind of car the player is driving...
+            List<CornerData.EnumWithThresholds> brakeTempThresholdsToUse;
+            if  (tyreType == TyreType.DTM_Option || tyreType == TyreType.DTM_Prime)
+            {
+                brakeTempThresholdsToUse = CarData.brakeTempThresholds[BrakeType.Carbon];
+            } else {
+                brakeTempThresholdsToUse = CarData.brakeTempThresholds[BrakeType.Iron_Race];
+            }
+            currentGameState.TyreData.BrakeTempStatus = CornerData.getCornerData(brakeTempThresholdsToUse, shared.BrakeTemperatures.FrontLeft, 
                 shared.BrakeTemperatures.FrontRight, shared.BrakeTemperatures.RearLeft, shared.BrakeTemperatures.RearRight);
             
             currentGameState.TyreData.LeftFrontBrakeTemp = shared.BrakeTemperatures.FrontLeft;
@@ -537,17 +534,17 @@ namespace CrewChiefV3.RaceRoom
         
         private TyreType mapToTyreType(int r3eTyreType)
         {
-            if ((int)RaceRoomConstant.TireType.Option == r3eTyreType)
+            if ((int)RaceRoomConstant.TireType.DTM_Option == r3eTyreType)
             {
-                return TyreType.Option;
+                return TyreType.DTM_Option;
             } 
             else if ((int)RaceRoomConstant.TireType.Prime == r3eTyreType)
             {
-                return TyreType.Prime;
+                return TyreType.DTM_Prime;
             }
             else
             {
-                return TyreType.Unknown;
+                return TyreType.Unknown_Race;
             }
         }
 

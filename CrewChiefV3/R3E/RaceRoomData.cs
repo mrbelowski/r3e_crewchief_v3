@@ -49,7 +49,7 @@ namespace CrewChiefV3.RaceRoom
         public enum TireType
         {
             Unavailable = -1,
-            Option = 0,
+            DTM_Option = 0,
             Prime = 1
         }
     }

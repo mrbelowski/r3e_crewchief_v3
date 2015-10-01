@@ -151,9 +151,9 @@ namespace CrewChiefV3.PCars
             {
                 timeToStartSpotting = now.Add(TimeSpan.FromSeconds(timeAfterRaceStartToActivate));
             }
-            // this check looks a bit funky... whe we start a practice session, the raceState is no_started
+            // this check looks a bit funky... whe we start a practice session, the raceState is not_started
             // until we cross the line for the first time. Which is retarded really.
-            if (currentState.mRaceState == (int)eRaceState.RACESTATE_INVALID || now < timeToStartSpotting)
+            if (currentState.mRaceState == (int)eRaceState.RACESTATE_INVALID || now < timeToStartSpotting || currentState.mSessionState == (int)eSessionState.SESSION_FORMATIONLAP)
             {
                 return;
             }
@@ -181,9 +181,11 @@ namespace CrewChiefV3.PCars
                         if (i != currentState.mViewedParticipantIndex)
                         {
                             pCarsAPIParticipantStruct opponentData = currentState.mParticipantData[i];
+                            pCarsAPIParticipantStruct previousOpponentData = lastState.mParticipantData[i];
                             if (opponentData.mIsActive) {
                                 if (opponentData.mWorldPosition[0] != 0 && opponentData.mWorldPosition[2] != 0 &&
-                                        opponentData.mWorldPosition[0] != -1 && opponentData.mWorldPosition[2] != -1)
+                                        opponentData.mWorldPosition[0] != -1 && opponentData.mWorldPosition[2] != -1 &&
+                                    opponentIsRacing(opponentData, previousOpponentData))
                                 {
                                     // note that we can't use the player or opponent lap distance for anything here - it's full of rubbish
                                     Side side = getSide(currentState.mOrientation[1], playerData.mWorldPosition, opponentData.mWorldPosition);
@@ -282,6 +284,13 @@ namespace CrewChiefV3.PCars
                     }
                 }
             }
+        }
+
+        private Boolean opponentIsRacing(pCarsAPIParticipantStruct opponentData, pCarsAPIParticipantStruct previousOpponentData)
+        {
+            float deltaX = Math.Abs(opponentData.mWorldPosition[0] - previousOpponentData.mWorldPosition[0]);
+            float deltaY = Math.Abs(opponentData.mWorldPosition[2] - previousOpponentData.mWorldPosition[2]);
+            return (deltaX > 1 || deltaY > 1) && deltaX < maxClosingSpeed && deltaY < maxClosingSpeed;
         }
         
         // TODO: "clear all round" will never play here unless both sides go clear during the same update, which is really unlikely

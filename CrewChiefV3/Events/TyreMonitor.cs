@@ -88,8 +88,9 @@ namespace CrewChiefV3.Events
         private int lapsIntoSessionBeforeTempMessage = 2;
         
 
-        // 2 or 3 for checking at start of sector 2 or 3. Anything else and we check at the end of the lap
-        private int checkAtSector = 2;
+        // check at start of which sector (1=s/f line)
+        private int checkTyresAtSector = 2;
+        private int checkBrakesAtSector = 3;
 
         private Boolean reportedTyreWearForCurrentPitEntry;
 
@@ -207,16 +208,20 @@ namespace CrewChiefV3.Events
                     reportedEstimatedTimeLeft = true;
                 }
 
-                if (!currentGameState.SessionData.LeaderHasFinishedRace && 
-                    ((checkAtSector != 1 && checkAtSector != 2 && currentGameState.SessionData.IsNewLap) ||
-                    ((currentGameState.SessionData.IsNewSector && currentGameState.SessionData.SectorNumber == checkAtSector))))
+                if (enableTyreTempWarnings && !currentGameState.SessionData.LeaderHasFinishedRace &&
+                    !currentGameState.PitData.InPitlane &&
+                    currentGameState.SessionData.CompletedLaps >= lapsIntoSessionBeforeTempMessage && 
+                    ((checkTyresAtSector == 1 && currentGameState.SessionData.IsNewLap) ||
+                    ((currentGameState.SessionData.IsNewSector && currentGameState.SessionData.SectorNumber == checkTyresAtSector))))
+                {
+                    reportCurrentTyreTempStatus(false);
+                }
+                if (!currentGameState.SessionData.LeaderHasFinishedRace &&
+                     ((checkBrakesAtSector == 1 && currentGameState.SessionData.IsNewLap) ||
+                     ((currentGameState.SessionData.IsNewSector && currentGameState.SessionData.SectorNumber == checkBrakesAtSector))))
                 {
                     if (!currentGameState.PitData.InPitlane && currentGameState.SessionData.CompletedLaps >= lapsIntoSessionBeforeTempMessage)
                     {
-                        if (enableTyreTempWarnings)
-                        {
-                            reportCurrentTyreTempStatus(false);
-                        }
                         if (enableBrakeTempWarnings)
                         {
                             reportCurrentBrakeTempStatus(false);
