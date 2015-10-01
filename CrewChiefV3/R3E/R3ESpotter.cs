@@ -77,12 +77,15 @@ namespace CrewChiefV3.RaceRoom
 
         private AudioPlayer audioPlayer;
 
-        public R3ESpotter(AudioPlayer audioPlayer, Boolean initialEnabledState)
+        private float intervalSeconds;
+
+        public R3ESpotter(AudioPlayer audioPlayer, Boolean initialEnabledState, float intervalSeconds)
         {
             this.audioPlayer = audioPlayer;
             this.enabled = initialEnabledState;
             this.initialEnabledState = initialEnabledState;
             this.biggestAllowedNegativeTimeDelta = -1 * carLength / minSpeedForSpotterToOperate;
+            this.intervalSeconds = intervalSeconds;
         }
 
         public void clearState()

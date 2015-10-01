@@ -31,9 +31,8 @@ namespace CrewChiefV3.PCars
         // don't play spotter messages if we're going < 10ms
         private float minSpeedForSpotterToOperate = UserSettings.GetUserSettings().getFloat("min_speed_for_spotter");
 
-        // if the closing speed is > 5ms (about 12mph) then don't trigger spotter messages - 
-        // this prevents them being triggered when passing stationary cars
-        private float maxClosingSpeed = UserSettings.GetUserSettings().getFloat("max_closing_speed_for_spotter");
+        // for PCars we use this purely as a de-noising parameter
+        private float maxClosingSpeed = 30;
 
         // don't activate the spotter unless this many seconds have elapsed (race starts are messy)
         private int timeAfterRaceStartToActivate = UserSettings.GetUserSettings().getInt("time_after_race_start_for_spotter");
@@ -98,19 +97,20 @@ namespace CrewChiefV3.PCars
 
         private int maxSavedStateReuse = 10;
 
-        private static float intervalSeconds = CrewChief.spotterIntervalMilliSeconds / 1000;
+        private float intervalSeconds = 50 / 1000;
 
         private enum NextMessageType
         {
             none, clearLeft, clearRight, clearAllRound, carLeft, carRight, threeWide, stillThere
         }
 
-        public PCarsSpotter(AudioPlayer audioPlayer, Boolean initialEnabledState)
+        public PCarsSpotter(AudioPlayer audioPlayer, Boolean initialEnabledState, float intervalSeconds)
         {
             this.audioPlayer = audioPlayer;
             this.enabled = initialEnabledState;
             this.initialEnabledState = initialEnabledState;
             this.longCarLength = carLength + gapNeededForClear;
+            this.intervalSeconds = intervalSeconds;
         }
 
         public void clearState()
@@ -193,51 +193,49 @@ namespace CrewChiefV3.PCars
                                 if (opponentData.mWorldPosition[0] != 0 && opponentData.mWorldPosition[2] != 0 &&
                                         opponentData.mWorldPosition[0] != -1 && opponentData.mWorldPosition[2] != -1 &&
                                     previousOpponentData.mWorldPosition[0] != 0 && previousOpponentData.mWorldPosition[2] != 0 &&
-                                        previousOpponentData.mWorldPosition[0] != -1 && previousOpponentData.mWorldPosition[2] != -1)
+                                        previousOpponentData.mWorldPosition[0] != -1 && previousOpponentData.mWorldPosition[2] != -1 &&
+                                    opponentIsRacing(opponentData, previousOpponentData, playerData, previousPlayerData))
                                 {
-                                    if (opponentIsRacing(opponentData, previousOpponentData, playerData, previousPlayerData)) {
-                                        // note that we can't use the player or opponent lap distance for anything here - it's full of rubbish
-                                        Side side = getSide(currentState.mOrientation[1], playerData.mWorldPosition, opponentData.mWorldPosition);
-                                        if (side == Side.left)
+                                    Side side = getSide(currentState.mOrientation[1], playerData.mWorldPosition, opponentData.mWorldPosition);
+                                    if (side == Side.left)
+                                    {
+                                        carsOnLeft++;
+                                        if (lastKnownOpponentState.ContainsKey(i))
                                         {
-                                            carsOnLeft++;
-                                            if (lastKnownOpponentState.ContainsKey(i))
-                                            {
-                                                lastKnownOpponentState[i] = Side.left;
-                                            }
-                                            else
-                                            {
-                                                lastKnownOpponentState.Add(i, Side.left);
-                                            }
-                                        }
-                                        else if (side == Side.right)
-                                        {
-                                            carsOnRight++;
-                                            if (lastKnownOpponentState.ContainsKey(i))
-                                            {
-                                                lastKnownOpponentState[i] = Side.right;
-                                            }
-                                            else
-                                            {
-                                                lastKnownOpponentState.Add(i, Side.right);
-                                            }
+                                            lastKnownOpponentState[i] = Side.left;
                                         }
                                         else
                                         {
-                                            if (lastKnownOpponentState.ContainsKey(i))
-                                            {
-                                                lastKnownOpponentState[i] = Side.none;
-                                            }
-                                            else
-                                            {
-                                                lastKnownOpponentState.Add(i, Side.none);
-                                            }
+                                            lastKnownOpponentState.Add(i, Side.left);
                                         }
-                                    }                                    
+                                    }
+                                    else if (side == Side.right)
+                                    {
+                                        carsOnRight++;
+                                        if (lastKnownOpponentState.ContainsKey(i))
+                                        {
+                                            lastKnownOpponentState[i] = Side.right;
+                                        }
+                                        else
+                                        {
+                                            lastKnownOpponentState.Add(i, Side.right);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        if (lastKnownOpponentState.ContainsKey(i))
+                                        {
+                                            lastKnownOpponentState[i] = Side.none;
+                                        }
+                                        else
+                                        {
+                                            lastKnownOpponentState.Add(i, Side.none);
+                                        }
+                                    }                             
                                 }
                                 else
                                 {
-                                    // zero position data, use the last known state
+                                    // zero usable position data, use the last known state
                                     if (lastKnownOpponentState.ContainsKey(i)) {
                                         int lastStateUseCount = 1;
                                         if (lastKnownOpponentStateUseCounter.ContainsKey(i))
@@ -299,10 +297,16 @@ namespace CrewChiefV3.PCars
         private Boolean opponentIsRacing(pCarsAPIParticipantStruct opponentData, pCarsAPIParticipantStruct previousOpponentData,
             pCarsAPIParticipantStruct playerData, pCarsAPIParticipantStruct previousPlayerData)
         {
+            float deltaX = Math.Abs(opponentData.mWorldPosition[0] - playerData.mWorldPosition[0]);
+            float deltaY = Math.Abs(opponentData.mWorldPosition[2] - playerData.mWorldPosition[2]);
+            if (deltaX > trackWidth || deltaY > trackWidth)
+            {
+                return false;
+            }
             float opponentVelocityX = Math.Abs(opponentData.mWorldPosition[0] - previousOpponentData.mWorldPosition[0]) / intervalSeconds;
             float opponentVelocityY = Math.Abs(opponentData.mWorldPosition[2] - previousOpponentData.mWorldPosition[2]) / intervalSeconds;
-            // hard code this - if the opponent car is going < 2mph on both axis we're not interested
-            if (opponentVelocityX < 2 && opponentVelocityY < 2)
+            // hard code this - if the opponent car is going < 4m/s on both axis we're not interested
+            if (opponentVelocityX < 4 && opponentVelocityY < 4)
             {
                 return false;
             }
@@ -312,6 +316,7 @@ namespace CrewChiefV3.PCars
 
             if (Math.Abs(playerVelocityX - opponentVelocityX) > maxClosingSpeed || Math.Abs(playerVelocityY - opponentVelocityY) > maxClosingSpeed)
             {
+                Console.WriteLine("high closing speed: x = " + (playerVelocityX - opponentVelocityX) + " y = " + (playerVelocityY - opponentVelocityY));
                 return false;
             }
             return true;
@@ -567,11 +572,6 @@ namespace CrewChiefV3.PCars
         {
             float rawXCoordinate = opponentWorldPosition[0] - playerWorldPosition[0];
             float rawYCoordinate = opponentWorldPosition[2] - playerWorldPosition[2];
-            if (rawXCoordinate > carLength && rawYCoordinate > longCarLength)
-            {
-                return Side.none;
-            }
-
             if (playerRotation < 0)
             {
                 playerRotation = (float)(2 * Math.PI) + playerRotation;
