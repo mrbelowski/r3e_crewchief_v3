@@ -477,6 +477,15 @@ namespace CrewChiefV3.GameState
         public Single LeftRearBrakeTemp = 0;
         public Single RightRearBrakeTemp = 0;
 
+        public Boolean LeftFrontIsLocked = false;
+        public Boolean RightFrontIsLocked = false;
+        public Boolean LeftRearIsLocked = false;
+        public Boolean RightRearIsLocked = false;
+        public Boolean LeftFrontIsSpinning = false;
+        public Boolean RightFrontIsSpinning = false;
+        public Boolean LeftRearIsSpinning = false;
+        public Boolean RightRearIsSpinning = false;
+
     }
 
     public class GameStateData

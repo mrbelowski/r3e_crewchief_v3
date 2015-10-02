@@ -81,12 +81,29 @@ namespace CrewChiefV3.Events
         public static String folderMinutesOnCurrentTyresIntro = "tyre_monitor/minutes_on_current_tyres_intro";
         public static String folderMinutesOnCurrentTyresOutro = "tyre_monitor/minutes_on_current_tyres_outro";
 
+        public static String folderLockingFrontsForLapWarning = "tyre_monitor/locking_fronts_lap_warning";
+        public static String folderLockingRearsForLapWarning = "tyre_monitor/locking_rears_lap_warning";
+        public static String folderLockingLeftFrontForLapWarning = "tyre_monitor/locking_left_front_lap_warning";
+        public static String folderLockingRightFrontForLapWarning = "tyre_monitor/locking_right_front_lap_warning";
+        public static String folderLockingLeftRearForLapWarning = "tyre_monitor/locking_left_rear_lap_warning";
+        public static String folderLockingRightRearForLapWarning = "tyre_monitor/locking_right_rear_lap_warning";
+
+        public static String folderSpinningFrontsForLapWarning = "tyre_monitor/spinning_fronts_lap_warning";
+        public static String folderSpinningRearsForLapWarning = "tyre_monitor/spinning_rears_lap_warning";
+        public static String folderSpinningLeftFrontForLapWarning = "tyre_monitor/spinning_left_front_lap_warning";
+        public static String folderSpinningRightFrontForLapWarning = "tyre_monitor/spinning_right_front_lap_warning";
+        public static String folderSpinningLeftRearForLapWarning = "tyre_monitor/spinning_left_rear_lap_warning";
+        public static String folderSpinningRightRearForLapWarning = "tyre_monitor/spinning_right_rear_lap_warning";
+
         private static Boolean enableTyreTempWarnings = UserSettings.GetUserSettings().getBoolean("enable_tyre_temp_warnings");
         private static Boolean enableBrakeTempWarnings = UserSettings.GetUserSettings().getBoolean("enable_brake_temp_warnings");
         private static Boolean enableTyreWearWarnings = UserSettings.GetUserSettings().getBoolean("enable_tyre_wear_warnings");
 
-        private int lapsIntoSessionBeforeTempMessage = 2;
-        
+        // todo: warn on single lockups
+        private static float initialTotalLapLockupThreshold = 5;
+        private static float initialTotalWheelspinThreshold = 6;
+
+        private int lapsIntoSessionBeforeTempMessage = 2;        
 
         // check at start of which sector (1=s/f line)
         private int checkBrakesAtSector = 3;
@@ -118,6 +135,25 @@ namespace CrewChiefV3.Events
         private List<MessageFragment> lastTyreConditionMessage = null;
 
         private float peakBrakeTempForLap = 0;
+
+        private float timeLeftFrontIsLockedForLap = 0;
+        private float timeRightFrontIsLockedForLap = 0; 
+        private float timeLeftRearIsLockedForLap = 0; 
+        private float timeRightRearIsLockedForLap = 0;
+        private float timeLeftFrontIsSpinningForLap = 0;
+        private float timeRightFrontIsSpinningForLap = 0;
+        private float timeLeftRearIsSpinningForLap = 0;
+        private float timeRightRearIsSpinningForLap = 0;
+
+        private float totalLockupThresholdForNextLap = initialTotalLapLockupThreshold;
+        private float totalWheelspinThresholdForNextLap = initialTotalWheelspinThreshold;
+        
+        private Boolean warnedOnLockingForLap = false;
+        private Boolean warnedOnWheelspinForLap = false;
+
+        private DateTime nextLockingAndSpinningCheck = DateTime.MinValue;
+
+        private Random random = new Random();
         
         public TyreMonitor(AudioPlayer audioPlayer)
         {
@@ -143,6 +179,19 @@ namespace CrewChiefV3.Events
             lastBrakeTempMessage = null;
             lastTyreConditionMessage = null;
             peakBrakeTempForLap = 0;
+            timeLeftFrontIsLockedForLap = 0;
+            timeRightFrontIsLockedForLap = 0; 
+            timeLeftRearIsLockedForLap = 0; 
+            timeRightRearIsLockedForLap = 0;
+            timeLeftFrontIsSpinningForLap = 0;
+            timeRightFrontIsSpinningForLap = 0;
+            timeLeftRearIsSpinningForLap = 0;
+            timeRightRearIsSpinningForLap = 0;
+            totalLockupThresholdForNextLap = initialTotalLapLockupThreshold;
+            totalWheelspinThresholdForNextLap = initialTotalWheelspinThreshold;
+            warnedOnLockingForLap = false;
+            warnedOnWheelspinForLap = false;
+            nextLockingAndSpinningCheck = DateTime.MinValue;
         }
 
         private Boolean isBrakeTempPeakForLap(float leftFront, float rightFront, float leftRear, float rightRear) 
@@ -157,6 +206,46 @@ namespace CrewChiefV3.Events
 
         override protected void triggerInternal(GameStateData previousGameState, GameStateData currentGameState)
         {
+            if (currentGameState.SessionData.IsNewLap)
+            {
+                timeLeftFrontIsLockedForLap = 0;
+                timeRightFrontIsLockedForLap = 0;
+                timeLeftRearIsLockedForLap = 0;
+                timeRightRearIsLockedForLap = 0;
+                timeLeftFrontIsSpinningForLap = 0;
+                timeRightFrontIsSpinningForLap = 0;
+                timeLeftRearIsSpinningForLap = 0;
+                timeRightRearIsSpinningForLap = 0;
+                if (warnedOnLockingForLap)
+                {
+                    totalLockupThresholdForNextLap = totalLockupThresholdForNextLap + 1;
+                }
+                else
+                {
+                    totalLockupThresholdForNextLap = initialTotalLapLockupThreshold;
+                }
+                if (warnedOnWheelspinForLap)
+                {
+                    totalWheelspinThresholdForNextLap = totalWheelspinThresholdForNextLap + 1;
+                }
+                else
+                {
+                    totalWheelspinThresholdForNextLap = initialTotalWheelspinThreshold;
+                }
+                warnedOnLockingForLap = false;
+                warnedOnWheelspinForLap = false;
+            }
+            if (previousGameState != null && currentGameState.Ticks > previousGameState.Ticks) 
+            {
+                addLockingAndSpinningData(currentGameState.TyreData, previousGameState.Ticks, currentGameState.Ticks);
+            }
+
+            if (currentGameState.Now > nextLockingAndSpinningCheck)
+            {
+                checkLocking();
+                checkWheelSpinning();
+            }
+            
             if (currentGameState.TyreData.TireWearActive)
             {
                 leftFrontWearPercent = currentGameState.TyreData.FrontLeftPercentWear;
@@ -767,6 +856,170 @@ namespace CrewChiefV3.Events
                     break;
                 default:
                     break;
+            }
+        }
+        private void addLockingAndSpinningData(TyreData tyreData, long previousTicks, long currentTicks)
+        {
+            if (tyreData.LeftFrontIsLocked)
+            {
+                timeLeftFrontIsLockedForLap += (currentTicks - previousTicks) / TimeSpan.TicksPerSecond;
+            }
+            if (tyreData.RightFrontIsLocked)
+            {
+                timeRightFrontIsLockedForLap += (currentTicks - previousTicks) / TimeSpan.TicksPerSecond;
+            }
+            if (tyreData.LeftRearIsLocked)
+            {
+                timeLeftRearIsLockedForLap += (currentTicks - previousTicks) / TimeSpan.TicksPerSecond;
+            }
+            if (tyreData.RightRearIsLocked)
+            {
+                timeRightRearIsLockedForLap += (currentTicks - previousTicks) / TimeSpan.TicksPerSecond;
+            }
+
+            if (tyreData.LeftFrontIsSpinning)
+            {
+                timeLeftFrontIsSpinningForLap += (currentTicks - previousTicks) / TimeSpan.TicksPerSecond;
+            }
+            if (tyreData.RightFrontIsSpinning)
+            {
+                timeRightFrontIsSpinningForLap += (currentTicks - previousTicks) / TimeSpan.TicksPerSecond;
+            }
+            if (tyreData.LeftRearIsSpinning)
+            {
+                timeLeftRearIsSpinningForLap += (currentTicks - previousTicks) / TimeSpan.TicksPerSecond;
+            }
+            if (tyreData.RightRearIsSpinning)
+            {
+                timeRightRearIsSpinningForLap += (currentTicks - previousTicks) / TimeSpan.TicksPerSecond;
+            }
+        }
+
+        private void checkLocking()
+        {
+            int messageDelay = random.Next(0, 5);
+            if (!warnedOnLockingForLap)
+            {
+                if (timeLeftFrontIsLockedForLap > initialTotalLapLockupThreshold)
+                {
+                    warnedOnLockingForLap = true;
+                    if (timeRightFrontIsLockedForLap > initialTotalLapLockupThreshold / 2)
+                    {
+                        // lots of left front locking, some right front locking
+                        audioPlayer.queueClip(new QueuedMessage(folderLockingFrontsForLapWarning, messageDelay, this));
+                    }
+                    else
+                    {
+                        // just left front locking
+                        audioPlayer.queueClip(new QueuedMessage(folderLockingLeftFrontForLapWarning, messageDelay, this));
+                    }
+                }
+                else if (timeRightFrontIsLockedForLap > initialTotalLapLockupThreshold)
+                {
+                    warnedOnLockingForLap = true;
+                    if (timeLeftFrontIsLockedForLap > initialTotalLapLockupThreshold / 2)
+                    {
+                        // lots of right front locking, some left front locking
+                        audioPlayer.queueClip(new QueuedMessage(folderLockingFrontsForLapWarning, messageDelay, this));
+                    }
+                    else
+                    {
+                        // just right front locking
+                        audioPlayer.queueClip(new QueuedMessage(folderLockingRightFrontForLapWarning, messageDelay, this));
+                    }
+                }
+                else if (timeLeftRearIsLockedForLap > initialTotalLapLockupThreshold)
+                {
+                    warnedOnLockingForLap = true;
+                    if (timeRightRearIsLockedForLap > initialTotalLapLockupThreshold / 2)
+                    {
+                        // lots of left rear locking, some right rear locking
+                        audioPlayer.queueClip(new QueuedMessage(folderLockingRearsForLapWarning, messageDelay, this));
+                    }
+                    else
+                    {
+                        // just left rear locking
+                        audioPlayer.queueClip(new QueuedMessage(folderLockingLeftRearForLapWarning, messageDelay, this));
+                    }
+                }
+                if (timeRightRearIsLockedForLap > initialTotalLapLockupThreshold)
+                {
+                    warnedOnLockingForLap = true;
+                    if (timeLeftRearIsLockedForLap > initialTotalLapLockupThreshold / 2)
+                    {
+                        // lots of right rear locking, some left rear locking
+                        audioPlayer.queueClip(new QueuedMessage(folderLockingRearsForLapWarning, messageDelay, this));
+                    }
+                    else
+                    {
+                        // just right rear locking
+                        audioPlayer.queueClip(new QueuedMessage(folderLockingRightRearForLapWarning, messageDelay, this));
+                    }
+                }
+            }
+        }
+
+        private void checkWheelSpinning()
+        {
+            int messageDelay = random.Next(0, 5);
+            if (!warnedOnWheelspinForLap)
+            {
+                if (timeLeftFrontIsSpinningForLap > initialTotalWheelspinThreshold)
+                {
+                    warnedOnWheelspinForLap = true;
+                    if (timeRightFrontIsSpinningForLap > initialTotalWheelspinThreshold / 2)
+                    {
+                        // lots of left front spinning, some right front spinning
+                        audioPlayer.queueClip(new QueuedMessage(folderSpinningFrontsForLapWarning, messageDelay, this));
+                    }
+                    else
+                    {
+                        // just left front spinning
+                        audioPlayer.queueClip(new QueuedMessage(folderSpinningLeftFrontForLapWarning, messageDelay, this));
+                    }
+                }
+                else if (timeRightFrontIsSpinningForLap > initialTotalWheelspinThreshold)
+                {
+                    warnedOnWheelspinForLap = true;
+                    if (timeLeftFrontIsSpinningForLap > initialTotalWheelspinThreshold / 2)
+                    {
+                        // lots of right front spinning, some left front spinning
+                        audioPlayer.queueClip(new QueuedMessage(folderSpinningFrontsForLapWarning, messageDelay, this));
+                    }
+                    else
+                    {
+                        // just right front spinning
+                        audioPlayer.queueClip(new QueuedMessage(folderSpinningRightFrontForLapWarning, messageDelay, this));
+                    }
+                }
+                else if (timeLeftRearIsSpinningForLap > initialTotalWheelspinThreshold)
+                {
+                    warnedOnWheelspinForLap = true;
+                    if (timeRightRearIsSpinningForLap > initialTotalWheelspinThreshold / 2)
+                    {
+                        // lots of left rear spinning, some right rear spinning
+                        audioPlayer.queueClip(new QueuedMessage(folderSpinningRearsForLapWarning, messageDelay, this));
+                    }
+                    else
+                    {
+                        // just left rear spinning
+                        audioPlayer.queueClip(new QueuedMessage(folderSpinningLeftRearForLapWarning, messageDelay, this));
+                    }
+                }
+                if (timeRightRearIsSpinningForLap > initialTotalWheelspinThreshold)
+                {
+                    warnedOnWheelspinForLap = true;
+                    if (timeLeftRearIsSpinningForLap > initialTotalWheelspinThreshold / 2)
+                    {
+                        // lots of right rear spinning, some left rear spinning
+                        audioPlayer.queueClip(new QueuedMessage(folderSpinningRearsForLapWarning, messageDelay, this));
+                    }
+                    else
+                    {
+                        // just right rear spinning
+                        audioPlayer.queueClip(new QueuedMessage(folderSpinningRightRearForLapWarning, messageDelay, this));
+                    }
+                }
             }
         }
     }
