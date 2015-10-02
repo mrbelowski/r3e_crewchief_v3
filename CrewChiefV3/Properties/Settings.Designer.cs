@@ -715,5 +715,29 @@ namespace CrewChiefV3.Properties {
                 this["enable_brake_temp_warnings"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool enable_wheel_spin_warnings {
+            get {
+                return ((bool)(this["enable_wheel_spin_warnings"]));
+            }
+            set {
+                this["enable_wheel_spin_warnings"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool enable_brake_lock_warnings {
+            get {
+                return ((bool)(this["enable_brake_lock_warnings"]));
+            }
+            set {
+                this["enable_brake_lock_warnings"] = value;
+            }
+        }
     }
 }

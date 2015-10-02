@@ -99,6 +99,9 @@ namespace CrewChiefV3.Events
         private static Boolean enableBrakeTempWarnings = UserSettings.GetUserSettings().getBoolean("enable_brake_temp_warnings");
         private static Boolean enableTyreWearWarnings = UserSettings.GetUserSettings().getBoolean("enable_tyre_wear_warnings");
 
+        private static Boolean enableWheelSpinWarnings = UserSettings.GetUserSettings().getBoolean("enable_wheel_spin_warnings");
+        private static Boolean enableTBrakeLockWarnings = UserSettings.GetUserSettings().getBoolean("enable_brake_lock_warnings");
+
         // todo: warn on single lockups
         private static float initialTotalLapLockupThreshold = 5;
         private static float initialTotalWheelspinThreshold = 6;
@@ -152,6 +155,8 @@ namespace CrewChiefV3.Events
         private Boolean warnedOnWheelspinForLap = false;
 
         private DateTime nextLockingAndSpinningCheck = DateTime.MinValue;
+
+        private TimeSpan lockingAndSpinningCheckInterval = TimeSpan.FromSeconds(3);
 
         private Random random = new Random();
         
@@ -242,8 +247,11 @@ namespace CrewChiefV3.Events
 
             if (currentGameState.Now > nextLockingAndSpinningCheck)
             {
+                Console.WriteLine("Front locking " + timeLeftFrontIsLockedForLap + ", " + timeRightFrontIsLockedForLap);
+                Console.WriteLine("Rear spinning " + timeLeftRearIsSpinningForLap + ", " + timeRightRearIsSpinningForLap);
                 checkLocking();
                 checkWheelSpinning();
+                nextLockingAndSpinningCheck = currentGameState.Now.Add(lockingAndSpinningCheckInterval);
             }
             
             if (currentGameState.TyreData.TireWearActive)
@@ -862,36 +870,36 @@ namespace CrewChiefV3.Events
         {
             if (tyreData.LeftFrontIsLocked)
             {
-                timeLeftFrontIsLockedForLap += (currentTicks - previousTicks) / TimeSpan.TicksPerSecond;
+                timeLeftFrontIsLockedForLap += (float)(currentTicks - previousTicks) / (float) TimeSpan.TicksPerSecond;
             }
             if (tyreData.RightFrontIsLocked)
             {
-                timeRightFrontIsLockedForLap += (currentTicks - previousTicks) / TimeSpan.TicksPerSecond;
+                timeRightFrontIsLockedForLap += (float)(currentTicks - previousTicks) / (float)TimeSpan.TicksPerSecond;
             }
             if (tyreData.LeftRearIsLocked)
             {
-                timeLeftRearIsLockedForLap += (currentTicks - previousTicks) / TimeSpan.TicksPerSecond;
+                timeLeftRearIsLockedForLap += (float)(currentTicks - previousTicks) / (float)TimeSpan.TicksPerSecond;
             }
             if (tyreData.RightRearIsLocked)
             {
-                timeRightRearIsLockedForLap += (currentTicks - previousTicks) / TimeSpan.TicksPerSecond;
+                timeRightRearIsLockedForLap += (float)(currentTicks - previousTicks) / (float)TimeSpan.TicksPerSecond;
             }
 
             if (tyreData.LeftFrontIsSpinning)
             {
-                timeLeftFrontIsSpinningForLap += (currentTicks - previousTicks) / TimeSpan.TicksPerSecond;
+                timeLeftFrontIsSpinningForLap += (float)(currentTicks - previousTicks) / (float)TimeSpan.TicksPerSecond;
             }
             if (tyreData.RightFrontIsSpinning)
             {
-                timeRightFrontIsSpinningForLap += (currentTicks - previousTicks) / TimeSpan.TicksPerSecond;
+                timeRightFrontIsSpinningForLap += (float)(currentTicks - previousTicks) / (float)TimeSpan.TicksPerSecond;
             }
             if (tyreData.LeftRearIsSpinning)
             {
-                timeLeftRearIsSpinningForLap += (currentTicks - previousTicks) / TimeSpan.TicksPerSecond;
+                timeLeftRearIsSpinningForLap += (float)(currentTicks - previousTicks) / (float)TimeSpan.TicksPerSecond;
             }
             if (tyreData.RightRearIsSpinning)
             {
-                timeRightRearIsSpinningForLap += (currentTicks - previousTicks) / TimeSpan.TicksPerSecond;
+                timeRightRearIsSpinningForLap += (float)(currentTicks - previousTicks) / (float)TimeSpan.TicksPerSecond;
             }
         }
 
@@ -962,6 +970,7 @@ namespace CrewChiefV3.Events
         private void checkWheelSpinning()
         {
             int messageDelay = random.Next(0, 5);
+            // TODO: are delayed messages bust?
             if (!warnedOnWheelspinForLap)
             {
                 if (timeLeftFrontIsSpinningForLap > initialTotalWheelspinThreshold)

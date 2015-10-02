@@ -772,22 +772,22 @@ namespace CrewChiefV3.PCars
             // Tyre slip speed seems to peak at about 30 with big lock or wheelspin (in Sauber Merc). It's noisy as hell and is frequently bouncing around
             // in single figures, with the noise varying between cars.
             // tyreRPS is much cleaner but we don't know the diameter of the tyre so can't compare it (accurately) to the car's speed
-            // Console.WriteLine(shared.mTyreRPS[0] + ", " + shared.mTyreRPS[1] + ", " + shared.mTyreRPS[2] + ", " + shared.mTyreRPS[3]);
-
-            // Console.WriteLine(shared.mTyreGrip[0] + ", " + shared.mTyreGrip[1] + ", " + shared.mTyreGrip[2] + ", " + shared.mTyreGrip[3]);
-            if (shared.mSpeed > 3)
+            if (shared.mSpeed > 10)
             {
-                float minRotatingSpeed = shared.mSpeed / (maxTyreCirumference * 2);
-                currentGameState.TyreData.LeftFrontIsLocked = shared.mTyreRPS[0] < minRotatingSpeed;
-                currentGameState.TyreData.RightFrontIsLocked = shared.mTyreRPS[1] < minRotatingSpeed;
-                currentGameState.TyreData.LeftRearIsLocked = shared.mTyreRPS[2] < minRotatingSpeed;
-                currentGameState.TyreData.RightRearIsLocked = shared.mTyreRPS[3] < minRotatingSpeed;
+                float minRotatingSpeed = 2 * (float)Math.PI * shared.mSpeed / maxTyreCirumference;
+                // I think the tyreRPS is actually radians per second...
+                currentGameState.TyreData.LeftFrontIsLocked = Math.Abs(shared.mTyreRPS[0]) < minRotatingSpeed;
+                currentGameState.TyreData.RightFrontIsLocked = Math.Abs(shared.mTyreRPS[1]) < minRotatingSpeed;
+                currentGameState.TyreData.LeftRearIsLocked = Math.Abs(shared.mTyreRPS[2]) < minRotatingSpeed;
+                currentGameState.TyreData.RightRearIsLocked = Math.Abs(shared.mTyreRPS[3]) < minRotatingSpeed;
+
+                float maxRotatingSpeed = 2 * (float)Math.PI * shared.mSpeed / minTyreCirumference;
+                currentGameState.TyreData.LeftFrontIsSpinning = Math.Abs(shared.mTyreRPS[0]) > maxRotatingSpeed;
+                currentGameState.TyreData.RightFrontIsSpinning = Math.Abs(shared.mTyreRPS[1]) > maxRotatingSpeed;
+                currentGameState.TyreData.LeftRearIsSpinning = Math.Abs(shared.mTyreRPS[2]) > maxRotatingSpeed;
+                currentGameState.TyreData.RightRearIsSpinning = Math.Abs(shared.mTyreRPS[3]) > maxRotatingSpeed;
             }
-            float maxRotatingSpeed = 2 * shared.mSpeed / minTyreCirumference;
-            currentGameState.TyreData.LeftFrontIsSpinning = shared.mTyreRPS[0] > maxRotatingSpeed;
-            currentGameState.TyreData.RightFrontIsSpinning = shared.mTyreRPS[1] > maxRotatingSpeed;
-            currentGameState.TyreData.LeftRearIsSpinning = shared.mTyreRPS[2] > maxRotatingSpeed;
-            currentGameState.TyreData.RightRearIsSpinning = shared.mTyreRPS[3] > maxRotatingSpeed;
+            
             return currentGameState;
         }
 
