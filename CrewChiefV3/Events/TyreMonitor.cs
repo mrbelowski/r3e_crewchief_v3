@@ -247,8 +247,6 @@ namespace CrewChiefV3.Events
 
             if (currentGameState.Now > nextLockingAndSpinningCheck)
             {
-                Console.WriteLine("Front locking " + timeLeftFrontIsLockedForLap + ", " + timeRightFrontIsLockedForLap);
-                Console.WriteLine("Rear spinning " + timeLeftRearIsSpinningForLap + ", " + timeRightRearIsSpinningForLap);
                 checkLocking();
                 checkWheelSpinning();
                 nextLockingAndSpinningCheck = currentGameState.Now.Add(lockingAndSpinningCheckInterval);
@@ -950,7 +948,7 @@ namespace CrewChiefV3.Events
                         audioPlayer.queueClip(new QueuedMessage(folderLockingLeftRearForLapWarning, messageDelay, this));
                     }
                 }
-                if (timeRightRearIsLockedForLap > initialTotalLapLockupThreshold)
+                else if (timeRightRearIsLockedForLap > initialTotalLapLockupThreshold)
                 {
                     warnedOnLockingForLap = true;
                     if (timeLeftRearIsLockedForLap > initialTotalLapLockupThreshold / 2)
@@ -1015,7 +1013,7 @@ namespace CrewChiefV3.Events
                         audioPlayer.queueClip(new QueuedMessage(folderSpinningLeftRearForLapWarning, messageDelay, this));
                     }
                 }
-                if (timeRightRearIsSpinningForLap > initialTotalWheelspinThreshold)
+                else if (timeRightRearIsSpinningForLap > initialTotalWheelspinThreshold)
                 {
                     warnedOnWheelspinForLap = true;
                     if (timeLeftRearIsSpinningForLap > initialTotalWheelspinThreshold / 2)

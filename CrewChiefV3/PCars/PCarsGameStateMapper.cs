@@ -83,9 +83,9 @@ namespace CrewChiefV3.PCars
         private float majorTyreWearPercent = 40f;
         private float wornOutTyreWearPercent = 80f;
 
-        // for locking / spinning check
-        private float minTyreCirumference = 0.5f * (float)Math.PI;  // 0.5m diameter
-        private float maxTyreCirumference = (float)Math.PI;
+        // for locking / spinning check - the tolerance values are built into these tyre diameter values
+        private float minTyreCirumference = 0.4f * (float)Math.PI;  // 0.4m diameter
+        private float maxTyreCirumference = 1.2f * (float)Math.PI;
 
         private TimeSpan minimumSessionParticipationTime = TimeSpan.FromSeconds(6);
 
@@ -772,7 +772,7 @@ namespace CrewChiefV3.PCars
             // Tyre slip speed seems to peak at about 30 with big lock or wheelspin (in Sauber Merc). It's noisy as hell and is frequently bouncing around
             // in single figures, with the noise varying between cars.
             // tyreRPS is much cleaner but we don't know the diameter of the tyre so can't compare it (accurately) to the car's speed
-            if (shared.mSpeed > 10)
+            if (shared.mSpeed > 7)
             {
                 float minRotatingSpeed = 2 * (float)Math.PI * shared.mSpeed / maxTyreCirumference;
                 // I think the tyreRPS is actually radians per second...
