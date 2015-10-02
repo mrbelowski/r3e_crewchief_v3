@@ -26,36 +26,27 @@ namespace CrewChiefV3.Events
             return true;
         }
 
+        private OpponentData makeTempDriver(String driverName, List<String> names)
+        {
+            OpponentData opponent = new OpponentData();
+            opponent.DriverRawName = driverName;
+            AudioPlayer.availableDriverNames.Add(driverName);
+            names.Add(driverName);
+            return opponent;
+        }
+
         override protected void triggerInternal(GameStateData previousGameState, GameStateData currentGameState)
         {
             audioPlayer.queueClip(new QueuedMessage(folderTest, 0, this));
-            /*OpponentData opponent1 = new OpponentData();
-            opponent1.DriverRawName = "mitrovic";
-            AudioPlayer.availableDriverNames.Add("mitrovic");
-            List<String> names = new List<string>();
-            names.Add("mitrovic");
-
-            OpponentData opponent2 = new OpponentData();
-            opponent2.DriverRawName = "brito";
-            AudioPlayer.availableDriverNames.Add("brito");
-            names.Add("brito");
-
-            OpponentData opponent3 = new OpponentData();
-            opponent3.DriverRawName = "cossette";
-            AudioPlayer.availableDriverNames.Add("cossette");
-            names.Add("cossette");
-
-            OpponentData opponent4 = new OpponentData();
-            opponent4.DriverRawName = "marshall";
-            AudioPlayer.availableDriverNames.Add("marshall");
-            names.Add("marshall");
-
-            OpponentData opponent5 = new OpponentData();
-            opponent5.DriverRawName = "simmonds";
-            AudioPlayer.availableDriverNames.Add("simmonds");
-            names.Add("simmonds");
-
-            audioPlayer.cacheDriverNames(names);
+            /*
+            List<String> driverNames = new List<string>();
+            OpponentData opponent1 = makeTempDriver("bills kid", driverNames);
+            OpponentData opponent2 = makeTempDriver("whats his name", driverNames);
+            OpponentData opponent3 = makeTempDriver("cain", driverNames);
+            OpponentData opponent4 = makeTempDriver("meeksta", driverNames);
+            OpponentData opponent5 = makeTempDriver("how good am i", driverNames);
+            audioPlayer.cacheDriverNames(driverNames);
+            
             audioPlayer.queueClip(new QueuedMessage("Timings/gap_in_front",
                                     MessageContents(Timings.folderTheGapTo, opponent1, Timings.folderAheadIsIncreasing,
                                     TimeSpan.FromSeconds(1.3), Timings.folderSeconds),

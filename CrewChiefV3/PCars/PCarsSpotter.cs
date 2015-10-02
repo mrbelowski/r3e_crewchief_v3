@@ -189,7 +189,7 @@ namespace CrewChiefV3.PCars
                         if (i != currentState.mViewedParticipantIndex)
                         {
                             pCarsAPIParticipantStruct opponentData = currentState.mParticipantData[i];
-                            pCarsAPIParticipantStruct previousOpponentData = lastState.mParticipantData[i];
+                            pCarsAPIParticipantStruct previousOpponentData = lastState.mParticipantData[PCarsGameStateMapper.getPreviousOpponentIndex(lastState.mParticipantData, i, opponentData.mName)];
                             if (opponentData.mIsActive) {
                                 if (opponentData.mWorldPosition[0] != 0 && opponentData.mWorldPosition[2] != 0 &&
                                         opponentData.mWorldPosition[0] != -1 && opponentData.mWorldPosition[2] != -1 &&

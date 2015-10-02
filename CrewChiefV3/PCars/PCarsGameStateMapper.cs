@@ -444,9 +444,10 @@ namespace CrewChiefV3.PCars
                 {
                     if (currentGameState.OpponentData.ContainsKey(opponentSlotId))
                     {
-                        if (currentGameState.OpponentData[opponentSlotId].IsActive && participantStruct.mIsActive)
+                        OpponentData currentOpponentData = currentGameState.OpponentData[opponentSlotId];
+                        if (currentOpponentData.IsActive && participantStruct.mIsActive)
                         {
-                            if (previousGameState != null && previousGameState.OpponentData.Count == currentGameState.OpponentData.Count) 
+                            if (previousGameState != null) 
                             {
                                 int previousOpponentSectorNumber = 1;
                                 int previousOpponentCompletedLaps = 0;
@@ -454,9 +455,9 @@ namespace CrewChiefV3.PCars
                                 Boolean previousOpponentIsEnteringPits = false;
                                 float[] previousOpponentWorldPosition = new float[]{0, 0, 0};
                                 float previousOpponentSpeed = 0;
-                                if (previousGameState.OpponentData.ContainsKey(opponentSlotId))
+                                OpponentData previousOpponentData = getPreviousOpponentData(previousGameState.OpponentData, opponentSlotId, currentOpponentData.DriverRawName);
+                                if (previousOpponentData != null)
                                 {
-                                    OpponentData previousOpponentData = previousGameState.OpponentData[opponentSlotId];
                                     previousOpponentSectorNumber = previousOpponentData.CurrentSectorNumber;
                                     previousOpponentCompletedLaps = previousOpponentData.CompletedLaps;
                                     previousOpponentPosition = previousOpponentData.Position;
@@ -556,7 +557,7 @@ namespace CrewChiefV3.PCars
                                     }
                                 }
                                 float secondsSinceLastUpdate = (float)new TimeSpan(currentGameState.Ticks - previousGameState.Ticks).TotalSeconds;
-                                upateOpponentData(currentGameState.OpponentData[opponentSlotId], currentOpponentRacePosition, currentOpponentLapsCompleted,
+                                upateOpponentData(currentOpponentData, currentOpponentRacePosition, currentOpponentLapsCompleted,
                                         currentOpponentSector, isEnteringPits, currentGameState.SessionData.SessionRunningTime, secondsSinceLastUpdate, 
                                         opponentPositionAtSector3, new float[] { participantStruct.mWorldPosition[0], participantStruct.mWorldPosition[2]}, previousOpponentWorldPosition,
                                         previousOpponentSpeed);
@@ -564,7 +565,7 @@ namespace CrewChiefV3.PCars
                         }                            
                         else
                         {
-                            currentGameState.OpponentData[opponentSlotId].IsActive = false;
+                            currentOpponentData.IsActive = false;
                         }
                     }
                     else
@@ -1104,6 +1105,53 @@ namespace CrewChiefV3.PCars
                 }
             }
             return onLimiter;
+        }
+
+        public static int getPreviousOpponentIndex(pCarsAPIParticipantStruct[] previousOpponents, int currentSlotId, String opponentDriverName)
+        {
+            if (previousOpponents == null || previousOpponents.Count() == 0)
+            {
+                return -1;
+            }
+            if (previousOpponents.Count() >= currentSlotId && previousOpponents[currentSlotId].mName == opponentDriverName)
+            {
+                return currentSlotId;
+            }
+            else
+            {
+                int index = 0;
+                for (; index < previousOpponents.Count(); index++)
+                {
+                    if (previousOpponents[index].mName == opponentDriverName)
+                    {
+                        return index;
+                    }
+                }
+                return -1;
+            }
+        }
+        public static OpponentData getPreviousOpponentData(Dictionary<int, OpponentData> previousOpponents, int currentSlotId, String opponentDriverName)
+        {
+            if (previousOpponents == null || !previousOpponents.ContainsKey(currentSlotId))
+            {
+                return null;
+            }
+            OpponentData previousOpponentAtSameSlot = previousOpponents[currentSlotId];
+            if (previousOpponentAtSameSlot.DriverRawName == opponentDriverName)
+            {
+                return previousOpponentAtSameSlot;
+            }
+            else
+            {
+                foreach (KeyValuePair<int, OpponentData> previousOpponent in previousOpponents)
+                {
+                    if (previousOpponent.Value.DriverRawName == opponentDriverName)
+                    {
+                        return previousOpponent.Value;
+                    }
+                }
+                return null;
+            }
         }
     }
 }
