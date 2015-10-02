@@ -158,3 +158,6 @@ CrustyA:crusty
 [PCDC]TheSeeD.be:the seed
 [OSG] Wunde:wunde
 [OSG] Wursthorst:wursthorst
+Kran:kran
+Cockpit:cockpit
+Sonique:sonique
