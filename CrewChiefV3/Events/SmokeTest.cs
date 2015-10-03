@@ -38,13 +38,13 @@ namespace CrewChiefV3.Events
         override protected void triggerInternal(GameStateData previousGameState, GameStateData currentGameState)
         {
             audioPlayer.queueClip(new QueuedMessage(folderTest, 0, this));
-            /*
-            List<String> driverNames = new List<string>();
-            OpponentData opponent1 = makeTempDriver("ozzy lot", driverNames);
-            OpponentData opponent2 = makeTempDriver("racing fool", driverNames);
-            OpponentData opponent3 = makeTempDriver("wursthorst", driverNames);
-            OpponentData opponent4 = makeTempDriver("el diablo", driverNames);
-            OpponentData opponent5 = makeTempDriver("evil one", driverNames);
+            
+            /*List<String> driverNames = new List<string>();
+            OpponentData opponent1 = makeTempDriver("bithrey", driverNames);
+            OpponentData opponent2 = makeTempDriver("bendy bayer", driverNames);
+            OpponentData opponent3 = makeTempDriver("feldsieper", driverNames);
+            OpponentData opponent4 = makeTempDriver("milli banter", driverNames);
+            OpponentData opponent5 = makeTempDriver("sanque", driverNames);
             audioPlayer.cacheDriverNames(driverNames);
             
             audioPlayer.queueClip(new QueuedMessage("Timings/gap_in_front",
@@ -54,17 +54,17 @@ namespace CrewChiefV3.Events
 
             audioPlayer.queueClip(new QueuedMessage("Timings/gap_in_front2",
                                     MessageContents(Timings.folderYoureReeling, opponent5,
-                                    Timings.folderInTheGapIsNow, TimeSpan.FromSeconds(1.3), Timings.folderSeconds),
-                                    MessageContents(Timings.folderGapInFrontDecreasing, TimeSpan.FromSeconds(1.3), Timings.folderSeconds), 0, this));
+                                    Timings.folderInTheGapIsNow, TimeSpan.FromSeconds(0.4), Timings.folderSeconds),
+                                    MessageContents(Timings.folderGapInFrontDecreasing, TimeSpan.FromSeconds(0.4), Timings.folderSeconds), 0, this));
 
             audioPlayer.queueClip(new QueuedMessage("Timings/gap_behind",
                                    MessageContents(Timings.folderTheGapTo, opponent3,
                                    Timings.folderBehindIsIncreasing, TimeSpan.FromSeconds(1.3), Timings.folderSeconds),
-                                   MessageContents(Timings.folderGapBehindIncreasing, TimeSpan.FromSeconds(1.3), Timings.folderSeconds), 0, this));
+                                   MessageContents(Timings.folderGapBehindIncreasing, TimeSpan.FromSeconds(2.9), Timings.folderSeconds), 0, this));
 
             audioPlayer.queueClip(new QueuedMessage("Timings/gap_behind2",
-                                    MessageContents(opponent4, Timings.folderIsReelingYouIn, TimeSpan.FromSeconds(1.3), Timings.folderSeconds),
-                                    MessageContents(Timings.folderGapBehindDecreasing, TimeSpan.FromSeconds(1.3), Timings.folderSeconds), 0, this));
+                                    MessageContents(opponent4, Timings.folderIsReelingYouIn, TimeSpan.FromSeconds(7), Timings.folderSeconds),
+                                    MessageContents(Timings.folderGapBehindDecreasing, TimeSpan.FromSeconds(7), Timings.folderSeconds), 0, this));
       
             audioPlayer.queueClip(new QueuedMessage("opponents_1",
                                     MessageContents(opponent1, Opponents.folderAheadIsPitting), 0, this));
