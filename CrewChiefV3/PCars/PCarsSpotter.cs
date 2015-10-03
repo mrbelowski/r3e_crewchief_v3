@@ -169,7 +169,9 @@ namespace CrewChiefV3.PCars
             if (enabled && currentState.mParticipantData.Count() > 1 && currentState.mViewedParticipantIndex >= 0)
             {
                 pCarsAPIParticipantStruct playerData = currentState.mParticipantData[currentState.mViewedParticipantIndex];
-                if (playerData.mWorldPosition[0] == 0 || playerData.mWorldPosition[2] == 0 || playerData.mWorldPosition[0] == -1 || playerData.mWorldPosition[2] == -1)
+                float playerX = playerData.mWorldPosition[0];
+                float playerY = playerData.mWorldPosition[2];
+                if (playerX == 0 || playerY == 0 || playerX == -1 || playerY == -1)
                 {
                     return;
                 }
@@ -189,15 +191,26 @@ namespace CrewChiefV3.PCars
                         if (i != currentState.mViewedParticipantIndex)
                         {
                             pCarsAPIParticipantStruct opponentData = currentState.mParticipantData[i];
-                            pCarsAPIParticipantStruct previousOpponentData = lastState.mParticipantData[PCarsGameStateMapper.getPreviousOpponentIndex(lastState.mParticipantData, i, opponentData.mName)];
+                            int prevOpponentIndex = PCarsGameStateMapper.getPreviousOpponentIndex(lastState.mParticipantData, i, opponentData.mName);
+                            float previousOpponentX = 0;
+                            float previousOpponentY = 0;
+                            if (prevOpponentIndex != -1)
+                            {
+                                pCarsAPIParticipantStruct previousOpponentData = lastState.mParticipantData[prevOpponentIndex];
+                                previousOpponentX = previousOpponentData.mWorldPosition[0];
+                                previousOpponentY = previousOpponentData.mWorldPosition[2];
+                            }
+                            float currentOpponentX = opponentData.mWorldPosition[0];
+                            float currentOpponentY = opponentData.mWorldPosition[2];
+
                             if (opponentData.mIsActive) {
-                                if (opponentData.mWorldPosition[0] != 0 && opponentData.mWorldPosition[2] != 0 &&
-                                        opponentData.mWorldPosition[0] != -1 && opponentData.mWorldPosition[2] != -1 &&
-                                    previousOpponentData.mWorldPosition[0] != 0 && previousOpponentData.mWorldPosition[2] != 0 &&
-                                        previousOpponentData.mWorldPosition[0] != -1 && previousOpponentData.mWorldPosition[2] != -1 &&
-                                    opponentIsRacing(opponentData, previousOpponentData, playerData, previousPlayerData))
+                                if (currentOpponentX != 0 && currentOpponentY != 0 &&
+                                        currentOpponentX != -1 && currentOpponentY != -1 &&
+                                    previousOpponentX != 0 && previousOpponentY != 0 &&
+                                        previousOpponentX != -1 && previousOpponentY != -1 &&
+                                    opponentIsRacing(currentOpponentX, currentOpponentY, previousOpponentX, previousOpponentY, playerData, previousPlayerData))
                                 {
-                                    Side side = getSide(currentState.mOrientation[1], playerData.mWorldPosition, opponentData.mWorldPosition);
+                                    Side side = getSide(currentState.mOrientation[1], playerX, playerY, currentOpponentX, currentOpponentY);
                                     if (side == Side.left)
                                     {
                                         carsOnLeft++;
@@ -295,17 +308,17 @@ namespace CrewChiefV3.PCars
             }
         }
 
-        private Boolean opponentIsRacing(pCarsAPIParticipantStruct opponentData, pCarsAPIParticipantStruct previousOpponentData,
+        private Boolean opponentIsRacing(float currentOpponentX, float currentOpponentY, float previousOpponentX, float previousOpponentY,
             pCarsAPIParticipantStruct playerData, pCarsAPIParticipantStruct previousPlayerData)
         {
-            float deltaX = Math.Abs(opponentData.mWorldPosition[0] - playerData.mWorldPosition[0]);
-            float deltaY = Math.Abs(opponentData.mWorldPosition[2] - playerData.mWorldPosition[2]);
+            float deltaX = Math.Abs(currentOpponentX - playerData.mWorldPosition[0]);
+            float deltaY = Math.Abs(currentOpponentY - playerData.mWorldPosition[2]);
             if (deltaX > trackWidth || deltaY > trackWidth)
             {
                 return false;
             }
-            float opponentVelocityX = Math.Abs(opponentData.mWorldPosition[0] - previousOpponentData.mWorldPosition[0]) / intervalSeconds;
-            float opponentVelocityY = Math.Abs(opponentData.mWorldPosition[2] - previousOpponentData.mWorldPosition[2]) / intervalSeconds;
+            float opponentVelocityX = Math.Abs(currentOpponentX - previousOpponentX) / intervalSeconds;
+            float opponentVelocityY = Math.Abs(currentOpponentY - previousOpponentY) / intervalSeconds;
             // hard code this - if the opponent car is going < 4m/s on both axis we're not interested
             if (opponentVelocityX < 4 && opponentVelocityY < 4)
             {
@@ -569,10 +582,10 @@ namespace CrewChiefV3.PCars
             }
         }
 
-        private Side getSide(float playerRotation, float[] playerWorldPosition, float[] opponentWorldPosition)
+        private Side getSide(float playerRotation, float playerX, float playerY, float oppponentX, float opponentY)
         {
-            float rawXCoordinate = opponentWorldPosition[0] - playerWorldPosition[0];
-            float rawYCoordinate = opponentWorldPosition[2] - playerWorldPosition[2];
+            float rawXCoordinate = oppponentX - playerX;
+            float rawYCoordinate = opponentY - playerY;
             if (playerRotation < 0)
             {
                 playerRotation = (float)(2 * Math.PI) + playerRotation;
