@@ -259,7 +259,14 @@ namespace CrewChiefV3
                     currentSpotterState = gameDataReader.ReadGameData();
                     if (lastSpotterState != null && currentSpotterState != null)
                     {
-                        spotter.trigger(lastSpotterState, currentSpotterState);
+                        try
+                        {
+                            spotter.trigger(lastSpotterState, currentSpotterState);
+                        }
+                        catch (Exception e)
+                        {
+                            Console.WriteLine("Spotter failed: " + e.StackTrace);
+                        }
                     }
                     lastSpotterState = currentSpotterState;
                     nextRunTime = DateTime.Now.Add(spotterInterval);
