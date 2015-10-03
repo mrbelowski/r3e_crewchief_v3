@@ -175,7 +175,7 @@ namespace CrewChiefV3.PCars
                 {
                     return;
                 }
-                pCarsAPIParticipantStruct previousPlayerData = lastState.mParticipantData[currentState.mViewedParticipantIndex];
+                pCarsAPIParticipantStruct previousPlayerData = lastState.mParticipantData[lastState.mViewedParticipantIndex];
 
                 if (currentSpeed > minSpeedForSpotterToOperate && currentState.mPitMode == (uint) ePitMode.PIT_MODE_NONE)
                 {
