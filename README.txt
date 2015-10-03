@@ -2,6 +2,8 @@ CrewChief version 3.
 
 Changelog
 ---------
+Version 3.3.1: Added better error checking to spotter; made locking detection less sensitive. No new sound pack for this version.
+
 Version 3.3.0: Added separate damage thresholds for different car components; fixed fuel usage tracking in RaceRoom; disable pit detection on rolling starts; added first cut of brake locking and wheel spinning detection; added a load of driver names for online races. The version requires a new sound pack.
 
 Version 3.2.2: Spotter additions to disregard cars which aren't moving, or who's closing speed is too high; fixes to rolling starts; added distinct car classes each with their own brake and engine temp thresholds; added temp thresholds for different tyre types; added some more race start sounds.
