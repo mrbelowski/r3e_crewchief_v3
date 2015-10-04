@@ -277,7 +277,8 @@ namespace CrewChiefV3.Events
                 {
                     if (currentGameState.SessionData.SessionType == SessionType.Race && enableTyreWearWarnings && !reportedTyreWearForCurrentPitEntry)
                     {
-                        reportCurrentTyreConditionStatus(false, true);
+                        //reportCurrentTyreConditionStatus(false, true);
+                        // sounds shit...
                         reportedTyreWearForCurrentPitEntry = true;
                     }
                 }
@@ -338,7 +339,7 @@ namespace CrewChiefV3.Events
             if (playImmediately)
             {
                 audioPlayer.openChannel();
-                audioPlayer.playClipImmediately(new QueuedMessage("tyre_temps", messageContents, 0, this));
+                audioPlayer.playClipImmediately(new QueuedMessage("tyre_temps", messageContents, 0, null));
                 audioPlayer.closeChannel();
             }
             else if (lastTyreTempMessage == null || !messagesHaveSameContent(lastTyreTempMessage, messageContents))
@@ -362,7 +363,7 @@ namespace CrewChiefV3.Events
             if (playImmediately)
             {
                 audioPlayer.openChannel();
-                audioPlayer.playClipImmediately(new QueuedMessage("brake_temps", messageContents, 0, this));
+                audioPlayer.playClipImmediately(new QueuedMessage("brake_temps", messageContents, 0, null));
                 audioPlayer.closeChannel();
             }
             else if (lastBrakeTempMessage == null || !messagesHaveSameContent(lastBrakeTempMessage, messageContents))
@@ -386,7 +387,7 @@ namespace CrewChiefV3.Events
             if (playImmediately)
             {
                 audioPlayer.openChannel();
-                audioPlayer.playClipImmediately(new QueuedMessage("tyre_condition", messageContents, 0, this));
+                audioPlayer.playClipImmediately(new QueuedMessage("tyre_condition", messageContents, 0, null));
                 audioPlayer.closeChannel();
             }
             else if (playEvenIfUnchanged || (lastTyreConditionMessage != null && !messagesHaveSameContent(lastTyreConditionMessage, messageContents)))
@@ -403,14 +404,14 @@ namespace CrewChiefV3.Events
                 if (minutesRemainingOnTheseTyres > 59 || minutesRemainingOnTheseTyres > (timeInSession - timeElapsed) / 60)
                 {
                     audioPlayer.openChannel();
-                    audioPlayer.playClipImmediately(new QueuedMessage(folderGoodWear, 0, this));
+                    audioPlayer.playClipImmediately(new QueuedMessage(folderGoodWear, 0, null));
                     audioPlayer.closeChannel();
                     return;
                 }
                 else if (minutesRemainingOnTheseTyres < 1)
                 {
                     audioPlayer.openChannel();
-                    audioPlayer.playClipImmediately(new QueuedMessage(folderKnackeredAllRound, 0, this));
+                    audioPlayer.playClipImmediately(new QueuedMessage(folderKnackeredAllRound, 0, null));
                     audioPlayer.closeChannel();
                     return;
                 }
@@ -419,7 +420,7 @@ namespace CrewChiefV3.Events
                         minutesRemainingOnTheseTyres <= (timeInSession - timeElapsed) / 60)
             {
                 QueuedMessage queuedMessage = new QueuedMessage("minutes_on_current_tyres",
-                    MessageContents(folderMinutesOnCurrentTyresIntro, QueuedMessage.folderNameNumbersStub + minutesRemainingOnTheseTyres, folderMinutesOnCurrentTyresOutro), 0, this);
+                    MessageContents(folderMinutesOnCurrentTyresIntro, QueuedMessage.folderNameNumbersStub + minutesRemainingOnTheseTyres, folderMinutesOnCurrentTyresOutro), 0, null);
                 if (immediate)
                 {
                     audioPlayer.openChannel();
@@ -434,7 +435,7 @@ namespace CrewChiefV3.Events
             else if (immediate)
             {
                 audioPlayer.openChannel();
-                audioPlayer.playClipImmediately(new QueuedMessage(AudioPlayer.folderNoData, 0, this));
+                audioPlayer.playClipImmediately(new QueuedMessage(AudioPlayer.folderNoData, 0, null));
                 audioPlayer.closeChannel();
             }
         }
@@ -446,14 +447,14 @@ namespace CrewChiefV3.Events
                 if (lapsRemainingOnTheseTyres > 59 || lapsRemainingOnTheseTyres > lapsInSession - completedLaps)
                 {
                     audioPlayer.openChannel();
-                    audioPlayer.playClipImmediately(new QueuedMessage(folderGoodWear, 0, this));
+                    audioPlayer.playClipImmediately(new QueuedMessage(folderGoodWear, 0, null));
                     audioPlayer.closeChannel();
                     return;
                 }
                 else if (lapsRemainingOnTheseTyres < 1)
                 {
                     audioPlayer.openChannel();
-                    audioPlayer.playClipImmediately(new QueuedMessage(folderKnackeredAllRound, 0, this));
+                    audioPlayer.playClipImmediately(new QueuedMessage(folderKnackeredAllRound, 0, null));
                     audioPlayer.closeChannel();
                     return;
                 }
@@ -462,7 +463,7 @@ namespace CrewChiefV3.Events
                         lapsRemainingOnTheseTyres <= lapsInSession - completedLaps)
             {
                 QueuedMessage queuedMessage = new QueuedMessage("laps_on_current_tyres",
-                    MessageContents(folderLapsOnCurrentTyresIntro, QueuedMessage.folderNameNumbersStub + lapsRemainingOnTheseTyres, folderLapsOnCurrentTyresOutro), 0, this);
+                    MessageContents(folderLapsOnCurrentTyresIntro, QueuedMessage.folderNameNumbersStub + lapsRemainingOnTheseTyres, folderLapsOnCurrentTyresOutro), 0, null);
                 if (immediate)
                 {
                     audioPlayer.openChannel();
@@ -477,7 +478,7 @@ namespace CrewChiefV3.Events
             else if (immediate)
             {
                 audioPlayer.openChannel();
-                audioPlayer.playClipImmediately(new QueuedMessage(AudioPlayer.folderNoData, 0, this));
+                audioPlayer.playClipImmediately(new QueuedMessage(AudioPlayer.folderNoData, 0, null));
                 audioPlayer.closeChannel();
             }
         }
@@ -504,7 +505,7 @@ namespace CrewChiefV3.Events
 
         public override void respond(string voiceMessage)
         {
-            if (voiceMessage.Contains(SpeechRecogniser.TYRE_TEMPS))
+            if (voiceMessage.Contains(SpeechRecogniser.TYRE_TEMPS) || voiceMessage.Contains(SpeechRecogniser.TYRE_TEMPERATURES))
             {
                 if (currentTyreTempStatus != null)
                 {
@@ -513,11 +514,11 @@ namespace CrewChiefV3.Events
                 else
                 {
                     audioPlayer.openChannel();
-                    audioPlayer.playClipImmediately(new QueuedMessage(AudioPlayer.folderNoData, 0, this));
+                    audioPlayer.playClipImmediately(new QueuedMessage(AudioPlayer.folderNoData, 0, null));
                     audioPlayer.closeChannel();
                 }
-            } 
-            else if (voiceMessage.Contains(SpeechRecogniser.BRAKE_TEMPS))
+            }
+            else if (voiceMessage.Contains(SpeechRecogniser.BRAKE_TEMPS) || voiceMessage.Contains(SpeechRecogniser.BRAKE_TEMPERATURES))
             {
                 if (currentBrakeTempStatus != null)
                 {
@@ -526,7 +527,7 @@ namespace CrewChiefV3.Events
                 else
                 {
                     audioPlayer.openChannel();
-                    audioPlayer.playClipImmediately(new QueuedMessage(AudioPlayer.folderNoData, 0, this));
+                    audioPlayer.playClipImmediately(new QueuedMessage(AudioPlayer.folderNoData, 0, null));
                     audioPlayer.closeChannel();
                 }
             }
@@ -539,7 +540,7 @@ namespace CrewChiefV3.Events
                 else
                 {
                     audioPlayer.openChannel();
-                    audioPlayer.playClipImmediately(new QueuedMessage(AudioPlayer.folderNoData, 0, this));
+                    audioPlayer.playClipImmediately(new QueuedMessage(AudioPlayer.folderNoData, 0, null));
                     audioPlayer.closeChannel();
                 }
             }

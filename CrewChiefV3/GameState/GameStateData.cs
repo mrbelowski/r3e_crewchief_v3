@@ -122,7 +122,7 @@ namespace CrewChiefV3.GameState
         public CornerData BrakeDamageStatus = new CornerData();
     }
 
-    public class SessionData
+    public class SessionData    
     {
         public Boolean IsDisqualified = false;
 

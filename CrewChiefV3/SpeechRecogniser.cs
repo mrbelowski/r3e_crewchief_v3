@@ -19,7 +19,9 @@ namespace CrewChiefV3
         public static String FUEL = "fuel";
         public static String TYRE_WEAR = "tyre wear";
         public static String TYRE_TEMPS = "tyre temps";
+        public static String TYRE_TEMPERATURES = "tyre temperatures";
         public static String BRAKE_TEMPS = "brake temps";
+        public static String BRAKE_TEMPERATURES = "brake temperatures";
         public static String AERO = "aero";
         public static String BODY_WORK = "body work";
         public static String TRANSMISSION = "transmission";
@@ -27,6 +29,7 @@ namespace CrewChiefV3
         public static String SUSPENSION = "suspension";
         public static String BRAKES = "brakes";
         public static String ENGINE_TEMPS = "engine temps";
+        public static String ENGINE_TEMPERATURES = "engine temperatures";
         public static String GAP_IN_FRONT = "gap in front";
         public static String GAP_AHEAD = "gap ahead";
         public static String GAP_BEHIND = "gap behind";
@@ -41,11 +44,15 @@ namespace CrewChiefV3
         private static String I_KNOW_WHAT_IM_DOING = "I know what I'm doing";
         private static String LEAVE_ME_ALONE = "leave me alone";
         private static String DONT_TELL_ME_THE_GAPS = "don't tell me the gaps";
+        private static String DONT_TELL_ME_THE_DELTAS = "don't tell me the deltas";
+        private static String DONT_GIVE_ME_THE_DELTAS = "don't give me the deltas";
 
         private static String KEEP_ME_UPDATED = "keep me updated";
         private static String KEEP_ME_INFORMED = "keep me informed";
         private static String KEEP_ME_POSTED = "keep me posted";
         private static String TELL_ME_THE_GAPS = "tell me the gaps";
+        private static String TELL_ME_THE_DELTAS = "tell me the deltas";
+        private static String GIVE_ME_THE_DELTAS = "give me the deltas";
 
         private static String HOW_LONGS_LEFT = "how long's left";
         private static String HOW_MANY_LAPS_LEFT = "how many laps left";
@@ -134,11 +141,14 @@ namespace CrewChiefV3
             }
             try
             {
+                Choices info0 = new Choices();
+                info0.Add(new string[] { "how's my", "how is my" });
                 Choices info1 = new Choices();
-                info1.Add(new string[] { FUEL, TYRE_WEAR, TYRE_TEMPS, BRAKE_TEMPS, AERO, BODY_WORK, TRANSMISSION, ENGINE, SUSPENSION, BRAKES, PACE, ENGINE_TEMPS });
+                info1.Add(new string[] { FUEL, TYRE_WEAR, AERO, BODY_WORK, TRANSMISSION, ENGINE, SUSPENSION, PACE, 
+                    TYRE_TEMPS, TYRE_TEMPERATURES, BRAKE_TEMPS, BRAKE_TEMPERATURES, BRAKES, ENGINE_TEMPS, ENGINE_TEMPERATURES });
                 GrammarBuilder gb1 = new GrammarBuilder();
                 gb1.Culture = cultureInfo;
-                gb1.Append("how is my");
+                gb1.Append(info0);
                 gb1.Append(info1);
                 Grammar g1 = new Grammar(gb1);
 
@@ -151,14 +161,14 @@ namespace CrewChiefV3
                 Grammar g2 = new Grammar(gb2);
 
                 Choices info3 = new Choices();
-                info3.Add(new string[] { KEEP_QUIET, SHUT_UP, I_KNOW_WHAT_IM_DOING, LEAVE_ME_ALONE, DONT_TELL_ME_THE_GAPS });
+                info3.Add(new string[] { KEEP_QUIET, SHUT_UP, I_KNOW_WHAT_IM_DOING, LEAVE_ME_ALONE, DONT_TELL_ME_THE_GAPS, DONT_GIVE_ME_THE_DELTAS, DONT_TELL_ME_THE_GAPS });
                 GrammarBuilder gb3 = new GrammarBuilder();
                 gb3.Culture = cultureInfo;
                 gb3.Append(info3);
                 Grammar g3 = new Grammar(gb3);
 
                 Choices info4 = new Choices();
-                info4.Add(new string[] { KEEP_ME_INFORMED, KEEP_ME_POSTED, KEEP_ME_UPDATED, TELL_ME_THE_GAPS });
+                info4.Add(new string[] { KEEP_ME_INFORMED, KEEP_ME_POSTED, KEEP_ME_UPDATED, TELL_ME_THE_GAPS, GIVE_ME_THE_DELTAS, TELL_ME_THE_DELTAS });
                 GrammarBuilder gb4 = new GrammarBuilder();
                 gb4.Culture = cultureInfo;
                 gb4.Append(info4);
@@ -192,6 +202,14 @@ namespace CrewChiefV3
                 gb8.Append(info8);
                 Grammar g8 = new Grammar(gb8);
 
+                Choices info9 = new Choices();
+                info1.Add(new string[] { TYRE_TEMPS, TYRE_TEMPERATURES, BRAKE_TEMPS, BRAKE_TEMPERATURES, BRAKES, ENGINE_TEMPS, ENGINE_TEMPERATURES });
+                GrammarBuilder gb9 = new GrammarBuilder();
+                gb9.Culture = cultureInfo;
+                gb9.Append("how are my");
+                gb9.Append(info1);
+                Grammar g9 = new Grammar(gb9);
+
                 sre.LoadGrammar(g1);
                 sre.LoadGrammar(g2);
                 sre.LoadGrammar(g3);
@@ -200,6 +218,7 @@ namespace CrewChiefV3
                 sre.LoadGrammar(g6);
                 sre.LoadGrammar(g7);
                 sre.LoadGrammar(g8);
+                sre.LoadGrammar(g9);
             }
             catch (Exception e)
             {
@@ -324,11 +343,13 @@ namespace CrewChiefV3
             {
                 crewChief.enableKeepQuietMode();
             }
-            else if (recognisedSpeech.Contains(DONT_TELL_ME_THE_GAPS))
+            else if (recognisedSpeech.Contains(DONT_TELL_ME_THE_GAPS) || recognisedSpeech.Contains(DONT_TELL_ME_THE_DELTAS) ||
+                recognisedSpeech.Contains(DONT_GIVE_ME_THE_DELTAS))
             {
                 crewChief.disableDeltasMode();
             }
-            else if (recognisedSpeech.Contains(TELL_ME_THE_GAPS))
+            else if (recognisedSpeech.Contains(TELL_ME_THE_GAPS) || recognisedSpeech.Contains(GIVE_ME_THE_DELTAS) ||
+                recognisedSpeech.Contains(TELL_ME_THE_DELTAS))
             {
                 crewChief.enableDeltasMode();
             }
@@ -369,8 +390,10 @@ namespace CrewChiefV3
                 return CrewChief.getEvent("LapTimes");
             }
             else if (recognisedSpeech.Contains(TYRE_TEMPS) ||
+                recognisedSpeech.Contains(TYRE_TEMPERATURES) || 
                 recognisedSpeech.Contains(TYRE_WEAR) ||
-                recognisedSpeech.Contains(BRAKE_TEMPS))
+                recognisedSpeech.Contains(BRAKE_TEMPS) ||
+                recognisedSpeech.Contains(BRAKE_TEMPERATURES))
             {
                 return CrewChief.getEvent("TyreMonitor");
             }
@@ -394,7 +417,7 @@ namespace CrewChiefV3
             {
                 return CrewChief.getEvent("MandatoryPitStops");
             }
-            else if (recognisedSpeech.Contains(ENGINE_TEMPS))
+            else if (recognisedSpeech.Contains(ENGINE_TEMPS) || recognisedSpeech.Contains(ENGINE_TEMPERATURES))
             {
                 return CrewChief.getEvent("EngineMonitor");
             }

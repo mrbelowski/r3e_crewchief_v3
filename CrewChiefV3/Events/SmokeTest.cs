@@ -40,11 +40,11 @@ namespace CrewChiefV3.Events
             audioPlayer.queueClip(new QueuedMessage(folderTest, 0, this));
             
             /*List<String> driverNames = new List<string>();
-            OpponentData opponent1 = makeTempDriver("bithrey", driverNames);
-            OpponentData opponent2 = makeTempDriver("bendy bayer", driverNames);
-            OpponentData opponent3 = makeTempDriver("feldsieper", driverNames);
-            OpponentData opponent4 = makeTempDriver("milli banter", driverNames);
-            OpponentData opponent5 = makeTempDriver("sanque", driverNames);
+            OpponentData opponent1 = makeTempDriver("dank", driverNames);
+            OpponentData opponent2 = makeTempDriver("kabob", driverNames);
+            OpponentData opponent3 = makeTempDriver("sasquatch", driverNames);
+            OpponentData opponent4 = makeTempDriver("squirrel", driverNames);
+            OpponentData opponent5 = makeTempDriver("noodles", driverNames);
             audioPlayer.cacheDriverNames(driverNames);
             
             audioPlayer.queueClip(new QueuedMessage("Timings/gap_in_front",

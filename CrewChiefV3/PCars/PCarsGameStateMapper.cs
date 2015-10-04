@@ -16,6 +16,14 @@ namespace CrewChiefV3.PCars
 {
     class PCarsGameStateMapper : GameStateMapper
     {
+        // pit detection parameters
+        float pitLimiterSpeedVariance = 2;
+        // the speeds are actual speed, rather than speed in one direction
+        float pitLimiterMinSpeed = 15;   // m/s
+        float pitLimiterMaxSpeed = 28;  // m/s
+        int updatesPerSecond = CrewChief._timeInterval == TimeSpan.Zero ? 10 : 1000 / CrewChief._timeInterval.Milliseconds;
+        int pitDetectionChunksToCheck = 3;
+
         Dictionary<int, DateTime> limiterCheckSchedule = new Dictionary<int, DateTime>();
 
         private class LocationAndTime
@@ -1091,40 +1099,30 @@ namespace CrewChiefV3.PCars
 
         private Boolean IsOpponentOnPitLimiter(int opponentId)
         {
-            float limiterSpeedVariance = 2;
-            float limiterMinSpeed = 7;
-            float limiterMaxSpeed = 30;
-            int updatesPerSecond = CrewChief._timeInterval == TimeSpan.Zero ? 10 : 1000 / CrewChief._timeInterval.Milliseconds;
-            int chunksToCheck = 3;
             int chunkSize = updatesPerSecond;
             Boolean onLimiter = false;
-            if (OpponentWorldPositions.ContainsKey(opponentId) && OpponentWorldPositions[opponentId].Count > chunksToCheck * chunkSize)
+            if (OpponentWorldPositions.ContainsKey(opponentId) && OpponentWorldPositions[opponentId].Count > pitDetectionChunksToCheck * chunkSize)
             {
-                float initialX = 0;
-                float initialY = 0;
+                float initialSpeed = 0;
                 onLimiter = true;
-                for (int i = 1; i <= chunksToCheck; i++)
+                for (int i = 1; i <= pitDetectionChunksToCheck; i++)
                 {
                     List<LocationAndTime> locationsForChunk = OpponentWorldPositions[opponentId].GetRange(OpponentWorldPositions[opponentId].Count - (i * chunkSize), chunkSize);
-                    float meanXSpeed = 0;
-                    float meanYSpeed = 0;
+                    float meanSpeed = 0;
                     int count = 0;
                     for (int j = 1; j < chunkSize; j++) 
                     {
                         count++;
                         float t = (float)TimeSpan.FromTicks(locationsForChunk[j].ticks - locationsForChunk[j - 1].ticks).TotalSeconds;
-                        meanXSpeed += Math.Abs(locationsForChunk[j].x - locationsForChunk[j - 1].x) / t; 
-                        meanYSpeed += Math.Abs(locationsForChunk[j].y - locationsForChunk[j - 1].y) / t;
+                        meanSpeed = meanSpeed + 
+                            (float)Math.Sqrt(Math.Pow(locationsForChunk[j].x - locationsForChunk[j - 1].x, 2) + Math.Pow(locationsForChunk[j].y - locationsForChunk[j - 1].y, 2)) / t;
                     }
-                    meanXSpeed = meanXSpeed / (chunkSize - 1);
-                    meanYSpeed = meanYSpeed / (chunkSize - 1);
+                    meanSpeed = meanSpeed / (chunkSize - 1);                  
                     if (i == 1)
                     {
-                        initialX = meanXSpeed;
-                        initialY = meanYSpeed;
+                        initialSpeed = meanSpeed;
                     }
-                    if (meanXSpeed > limiterMaxSpeed || meanYSpeed > limiterMaxSpeed || (meanXSpeed < limiterMinSpeed && meanYSpeed < limiterMinSpeed) ||
-                            Math.Abs(meanXSpeed - initialX) > limiterSpeedVariance || Math.Abs(meanYSpeed - initialY) > limiterSpeedVariance)
+                    if (meanSpeed > pitLimiterMaxSpeed || meanSpeed < pitLimiterMinSpeed || Math.Abs(meanSpeed - initialSpeed) > pitLimiterSpeedVariance)
                     {
                         onLimiter = false;
                         break;

@@ -82,33 +82,40 @@ namespace CrewChiefV3.Events
             {
                 previousPosition = currentPosition;
             }
-            if (currentGameState.SessionData.SessionType == SessionType.Race && enableRaceStartMessages && !playedRaceStartMessage && 
-                currentGameState.SessionData.SessionRunningTime > startMessageTime)
+            if (currentGameState.SessionData.SessionPhase == SessionPhase.Green)
             {
-                playedRaceStartMessage = true;
-                Console.WriteLine("Race start message... isLast = " + isLast +
-                    " session start pos = " + currentGameState.SessionData.SessionStartPosition + " current pos = " + currentGameState.SessionData.Position);
-                if (isLast || currentGameState.SessionData.SessionStartPosition + 1 < currentGameState.SessionData.Position)
+                if (currentGameState.SessionData.SessionType == SessionType.Race &&
+                    enableRaceStartMessages && !playedRaceStartMessage &&
+                    currentGameState.SessionData.CompletedLaps == 0 && currentGameState.SessionData.LapTimeCurrent > startMessageTime)
                 {
-                    audioPlayer.queueClip(new QueuedMessage(folderBadStart, 0, this));
-                }
-                else if (currentGameState.SessionData.Position == 1 || currentGameState.SessionData.SessionStartPosition >= currentGameState.SessionData.Position)
-                {
-                    audioPlayer.queueClip(new QueuedMessage(folderGoodStart, 0, this));
-                }
-                else if (currentGameState.SessionData.SessionStartPosition + 5 < currentGameState.SessionData.Position)
-                {
-                    audioPlayer.queueClip(new QueuedMessage(folderTerribleStart, 0, this));
-                }                
-                else if (new Random().NextDouble() > 0.6)
-                {
-                    // only play the OK start message sometimes
-                    audioPlayer.queueClip(new QueuedMessage(folderOKStart, 0, this));
+                    playedRaceStartMessage = true;
+                    Console.WriteLine("Race start message... isLast = " + isLast +
+                        " session start pos = " + currentGameState.SessionData.SessionStartPosition + " current pos = " + currentGameState.SessionData.Position);
+                    if (isLast || currentGameState.SessionData.SessionStartPosition + 1 < currentGameState.SessionData.Position)
+                    {
+                        audioPlayer.queueClip(new QueuedMessage(folderBadStart, 0, this));
+                    }
+                    else if (currentGameState.SessionData.Position == 1 || currentGameState.SessionData.SessionStartPosition >= currentGameState.SessionData.Position)
+                    {
+                        audioPlayer.queueClip(new QueuedMessage(folderGoodStart, 0, this));
+                    }
+                    else if (currentGameState.SessionData.SessionStartPosition + 5 < currentGameState.SessionData.Position)
+                    {
+                        audioPlayer.queueClip(new QueuedMessage(folderTerribleStart, 0, this));
+                    }
+                    else if (new Random().NextDouble() > 0.6)
+                    {
+                        // only play the OK start message sometimes
+                        audioPlayer.queueClip(new QueuedMessage(folderOKStart, 0, this));
+                    }
                 }
             }
             if (enablePositionMessages && currentGameState.SessionData.IsNewLap)
             {
-                playedRaceStartMessage = true;
+                if (currentGameState.SessionData.CompletedLaps > 0)
+                {
+                    playedRaceStartMessage = true;
+                }
                 if (isLast)
                 {
                     numberOfLapsInLastPlace++;
