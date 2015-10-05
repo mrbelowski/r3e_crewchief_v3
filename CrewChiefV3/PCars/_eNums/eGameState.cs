@@ -20,6 +20,10 @@ namespace CrewChiefV3.PCars
         GAME_INGAME_PLAYING,
         [Description("Game Paused")]
         GAME_INGAME_PAUSED,
+        [Description("Undefined")]
+        GAME_UNDEFINED,
+        [Description("Viewing replay")]
+        GAME_VIEWING_REPLAY,
         //-------------
         GAME_MAX
     }

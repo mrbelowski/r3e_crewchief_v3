@@ -142,10 +142,21 @@ namespace CrewChiefV3.PCars
         {
             if (paused)
             {
+                audioPlayer.closeChannel();
+                return;
+            }
+            pCarsAPIStruct currentState = ((CrewChiefV3.PCars.PCarsSharedMemoryReader.PCarsStructWrapper)currentStateObj).data;
+
+            // game state is 3 for paused, 5 for replay. No idea what 4 is...
+            if (currentState.mGameState == (uint)eGameState.GAME_FRONT_END ||
+                (currentState.mGameState == (uint)eGameState.GAME_INGAME_PAUSED && !System.Diagnostics.Debugger.IsAttached) ||
+                currentState.mGameState == (uint)eGameState.GAME_VIEWING_REPLAY || currentState.mGameState == (uint)eGameState.GAME_EXITED)
+            {
+                // don't ignore the paused game updates if we're in debug mode
+                audioPlayer.closeChannel();
                 return;
             }
             pCarsAPIStruct lastState = ((CrewChiefV3.PCars.PCarsSharedMemoryReader.PCarsStructWrapper)lastStateObj).data;
-            pCarsAPIStruct currentState = ((CrewChiefV3.PCars.PCarsSharedMemoryReader.PCarsStructWrapper)currentStateObj).data;
             DateTime now = DateTime.Now;
 
             if (currentState.mRaceState == (int)eRaceState.RACESTATE_RACING &&

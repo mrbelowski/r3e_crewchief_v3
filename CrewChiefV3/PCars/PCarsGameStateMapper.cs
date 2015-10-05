@@ -146,6 +146,16 @@ namespace CrewChiefV3.PCars
             pCarsAPIStruct shared = ((CrewChiefV3.PCars.PCarsSharedMemoryReader.PCarsStructWrapper)memoryMappedFileStruct).data;
             long ticks = ((CrewChiefV3.PCars.PCarsSharedMemoryReader.PCarsStructWrapper)memoryMappedFileStruct).ticksWhenRead;
             
+            
+            // game state is 3 for paused, 5 for replay. No idea what 4 is...
+            if (shared.mGameState == (uint)eGameState.GAME_FRONT_END ||
+                (shared.mGameState == (uint)eGameState.GAME_INGAME_PAUSED && !System.Diagnostics.Debugger.IsAttached) || 
+                shared.mGameState == (uint)eGameState.GAME_VIEWING_REPLAY || shared.mGameState == (uint)eGameState.GAME_EXITED)
+            {
+                // don't ignore the paused game updates if we're in debug mode
+                return previousGameState;
+            }
+
             GameStateData currentGameState = new GameStateData(ticks);
 
             if (shared.mNumParticipants < 1 || 
