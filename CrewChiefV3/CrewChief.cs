@@ -276,7 +276,7 @@ namespace CrewChiefV3
             spotterIsRunning = false;
         }
 
-        public Boolean Run(String filenameToRun, Boolean dumpToFile)
+        public Boolean Run(String filenameToRun, int interval, Boolean dumpToFile)
         {
             loadDataFromFile = false;
             audioPlayer.mute = false;
@@ -284,9 +284,17 @@ namespace CrewChiefV3
             {
                 loadDataFromFile = true;
                 spotterEnabled = false;
-                _timeInterval = TimeSpan.Zero;
+                if (interval > 0)
+                {
+                    _timeInterval = TimeSpan.FromMilliseconds(interval);
+                    audioPlayer.mute = false;
+                }
+                else
+                {
+                    _timeInterval = TimeSpan.Zero;
+                    audioPlayer.mute = true;
+                }
                 dumpToFile = false;
-                audioPlayer.mute = true;
             }
             if (dumpToFile)
             {

@@ -119,6 +119,7 @@ namespace CrewChiefV3
             this.filenameLabel.Visible = System.Diagnostics.Debugger.IsAttached;
             this.filenameTextbox.Visible = System.Diagnostics.Debugger.IsAttached;
             this.recordSession.Visible = System.Diagnostics.Debugger.IsAttached;
+            this.playbackInterval.Visible = System.Diagnostics.Debugger.IsAttached;
             CheckForIllegalCrossThreadCalls = false;
             Console.SetOut(new ControlWriter(textBox1));
             crewChief = new CrewChief();
@@ -342,15 +343,20 @@ namespace CrewChiefV3
         private void runApp()
         {
             String filenameToRun = null;
+            int interval = 0;
             Boolean record = false;
             if (System.Diagnostics.Debugger.IsAttached && filenameTextbox.Text != null && filenameTextbox.Text.Count() > 0)
             {
                 filenameToRun = filenameTextbox.Text;
+                if (playbackInterval.Text.Length > 0)
+                {
+                    interval = int.Parse(playbackInterval.Text);
+                }
             }
             if (System.Diagnostics.Debugger.IsAttached && recordSession.Checked) {
                 record = true;
             }
-            if (!crewChief.Run(filenameToRun, record))
+            if (!crewChief.Run(filenameToRun, interval, record))
             {
                 this.deleteAssigmentButton.Enabled = this.buttonActionSelect.SelectedIndex > -1 &&
                     this.controllerConfiguration.buttonAssignments[this.buttonActionSelect.SelectedIndex].joystick != null;

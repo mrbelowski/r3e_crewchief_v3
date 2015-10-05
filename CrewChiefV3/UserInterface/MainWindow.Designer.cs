@@ -64,6 +64,7 @@ namespace CrewChiefV3
             this.filenameTextbox = new System.Windows.Forms.TextBox();
             this.filenameLabel = new System.Windows.Forms.Label();
             this.recordSession = new System.Windows.Forms.CheckBox();
+            this.playbackInterval = new System.Windows.Forms.TextBox();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.messagesVolumeSlider)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.backgroundVolumeSlider)).BeginInit();
@@ -288,15 +289,15 @@ namespace CrewChiefV3
             // 
             // filenameTextbox
             // 
-            this.filenameTextbox.Location = new System.Drawing.Point(186, 2);
+            this.filenameTextbox.Location = new System.Drawing.Point(150, 2);
             this.filenameTextbox.Name = "filenameTextbox";
-            this.filenameTextbox.Size = new System.Drawing.Size(137, 20);
+            this.filenameTextbox.Size = new System.Drawing.Size(108, 20);
             this.filenameTextbox.TabIndex = 23;
             // 
             // filenameLabel
             // 
             this.filenameLabel.AutoSize = true;
-            this.filenameLabel.Location = new System.Drawing.Point(101, 5);
+            this.filenameLabel.Location = new System.Drawing.Point(68, 5);
             this.filenameLabel.Name = "filenameLabel";
             this.filenameLabel.Size = new System.Drawing.Size(82, 13);
             this.filenameLabel.TabIndex = 24;
@@ -305,18 +306,26 @@ namespace CrewChiefV3
             // recordSession
             // 
             this.recordSession.AutoSize = true;
-            this.recordSession.Location = new System.Drawing.Point(41, 4);
+            this.recordSession.Location = new System.Drawing.Point(7, 4);
             this.recordSession.Name = "recordSession";
             this.recordSession.Size = new System.Drawing.Size(61, 17);
             this.recordSession.TabIndex = 25;
             this.recordSession.Text = "Record";
             this.recordSession.UseVisualStyleBackColor = true;
             // 
+            // playbackRate
+            // 
+            this.playbackInterval.Location = new System.Drawing.Point(261, 2);
+            this.playbackInterval.Name = "playbackRate";
+            this.playbackInterval.Size = new System.Drawing.Size(100, 20);
+            this.playbackInterval.TabIndex = 26;
+            // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1146, 692);
+            this.Controls.Add(this.playbackInterval);
             this.Controls.Add(this.recordSession);
             this.Controls.Add(this.filenameLabel);
             this.Controls.Add(this.filenameTextbox);
@@ -376,6 +385,7 @@ namespace CrewChiefV3
         private System.Windows.Forms.TextBox filenameTextbox;
         private System.Windows.Forms.Label filenameLabel;
         private System.Windows.Forms.CheckBox recordSession;
+        private System.Windows.Forms.TextBox playbackInterval;
 
     }
 }

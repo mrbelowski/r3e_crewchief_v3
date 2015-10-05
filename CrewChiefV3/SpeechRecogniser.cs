@@ -45,7 +45,9 @@ namespace CrewChiefV3
         private static String LEAVE_ME_ALONE = "leave me alone";
         private static String DONT_TELL_ME_THE_GAPS = "don't tell me the gaps";
         private static String DONT_TELL_ME_THE_DELTAS = "don't tell me the deltas";
-        private static String DONT_GIVE_ME_THE_DELTAS = "don't give me the deltas";
+        private static String DONT_GIVE_ME_THE_DELTAS = "don't give me the deltas"; 
+        private static String NO_MORE_DELTAS = "no more deltas";
+        private static String NO_MORE_GAPS = "no more gaps";
 
         private static String KEEP_ME_UPDATED = "keep me updated";
         private static String KEEP_ME_INFORMED = "keep me informed";
@@ -344,7 +346,8 @@ namespace CrewChiefV3
                 crewChief.enableKeepQuietMode();
             }
             else if (recognisedSpeech.Contains(DONT_TELL_ME_THE_GAPS) || recognisedSpeech.Contains(DONT_TELL_ME_THE_DELTAS) ||
-                recognisedSpeech.Contains(DONT_GIVE_ME_THE_DELTAS))
+                recognisedSpeech.Contains(DONT_GIVE_ME_THE_DELTAS) || recognisedSpeech.Contains(NO_MORE_DELTAS) ||
+                recognisedSpeech.Contains(NO_MORE_GAPS))
             {
                 crewChief.disableDeltasMode();
             }

@@ -15,11 +15,11 @@ namespace CrewChiefV3
         private static float maxWarmRoadTyreTempPeak = 95;
         private static float maxHotRoadTyreTempPeak = 115;
 
-        private static float maxColdUnknownRaceTyreTempPeak = 80;
+        private static float maxColdUnknownRaceTyreTempPeak = 75;
         private static float maxWarmUnknownRaceTyreTempPeak = 115;
         private static float maxHotUnknownRaceTyreTempPeak = 135;
 
-        private static float maxColdDtmOptionTyreTempPeak = 70;
+        private static float maxColdDtmOptionTyreTempPeak = 75;
         private static float maxWarmDtmOptionTyreTempPeak = 110;
         private static float maxHotDtmOptionTyreTempPeak = 125;
 
