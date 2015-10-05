@@ -18,11 +18,14 @@ namespace CrewChiefV3.PCars
     {
         // pit detection parameters
         float pitLimiterSpeedVariance = 2;
+        float pitLimiterSpeedSingleSpeedAxisVariance = 2;
         // the speeds are actual speed, rather than speed in one direction
         float pitLimiterMinSpeed = 15;   // m/s
         float pitLimiterMaxSpeed = 28;  // m/s
         int updatesPerSecond = CrewChief._timeInterval == TimeSpan.Zero ? 10 : 1000 / CrewChief._timeInterval.Milliseconds;
         int pitDetectionChunksToCheck = 3;
+
+        private Boolean attemptPitDetection = UserSettings.GetUserSettings().getBoolean("attempt_pcars_opponent_pit_detection");
 
         Dictionary<int, DateTime> limiterCheckSchedule = new Dictionary<int, DateTime>();
 
@@ -506,71 +509,74 @@ namespace CrewChiefV3.PCars
                                 }
                                 int opponentPositionAtSector3 = previousOpponentPosition;
                                 Boolean isEnteringPits = false;
-                                if (previousOpponentDataWithSlotId != null && currentOpponentSector == 3 && currentGameState.SessionData.SessionRunningTime > 30)
-                                {
-                                    if (previousOpponentSectorNumber == 2)
+                                if (attemptPitDetection)
+                                {                                    
+                                    if (previousOpponentDataWithSlotId != null && currentOpponentSector == 3 && currentGameState.SessionData.SessionRunningTime > 30)
                                     {
-                                        if (limiterCheckSchedule.ContainsKey(previousOpponentDataWithSlotId.Item1))
+                                        if (previousOpponentSectorNumber == 2)
                                         {
-                                            limiterCheckSchedule[previousOpponentDataWithSlotId.Item1] = currentGameState.Now.AddSeconds(1);
-                                        }
-                                        else
-                                        {
-                                            limiterCheckSchedule.Add(previousOpponentDataWithSlotId.Item1, currentGameState.Now.AddSeconds(1));
-                                        }
-                                        opponentPositionAtSector3 = currentOpponentRacePosition;
-                                        if (OpponentWorldPositions.ContainsKey(previousOpponentDataWithSlotId.Item1))
-                                        {
-                                            OpponentWorldPositions[previousOpponentDataWithSlotId.Item1].Clear();
-                                        }
-                                        else
-                                        {
-                                            OpponentWorldPositions.Add(previousOpponentDataWithSlotId.Item1, new List<LocationAndTime>());
-                                        }
-                                    }
-                                    else if (!previousOpponentIsEnteringPits)
-                                    {
-                                        if (OpponentWorldPositions.ContainsKey(previousOpponentDataWithSlotId.Item1))
-                                        {
-                                            OpponentWorldPositions[previousOpponentDataWithSlotId.Item1].Add(new LocationAndTime(participantStruct.mWorldPosition[0],
-                                                participantStruct.mWorldPosition[2], currentGameState.Ticks));
-                                            if (limiterCheckSchedule.ContainsKey(previousOpponentDataWithSlotId.Item1) && currentGameState.Now > limiterCheckSchedule[previousOpponentDataWithSlotId.Item1])
+                                            if (limiterCheckSchedule.ContainsKey(previousOpponentDataWithSlotId.Item1))
                                             {
-                                                isEnteringPits = IsOpponentOnPitLimiter(previousOpponentDataWithSlotId.Item1);
-                                                if (isEnteringPits)
+                                                limiterCheckSchedule[previousOpponentDataWithSlotId.Item1] = currentGameState.Now.AddSeconds(1);
+                                            }
+                                            else
+                                            {
+                                                limiterCheckSchedule.Add(previousOpponentDataWithSlotId.Item1, currentGameState.Now.AddSeconds(1));
+                                            }
+                                            opponentPositionAtSector3 = currentOpponentRacePosition;
+                                            if (OpponentWorldPositions.ContainsKey(previousOpponentDataWithSlotId.Item1))
+                                            {
+                                                OpponentWorldPositions[previousOpponentDataWithSlotId.Item1].Clear();
+                                            }
+                                            else
+                                            {
+                                                OpponentWorldPositions.Add(previousOpponentDataWithSlotId.Item1, new List<LocationAndTime>());
+                                            }
+                                        }
+                                        else if (!previousOpponentIsEnteringPits)
+                                        {
+                                            if (OpponentWorldPositions.ContainsKey(previousOpponentDataWithSlotId.Item1))
+                                            {
+                                                OpponentWorldPositions[previousOpponentDataWithSlotId.Item1].Add(new LocationAndTime(participantStruct.mWorldPosition[0],
+                                                    participantStruct.mWorldPosition[2], currentGameState.Ticks));
+                                                if (limiterCheckSchedule.ContainsKey(previousOpponentDataWithSlotId.Item1) && currentGameState.Now > limiterCheckSchedule[previousOpponentDataWithSlotId.Item1])
                                                 {
-                                                    Console.WriteLine("opponent at position " + currentOpponentRacePosition + " is entering pits");
-                                                    limiterCheckSchedule[previousOpponentDataWithSlotId.Item1] = DateTime.MaxValue;
-                                                }
-                                                else
-                                                {
-                                                    limiterCheckSchedule[previousOpponentDataWithSlotId.Item1] = currentGameState.Now.AddSeconds(1);
+                                                    isEnteringPits = IsOpponentOnPitLimiter(previousOpponentDataWithSlotId.Item1);
+                                                    if (isEnteringPits)
+                                                    {
+                                                        Console.WriteLine("opponent at position " + currentOpponentRacePosition + " is entering pits");
+                                                        limiterCheckSchedule[previousOpponentDataWithSlotId.Item1] = DateTime.MaxValue;
+                                                    }
+                                                    else
+                                                    {
+                                                        limiterCheckSchedule[previousOpponentDataWithSlotId.Item1] = currentGameState.Now.AddSeconds(1);
+                                                    }
                                                 }
                                             }
                                         }
+                                        else
+                                        {
+                                            isEnteringPits = previousOpponentIsEnteringPits;
+                                        }
                                     }
-                                    else
-                                    {
-                                        isEnteringPits = previousOpponentIsEnteringPits;
-                                    }
-                                }                                
 
-                                if (isEnteringPits && !previousOpponentIsEnteringPits)
-                                {
-                                    if (opponentPositionAtSector3 == 1)
+                                    if (isEnteringPits && !previousOpponentIsEnteringPits)
                                     {
-                                        Console.WriteLine("leader pitting, pos at sector 3 = " + opponentPositionAtSector3 + " current pos = " + currentOpponentRacePosition);
-                                        currentGameState.PitData.LeaderIsPitting = true;
-                                    }
-                                    if (currentGameState.SessionData.Position > 2 && opponentPositionAtSector3 == currentGameState.SessionData.Position - 1)
-                                    {
-                                        Console.WriteLine("car in front pitting, pos at sector 3 = " + opponentPositionAtSector3 + " current pos = " + currentOpponentRacePosition);
-                                        currentGameState.PitData.CarInFrontIsPitting = true;
-                                    }
-                                    if (!currentGameState.isLast() && opponentPositionAtSector3 == currentGameState.SessionData.Position + 1)
-                                    {
-                                        Console.WriteLine("car behind pitting, pos at sector 3 = " + opponentPositionAtSector3 + " current pos = " + currentOpponentRacePosition);
-                                        currentGameState.PitData.CarBehindIsPitting = true;
+                                        if (opponentPositionAtSector3 == 1)
+                                        {
+                                            Console.WriteLine("leader pitting, pos at sector 3 = " + opponentPositionAtSector3 + " current pos = " + currentOpponentRacePosition);
+                                            currentGameState.PitData.LeaderIsPitting = true;
+                                        }
+                                        if (currentGameState.SessionData.Position > 2 && opponentPositionAtSector3 == currentGameState.SessionData.Position - 1)
+                                        {
+                                            Console.WriteLine("car in front pitting, pos at sector 3 = " + opponentPositionAtSector3 + " current pos = " + currentOpponentRacePosition);
+                                            currentGameState.PitData.CarInFrontIsPitting = true;
+                                        }
+                                        if (!currentGameState.isLast() && opponentPositionAtSector3 == currentGameState.SessionData.Position + 1)
+                                        {
+                                            Console.WriteLine("car behind pitting, pos at sector 3 = " + opponentPositionAtSector3 + " current pos = " + currentOpponentRacePosition);
+                                            currentGameState.PitData.CarBehindIsPitting = true;
+                                        }
                                     }
                                 }
                                 float secondsSinceLastUpdate = (float)new TimeSpan(currentGameState.Ticks - previousGameState.Ticks).TotalSeconds;
@@ -777,7 +783,7 @@ namespace CrewChiefV3.PCars
                     currentGameState.PenaltiesData.CutTrackWarnings = previousGameState.PenaltiesData.CutTrackWarnings + 1;
                 }
             }
-            if (previousGameState != null && previousGameState.SessionData.CurrentLapIsValid && !currentGameState.SessionData.CurrentLapIsValid &&
+            if (!currentGameState.PitData.OnOutLap && previousGameState != null && previousGameState.SessionData.CurrentLapIsValid && !currentGameState.SessionData.CurrentLapIsValid &&
                 !(shared.mSessionState == (int)eSessionState.SESSION_RACE && shared.mRaceState == (int)eRaceState.RACESTATE_NOT_STARTED))
             {
                 currentGameState.PenaltiesData.CutTrackWarnings = previousGameState.PenaltiesData.CutTrackWarnings + 1;
@@ -1104,11 +1110,18 @@ namespace CrewChiefV3.PCars
             if (OpponentWorldPositions.ContainsKey(opponentId) && OpponentWorldPositions[opponentId].Count > pitDetectionChunksToCheck * chunkSize)
             {
                 float initialSpeed = 0;
+                float initialX = 0;
+                float initialY = 0;
+                float meanSpeed = 0;
+                float meanX = 0;
+                float meanY = 0;
                 onLimiter = true;
                 for (int i = 1; i <= pitDetectionChunksToCheck; i++)
                 {
                     List<LocationAndTime> locationsForChunk = OpponentWorldPositions[opponentId].GetRange(OpponentWorldPositions[opponentId].Count - (i * chunkSize), chunkSize);
-                    float meanSpeed = 0;
+                    meanSpeed = 0;
+                    meanX = 0;
+                    meanY = 0;
                     int count = 0;
                     for (int j = 1; j < chunkSize; j++) 
                     {
@@ -1116,19 +1129,30 @@ namespace CrewChiefV3.PCars
                         float t = (float)TimeSpan.FromTicks(locationsForChunk[j].ticks - locationsForChunk[j - 1].ticks).TotalSeconds;
                         meanSpeed = meanSpeed + 
                             (float)Math.Sqrt(Math.Pow(locationsForChunk[j].x - locationsForChunk[j - 1].x, 2) + Math.Pow(locationsForChunk[j].y - locationsForChunk[j - 1].y, 2)) / t;
+                        meanX = meanX + (locationsForChunk[j].x - locationsForChunk[j - 1].x) / t;
+                        meanY = meanY + (locationsForChunk[j].y - locationsForChunk[j - 1].y) / t;
                     }
-                    meanSpeed = meanSpeed / (chunkSize - 1);                  
+                    meanSpeed = meanSpeed / (chunkSize - 1);   
+                    meanX = meanX / (chunkSize - 1);
+                    meanY = meanY / (chunkSize - 1);
                     if (i == 1)
                     {
                         initialSpeed = meanSpeed;
+                        initialX = meanX;
+                        initialY = meanY;
                     }
-                    if (meanSpeed > pitLimiterMaxSpeed || meanSpeed < pitLimiterMinSpeed || Math.Abs(meanSpeed - initialSpeed) > pitLimiterSpeedVariance)
+                    if (meanSpeed > pitLimiterMaxSpeed || meanSpeed < pitLimiterMinSpeed || Math.Abs(meanSpeed - initialSpeed) > pitLimiterSpeedVariance ||
+                        Math.Abs(meanX - initialX) > pitLimiterSpeedSingleSpeedAxisVariance || Math.Abs(meanY - initialY) > pitLimiterSpeedSingleSpeedAxisVariance)
                     {
                         onLimiter = false;
                         break;
                     }
                 }
-            }
+                if (onLimiter)
+                {
+                    Console.WriteLine("on limiter, initial: " + initialSpeed + " : " + initialX + " : " + initialY + " final " + meanSpeed + " : " + meanX + " : " + meanY);
+                }
+            }            
             return onLimiter;
         }
 

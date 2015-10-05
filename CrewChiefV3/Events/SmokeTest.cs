@@ -46,25 +46,35 @@ namespace CrewChiefV3.Events
             OpponentData opponent4 = makeTempDriver("squirrel", driverNames);
             OpponentData opponent5 = makeTempDriver("noodles", driverNames);
             audioPlayer.cacheDriverNames(driverNames);
-            
+            Random random = new Random();
             audioPlayer.queueClip(new QueuedMessage("Timings/gap_in_front",
                                     MessageContents(Timings.folderTheGapTo, opponent1, Timings.folderAheadIsIncreasing,
-                                    TimeSpan.FromSeconds(1.3), Timings.folderSeconds),
-                                    MessageContents(Timings.folderGapInFrontIncreasing, TimeSpan.FromSeconds(1.3), Timings.folderSeconds), 0, this));
+                                    TimeSpanWrapper.FromSeconds((float) random.NextDouble() * 10, true)),
+                                    MessageContents(Timings.folderGapInFrontIncreasing, TimeSpanWrapper.FromSeconds((float)random.NextDouble() * 10, true)), 0, this));
 
             audioPlayer.queueClip(new QueuedMessage("Timings/gap_in_front2",
                                     MessageContents(Timings.folderYoureReeling, opponent5,
-                                    Timings.folderInTheGapIsNow, TimeSpan.FromSeconds(0.4), Timings.folderSeconds),
-                                    MessageContents(Timings.folderGapInFrontDecreasing, TimeSpan.FromSeconds(0.4), Timings.folderSeconds), 0, this));
+                                    Timings.folderInTheGapIsNow, TimeSpanWrapper.FromSeconds((float) random.NextDouble() * 10, true)),
+                                    MessageContents(Timings.folderGapInFrontDecreasing, TimeSpanWrapper.FromSeconds((float)random.NextDouble() * 10, true)), 0, this));
 
+            audioPlayer.queueClip(new QueuedMessage("Timings/gap_in_front3",
+                                    MessageContents(Timings.folderYoureReeling, opponent5,
+                                    Timings.folderInTheGapIsNow, TimeSpanWrapper.FromSeconds((float)random.NextDouble() * 10, true)),
+                                    MessageContents(Timings.folderGapInFrontDecreasing, TimeSpanWrapper.FromSeconds((float)random.NextDouble() * 10, true)), 0, this));
+
+            audioPlayer.queueClip(new QueuedMessage("Timings/gap_in_front4",
+                                    MessageContents(Timings.folderYoureReeling, opponent5,
+                                    Timings.folderInTheGapIsNow, TimeSpanWrapper.FromSeconds(0.04f, true)),
+                                    MessageContents(Timings.folderGapInFrontDecreasing, TimeSpanWrapper.FromSeconds((float)random.NextDouble() * 10, true)), 0, this));
+            
             audioPlayer.queueClip(new QueuedMessage("Timings/gap_behind",
                                    MessageContents(Timings.folderTheGapTo, opponent3,
-                                   Timings.folderBehindIsIncreasing, TimeSpan.FromSeconds(1.3), Timings.folderSeconds),
-                                   MessageContents(Timings.folderGapBehindIncreasing, TimeSpan.FromSeconds(2.9), Timings.folderSeconds), 0, this));
+                                   Timings.folderBehindIsIncreasing, TimeSpanWrapper.FromSeconds((float)random.NextDouble() * 10, true)),
+                                   MessageContents(Timings.folderGapBehindIncreasing, TimeSpanWrapper.FromSeconds((float)random.NextDouble() * 10, true)), 0, this));
 
             audioPlayer.queueClip(new QueuedMessage("Timings/gap_behind2",
-                                    MessageContents(opponent4, Timings.folderIsReelingYouIn, TimeSpan.FromSeconds(7), Timings.folderSeconds),
-                                    MessageContents(Timings.folderGapBehindDecreasing, TimeSpan.FromSeconds(7), Timings.folderSeconds), 0, this));
+                                    MessageContents(opponent4, Timings.folderIsReelingYouIn, TimeSpanWrapper.FromSeconds((float)random.NextDouble() * 10, true)),
+                                    MessageContents(Timings.folderGapBehindDecreasing, TimeSpanWrapper.FromSeconds((float)random.NextDouble() * 10, true)), 0, this));
       
             audioPlayer.queueClip(new QueuedMessage("opponents_1",
                                     MessageContents(opponent1, Opponents.folderAheadIsPitting), 0, this));
@@ -83,7 +93,7 @@ namespace CrewChiefV3.Events
                                         Fuel.folderWeEstimate, QueuedMessage.folderNameNumbersStub + 12, Fuel.folderMinutesRemaining), 0, this));
             
             audioPlayer.queueClip(new QueuedMessage("laptime", MessageContents(LapTimes.folderLapTimeIntro, 
-                TimeSpan.FromSeconds(currentGameState.SessionData.LapTimePrevious)), 0, this));
+                TimeSpan.FromSeconds(60 + (random.NextDouble() * 60))), 0, this));
             audioPlayer.queueClip(new QueuedMessage("yesBoxAfter", MessageContents(MandatoryPitStops.folderMandatoryPitStopsYesStopAfter,
                 QueuedMessage.folderNameNumbersStub + 10, MandatoryPitStops.folderMandatoryPitStopsMinutes), 0, null));
             audioPlayer.queueClip(new QueuedMessage("laps_on_current_tyres", MessageContents(TyreMonitor.folderLapsOnCurrentTyresIntro,

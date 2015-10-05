@@ -2,6 +2,8 @@ CrewChief version 3.
 
 Changelog
 ---------
+Version 3.3.3: Fixed some pit detection issues; disable tyre wear info on pit entry for now; added a few more speech recognition bits and bobs; fixed race start message playing while in parmc ferme. No new sound pack for this version.
+
 Version 3.3.2: Another potential crash-bug in the spotter fixed, make the pit limiter detection stuff work when opponent data arrays get jumbled up in the shared memory. No new sound pack for this version.
 
 Version 3.3.1: Added better error checking to spotter. No new sound pack for this version.
@@ -44,7 +46,8 @@ You need to speak clearly and your mic needs to be properly set up - you might n
 
 I've not finished implementing this but currently the app understands and responds to the following commands:
 
-"how is my [fuel / tyre temps / tyre wear / body work / aero / engine / transmission / brakes / suspension / brake temps / pace / engine temps]"
+"how is my [fuel / tyre wear / body work / aero / engine / transmission / suspension / pace ]"
+"how are my [tyre temps / tyre temperatures / brakes / brake temps / brake temperatures / engine temps / engine temperatures]"
 "what's my [gap in front / gap ahead / gap behind / last lap / last lap time / lap time / position]"
 "keep quiet / I know what I'm doing / leave me alone" (switches off messages)
 "keep me informed / keep me posted / keep me updated" (switches messages back on)
@@ -54,7 +57,8 @@ I've not finished implementing this but currently the app understands and respon
 "do I have to pit / do I need to pit / do I have a mandatory pit stop / do I have a mandatory stop / do I have to make a pit stop"
 "where's [opponent driver last name]"
 "who's [ahead / behind]" (this one only works if you have the driver name recording for that driver)
-"tell me the gaps / don't tell me the gaps" (switch on and off 'deltas' mode where the time deltas in front and behind get read out on each lap. Note that these messages will play even if you have disabled messages)
+"tell me the gaps / give me the gaps / tell me the deltas / give me the deltas" (switch on 'deltas' mode where the time deltas in front and behind get read out on each lap. Note that these messages will play even if you have disabled messages)
+"don't tell me the gaps / don't tell me the deltas" (switch off deltas mode)
 
 
 Other button assignments

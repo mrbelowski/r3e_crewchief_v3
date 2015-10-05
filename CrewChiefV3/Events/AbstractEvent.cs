@@ -63,9 +63,13 @@ namespace CrewChiefV3.Events
             else if (o.GetType() == typeof(String)) {
                 messageFragments.Add(MessageFragment.Text((String)o));
             }
+            else if (o.GetType() == typeof(TimeSpanWrapper))
+            {
+                messageFragments.Add(MessageFragment.Time((TimeSpanWrapper)o));
+            }
             else if (o.GetType() == typeof(TimeSpan))
             {
-                messageFragments.Add(MessageFragment.Time((TimeSpan)o));
+                messageFragments.Add(MessageFragment.Time(new TimeSpanWrapper((TimeSpan)o)));
             }
             else if (o.GetType() == typeof(OpponentData)) {
                 messageFragments.Add(MessageFragment.Opponent((OpponentData)o));
@@ -139,13 +143,14 @@ namespace CrewChiefV3.Events
                         foundMatch = true;
                         break;
                     }
-                    else if (m1Fragment.type == MessageFragment.FragmentType.Time && m2Fragment.type == MessageFragment.FragmentType.Time && m1Fragment.time.Equals(m2Fragment.time))
+                    else if (m1Fragment.type == MessageFragment.FragmentType.Time && m2Fragment.type == MessageFragment.FragmentType.Time &&
+                        m1Fragment.timeSpanWrapper.timeSpan.Equals(m2Fragment.timeSpanWrapper.timeSpan))
                     {
                         foundMatch = true;
                         break;
                     }
-                    else if (m1Fragment.type == MessageFragment.FragmentType.Opponent && m2Fragment.type == MessageFragment.FragmentType.Opponent && 
-                        ((m1Fragment.opponent == null && m2Fragment.opponent == null) || 
+                    else if (m1Fragment.type == MessageFragment.FragmentType.Opponent && m2Fragment.type == MessageFragment.FragmentType.Opponent &&
+                        ((m1Fragment.opponent == null && m2Fragment.opponent == null) ||
                             (m1Fragment.opponent != null && m2Fragment.opponent != null && m1Fragment.opponent.DriverRawName.Equals(m2Fragment.opponent.DriverRawName))))
                     {
                         foundMatch = true;

@@ -182,5 +182,8 @@
     <Setting Name="enable_brake_lock_warnings" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
+    <Setting Name="attempt_pcars_opponent_pit_detection" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

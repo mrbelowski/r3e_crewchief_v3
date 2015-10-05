@@ -739,5 +739,17 @@ namespace CrewChiefV3.Properties {
                 this["enable_brake_lock_warnings"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool attempt_pcars_opponent_pit_detection {
+            get {
+                return ((bool)(this["attempt_pcars_opponent_pit_detection"]));
+            }
+            set {
+                this["attempt_pcars_opponent_pit_detection"] = value;
+            }
+        }
     }
 }

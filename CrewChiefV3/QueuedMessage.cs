@@ -15,14 +15,14 @@ namespace CrewChiefV3
         }
 
         public String text;
-        public TimeSpan time;
+        public TimeSpanWrapper timeSpanWrapper;
         public OpponentData opponent;
         public FragmentType type;
 
-        private MessageFragment(String text, TimeSpan timeSpan, OpponentData opponent, FragmentType type)
+        private MessageFragment(String text, TimeSpanWrapper timeSpanWrapper, OpponentData opponent, FragmentType type)
         {
             this.text = text;
-            this.time = timeSpan;
+            this.timeSpanWrapper = timeSpanWrapper;
             this.opponent = opponent;
             this.type = type;
         }
@@ -38,10 +38,11 @@ namespace CrewChiefV3
         {
             return new MessageFragment(text, null, FragmentType.Text);
         }
-        public static MessageFragment Time(TimeSpan timeSpan)
+        public static MessageFragment Time(TimeSpanWrapper timeSpanWrapper)
         {
-            return new MessageFragment(null, timeSpan, null, FragmentType.Time);
+            return new MessageFragment(null, timeSpanWrapper, null, FragmentType.Time);
         }
+
         public static MessageFragment Opponent(OpponentData opponent)
         {
             return new MessageFragment(null, opponent, FragmentType.Opponent);
@@ -56,6 +57,9 @@ namespace CrewChiefV3
         public static String folderNamePoint = "numbers/point";
         public static String folderNameNumbersStub = "numbers/";
         public static String folderZeroZero = "numbers/zerozero";
+        public static String folderSeconds = "numbers/seconds";
+        public static String folderSecond = "numbers/second";
+
 
         // if a queued message is a gap filler, it's only played if the queue only contains 1 other message
         public Boolean gapFiller = false;
@@ -178,17 +182,23 @@ namespace CrewChiefV3
                         }                     
                         break;
                     case MessageFragment.FragmentType.Time:
-                        List<String> timeFolders = getTimeMessageFolders(messageFragment.time);
-                        foreach (String timeFolder in timeFolders)
+                        List<String> timeFolders = getTimeMessageFolders(messageFragment.timeSpanWrapper.timeSpan, messageFragment.timeSpanWrapper.readSeconds);
+                        if (timeFolders.Count == 0)
                         {
-                            if (!AudioPlayer.allMessageNames.Contains(timeFolder))
-                            {
-                                canBePlayed = false;
-                                break;
-                            }
+                            canBePlayed = false;
                         }
-                        messages.AddRange(getTimeMessageFolders(messageFragment.time));
-                        break;
+                        else { 
+                            foreach (String timeFolder in timeFolders)
+                            {
+                                if (!AudioPlayer.allMessageNames.Contains(timeFolder))
+                                {
+                                    canBePlayed = false;
+                                    break;
+                                }
+                            }
+                             messages.AddRange(timeFolders);
+                        }
+                        break;                    
                     case MessageFragment.FragmentType.Opponent:
                         canBePlayed = false;
                         if (messageFragment.opponent != null)
@@ -210,7 +220,7 @@ namespace CrewChiefV3
             return messages;
         }
 
-        private List<String> getTimeMessageFolders(TimeSpan timeSpan)
+        private List<String> getTimeMessageFolders(TimeSpan timeSpan, Boolean includeSeconds)
         {
             List<String> messages = new List<String>();
             if (timeSpan != null)
@@ -239,15 +249,35 @@ namespace CrewChiefV3
                     messages.AddRange(getFolderNames(timeSpan.Seconds, ZeroType.NONE));
                 }
                 int tenths = (int)Math.Round(((double)timeSpan.Milliseconds / 100));
-                messages.Add(folderNamePoint);
-                if (tenths == 0)
+                if (includeSeconds)
                 {
-                    messages.Add(folderNameNumbersStub + 0);
+                    if (tenths == 0)
+                    {
+                        if (timeSpan.Seconds == 1) {
+                            messages.Add(folderSecond);
+                        }
+                        else if(timeSpan.Seconds > 1)
+                        {
+                            messages.Add(folderSeconds);
+                        }
+                    }
+                    else
+                    {
+                        messages.Add(folderNameNumbersStub + "point" + tenths + "seconds");
+                    }
                 }
                 else
                 {
-                    messages.AddRange(getFolderNames(tenths, ZeroType.NONE));
-                }
+                    messages.Add(folderNamePoint);
+                    if (tenths == 0)
+                    {
+                        messages.Add(folderNameNumbersStub + 0);
+                    }
+                    else
+                    {
+                        messages.AddRange(getFolderNames(tenths, ZeroType.NONE));
+                    }
+                }                
             }
             return messages;
         }
@@ -281,7 +311,7 @@ namespace CrewChiefV3
                             names.Add(folderNameNumbersStub + number);
                         }
                     }
-                    else
+                    else if (zeroType != ZeroType.NONE || number > 0)
                     {
                         names.Add(folderNameNumbersStub + number);
                     }
