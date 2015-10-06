@@ -2,7 +2,7 @@ CrewChief version 3.
 
 Changelog
 ---------
-Version 3.4.1: Minor cold tyre temp increase (there were too many warnings); added a couple more voice options for switching off deltas. No new sound pack for this version.
+Version 3.4.1: Minor cold tyre temp increase (there were too many warnings); added a couple more voice options for switching off deltas; fixed some ignored enable / disable messges flags; added driver names for RaceRoom. No new sound pack for this version.
 
 Version 3.4.0: Fixed some pit detection issues; added option to disable pcars opponent pit detection; disable cut track warnings on out lap / pit exit; tidied up the way numbers are read for time gaps; removed some crap green-light sounds; disable tyre wear info on pit entry for now; added a few more speech recognition bits and bobs; fixed race start message playing while in parmc ferme; don't process data when in replay, pause, or menus; fixed ignored 'enable_brake_locking_warning' and 'enable_wheel_spin_warning' options. This version requires a new sound pack.
 
