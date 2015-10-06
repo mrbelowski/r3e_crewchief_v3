@@ -71,13 +71,12 @@ namespace CrewChiefV3
             public CarClassEnum carClassEnum;
             public String[] pCarsClassNames;
             public String[] raceroomClassNames;
-            public String[] classNames;
             public BrakeType brakeType;
             public TyreType defaultTyreType;
             public float maxSafeWaterTemp;
             public float maxSafeOilTemp;
 
-            public CarClass(CarClassEnum carClassEnum, String[] pcarsClassNames, String[] raceroomClassNames, BrakeType brakeType, TyreType defaultTyreType, float maxSafeWaterTemp, float maxSafeOilTemp)
+            public CarClass(CarClassEnum carClassEnum, String[] pCarsClassNames, String[] raceroomClassNames, BrakeType brakeType, TyreType defaultTyreType, float maxSafeWaterTemp, float maxSafeOilTemp)
             {
                 this.carClassEnum = carClassEnum;
                 this.pCarsClassNames = pCarsClassNames;
@@ -205,16 +204,27 @@ namespace CrewChiefV3
             brakeTempThresholds.Add(BrakeType.Carbon, carbonBrakeTempsThresholds);
         }
 
-        public static CarClass getCarClass(String carClassName)
+        public static CarClass getCarClass(String carClassName, GameEnum gameEnum)
         {
             if (carClassName != null)
             {
                 foreach (CarClass carClass in carClasses)
                 {
-                    if (carClass.classNames.Contains(carClassName))
+                    if (gameEnum == GameEnum.PCARS_32BIT || gameEnum == GameEnum.PCARS_64BIT)
                     {
-                        Console.WriteLine("Using car class " + carClass.carClassEnum + " for class name " + carClassName);
-                        return carClass;
+                        if (carClass.pCarsClassNames.Contains(carClassName))
+                        {
+                            Console.WriteLine("Using car class " + carClass.carClassEnum + " for class name " + carClassName);
+                            return carClass;
+                        }
+                    }
+                    else if (gameEnum == GameEnum.RACE_ROOM)
+                    {
+                        if (carClass.raceroomClassNames.Contains(carClassName))
+                        {
+                            Console.WriteLine("Using car class " + carClass.carClassEnum + " for class name " + carClassName);
+                            return carClass;
+                        }
                     }
                 }
             }

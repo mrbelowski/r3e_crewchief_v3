@@ -134,7 +134,7 @@ namespace CrewChiefV3.RaceRoom
                 currentGameState.SessionData.EventIndex = shared.EventIndex;
                 currentGameState.SessionData.SessionIteration = shared.SessionIteration;
                 currentGameState.SessionData.SessionStartTime = currentGameState.Now;
-                currentGameState.carClass = CarData.getCarClass(null);  // TODO: change this null to the actual class identifier
+                currentGameState.carClass = CarData.getCarClass(null, GameEnum.RACE_ROOM);  // TODO: change this null to the actual class identifier
             }
             else
             {
@@ -172,8 +172,8 @@ namespace CrewChiefV3.RaceRoom
                         // no car class info in the block, but if we've got DTM tyres on we can use that
                         if ((int)RaceRoomConstant.TireType.DTM_Option == shared.TireType || (int)RaceRoomConstant.TireType.Prime == shared.TireType)
                         {
-                            Console.WriteLine("Using DTM (TC3) car class data");
-                            currentGameState.carClass = CarData.getCarClassFromEnum(CarData.CarClassEnum.TC3);
+                            Console.WriteLine("Using DTM car class data");
+                            currentGameState.carClass = CarData.getCarClassFromEnum(CarData.CarClassEnum.DTM);
                         }
                         Console.WriteLine("SessionType " + currentGameState.SessionData.SessionType);
                         Console.WriteLine("SessionPhase " + currentGameState.SessionData.SessionPhase);
