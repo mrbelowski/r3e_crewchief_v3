@@ -176,3 +176,24 @@ funkygib:funky gib
 AOD_bozza72:bozzer
 ConsNZ:cons
 spencerrg:spence
+Fraiser:fraser
+Fan:phan
+Hertzog:herzog
+Plaza:plasa
+Bergman:bergmann
+MacAllen:mcallen
+Aviv Ben-David:ben-david
+Olivier Thibault:teebow
+Mattias Ekström:Ekstrom
+Adrien Tambay:tombay
+Simon Lindström:Lindstrom
+Stefano D'Aste:de ast
+Darryl O'Young:oh young
+Nico Müller:Muller
+Paul Di Resta:Di Resta
+Kelvin van der Linde:van der Linde
+Hans Joachim Stuck:Stuck
+José María López:lopez
+Charles T.Ackerman:Ackerman
+António Félix da Costa:felix da Costa
+Karlsen:carlsson
