@@ -167,6 +167,7 @@ namespace CrewChiefV3.PCars
             }
             
             pCarsAPIParticipantStruct viewedParticipant = shared.mParticipantData[shared.mViewedParticipantIndex];
+            NameValidator.validateName(viewedParticipant.mName);
             currentGameState.SessionData.CompletedLaps = (int)viewedParticipant.mLapsCompleted;
             currentGameState.SessionData.SectorNumber = (int)viewedParticipant.mCurrentSector;
             currentGameState.SessionData.Position = (int)viewedParticipant.mRacePosition;

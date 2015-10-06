@@ -86,6 +86,7 @@
     <Compile Include="Events\FlagsMonitor.cs" />
     <Compile Include="Events\Spotter.cs" />
     <Compile Include="GameDefinition.cs" />
+    <Compile Include="NameValidator.cs" />
     <Compile Include="PCars\PCarsSpotter.cs" />
     <Compile Include="R3E\R3ESharedMemoryReader.cs" />
     <Compile Include="GameDataReader.cs" />
