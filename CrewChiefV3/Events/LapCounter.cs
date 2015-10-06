@@ -30,7 +30,7 @@ namespace CrewChiefV3.Events
 
         private DateTime lastFinishMessageTime = DateTime.MinValue;
 
-        private Boolean enableSessionEndMessages = UserSettings.GetUserSettings().getBoolean("enable_session_end_messages");
+        private Boolean enableGreenLightMessages = UserSettings.GetUserSettings().getBoolean("enable_green_light_messages");
 
         public override List<SessionPhase> applicableSessionPhases
         {
@@ -67,7 +67,7 @@ namespace CrewChiefV3.Events
                     (previousGameState.SessionData.SessionPhase == SessionPhase.Formation ||
                      previousGameState.SessionData.SessionPhase == SessionPhase.Countdown)))
             {*/
-            if (previousGameState != null &&
+            if (previousGameState != null && enableGreenLightMessages && 
                 currentGameState.SessionData.SessionType == SessionType.Race &&
                 currentGameState.SessionData.SessionPhase == SessionPhase.Green && 
                 (previousGameState.SessionData.SessionPhase == SessionPhase.Formation ||

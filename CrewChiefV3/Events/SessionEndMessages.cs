@@ -22,6 +22,8 @@ namespace CrewChiefV3.Events
 
         private String folderEndOfSessionPole = "lap_counter/end_of_session_pole";
 
+        private Boolean enableSessionEndMessages = UserSettings.GetUserSettings().getBoolean("enable_session_end_messages");
+
         private AudioPlayer audioPlayer;
 
         public SessionEndMessages(AudioPlayer audioPlayer)
@@ -32,6 +34,11 @@ namespace CrewChiefV3.Events
         public void trigger(float sessionRunningTime, SessionType sessionType, SessionPhase lastSessionPhase, 
             int finishPosition, int numCars, int completedLaps, Boolean isDisqualified)
         {
+            if (!enableSessionEndMessages)
+            {
+                Console.WriteLine("Session end, position = " + finishPosition + ", session end messages are disabled");
+                return;
+            }
             if (sessionType == SessionType.Race)
             {
                 if (sessionRunningTime > 60 || completedLaps > 0)

@@ -26,12 +26,11 @@ namespace CrewChiefV3.Events
             return true;
         }
 
-        private OpponentData makeTempDriver(String driverName, List<String> names)
+        private OpponentData makeTempDriver(String driverName, List<String> rawDriverNames)
         {
             OpponentData opponent = new OpponentData();
             opponent.DriverRawName = driverName;
-            AudioPlayer.availableDriverNames.Add(driverName);
-            names.Add(driverName);
+            rawDriverNames.Add(driverName);
             return opponent;
         }
 
@@ -39,13 +38,19 @@ namespace CrewChiefV3.Events
         {
             audioPlayer.queueClip(new QueuedMessage(folderTest, 0, this));
             
-            /*List<String> driverNames = new List<string>();
-            OpponentData opponent1 = makeTempDriver("dank", driverNames);
-            OpponentData opponent2 = makeTempDriver("kabob", driverNames);
-            OpponentData opponent3 = makeTempDriver("sasquatch", driverNames);
-            OpponentData opponent4 = makeTempDriver("squirrel", driverNames);
-            OpponentData opponent5 = makeTempDriver("noodles", driverNames);
-            audioPlayer.cacheDriverNames(driverNames);
+            /*List<String> rawDriverNames = new List<string>();
+            OpponentData opponent1 = makeTempDriver("AOD_bozza72", rawDriverNames);
+            OpponentData opponent2 = makeTempDriver("THFS -GN-", rawDriverNames);
+            OpponentData opponent3 = makeTempDriver("akapillarz", rawDriverNames);
+            OpponentData opponent4 = makeTempDriver("hilton", rawDriverNames);
+            OpponentData opponent5 = makeTempDriver("Strattos", rawDriverNames);
+
+            List<String> usableDriverNames = DriverNameHelper.getUsableDriverNames(rawDriverNames, audioPlayer.soundFilesPath);
+            foreach (String usableDriverName in usableDriverNames)
+            {
+                AudioPlayer.availableDriverNames.Add(usableDriverName);
+            }
+            audioPlayer.cacheDriverNames(usableDriverNames);
             Random random = new Random();
             audioPlayer.queueClip(new QueuedMessage("Timings/gap_in_front",
                                     MessageContents(Timings.folderTheGapTo, opponent1, Timings.folderAheadIsIncreasing,

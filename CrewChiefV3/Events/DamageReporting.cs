@@ -393,7 +393,14 @@ namespace CrewChiefV3.Events
 
         private void playDamageToReport()
         {
-            Boolean playMissingWheel = isMissingWheel;            
+            Boolean playMissingWheel = isMissingWheel;
+            if (playMissingWheel || damageToReportNext.Item2 > DamageLevel.MINOR)
+            {
+                // missing wheel or major damage, so don't play any cut track warnings that might be queued
+                audioPlayer.removeQueuedClip(Penalties.folderCutTrackInRace);
+                audioPlayer.removeQueuedClip(Penalties.folderCutTrackPracticeOrQual);
+                audioPlayer.removeQueuedClip(Penalties.folderLapDeleted);
+            }
             if (damageToReportNext.Item1 == Component.ENGINE)
             {
                 if (damageToReportNext.Item2 == DamageLevel.DESTROYED)

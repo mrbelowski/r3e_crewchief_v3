@@ -161,3 +161,18 @@ CrustyA:crusty
 Kran:kran
 Cockpit:cockpit
 Sonique:sonique
+RWB Rygel:rigel
+RWB Sinoob:si
+RWB Reaperman:reaper
+RWB Plugz:plugs
+Carbo-OZ:carbo
+akapillarz:pillars
+OPPYLOCK333:oppy
+THFS -GN-:tim
+AOD_CALGT4:cal
+murorder:marauder
+original_hondo:hondo
+funkygib:funky gib
+AOD_bozza72:bozzer
+ConsNZ:cons
+spencerrg:spence

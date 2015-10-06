@@ -33,11 +33,11 @@ namespace CrewChiefV3.Events
 
         private String folderTimePenalty = "penalties/time_penalty";
 
-        private String folderCutTrackInRace = "penalties/cut_track_in_race";
+        public static String folderCutTrackInRace = "penalties/cut_track_in_race";
 
-        private String folderLapDeleted = "penalties/lap_deleted";
+        public static String folderLapDeleted = "penalties/lap_deleted";
 
-        private String folderCutTrackPracticeOrQual = "penalties/cut_track_in_prac_or_qual";
+        public static String folderCutTrackPracticeOrQual = "penalties/cut_track_in_prac_or_qual";
 
         private String folderPenaltyNotServed = "penalties/penalty_not_served";
 

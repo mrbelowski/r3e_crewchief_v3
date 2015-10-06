@@ -751,5 +751,17 @@ namespace CrewChiefV3.Properties {
                 this["attempt_pcars_opponent_pit_detection"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool enable_green_light_messages {
+            get {
+                return ((bool)(this["enable_green_light_messages"]));
+            }
+            set {
+                this["enable_green_light_messages"] = value;
+            }
+        }
     }
 }
