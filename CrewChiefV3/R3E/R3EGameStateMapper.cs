@@ -263,6 +263,7 @@ namespace CrewChiefV3.RaceRoom
                 ((lastSessionPhase == SessionPhase.Countdown || lastSessionPhase == SessionPhase.Formation || lastSessionPhase == SessionPhase.Garage)
                 && currentGameState.SessionData.SessionPhase == SessionPhase.Green));
 
+            // TODO: lap time previous for invalid laps, sector time stuff.
 
             if (shared.SessionType == (int)RaceRoomConstant.Session.Race && shared.SessionPhase == (int)RaceRoomConstant.SessionPhase.Checkered &&
                 previousGameState != null && previousGameState.SessionData.SessionPhase == SessionPhase.Green)

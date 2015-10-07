@@ -184,6 +184,8 @@ namespace CrewChiefV3.GameState
         // Unit: Seconds (-1.0 = none)
         public Single LapTimePrevious = -1;
 
+        public Single LapTimePreviousEstimateForInvalidLap = -1;
+
         // Unit: Seconds (-1.0 = none)
         public Single LapTimeCurrent = -1;
 
@@ -239,13 +241,16 @@ namespace CrewChiefV3.GameState
 
         public Boolean HasLeadChanged = false;
 
-        public float SessionTimeAtEndOfLastSector1 = 0;
-
-        public float SessionTimeAtEndOfLastSector2 = 0;
-
-        public float SessionTimeAtEndOfLastSector3 = 0;
+        public Dictionary<int, float> SessionTimesAtEndOfSectors = new Dictionary<int, float>();
 
         public String DriverRawName;
+
+        public SessionData()
+        {
+            SessionTimesAtEndOfSectors.Add(1, -1); 
+            SessionTimesAtEndOfSectors.Add(2, -1); 
+            SessionTimesAtEndOfSectors.Add(3, -1);
+        }
     }
 
     public class PositionAndMotionData
@@ -279,19 +284,9 @@ namespace CrewChiefV3.GameState
         public int CurrentSectorNumber = 0;
 
         public Boolean IsEnteringPits = false;
-        
-        public float SessionTimeAtEndOfLastSector1 = 0;
 
-        public float SessionTimeAtEndOfLastSector2 = 0;
-
-        public float SessionTimeAtEndOfLastSector3 = 0;
-        
-        public int LapsCompletedAtEndOfLastSector1 = 0;
-
-        public int LapsCompletedAtEndOfLastSector2 = 0;
-
-        public int LapsCompletedAtEndOfLastSector3 = 0;
-
+        public Dictionary<int, float> SessionTimesAtEndOfSectors = new Dictionary<int, float>();
+               
         public float ApproximateLastLapTime = 0;
 
         public float Speed = 0;
@@ -299,28 +294,62 @@ namespace CrewChiefV3.GameState
         public float[] WorldPosition;
 
         public Boolean IsNewLap = false;
+
+        public OpponentData()
+        {
+            SessionTimesAtEndOfSectors.Add(1, -1); 
+            SessionTimesAtEndOfSectors.Add(2, -1); 
+            SessionTimesAtEndOfSectors.Add(3, -1);
+        }
         
-        // TODO: the logic in this method is bascially bollocks
         public OpponentDelta getTimeDifferenceToPlayer(SessionData playerSessionData)
         {
-            if (playerSessionData.SectorNumber == 1)
+            int lastSectorPlayerCompleted = playerSessionData.SectorNumber == 1 ? 3 : playerSessionData.SectorNumber;
+            int lastSectorThisOpponentCompleted = CurrentSectorNumber == 1 ? 3 : CurrentSectorNumber;
+            float playerLapTimeToUse = playerSessionData.LapTimePrevious;
+            if (playerLapTimeToUse == 0 || playerLapTimeToUse == -1) 
             {
-                return new OpponentDelta(playerSessionData.SessionTimeAtEndOfLastSector3 - SessionTimeAtEndOfLastSector3,
-                    playerSessionData.CompletedLaps - LapsCompletedAtEndOfLastSector3);
+                playerLapTimeToUse = playerSessionData.LapTimePreviousEstimateForInvalidLap;
             }
-            else if (playerSessionData.SectorNumber == 2)
-            {
-                return new OpponentDelta(playerSessionData.SessionTimeAtEndOfLastSector1 - SessionTimeAtEndOfLastSector1,
-                     playerSessionData.CompletedLaps - LapsCompletedAtEndOfLastSector1);
-            } 
-            else if (playerSessionData.SectorNumber == 3)
-            {
-                return new OpponentDelta(playerSessionData.SessionTimeAtEndOfLastSector2 - SessionTimeAtEndOfLastSector2,
-                     playerSessionData.CompletedLaps - LapsCompletedAtEndOfLastSector2);
-            }
-            else
+
+            if (playerSessionData.SessionTimesAtEndOfSectors[lastSectorPlayerCompleted] == -1 || SessionTimesAtEndOfSectors[lastSectorPlayerCompleted] == -1)
             {
                 return null;
+            }
+            float timeDifference;
+            if (Position == playerSessionData.Position + 1) 
+            {
+                timeDifference = -1 * playerSessionData.TimeDeltaBehind;
+            }
+            else if (Position == playerSessionData.Position - 1)
+            {
+                timeDifference = playerSessionData.TimeDeltaFront;
+            }
+            else 
+            { 
+                timeDifference = playerSessionData.SessionTimesAtEndOfSectors[lastSectorPlayerCompleted] - SessionTimesAtEndOfSectors[lastSectorPlayerCompleted];
+            }
+            // if the player is ahead, the time difference is negative
+
+            if (((playerSessionData.CompletedLaps == CompletedLaps + 1 && timeDifference < 0) || playerSessionData.CompletedLaps > CompletedLaps + 1 ||
+                (playerSessionData.CompletedLaps == CompletedLaps - 1 && timeDifference > 0) || playerSessionData.CompletedLaps < CompletedLaps - 1))
+            {
+                // there's more than a lap difference
+                return new OpponentDelta(-1, playerSessionData.CompletedLaps - CompletedLaps);
+            }
+            else if (playerSessionData.CompletedLaps == CompletedLaps + 1 && timeDifference > 0)
+            {
+                // the player has completed 1 more lap but is behind on track
+                return new OpponentDelta(timeDifference - playerLapTimeToUse, 0);
+            }
+            else if (playerSessionData.CompletedLaps == CompletedLaps - 1 && timeDifference < 0)
+            {
+                // the player has completed 1 less lap but is ahead on track
+                return new OpponentDelta(playerLapTimeToUse - timeDifference, 0);
+            } 
+            else 
+            {
+                return new OpponentDelta(timeDifference, 0);
             }
         }
 
@@ -516,7 +545,7 @@ namespace CrewChiefV3.GameState
 
         public PositionAndMotionData PositionAndMotionData = new PositionAndMotionData();
 
-        public Dictionary<int, OpponentData> OpponentData = new Dictionary<int, OpponentData>();
+        public Dictionary<String, OpponentData> OpponentData = new Dictionary<String, OpponentData>();
 
         public GameStateData(long ticks)
         {
@@ -533,7 +562,7 @@ namespace CrewChiefV3.GameState
         public List<String> getRawDriverNames()
         {
             List<String> rawDriverNames = new List<String>();
-            foreach (KeyValuePair<int, OpponentData> entry in OpponentData)
+            foreach (KeyValuePair<String, OpponentData> entry in OpponentData)
             {
                 rawDriverNames.Add(entry.Value.DriverRawName);                
             }
@@ -543,10 +572,10 @@ namespace CrewChiefV3.GameState
 
         public OpponentData getOpponentAtPosition(int position) 
         {
-            int opponentId = getOpponentIdAtPosition(position);
-            if (opponentId != -1 && OpponentData.ContainsKey(opponentId))
+            String opponentName = getOpponentNameAtPosition(position);
+            if (opponentName != null && OpponentData.ContainsKey(opponentName))
             {
-                return OpponentData[opponentId];
+                return OpponentData[opponentName];
             }
             else
             {
@@ -558,7 +587,7 @@ namespace CrewChiefV3.GameState
         {
             if (OpponentData != null && OpponentData.Count != 0)
             {
-                foreach (KeyValuePair<int, OpponentData> entry in OpponentData)
+                foreach (KeyValuePair<String, OpponentData> entry in OpponentData)
                 {
                     if (entry.Value.PositionAtSector3 == position)
                     {
@@ -569,35 +598,35 @@ namespace CrewChiefV3.GameState
             return null;
         }
 
-        public int getOpponentIdInFront()
+        public String getOpponentNameInFront()
         {
             if (SessionData.Position > 1)
             {
-                 return getOpponentIdAtPosition(SessionData.Position - 1);
+                 return getOpponentNameAtPosition(SessionData.Position - 1);
             }
             else
             {
-                return -1;
+                return null;
             }
         }
 
-        public int getOpponentIdBehind()
+        public String getOpponentNameBehind()
         {
             if (SessionData.Position < SessionData.NumCars)
             {
-                return getOpponentIdAtPosition(SessionData.Position + 1);
+                return getOpponentNameAtPosition(SessionData.Position + 1);
             }
             else
             {
-                return -1;
+                return null;
             }
         }
 
-        public int getOpponentIdAtPosition(int position)
+        public String getOpponentNameAtPosition(int position)
         {
             if (OpponentData.Count != 0)
             {
-                foreach (KeyValuePair<int, OpponentData> entry in OpponentData)
+                foreach (KeyValuePair<String, OpponentData> entry in OpponentData)
                 {
                     if (entry.Value.Position == position)
                     {
@@ -605,13 +634,13 @@ namespace CrewChiefV3.GameState
                     }
                 }
             }
-            return -1;
+            return null;
         }
 
         public float getBestOpponentLapTime()
         {
             float bestLapTime = -1;
-            foreach (KeyValuePair<int, OpponentData> entry in OpponentData)
+            foreach (KeyValuePair<String, OpponentData> entry in OpponentData)
             {
                 if (entry.Value.ApproximateLastLapTime > 0 &&
                     (bestLapTime == -1 || entry.Value.ApproximateLastLapTime < bestLapTime))
@@ -633,7 +662,7 @@ namespace CrewChiefV3.GameState
         public void displayOpponentData()
         {
             Console.WriteLine("got " + OpponentData.Count + " opponents");
-            foreach (KeyValuePair<int, OpponentData> opponent in OpponentData)
+            foreach (KeyValuePair<String, OpponentData> opponent in OpponentData)
             {
                 Console.WriteLine("last laptime " + opponent.Value.ApproximateLastLapTime + " completed laps " + opponent.Value.CompletedLaps + 
                     " ID " + opponent.Key + " name " + opponent.Value.DriverRawName + " active " + opponent.Value.IsActive + 

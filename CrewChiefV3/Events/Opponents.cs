@@ -60,6 +60,17 @@ namespace CrewChiefV3.Events
 
         override protected void triggerInternal(GameStateData previousGameState, GameStateData currentGameState)
         {
+            /*if (currentGameState.SessionData.IsNewSector && currentGameState.SessionData.CompletedLaps > 0)
+            {
+                foreach (KeyValuePair<String, OpponentData> opp in currentGameState.OpponentData) {
+                    OpponentData.OpponentDelta delta = opp.Value.getTimeDifferenceToPlayer(currentGameState.SessionData);
+                    if (delta != null)
+                    {
+                        Console.WriteLine("DETLA: " + delta.lapDifference + " , " + delta.time + " POSITION " + opp.Value.Position + " PLAYER_POS " + currentGameState.SessionData.Position);
+                    }
+                }
+            }*/
+
             this.currentGameState = currentGameState;
             if (nextCarAheadChangeMessage == DateTime.MinValue)
             {
@@ -189,7 +200,7 @@ namespace CrewChiefV3.Events
             {
                 if (voiceMessage.StartsWith(SpeechRecogniser.WHERE_IS))
                 {
-                    foreach (KeyValuePair<int, OpponentData> entry in currentGameState.OpponentData)
+                    foreach (KeyValuePair<String, OpponentData> entry in currentGameState.OpponentData)
                     {
                         String usableDriverName = DriverNameHelper.getUsableNameForRawName(entry.Value.DriverRawName);
                         if (voiceMessage.Contains(usableDriverName))

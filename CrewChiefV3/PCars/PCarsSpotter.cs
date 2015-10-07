@@ -174,19 +174,20 @@ namespace CrewChiefV3.PCars
 
             float currentSpeed = currentState.mSpeed;
             float previousSpeed = lastState.mSpeed;
-            // knock 10 metres off the track length to avoid farting about with positions wrapping relative to each other - 
-            // we only use the track length here for belt n braces checking
-            float trackLengthToUse = currentState.mTrackLength - 10;
-            if (enabled && currentState.mParticipantData.Count() > 1 && currentState.mViewedParticipantIndex >= 0)
+
+            if (enabled && currentState.mParticipantData.Count() > 1)
             {
-                pCarsAPIParticipantStruct playerData = currentState.mParticipantData[currentState.mViewedParticipantIndex];
+                Tuple<int, pCarsAPIParticipantStruct> playerDataWithIndex = PCarsGameStateMapper.getPlayerDataStruct(currentState.mParticipantData, currentState.mViewedParticipantIndex);
+                int playerIndex = playerDataWithIndex.Item1;
+                pCarsAPIParticipantStruct playerData = playerDataWithIndex.Item2;
                 float playerX = playerData.mWorldPosition[0];
                 float playerY = playerData.mWorldPosition[2];
                 if (playerX == 0 || playerY == 0 || playerX == -1 || playerY == -1)
                 {
                     return;
                 }
-                pCarsAPIParticipantStruct previousPlayerData = lastState.mParticipantData[lastState.mViewedParticipantIndex];
+                Tuple<int, pCarsAPIParticipantStruct> previousPlayerDataWithIndex = PCarsGameStateMapper.getPlayerDataStruct(lastState.mParticipantData, lastState.mViewedParticipantIndex);
+                pCarsAPIParticipantStruct previousPlayerData = previousPlayerDataWithIndex.Item2;
 
                 if (currentSpeed > minSpeedForSpotterToOperate && currentState.mPitMode == (uint) ePitMode.PIT_MODE_NONE)
                 {
@@ -194,105 +195,111 @@ namespace CrewChiefV3.PCars
                     int carsOnRight = 0;
                     for (int i = 0; i < currentState.mParticipantData.Count(); i++)
                     {
+                        if (i == playerIndex)
+                        {
+                            continue;
+                        }
                         if (carsOnLeft >= 1 && carsOnRight >= 1)
                         {
                             // stop processing - we already know there's a car on both sides
                             break;
                         }
-                        if (i != currentState.mViewedParticipantIndex)
-                        {
-                            pCarsAPIParticipantStruct opponentData = currentState.mParticipantData[i];
-                            int prevOpponentIndex = PCarsGameStateMapper.getPreviousOpponentIndex(lastState.mParticipantData, i, opponentData.mName);
-                            float previousOpponentX = 0;
-                            float previousOpponentY = 0;
-                            if (prevOpponentIndex != -1)
-                            {
-                                pCarsAPIParticipantStruct previousOpponentData = lastState.mParticipantData[prevOpponentIndex];
-                                previousOpponentX = previousOpponentData.mWorldPosition[0];
-                                previousOpponentY = previousOpponentData.mWorldPosition[2];
-                            }
-                            float currentOpponentX = opponentData.mWorldPosition[0];
-                            float currentOpponentY = opponentData.mWorldPosition[2];
+                        
+                        pCarsAPIParticipantStruct opponentData = currentState.mParticipantData[i];
 
-                            if (opponentData.mIsActive) {
-                                if (currentOpponentX != 0 && currentOpponentY != 0 &&
-                                        currentOpponentX != -1 && currentOpponentY != -1 &&
-                                    previousOpponentX != 0 && previousOpponentY != 0 &&
-                                        previousOpponentX != -1 && previousOpponentY != -1 &&
-                                    opponentIsRacing(currentOpponentX, currentOpponentY, previousOpponentX, previousOpponentY, playerData, previousPlayerData))
+                        float previousOpponentX = 0;
+                        float previousOpponentY = 0;
+                        try
+                        {
+                            pCarsAPIParticipantStruct previousOpponentData = PCarsGameStateMapper.getParticipantDataForName(lastState.mParticipantData, opponentData.mName, i);
+                            previousOpponentX = previousOpponentData.mWorldPosition[0];
+                            previousOpponentY = previousOpponentData.mWorldPosition[2];
+                        }
+                        catch (Exception e)
+                        {
+                            // ignore - the mParticipantData array is frequently full of crap
+                        }
+                        float currentOpponentX = opponentData.mWorldPosition[0];
+                        float currentOpponentY = opponentData.mWorldPosition[2];
+
+                        if (opponentData.mIsActive) {
+                            if (currentOpponentX != 0 && currentOpponentY != 0 &&
+                                    currentOpponentX != -1 && currentOpponentY != -1 &&
+                                previousOpponentX != 0 && previousOpponentY != 0 &&
+                                    previousOpponentX != -1 && previousOpponentY != -1 &&
+                                opponentIsRacing(currentOpponentX, currentOpponentY, previousOpponentX, previousOpponentY, playerData, previousPlayerData))
+                            {
+                                Side side = getSide(currentState.mOrientation[1], playerX, playerY, currentOpponentX, currentOpponentY);
+                                if (side == Side.left)
                                 {
-                                    Side side = getSide(currentState.mOrientation[1], playerX, playerY, currentOpponentX, currentOpponentY);
-                                    if (side == Side.left)
+                                    carsOnLeft++;
+                                    if (lastKnownOpponentState.ContainsKey(i))
                                     {
-                                        carsOnLeft++;
-                                        if (lastKnownOpponentState.ContainsKey(i))
-                                        {
-                                            lastKnownOpponentState[i] = Side.left;
-                                        }
-                                        else
-                                        {
-                                            lastKnownOpponentState.Add(i, Side.left);
-                                        }
+                                        lastKnownOpponentState[i] = Side.left;
                                     }
-                                    else if (side == Side.right)
+                                    else
                                     {
-                                        carsOnRight++;
-                                        if (lastKnownOpponentState.ContainsKey(i))
+                                        lastKnownOpponentState.Add(i, Side.left);
+                                    }
+                                }
+                                else if (side == Side.right)
+                                {
+                                    carsOnRight++;
+                                    if (lastKnownOpponentState.ContainsKey(i))
+                                    {
+                                        lastKnownOpponentState[i] = Side.right;
+                                    }
+                                    else
+                                    {
+                                        lastKnownOpponentState.Add(i, Side.right);
+                                    }
+                                }
+                                else
+                                {
+                                    if (lastKnownOpponentState.ContainsKey(i))
+                                    {
+                                        lastKnownOpponentState[i] = Side.none;
+                                    }
+                                    else
+                                    {
+                                        lastKnownOpponentState.Add(i, Side.none);
+                                    }
+                                }                             
+                            }
+                            else
+                            {
+                                // no usable position data, use the last known state
+                                if (lastKnownOpponentState.ContainsKey(i)) {
+                                    int lastStateUseCount = 1;
+                                    if (lastKnownOpponentStateUseCounter.ContainsKey(i))
+                                    {
+                                        lastStateUseCount = lastKnownOpponentStateUseCounter[i] + 1;
+                                    }
+                                    else
+                                    {
+                                        lastKnownOpponentStateUseCounter.Add(i, 0);
+                                    }
+                                    if (lastStateUseCount < maxSavedStateReuse)
+                                    {
+                                        lastKnownOpponentStateUseCounter[i] = lastStateUseCount;
+                                        if (lastKnownOpponentState[i] == Side.left)
                                         {
-                                            lastKnownOpponentState[i] = Side.right;
+                                            carsOnLeft++;
                                         }
-                                        else
+                                        else if (lastKnownOpponentState[i] == Side.right)
                                         {
-                                            lastKnownOpponentState.Add(i, Side.right);
+                                            carsOnRight++;
                                         }
                                     }
                                     else
                                     {
-                                        if (lastKnownOpponentState.ContainsKey(i))
-                                        {
-                                            lastKnownOpponentState[i] = Side.none;
-                                        }
-                                        else
-                                        {
-                                            lastKnownOpponentState.Add(i, Side.none);
-                                        }
-                                    }                             
-                                }
-                                else
-                                {
-                                    // no usable position data, use the last known state
-                                    if (lastKnownOpponentState.ContainsKey(i)) {
-                                        int lastStateUseCount = 1;
-                                        if (lastKnownOpponentStateUseCounter.ContainsKey(i))
-                                        {
-                                            lastStateUseCount = lastKnownOpponentStateUseCounter[i] + 1;
-                                        }
-                                        else
-                                        {
-                                            lastKnownOpponentStateUseCounter.Add(i, 0);
-                                        }
-                                        if (lastStateUseCount < maxSavedStateReuse)
-                                        {
-                                            lastKnownOpponentStateUseCounter[i] = lastStateUseCount;
-                                            if (lastKnownOpponentState[i] == Side.left)
-                                            {
-                                                carsOnLeft++;
-                                            }
-                                            else if (lastKnownOpponentState[i] == Side.right)
-                                            {
-                                                carsOnRight++;
-                                            }
-                                        }
-                                        else
-                                        {
-                                            // we've used too many saved states for this missing opponent position
-                                            lastKnownOpponentState.Remove(i);
-                                            lastKnownOpponentStateUseCounter.Remove(i);
-                                        }
+                                        // we've used too many saved states for this missing opponent position
+                                        lastKnownOpponentState.Remove(i);
+                                        lastKnownOpponentStateUseCounter.Remove(i);
                                     }
                                 }
-                            }                            
-                        }                        
+                            }
+                        }                    
                     }
                     getNextMessage(carsOnLeft, carsOnRight, now);
                     playNextMessage(carsOnLeft, carsOnRight, now);

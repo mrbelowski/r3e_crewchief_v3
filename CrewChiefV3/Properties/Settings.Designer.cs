@@ -763,5 +763,17 @@ namespace CrewChiefV3.Properties {
                 this["enable_green_light_messages"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string pcars_steam_id {
+            get {
+                return ((string)(this["pcars_steam_id"]));
+            }
+            set {
+                this["pcars_steam_id"] = value;
+            }
+        }
     }
 }

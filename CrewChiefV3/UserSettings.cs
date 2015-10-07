@@ -42,6 +42,8 @@ namespace CrewChiefV3
             propertyHelp.Add("launch_raceroom", "If this is true the application will attempt to launch RaceRoom when CrewChief starts (when you click 'Start application'" + 
                 " or the app auto starts CrewChief if you set run_immediately to true)");
             propertyHelp.Add("run_immediately", "If this is true the application will start running CrewChief as soon as you start it up, using whatever options you previously set");
+            propertyHelp.Add("pcars_steam_id", "PCars sometimes sends the participant data in the wrong order. If this value " +
+                "is set, the app will use it to try and work around this issue, preventing the app 'seeing' the wrong data for the player");
         }
 
         public String getHelp(String propertyId)
