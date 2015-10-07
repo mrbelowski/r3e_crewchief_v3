@@ -775,5 +775,29 @@ namespace CrewChiefV3.Properties {
                 this["pcars_steam_id"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("4")]
+        public float cumulative_lap_lockup_warning_threshold {
+            get {
+                return ((float)(this["cumulative_lap_lockup_warning_threshold"]));
+            }
+            set {
+                this["cumulative_lap_lockup_warning_threshold"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("5")]
+        public float cumulative_lap_wheelspin_warning_threshold {
+            get {
+                return ((float)(this["cumulative_lap_wheelspin_warning_threshold"]));
+            }
+            set {
+                this["cumulative_lap_wheelspin_warning_threshold"] = value;
+            }
+        }
     }
 }

@@ -102,9 +102,10 @@ namespace CrewChiefV3.Events
         private static Boolean enableWheelSpinWarnings = UserSettings.GetUserSettings().getBoolean("enable_wheel_spin_warnings");
         private static Boolean enableBrakeLockWarnings = UserSettings.GetUserSettings().getBoolean("enable_brake_lock_warnings");
 
+        private static float initialTotalLapLockupThreshold = UserSettings.GetUserSettings().getFloat("cumulative_lap_lockup_warning_threshold");
+        private static float initialTotalWheelspinThreshold = UserSettings.GetUserSettings().getFloat("cumulative_lap_wheelspin_warning_threshold");
+
         // todo: warn on single lockups
-        private static float initialTotalLapLockupThreshold = 5;
-        private static float initialTotalWheelspinThreshold = 6;
 
         private int lapsIntoSessionBeforeTempMessage = 2;        
 
