@@ -191,7 +191,7 @@ namespace CrewChiefV3.PCars
         {
             pCarsAPIStruct shared = ((CrewChiefV3.PCars.PCarsSharedMemoryReader.PCarsStructWrapper)memoryMappedFileStruct).data;
             long ticks = ((CrewChiefV3.PCars.PCarsSharedMemoryReader.PCarsStructWrapper)memoryMappedFileStruct).ticksWhenRead;
-            
+            Console.WriteLine(shared.mRainDensity + ", " + shared.mCloudBrightness);
             
             // game state is 3 for paused, 5 for replay. No idea what 4 is...
             if (shared.mGameState == (uint)eGameState.GAME_FRONT_END ||

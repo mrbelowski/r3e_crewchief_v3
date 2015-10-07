@@ -33,6 +33,7 @@ namespace CrewChiefV3
         public static String folderDeltasEnabled = "acknowledge/deltasEnabled";
         public static String folderDeltasDisabled = "acknowledge/deltasDisabled";
 
+        private QueuedMessage lastMessagePlayed = null;
 
         private Boolean allowPearlsOnNextPlay = true;
 
@@ -701,6 +702,7 @@ namespace CrewChiefV3
                         }
                         else
                         {
+                            lastMessagePlayed = thisMessage;
                             foreach (String message in thisMessage.messageFolders)
                             {
                                 List<SoundPlayer> clipsList = clips[message];
@@ -1073,6 +1075,16 @@ namespace CrewChiefV3
         public void suspendPearlsOfWisdom()
         {
             allowPearlsOnNextPlay = false;
+        }
+
+        public void repeatLastMessage()
+        {
+            if (lastMessagePlayed != null)
+            {
+                openChannel();
+                playClipImmediately(lastMessagePlayed);
+                closeChannel();
+            }
         }
     }
 }

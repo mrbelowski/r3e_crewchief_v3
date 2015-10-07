@@ -78,6 +78,9 @@ namespace CrewChiefV3
         public static String WHOS_BEHIND = "who's behind";
         public static String WHOS_LEADING = "who's leading";
 
+        public static String REPEAT_LAST_MESSAGE = "repeat last message";
+        public static String SAY_AGAIN = "say again";
+
         private float confidenceLimit = 0.5f;
 
         private CrewChief crewChief;
@@ -87,7 +90,7 @@ namespace CrewChiefV3
         public MainWindow.VoiceOptionEnum voiceOptionEnum;
 
         private Grammar namesGrammar = null;
-
+        
         private List<String> loadedDriverNames;
 
         private System.Globalization.CultureInfo cultureInfo;
@@ -185,7 +188,7 @@ namespace CrewChiefV3
                 Grammar g5 = new Grammar(gb5);
 
                 Choices info6 = new Choices();
-                info6.Add(new string[] { SPOT, DONT_SPOT });
+                info6.Add(new string[] { SPOT, DONT_SPOT, REPEAT_LAST_MESSAGE, SAY_AGAIN });
                 GrammarBuilder gb6 = new GrammarBuilder();
                 gb6.Culture = cultureInfo;
                 gb6.Append(info6);
@@ -206,7 +209,7 @@ namespace CrewChiefV3
                 Grammar g8 = new Grammar(gb8);
 
                 Choices info9 = new Choices();
-                info1.Add(new string[] { TYRE_TEMPS, TYRE_TEMPERATURES, BRAKE_TEMPS, BRAKE_TEMPERATURES, BRAKES, ENGINE_TEMPS, ENGINE_TEMPERATURES });
+                info9.Add(new string[] { TYRE_TEMPS, TYRE_TEMPERATURES, BRAKE_TEMPS, BRAKE_TEMPERATURES, BRAKES, ENGINE_TEMPS, ENGINE_TEMPERATURES });
                 GrammarBuilder gb9 = new GrammarBuilder();
                 gb9.Culture = cultureInfo;
                 gb9.Append("how are my");
@@ -274,7 +277,7 @@ namespace CrewChiefV3
                 Console.WriteLine("Driver names are already loaded");
             }
         }
-
+        
         void sre_SpeechRecognized(object sender, SpeechRecognizedEventArgs e)
         {
             Console.WriteLine("recognised : " + e.Result.Text + " confidence = " + e.Result.Confidence);
@@ -285,6 +288,10 @@ namespace CrewChiefV3
                     if (e.Result.Grammar == namesGrammar)
                     {
                         CrewChief.getEvent("Opponents").respond(e.Result.Text);
+                    }
+                    else if (e.Result.Text.Contains(REPEAT_LAST_MESSAGE) || e.Result.Text.Contains(SAY_AGAIN))
+                    {
+                        crewChief.audioPlayer.repeatLastMessage();
                     }
                     else
                     {
