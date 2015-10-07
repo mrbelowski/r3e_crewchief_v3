@@ -304,8 +304,7 @@ namespace CrewChiefV3.GameState
         
         public OpponentDelta getTimeDifferenceToPlayer(SessionData playerSessionData)
         {
-            int lastSectorPlayerCompleted = playerSessionData.SectorNumber == 1 ? 3 : playerSessionData.SectorNumber;
-            int lastSectorThisOpponentCompleted = CurrentSectorNumber == 1 ? 3 : CurrentSectorNumber;
+            int lastSectorPlayerCompleted = playerSessionData.SectorNumber == 1 ? 3 : playerSessionData.SectorNumber - 1;
             float playerLapTimeToUse = playerSessionData.LapTimePrevious;
             if (playerLapTimeToUse == 0 || playerLapTimeToUse == -1) 
             {
@@ -331,8 +330,10 @@ namespace CrewChiefV3.GameState
             }
             // if the player is ahead, the time difference is negative
 
-            if (((playerSessionData.CompletedLaps == CompletedLaps + 1 && timeDifference < 0) || playerSessionData.CompletedLaps > CompletedLaps + 1 ||
-                (playerSessionData.CompletedLaps == CompletedLaps - 1 && timeDifference > 0) || playerSessionData.CompletedLaps < CompletedLaps - 1))
+            if (((playerSessionData.CompletedLaps == CompletedLaps + 1 && timeDifference < 0 && CurrentSectorNumber < playerSessionData.SectorNumber) || 
+                playerSessionData.CompletedLaps > CompletedLaps + 1 ||
+                (playerSessionData.CompletedLaps == CompletedLaps - 1 && timeDifference > 0 && CurrentSectorNumber >= playerSessionData.SectorNumber) || 
+                playerSessionData.CompletedLaps < CompletedLaps - 1))
             {
                 // there's more than a lap difference
                 return new OpponentDelta(-1, playerSessionData.CompletedLaps - CompletedLaps);
