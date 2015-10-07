@@ -1196,10 +1196,6 @@ namespace CrewChiefV3.PCars
                         break;
                     }
                 }
-                if (onLimiter)
-                {
-                    Console.WriteLine("on limiter, initial: " + initialSpeed + " : " + initialX + " : " + initialY + " final " + meanSpeed + " : " + meanX + " : " + meanY);
-                }
             }            
             return onLimiter;
         }
