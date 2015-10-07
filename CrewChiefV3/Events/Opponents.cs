@@ -285,6 +285,21 @@ namespace CrewChiefV3.Events
                         }
                     }
                 }
+                else if (voiceMessage.StartsWith(SpeechRecogniser.WHOS_LEADING) && currentGameState.SessionData.Position > 1)
+                {
+                    OpponentData opponent = currentGameState.getOpponentAtPosition(1);
+                    if (opponent != null)
+                    {
+                        QueuedMessage queuedMessage = new QueuedMessage("opponentName", MessageContents(opponent), 0, null);
+                        if (queuedMessage.canBePlayed)
+                        {
+                            audioPlayer.openChannel();
+                            audioPlayer.playClipImmediately(queuedMessage);
+                            audioPlayer.closeChannel();
+                            foundDriver = true;
+                        }
+                    }
+                }
             }
             if (!foundDriver)
             {

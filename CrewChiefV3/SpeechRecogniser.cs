@@ -76,6 +76,7 @@ namespace CrewChiefV3
         public static String WHERE_IS = "where's";
         public static String WHOS_IN_FRONT = "who's in front";
         public static String WHOS_BEHIND = "who's behind";
+        public static String WHOS_LEADING = "who's leading";
 
         private float confidenceLimit = 0.5f;
 
@@ -259,6 +260,7 @@ namespace CrewChiefV3
                 }
                 nameChoices.Add(WHOS_BEHIND);
                 nameChoices.Add(WHOS_IN_FRONT);
+                nameChoices.Add(WHOS_LEADING);
                 GrammarBuilder nameGB = new GrammarBuilder();
                 nameGB.Culture = cultureInfo;                
                 nameGB.Append(nameChoices);

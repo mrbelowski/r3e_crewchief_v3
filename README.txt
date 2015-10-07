@@ -2,7 +2,7 @@ CrewChief version 3.
 
 Changelog
 ---------
-Version 3.4.1: Minor cold tyre temp increase (there were too many warnings); added a couple more voice options for switching off deltas; fixed some ignored enable / disable messges flags; added driver names for RaceRoom; use names, rather than array indexes, to track PCars participant data (should behave better when PCars messes up the participant data array - particularly in online practice and qual sessions); re-worked opponent gap monitoring; make wheelspin and lockup warning thresholds (total seconds per lap) configurable; some cold tyre warning temp tweaks. No new sound pack for this version.
+Version 3.4.1: Minor cold tyre temp increase (there were too many warnings); added a couple more voice options for switching off deltas; fixed some ignored enable / disable messges flags; added driver names for RaceRoom; use names, rather than array indexes, to track PCars participant data (should behave better when PCars messes up the participant data array - particularly in online practice and qual sessions); re-worked opponent gap monitoring; make wheelspin and lockup warning thresholds (total seconds per lap) configurable; Added "who's leading" voice recognition; some cold tyre warning temp tweaks. No new sound pack for this version.
 
 Version 3.4.0: Fixed some pit detection issues; added option to disable pcars opponent pit detection; disable cut track warnings on out lap / pit exit; tidied up the way numbers are read for time gaps; removed some crap green-light sounds; disable tyre wear info on pit entry for now; added a few more speech recognition bits and bobs; fixed race start message playing while in parmc ferme; don't process data when in replay, pause, or menus; fixed ignored 'enable_brake_locking_warning' and 'enable_wheel_spin_warning' options. This version requires a new sound pack.
 
@@ -58,6 +58,7 @@ I've not finished implementing this but currently the app understands and respon
 "do I still have a penalty / do I have a penalty / have I served my penalty"
 "do I have to pit / do I need to pit / do I have a mandatory pit stop / do I have a mandatory stop / do I have to make a pit stop"
 "where's [opponent driver last name]"
+"who's leading" (this one only works if you have the driver name recording for the lead car)
 "who's [ahead / behind]" (this one only works if you have the driver name recording for that driver)
 "tell me the gaps / give me the gaps / tell me the deltas / give me the deltas" (switch on 'deltas' mode where the time deltas in front and behind get read out on each lap. Note that these messages will play even if you have disabled messages)
 "don't tell me the gaps / don't tell me the deltas / no more gaps / no more deltas" (switch off deltas mode)
