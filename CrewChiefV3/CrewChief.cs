@@ -21,7 +21,7 @@ namespace CrewChiefV3
 
         public SpeechRecogniser speechRecogniser;
 
-        private GameDefinition gameDefinition;
+        public static GameDefinition gameDefinition;
 
         public static Boolean readOpponentDeltasForEveryLap = false;
         private Boolean keepQuietEnabled = false;
@@ -103,7 +103,7 @@ namespace CrewChiefV3
                 Console.WriteLine("Using game definition " + gameDefinition.friendlyName);
                 UserSettings.GetUserSettings().setProperty("last_game_definition", gameDefinition.gameEnum.ToString());
                 UserSettings.GetUserSettings().saveUserSettings();
-                this.gameDefinition = gameDefinition;
+                CrewChief.gameDefinition = gameDefinition;
             }
         }
 

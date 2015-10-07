@@ -310,37 +310,46 @@ namespace CrewChiefV3.Events
 
         public override void respond(String voiceMessage)
         {
-            if (!mandatoryStopRequired || mandatoryStopCompleted)
+            if (CrewChief.gameDefinition == GameDefinition.raceRoom)
             {
-                audioPlayer.openChannel();
-                audioPlayer.playClipImmediately(new QueuedMessage(AudioPlayer.folderNo, 0, null));
-                audioPlayer.closeChannel();
+                if (!mandatoryStopRequired || mandatoryStopCompleted)
+                {
+                    audioPlayer.openChannel();
+                    audioPlayer.playClipImmediately(new QueuedMessage(AudioPlayer.folderNo, 0, null));
+                    audioPlayer.closeChannel();
+                }
+                else if (mandatoryStopMissed)
+                {
+                    audioPlayer.openChannel();
+                    audioPlayer.playClipImmediately(new QueuedMessage(folderMandatoryPitStopsMissedStop, 0, null));
+                    audioPlayer.closeChannel();
+                }
+                else if (mandatoryStopBoxThisLap)
+                {
+                    audioPlayer.openChannel();
+                    audioPlayer.playClipImmediately(new QueuedMessage("yesBoxThisLap",
+                        MessageContents(AudioPlayer.folderYes, folderMandatoryPitStopsPitThisLap), 0, null));
+                    audioPlayer.closeChannel();
+                }
+                else if (pitWindowOpenLap > 0)
+                {
+                    audioPlayer.openChannel();
+                    audioPlayer.playClipImmediately(new QueuedMessage("yesBoxOnLap",
+                        MessageContents(folderMandatoryPitStopsYesStopOnLap, QueuedMessage.folderNameNumbersStub + pitWindowOpenLap), 0, null));
+                    audioPlayer.closeChannel();
+                }
+                else if (pitWindowOpenTime > 0)
+                {
+                    audioPlayer.openChannel();
+                    audioPlayer.playClipImmediately(new QueuedMessage("yesBoxAfter",
+                        MessageContents(folderMandatoryPitStopsYesStopAfter, QueuedMessage.folderNameNumbersStub + pitWindowOpenTime, folderMandatoryPitStopsMinutes), 0, null));
+                    audioPlayer.closeChannel();
+                }
             }
-            else if (mandatoryStopMissed)
+            else
             {
                 audioPlayer.openChannel();
-                audioPlayer.playClipImmediately(new QueuedMessage(folderMandatoryPitStopsMissedStop, 0, null));
-                audioPlayer.closeChannel();
-            }
-            else if (mandatoryStopBoxThisLap)
-            {
-                audioPlayer.openChannel();
-                audioPlayer.playClipImmediately(new QueuedMessage("yesBoxThisLap",
-                    MessageContents(AudioPlayer.folderYes, folderMandatoryPitStopsPitThisLap), 0, null));
-                audioPlayer.closeChannel();
-            }
-            else if (pitWindowOpenLap > 0)
-            {
-                audioPlayer.openChannel();
-                audioPlayer.playClipImmediately(new QueuedMessage("yesBoxOnLap",
-                    MessageContents(folderMandatoryPitStopsYesStopOnLap, QueuedMessage.folderNameNumbersStub + pitWindowOpenLap), 0, null));
-                audioPlayer.closeChannel();
-            }
-            else if (pitWindowOpenTime > 0)
-            {
-                audioPlayer.openChannel();
-                audioPlayer.playClipImmediately(new QueuedMessage("yesBoxAfter",
-                    MessageContents(folderMandatoryPitStopsYesStopAfter, QueuedMessage.folderNameNumbersStub + pitWindowOpenTime, folderMandatoryPitStopsMinutes), 0, null));
+                audioPlayer.playClipImmediately(new QueuedMessage(AudioPlayer.folderNoData, 0, null));
                 audioPlayer.closeChannel();
             }
         }
