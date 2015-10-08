@@ -329,7 +329,7 @@ namespace CrewChiefV3.PCars
                 for (int i=0; i < shared.mParticipantData.Length; i++)
                 {
                     pCarsAPIParticipantStruct participantStruct = shared.mParticipantData[i];
-                    if (i != playerDataIndex && participantStruct.mIsActive)
+                    if (i != playerDataIndex && participantStruct.mIsActive && participantStruct.mName != null && participantStruct.mName.Length > 0)
                     {
                         if (!currentGameState.OpponentData.ContainsKey(participantStruct.mName))
                         {
@@ -643,7 +643,7 @@ namespace CrewChiefV3.PCars
                     }
                     else
                     {
-                        if (participantStruct.mIsActive)
+                        if (participantStruct.mIsActive && participantStruct.mName != null && participantStruct.mName.Length > 0)
                         {
                             Console.WriteLine("Creating opponent for name " + participantStruct.mName);
                             currentGameState.OpponentData.Add(participantStruct.mName, createOpponentData(participantStruct));
@@ -967,7 +967,7 @@ namespace CrewChiefV3.PCars
             opponentData.WorldPosition = new float[] { participantStruct.mWorldPosition[0], participantStruct.mWorldPosition[2] };
             return opponentData;
         }
-
+        
         /*
          * Race state changes - start race, skip practice to end of session, then into race:
          * 
