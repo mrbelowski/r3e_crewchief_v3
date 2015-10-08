@@ -196,6 +196,7 @@ namespace CrewChiefV3
                     if (!channelOpen && controllerConfiguration.isChannelOpen())
                     {
                         channelOpen = true;
+                        crewChief.audioPlayer.playStartListeningBeep();
                         crewChief.speechRecogniser.recognizeAsync();
                         Console.WriteLine("Listening...");
                     }
@@ -203,6 +204,7 @@ namespace CrewChiefV3
                     {
                         Console.WriteLine("Stopping listening...");
                         crewChief.speechRecogniser.recognizeAsyncCancel();
+                        crewChief.audioPlayer.playEndListeningBeep();
                         channelOpen = false;
                     }
                 }        

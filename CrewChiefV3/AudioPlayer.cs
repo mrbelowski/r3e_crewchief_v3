@@ -111,7 +111,7 @@ namespace CrewChiefV3
         private Boolean backgroundPlayerInitialised = false;
 
         public Boolean initialised = false;
-
+        
         public AudioPlayer(CrewChief crewChief)
         {
             this.crewChief = crewChief;
@@ -788,22 +788,14 @@ namespace CrewChiefV3
                 }
 
                 if (enableStartBleep)
-                {                    
-                    String bleepName;
+                {
                     if (useShortBeepWhenOpeningChannel)
                     {
-                        bleepName = "short_bleep";
+                        playShortStartSpeakingBeep();
                     }
                     else
                     {
-                        bleepName = "start_bleep";
-                    }
-                    List<SoundPlayer> bleeps = clips[bleepName];
-                    int bleepIndex = random.Next(0, bleeps.Count);
-                    Console.WriteLine("*** Opening channel, using bleep " + bleepName + " at position " + bleepIndex);
-                    if (!mute)
-                    {
-                        bleeps[bleepIndex].PlaySync();
+                        playStartSpeakingBeep();
                     }
                 }
             }
@@ -813,15 +805,9 @@ namespace CrewChiefV3
         {
             if (channelOpen)
             {
-                Console.WriteLine("*** Closing channel");
                 if (enableEndBleep)
                 {
-                    List<SoundPlayer> bleeps = clips["end_bleep"];
-                    int bleepIndex = random.Next(0, bleeps.Count);
-                    if (!mute)
-                    {
-                        bleeps[bleepIndex].PlaySync();
-                    }
+                    playEndSpeakingBeep();
                 }
                 if (getBackgroundVolume() > 0 && !mute)
                 {
@@ -834,6 +820,51 @@ namespace CrewChiefV3
                 channelOpen = false;
             }
             useShortBeepWhenOpeningChannel = false;
+        }
+
+        public void playStartSpeakingBeep()
+        {
+            List<SoundPlayer> bleeps = clips["start_bleep"];
+            int bleepIndex = random.Next(0, bleeps.Count);
+            Console.WriteLine("*** Opening channel, using bleep start_bleep at position " + bleepIndex);
+            if (!mute)
+            {
+                bleeps[bleepIndex].PlaySync();
+            }
+        }
+
+        // TODO: different beep
+        public void playStartListeningBeep()
+        {
+            playStartSpeakingBeep();
+        }
+
+        public void playShortStartSpeakingBeep()
+        {
+            List<SoundPlayer> bleeps = clips["short_bleep"];
+            int bleepIndex = random.Next(0, bleeps.Count);
+            Console.WriteLine("*** Opening channel, using bleep short_bleep at position " + bleepIndex);
+            if (!mute)
+            {
+                bleeps[bleepIndex].PlaySync();
+            }
+        }
+
+        // TODO: different beep
+        public void playEndListeningBeep()
+        {
+            playEndSpeakingBeep();
+        }
+
+        public void playEndSpeakingBeep()
+        {
+            List<SoundPlayer> bleeps = clips["end_bleep"];
+            int bleepIndex = random.Next(0, bleeps.Count);
+            Console.WriteLine("*** Closing channel, using bleep end_bleep at position " + bleepIndex);
+            if (!mute)
+            {
+                bleeps[bleepIndex].PlaySync();
+            }
         }
 
         /**
