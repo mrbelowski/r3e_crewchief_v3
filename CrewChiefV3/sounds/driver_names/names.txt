@@ -80,7 +80,7 @@ soke:soak
 ncc1980:en see see
 billzkid:bills kid
 Sharpnelson:nelson
-M.Weber:weber (**)
+M.Weber:weber
 GTRP_Rumblefish:rumble fish
 peedsN:peeds
 Snakekid Ger:snake kid

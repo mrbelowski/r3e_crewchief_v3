@@ -11,7 +11,13 @@ namespace CrewChiefV3
 {
     class DriverNameHelper
     {
-        private static Dictionary<String, String> rawNameToUsableName = new Dictionary<String, String>();
+        // if there's more than 2 names, and the second to last name isn't one of the common middle bits, 
+        // use the last part
+        private static Boolean optimisticSurnameExtraction = true;
+
+        private static String[] middleBits = new String[] { "van", "de", "da", "le", "la", "von", "di", "eg", "du" };
+
+        private static Dictionary<String, String> lowerCaseRawNameToUsableName = new Dictionary<String, String>();
 
         private static Dictionary<String, String> usableNamesForSession = new Dictionary<String, String>();
 
@@ -39,11 +45,11 @@ namespace CrewChiefV3
                 int separatorIndex = line.LastIndexOf(":");
                 if (separatorIndex > 0 && line.Length > separatorIndex + 1)
                 {
-                    String rawName = line.Substring(0, separatorIndex);
+                    String lowerCaseRawName = line.Substring(0, separatorIndex).ToLower();
                     String usableName = validateAndCleanUpName(line.Substring(separatorIndex + 1));
-                    if (usableName != null && !rawNameToUsableName.ContainsKey(rawName))
+                    if (usableName != null && !lowerCaseRawNameToUsableName.ContainsKey(lowerCaseRawName))
                     {
-                        rawNameToUsableName.Add(rawName, usableName);
+                        lowerCaseRawNameToUsableName.Add(lowerCaseRawName, usableName);
                     }
                 }
                 counter++;
@@ -53,31 +59,45 @@ namespace CrewChiefV3
 
         private static String validateAndCleanUpName(String name)
         {
-            name = name.Replace('_', ' ');
-            name = name.Replace('-', ' ');
-            if (name.EndsWith("]") && name.Contains("["))
+            try
             {
-                name = name.Substring(0, name.LastIndexOf('['));
-            }
-            for (int i = 0; i < 4; i++)
-            {
-                if (name.Count() > 1 && Char.IsNumber(name[name.Count() - 1]))
+                name = name.Replace('_', ' ');
+                // be a bit careful with hypens - if it's before the first space, just remove it as
+                // it's a separated firstname
+                if (name.IndexOf(' ') > 0 && name.IndexOf('-') > 0 && name.IndexOf('-') < name.IndexOf(' '))
                 {
-                    name = name.Substring(0, name.Count() - 1);
+                    name = name.Replace("-", "");
                 }
-                else
+                name = name.Replace('-', ' ');
+                name = name.Replace('.', ' ');
+                if (name.EndsWith("]") && name.Contains("["))
                 {
-                    break;
+                    name = name.Substring(0, name.LastIndexOf('['));
                 }
-            }                
-
-            if (name.All(c=>Char.IsLetter(c) || c==' ' || c=='\'' || c=='.') && name.Length > 0) {
-                return name.Trim();
+                if (name.StartsWith("[") && name.Contains("]"))
+                {
+                    name = name.Substring(name.LastIndexOf(']') + 1);
+                }
+                for (int i = 0; i < 4; i++)
+                {
+                    if (name.Count() > 1 && Char.IsNumber(name[name.Count() - 1]))
+                    {
+                        name = name.Substring(0, name.Count() - 1);
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }   
+                if (name.All(c=>Char.IsLetter(c) || c==' ' || c=='\'') && name.Length > 0) {
+                    return name.Trim();
+                }
             }
-            else
+            catch (Exception e)
             {
-                return null;
+                
             }
+            return null;
         }
 
         public static List<String> getUsableDriverNames(List<String> rawDriverNames, String soundsFolderName)
@@ -86,14 +106,14 @@ namespace CrewChiefV3
             usableNamesForSession.Clear();
             foreach (String rawDriverName in rawDriverNames)
             {
-                if (rawNameToUsableName.ContainsKey(rawDriverName))
+                if (lowerCaseRawNameToUsableName.ContainsKey(rawDriverName.ToLower()))
                 {
-                    String usableDriverName = rawNameToUsableName[rawDriverName];
+                    String usableDriverName = lowerCaseRawNameToUsableName[rawDriverName.ToLower()];
                     if (!usableNamesForSession.ContainsKey(rawDriverName))
                     {
                         Console.WriteLine("Using mapped drivername " + usableDriverName + " for raw driver name " + rawDriverName);
                         usableNamesForSession.Add(rawDriverName, usableDriverName);
-                    }                    
+                    }
                 }
                 else
                 {
@@ -128,16 +148,43 @@ namespace CrewChiefV3
 
         private static String getUnambiguousLastName(String fullName)
         {
-            if (fullName.Count(Char.IsWhiteSpace) == 1)
+            if (fullName.Count(Char.IsWhiteSpace) == 0) 
             {
-                return fullName.Split(' ')[1];
-            }
-            if (fullName.LastIndexOf(". ") > 0 && fullName.LastIndexOf(". ") == fullName.LastIndexOf(" ") - 1)
+                return fullName;
+            } 
+            else
             {
-                String[] split = fullName.Split(' ');
-                return split[split.Length - 1];
+                String[] fullNameSplit = trimEmptyStrings(fullName.Split(' '));
+                if (fullNameSplit.Count() == 2)
+                {
+                    return fullName.Split(' ')[1];
+                }
+                else if (fullNameSplit[fullNameSplit.Count() - 2].Length == 1) 
+                {
+                    return fullNameSplit[fullNameSplit.Count() - 1];
+                }
+                else if (middleBits.Contains(fullNameSplit[fullNameSplit.Count() - 2].ToLower()))
+                {
+                    return fullNameSplit[fullNameSplit.Count() - 2] + " " + fullNameSplit[fullNameSplit.Count() - 1];
+                }
+                else if (optimisticSurnameExtraction)
+                {
+                    return fullNameSplit[fullNameSplit.Count() - 1];
+                }
             }
             return null;
+        }
+
+        private static String[] trimEmptyStrings(String[] strings)
+        {
+            List<String> trimmedList = new List<string>();
+            foreach (String str in strings) {
+                if (str.Trim().Length > 0)
+                {
+                    trimmedList.Add(str.Trim());
+                }
+            }
+            return trimmedList.ToArray();
         }
     }
 }
