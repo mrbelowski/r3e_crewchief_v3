@@ -173,6 +173,7 @@ AOD_CALGT4:cal
 murorder:marauder
 original_hondo:hondo
 funkygib:funky gib
+FunkyGib:funky gib
 AOD_bozza72:bozzer
 ConsNZ:cons
 spencerrg:spence
@@ -211,3 +212,4 @@ Vitor dos Santos:dos santos
 Carlos Rolando Ramirez:ramirez
 Simon Lindström:linstrom
 Zoltán Kozák:kozak
+Robert L Johnson:johnson

@@ -60,6 +60,7 @@ namespace CrewChiefV3
         private Dictionary<String, List<SoundPlayer>> clips = new Dictionary<String, List<SoundPlayer>>();
 
         private String soundFolderName = UserSettings.GetUserSettings().getString("sound_files_path");
+        private Boolean useListenBeep = UserSettings.GetUserSettings().getBoolean("use_listen_beep");
 
         private String voiceFolderPath;
 
@@ -194,6 +195,10 @@ namespace CrewChiefV3
                         {
                             enableEndBleep = true;
                             openAndCacheClip("short_bleep", bleepFile.FullName);
+                        }
+                        else if (bleepFile.Name.StartsWith("listen_start"))
+                        {
+                            openAndCacheClip("listen_start_sound", bleepFile.FullName);
                         }
                     }
                 }
@@ -833,10 +838,18 @@ namespace CrewChiefV3
             }
         }
 
-        // TODO: different beep
         public void playStartListeningBeep()
         {
-            playStartSpeakingBeep();
+            if (useListenBeep && clips.ContainsKey("listen_start_sound"))
+            {
+                List<SoundPlayer> bleeps = clips["listen_start_sound"];
+                int bleepIndex = random.Next(0, bleeps.Count);
+                Console.WriteLine("*** Listening, using sound listen_start_sound at position " + bleepIndex);
+                if (!mute)
+                {
+                    bleeps[bleepIndex].Play();
+                }
+            }
         }
 
         public void playShortStartSpeakingBeep()
@@ -846,14 +859,8 @@ namespace CrewChiefV3
             Console.WriteLine("*** Opening channel, using bleep short_bleep at position " + bleepIndex);
             if (!mute)
             {
-                bleeps[bleepIndex].PlaySync();
+                bleeps[bleepIndex].Play();
             }
-        }
-
-        // TODO: different beep
-        public void playEndListeningBeep()
-        {
-            playEndSpeakingBeep();
         }
 
         public void playEndSpeakingBeep()

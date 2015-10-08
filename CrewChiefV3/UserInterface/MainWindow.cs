@@ -204,7 +204,6 @@ namespace CrewChiefV3
                     {
                         Console.WriteLine("Stopping listening...");
                         crewChief.speechRecogniser.recognizeAsyncCancel();
-                        crewChief.audioPlayer.playEndListeningBeep();
                         channelOpen = false;
                     }
                 }        

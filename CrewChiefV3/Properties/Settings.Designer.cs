@@ -799,5 +799,17 @@ namespace CrewChiefV3.Properties {
                 this["cumulative_lap_wheelspin_warning_threshold"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool use_listen_beep {
+            get {
+                return ((bool)(this["use_listen_beep"]));
+            }
+            set {
+                this["use_listen_beep"] = value;
+            }
+        }
     }
 }

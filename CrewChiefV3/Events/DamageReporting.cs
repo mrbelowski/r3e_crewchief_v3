@@ -212,7 +212,7 @@ namespace CrewChiefV3.Events
                     audioPlayer.playClipImmediately(new QueuedMessage(folderNoAeroDamage, 0, null));
                     audioPlayer.closeChannel();
                 }
-                else if (aeroDamage == DamageLevel.MAJOR)
+                else if (aeroDamage == DamageLevel.MAJOR || aeroDamage == DamageLevel.DESTROYED)
                 {
                     audioPlayer.openChannel();
                     audioPlayer.playClipImmediately(new QueuedMessage(folderSevereAeroDamage, 0, null));
@@ -232,7 +232,7 @@ namespace CrewChiefV3.Events
             }
             if (voiceMessage.Contains(SpeechRecogniser.TRANSMISSION))
             {
-                if (trannyDamage == DamageLevel.NONE)
+                if (trannyDamage == DamageLevel.NONE || trannyDamage == DamageLevel.TRIVIAL)
                 {
                     audioPlayer.openChannel();
                     audioPlayer.playClipImmediately(new QueuedMessage(folderNoTransmissionDamage, 0, null));
@@ -259,7 +259,7 @@ namespace CrewChiefV3.Events
             }
             if (voiceMessage.Contains(SpeechRecogniser.ENGINE))
             {
-                if (engineDamage == DamageLevel.NONE)
+                if (engineDamage == DamageLevel.NONE || engineDamage == DamageLevel.TRIVIAL)
                 {
                     audioPlayer.openChannel();
                     audioPlayer.playClipImmediately(new QueuedMessage(folderNoEngineDamage, 0, null));
@@ -292,7 +292,7 @@ namespace CrewChiefV3.Events
                     audioPlayer.playClipImmediately(new QueuedMessage(folderMissingWheel, 0, null));
                     audioPlayer.closeChannel();
                 }
-                if (maxSuspensionDamage == DamageLevel.NONE && !isMissingWheel)
+                if ((maxSuspensionDamage == DamageLevel.NONE || maxSuspensionDamage == DamageLevel.TRIVIAL) && !isMissingWheel)
                 {
                     audioPlayer.openChannel();
                     audioPlayer.playClipImmediately(new QueuedMessage(folderNoSuspensionDamage, 0, null));
@@ -319,7 +319,7 @@ namespace CrewChiefV3.Events
             }
             if (voiceMessage.Contains(SpeechRecogniser.BRAKES))
             {
-                if (maxBrakeDamage == DamageLevel.NONE)
+                if (maxBrakeDamage == DamageLevel.NONE || maxBrakeDamage == DamageLevel.TRIVIAL)
                 {
                     audioPlayer.openChannel();
                     audioPlayer.playClipImmediately(new QueuedMessage(folderNoBrakeDamage, 0, null));

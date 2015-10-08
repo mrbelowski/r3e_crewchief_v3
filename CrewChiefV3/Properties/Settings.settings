@@ -197,5 +197,8 @@
     <Setting Name="cumulative_lap_wheelspin_warning_threshold" Type="System.Single" Scope="User">
       <Value Profile="(Default)">5</Value>
     </Setting>
+    <Setting Name="use_listen_beep" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
   </Settings>
 </SettingsFile>
