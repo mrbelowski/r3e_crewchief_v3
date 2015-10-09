@@ -310,16 +310,14 @@ namespace CrewChiefV3.Events
             {
                 if (isLeading && isRace)
                 {
-                    audioPlayer.openChannel();
-                    audioPlayer.playClipImmediately(new QueuedMessage(Position.folderLeading, 0, this));
+                    audioPlayer.playClipImmediately(new QueuedMessage(Position.folderLeading, 0, this), false);
                     audioPlayer.closeChannel();
                     haveData = true;
                 }
                 else if (currentGapInFront < 60)
                 {
-                    audioPlayer.openChannel();
                     audioPlayer.playClipImmediately(new QueuedMessage("Timings/gaps",
-                        MessageContents(TimeSpanWrapper.FromMilliseconds(currentGapInFront * 1000, true)), 0, this));
+                        MessageContents(TimeSpanWrapper.FromMilliseconds(currentGapInFront * 1000, true)), 0, this), false);
                     audioPlayer.closeChannel();
                     haveData = true;
                 }
@@ -333,16 +331,14 @@ namespace CrewChiefV3.Events
             {
                 if (isLast && isRace)
                 {
-                    audioPlayer.openChannel();
-                    audioPlayer.playClipImmediately(new QueuedMessage(Position.folderLast, 0, this));
+                    audioPlayer.playClipImmediately(new QueuedMessage(Position.folderLast, 0, this), false);
                     audioPlayer.closeChannel();
                     haveData = true;
                 }
                 else if (currentGapBehind < 60)
                 {
-                    audioPlayer.openChannel();
                     audioPlayer.playClipImmediately(new QueuedMessage("Timings/gaps",
-                        MessageContents(TimeSpanWrapper.FromMilliseconds(currentGapBehind * 1000, true)), 0, this));
+                        MessageContents(TimeSpanWrapper.FromMilliseconds(currentGapBehind * 1000, true)), 0, this), false);
                     audioPlayer.closeChannel();
                     haveData = true;
                 }
@@ -353,8 +349,7 @@ namespace CrewChiefV3.Events
             }
             if (!haveData)
             {
-                audioPlayer.openChannel();
-                audioPlayer.playClipImmediately(new QueuedMessage(AudioPlayer.folderNoData, 0, this));
+                audioPlayer.playClipImmediately(new QueuedMessage(AudioPlayer.folderNoData, 0, this), false);
                 audioPlayer.closeChannel();
             }
         }

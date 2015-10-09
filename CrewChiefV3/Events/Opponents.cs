@@ -210,27 +210,27 @@ namespace CrewChiefV3.Events
                             {
                                 int position = entry.Value.Position;
                                 OpponentData.OpponentDelta opponentDelta = entry.Value.getTimeDifferenceToPlayer(currentGameState.SessionData);
-                                audioPlayer.openChannel();
-                                audioPlayer.playClipImmediately(new QueuedMessage("opponentPosition", MessageContents(Position.folderStub, QueuedMessage.folderNameNumbersStub + position), 0, null));
+                                audioPlayer.playClipImmediately(new QueuedMessage("opponentPosition", 
+                                    MessageContents(Position.folderStub, QueuedMessage.folderNameNumbersStub + position), 0, null), false);
                                 if (opponentDelta != null && (opponentDelta.lapDifference != 0 || Math.Abs(opponentDelta.time) > 0.05))
                                 {
                                     if (opponentDelta.lapDifference == 1)
                                     {
-                                        audioPlayer.playClipImmediately(new QueuedMessage(Position.folderOneLapBehind, 0, null));
+                                        audioPlayer.playClipImmediately(new QueuedMessage(Position.folderOneLapBehind, 0, null), false);
                                     }
                                     else if (opponentDelta.lapDifference > 1)
                                     {
                                         audioPlayer.playClipImmediately(new QueuedMessage("opponentTimeDelta",
-                                            MessageContents(QueuedMessage.folderNameNumbersStub + opponentDelta.lapDifference, Position.folderLapsBehind), 0, null));
+                                            MessageContents(QueuedMessage.folderNameNumbersStub + opponentDelta.lapDifference, Position.folderLapsBehind), 0, null), false);
                                     }
                                     else if (opponentDelta.lapDifference == -1)
                                     {
-                                        audioPlayer.playClipImmediately(new QueuedMessage(Position.folderOneLapAhead, 0, null));
+                                        audioPlayer.playClipImmediately(new QueuedMessage(Position.folderOneLapAhead, 0, null), false);
                                     }
                                     else if (opponentDelta.lapDifference < -1)
                                     {
                                         audioPlayer.playClipImmediately(new QueuedMessage("opponentTimeDelta",
-                                            MessageContents(QueuedMessage.folderNameNumbersStub + opponentDelta.lapDifference, Position.folderLapsAhead), 0, null));
+                                            MessageContents(QueuedMessage.folderNameNumbersStub + opponentDelta.lapDifference, Position.folderLapsAhead), 0, null), false);
                                     }
                                     else
                                     {
@@ -241,7 +241,7 @@ namespace CrewChiefV3.Events
                                             aheadOrBehind = Position.folderBehind;
                                         }
                                         audioPlayer.playClipImmediately(new QueuedMessage("opponentTimeDelta",
-                                            MessageContents(delta, aheadOrBehind), 0, null));
+                                            MessageContents(delta, aheadOrBehind), 0, null), false);
                                     }
                                 }
                                 audioPlayer.closeChannel();
@@ -263,8 +263,7 @@ namespace CrewChiefV3.Events
                         QueuedMessage queuedMessage = new QueuedMessage("opponentName", MessageContents(opponent), 0, null);
                         if (queuedMessage.canBePlayed)
                         {
-                            audioPlayer.openChannel();
-                            audioPlayer.playClipImmediately(queuedMessage);
+                            audioPlayer.playClipImmediately(queuedMessage, false);
                             audioPlayer.closeChannel();
                             foundDriver = true;
                         }                        
@@ -278,8 +277,7 @@ namespace CrewChiefV3.Events
                         QueuedMessage queuedMessage = new QueuedMessage("opponentName", MessageContents(opponent), 0, null);
                         if (queuedMessage.canBePlayed)
                         {
-                            audioPlayer.openChannel();
-                            audioPlayer.playClipImmediately(queuedMessage);
+                            audioPlayer.playClipImmediately(queuedMessage, false);
                             audioPlayer.closeChannel();
                             foundDriver = true;
                         }
@@ -293,8 +291,7 @@ namespace CrewChiefV3.Events
                         QueuedMessage queuedMessage = new QueuedMessage("opponentName", MessageContents(opponent), 0, null);
                         if (queuedMessage.canBePlayed)
                         {
-                            audioPlayer.openChannel();
-                            audioPlayer.playClipImmediately(queuedMessage);
+                            audioPlayer.playClipImmediately(queuedMessage, false);
                             audioPlayer.closeChannel();
                             foundDriver = true;
                         }
@@ -303,8 +300,7 @@ namespace CrewChiefV3.Events
             }
             if (!foundDriver)
             {
-                audioPlayer.openChannel();
-                audioPlayer.playClipImmediately(new QueuedMessage(AudioPlayer.folderNoData, 0, null));
+                audioPlayer.playClipImmediately(new QueuedMessage(AudioPlayer.folderNoData, 0, null), false);
                 audioPlayer.closeChannel();
             }       
         }

@@ -57,8 +57,7 @@ namespace CrewChiefV3.Events
         {
             if (!playedGetReady && currentGameState.SessionData.SessionType == SessionType.Race && currentGameState.SessionData.SessionPhase == SessionPhase.Countdown)
             {
-                audioPlayer.openChannel();
-                audioPlayer.playClipImmediately(new QueuedMessage(folderGetReady, 0, this));
+                audioPlayer.playClipImmediately(new QueuedMessage(folderGetReady, 0, this), false);
                 playedGetReady = true;
                 audioPlayer.closeChannel();
             }
@@ -73,8 +72,7 @@ namespace CrewChiefV3.Events
                 (previousGameState.SessionData.SessionPhase == SessionPhase.Formation ||
                  previousGameState.SessionData.SessionPhase == SessionPhase.Countdown))
             {
-                audioPlayer.openChannel();
-                audioPlayer.playClipImmediately(new QueuedMessage(folderGreenGreenGreen, 0, this));
+                audioPlayer.playClipImmediately(new QueuedMessage(folderGreenGreenGreen, 0, this), false);
                 audioPlayer.closeChannel();
                 audioPlayer.disablePearlsOfWisdom = false;
             }

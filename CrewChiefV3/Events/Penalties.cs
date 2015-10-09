@@ -248,8 +248,7 @@ namespace CrewChiefV3.Events
         {
             if (!hasHadAPenalty)
             {
-                audioPlayer.openChannel();
-                audioPlayer.playClipImmediately(new QueuedMessage(folderYouDontHaveAPenalty, 0, null));
+                audioPlayer.playClipImmediately(new QueuedMessage(folderYouDontHaveAPenalty, 0, null), false);
                 audioPlayer.closeChannel();
                 return;
             }
@@ -257,21 +256,18 @@ namespace CrewChiefV3.Events
             {
                 if (hasOutstandingPenalty) {
                     if (lapsCompleted - penaltyLap == 2) {
-                        audioPlayer.openChannel();
                         audioPlayer.playClipImmediately(new QueuedMessage("youHaveAPenaltyBoxThisLap",
-                            MessageContents(folderYouHavePenalty, MandatoryPitStops.folderMandatoryPitStopsPitThisLap), 0, null));
+                            MessageContents(folderYouHavePenalty, MandatoryPitStops.folderMandatoryPitStopsPitThisLap), 0, null), false);
                         audioPlayer.closeChannel();
                     } else
                     {
-                        audioPlayer.openChannel();
-                        audioPlayer.playClipImmediately(new QueuedMessage(folderYouHavePenalty, 0, null));
+                        audioPlayer.playClipImmediately(new QueuedMessage(folderYouHavePenalty, 0, null), false);
                         audioPlayer.closeChannel();
                     }
                 }
                 else
                 {
-                    audioPlayer.openChannel();
-                    audioPlayer.playClipImmediately(new QueuedMessage(folderYouDontHaveAPenalty, 0, null));
+                    audioPlayer.playClipImmediately(new QueuedMessage(folderYouDontHaveAPenalty, 0, null), false);
                     audioPlayer.closeChannel();
                 }
             }
@@ -286,15 +282,13 @@ namespace CrewChiefV3.Events
                     {
                         messages.Add(MessageFragment.Text(MandatoryPitStops.folderMandatoryPitStopsPitThisLap));
                     }
-                    audioPlayer.openChannel();
-                    audioPlayer.playClipImmediately(new QueuedMessage("noYouStillHaveAPenalty", messages, 0, null));
+                    audioPlayer.playClipImmediately(new QueuedMessage("noYouStillHaveAPenalty", messages, 0, null), false);
                     audioPlayer.closeChannel();
                 }
                 else
                 {
-                    audioPlayer.openChannel();
                     audioPlayer.playClipImmediately(new QueuedMessage("yesYouServedYourPenalty",
-                        MessageContents(AudioPlayer.folderYes, folderPenaltyServed), 0, null));
+                        MessageContents(AudioPlayer.folderYes, folderPenaltyServed), 0, null), false);
                     audioPlayer.closeChannel();
                 }
             } else if (voiceMessage.Contains(SpeechRecogniser.DO_I_STILL_HAVE_A_PENALTY))
@@ -308,15 +302,13 @@ namespace CrewChiefV3.Events
                     {
                         messages.Add(MessageFragment.Text(MandatoryPitStops.folderMandatoryPitStopsPitThisLap));
                     }
-                    audioPlayer.openChannel();
-                    audioPlayer.playClipImmediately(new QueuedMessage("yesYouStillHaveAPenalty", messages, 0, null));
+                    audioPlayer.playClipImmediately(new QueuedMessage("yesYouStillHaveAPenalty", messages, 0, null), false);
                     audioPlayer.closeChannel();
                 }
                 else
                 {
-                    audioPlayer.openChannel();
                     audioPlayer.playClipImmediately(new QueuedMessage("noYouServedYourPenalty",
-                        MessageContents(AudioPlayer.folderNo, folderPenaltyServed), 0, null));
+                        MessageContents(AudioPlayer.folderNo, folderPenaltyServed), 0, null), false);
                     audioPlayer.closeChannel();
                 }                
             }

@@ -314,42 +314,36 @@ namespace CrewChiefV3.Events
             {
                 if (!mandatoryStopRequired || mandatoryStopCompleted)
                 {
-                    audioPlayer.openChannel();
-                    audioPlayer.playClipImmediately(new QueuedMessage(AudioPlayer.folderNo, 0, null));
+                    audioPlayer.playClipImmediately(new QueuedMessage(AudioPlayer.folderNo, 0, null), false);
                     audioPlayer.closeChannel();
                 }
                 else if (mandatoryStopMissed)
                 {
-                    audioPlayer.openChannel();
-                    audioPlayer.playClipImmediately(new QueuedMessage(folderMandatoryPitStopsMissedStop, 0, null));
+                    audioPlayer.playClipImmediately(new QueuedMessage(folderMandatoryPitStopsMissedStop, 0, null), false);
                     audioPlayer.closeChannel();
                 }
                 else if (mandatoryStopBoxThisLap)
                 {
-                    audioPlayer.openChannel();
                     audioPlayer.playClipImmediately(new QueuedMessage("yesBoxThisLap",
-                        MessageContents(AudioPlayer.folderYes, folderMandatoryPitStopsPitThisLap), 0, null));
+                        MessageContents(AudioPlayer.folderYes, folderMandatoryPitStopsPitThisLap), 0, null), false);
                     audioPlayer.closeChannel();
                 }
                 else if (pitWindowOpenLap > 0)
                 {
-                    audioPlayer.openChannel();
                     audioPlayer.playClipImmediately(new QueuedMessage("yesBoxOnLap",
-                        MessageContents(folderMandatoryPitStopsYesStopOnLap, QueuedMessage.folderNameNumbersStub + pitWindowOpenLap), 0, null));
+                        MessageContents(folderMandatoryPitStopsYesStopOnLap, QueuedMessage.folderNameNumbersStub + pitWindowOpenLap), 0, null), false);
                     audioPlayer.closeChannel();
                 }
                 else if (pitWindowOpenTime > 0)
                 {
-                    audioPlayer.openChannel();
                     audioPlayer.playClipImmediately(new QueuedMessage("yesBoxAfter",
-                        MessageContents(folderMandatoryPitStopsYesStopAfter, QueuedMessage.folderNameNumbersStub + pitWindowOpenTime, folderMandatoryPitStopsMinutes), 0, null));
+                        MessageContents(folderMandatoryPitStopsYesStopAfter, QueuedMessage.folderNameNumbersStub + pitWindowOpenTime, folderMandatoryPitStopsMinutes), 0, null), false);
                     audioPlayer.closeChannel();
                 }
             }
             else
             {
-                audioPlayer.openChannel();
-                audioPlayer.playClipImmediately(new QueuedMessage(AudioPlayer.folderNoData, 0, null));
+                audioPlayer.playClipImmediately(new QueuedMessage(AudioPlayer.folderNoData, 0, null), false);
                 audioPlayer.closeChannel();
             }
         }

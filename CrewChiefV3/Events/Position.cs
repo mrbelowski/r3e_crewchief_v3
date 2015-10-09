@@ -199,20 +199,17 @@ namespace CrewChiefV3.Events
             {
                 if (isLast)
                 {
-                    audioPlayer.openChannel();
-                    audioPlayer.playClipImmediately(new QueuedMessage(folderLast, 0, this));
+                    audioPlayer.playClipImmediately(new QueuedMessage(folderLast, 0, this), false);
                     audioPlayer.closeChannel();
                 }
                 else if (currentPosition == 1)
                 {
-                    audioPlayer.openChannel();
-                    audioPlayer.playClipImmediately(new QueuedMessage(folderLeading, 0, this));
+                    audioPlayer.playClipImmediately(new QueuedMessage(folderLeading, 0, this), false);
                     audioPlayer.closeChannel();
                 }
                 else
                 {
-                    audioPlayer.openChannel();
-                    audioPlayer.playClipImmediately(new QueuedMessage(folderStub + currentPosition, 0, this));
+                    audioPlayer.playClipImmediately(new QueuedMessage(folderStub + currentPosition, 0, this), false);
                     audioPlayer.closeChannel();
                 }
             }

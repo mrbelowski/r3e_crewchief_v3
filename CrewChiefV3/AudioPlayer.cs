@@ -490,14 +490,14 @@ namespace CrewChiefV3
 
         public void enableKeepQuietMode()
         {
-            playClipImmediately(new QueuedMessage(folderAcknowlegeEnableKeepQuiet, 0, null));
+            playClipImmediately(new QueuedMessage(folderAcknowlegeEnableKeepQuiet, 0, null), false);
             closeChannel();
             keepQuiet = true;
         }
 
         public void disableKeepQuietMode()
         {
-            playClipImmediately(new QueuedMessage(folderAcknowlegeDisableKeepQuiet, 0, null));
+            playClipImmediately(new QueuedMessage(folderAcknowlegeDisableKeepQuiet, 0, null), false);
             closeChannel();
             keepQuiet = false;
         }
@@ -912,7 +912,7 @@ namespace CrewChiefV3
             }
         }
         
-        public void openChannel()
+        private void openChannel()
         {
             openChannel(false);
         }
@@ -922,13 +922,13 @@ namespace CrewChiefV3
             holdOpenChannel(false);
         }
 
-        public void openChannel(Boolean useShortBeep)
+        private void openChannel(Boolean useShortBeep)
         {
             useShortBeepWhenOpeningChannel = useShortBeep;
             requestChannelOpen = true;
         }
 
-        public void holdOpenChannel(Boolean useShortBeep)
+        private void holdOpenChannel(Boolean useShortBeep)
         {
             useShortBeepWhenOpeningChannel = useShortBeep;
             requestChannelOpen = true;
@@ -950,8 +950,13 @@ namespace CrewChiefV3
         {
             queueClip(queuedMessage, PearlsOfWisdom.PearlType.NONE, 0);
         }
-        
-        public void playClipImmediately(QueuedMessage queuedMessage)
+
+        public void playClipImmediately(QueuedMessage queuedMessage, Boolean useShortBeep)
+        {
+            playClipImmediately(queuedMessage, false, useShortBeep);
+        }
+
+        public void playClipImmediately(QueuedMessage queuedMessage, Boolean keepChannelOpen, Boolean useShortBeep)
         {
             if (disableImmediateMessages)
             {
@@ -968,6 +973,14 @@ namespace CrewChiefV3
                     }
                     else
                     {
+                        if (keepChannelOpen)
+                        {
+                            holdOpenChannel(useShortBeep);
+                        }
+                        else
+                        {
+                            openChannel(useShortBeep);
+                        }
                         immediateClips.Add(queuedMessage.messageName, queuedMessage);
                     }
                 }
@@ -1119,8 +1132,7 @@ namespace CrewChiefV3
         {
             if (lastMessagePlayed != null)
             {
-                openChannel();
-                playClipImmediately(lastMessagePlayed);
+                playClipImmediately(lastMessagePlayed, false);
                 closeChannel();
             }
         }

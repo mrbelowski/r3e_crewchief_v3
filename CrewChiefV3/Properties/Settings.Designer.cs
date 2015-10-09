@@ -811,5 +811,41 @@ namespace CrewChiefV3.Properties {
                 this["use_listen_beep"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string REPEAT_LAST_MESSAGE_BUTTON_device_guid {
+            get {
+                return ((string)(this["REPEAT_LAST_MESSAGE_BUTTON_device_guid"]));
+            }
+            set {
+                this["REPEAT_LAST_MESSAGE_BUTTON_device_guid"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("-1")]
+        public int REPEAT_LAST_MESSAGE_BUTTON_button_index {
+            get {
+                return ((int)(this["REPEAT_LAST_MESSAGE_BUTTON_button_index"]));
+            }
+            set {
+                this["REPEAT_LAST_MESSAGE_BUTTON_button_index"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string REPEAT_LAST_MESSAGE_BUTTON_device_type {
+            get {
+                return ((string)(this["REPEAT_LAST_MESSAGE_BUTTON_device_type"]));
+            }
+            set {
+                this["REPEAT_LAST_MESSAGE_BUTTON_device_type"] = value;
+            }
+        }
     }
 }

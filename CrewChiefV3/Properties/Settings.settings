@@ -200,5 +200,14 @@
     <Setting Name="use_listen_beep" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
+    <Setting Name="REPEAT_LAST_MESSAGE_BUTTON_device_guid" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="REPEAT_LAST_MESSAGE_BUTTON_button_index" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">-1</Value>
+    </Setting>
+    <Setting Name="REPEAT_LAST_MESSAGE_BUTTON_device_type" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
   </Settings>
 </SettingsFile>

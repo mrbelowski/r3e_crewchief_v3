@@ -245,6 +245,12 @@ namespace CrewChiefV3
                         crewChief.toggleReadOpponentDeltasMode();
                         nextPollWait = 1000;
                     }
+                    else if (controllerConfiguration.hasOutstandingClick(ControllerConfiguration.REPEAT_LAST_MESSAGE_BUTTON))
+                    {
+                        Console.WriteLine("Repeating last message");
+                        crewChief.audioPlayer.repeatLastMessage();
+                        nextPollWait = 1000;
+                    }
                     else if (crewChief.speechRecogniser.initialised && voiceOption == VoiceOptionEnum.TOGGLE && 
                         controllerConfiguration.hasOutstandingClick(ControllerConfiguration.CHANNEL_OPEN_FUNCTION))
                     {

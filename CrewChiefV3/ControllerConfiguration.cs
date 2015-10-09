@@ -21,6 +21,7 @@ namespace CrewChiefV3
         public static String TOGGLE_RACE_UPDATES_FUNCTION = "Toggle race updates on/off"; 
         public static String TOGGLE_SPOTTER_FUNCTION = "Toggle spotter on/off";
         public static String TOGGLE_READ_OPPONENT_DELTAS = "Toggle opponent deltas on/off for each lap";
+        public static String REPEAT_LAST_MESSAGE_BUTTON = "Press to replay the last message";
         
         // yuk...
         public Dictionary<String, int> buttonAssignmentIndexes = new Dictionary<String, int>();
@@ -46,8 +47,9 @@ namespace CrewChiefV3
         {
             addButtonAssignment(CHANNEL_OPEN_FUNCTION);
             addButtonAssignment(TOGGLE_RACE_UPDATES_FUNCTION);
-            addButtonAssignment(TOGGLE_SPOTTER_FUNCTION); 
+            addButtonAssignment(TOGGLE_SPOTTER_FUNCTION);
             addButtonAssignment(TOGGLE_READ_OPPONENT_DELTAS);
+            addButtonAssignment(REPEAT_LAST_MESSAGE_BUTTON);
             controllers = getControllers();
         }
 
@@ -70,6 +72,7 @@ namespace CrewChiefV3
             pollForButtonClicks(buttonAssignments[buttonAssignmentIndexes[TOGGLE_RACE_UPDATES_FUNCTION]]);
             pollForButtonClicks(buttonAssignments[buttonAssignmentIndexes[TOGGLE_SPOTTER_FUNCTION]]);
             pollForButtonClicks(buttonAssignments[buttonAssignmentIndexes[TOGGLE_READ_OPPONENT_DELTAS]]);
+            pollForButtonClicks(buttonAssignments[buttonAssignmentIndexes[REPEAT_LAST_MESSAGE_BUTTON]]);
             if (channelOpenIsToggle) 
             {
                 pollForButtonClicks(buttonAssignments[buttonAssignmentIndexes[CHANNEL_OPEN_FUNCTION]]);
@@ -80,11 +83,25 @@ namespace CrewChiefV3
         {
             if (ba != null && ba.buttonIndex != -1 && ba.joystick != null)
             {
-                Boolean click = ba.joystick.GetCurrentState().Buttons[ba.buttonIndex];
-                if (click)
+                try
                 {
-                    ba.hasUnprocessedClick = true;
+                    if (ba.joystick != null)
+                    {
+                        JoystickState state = ba.joystick.GetCurrentState();
+                        if (state != null)
+                        {
+                            Boolean click = state.Buttons[ba.buttonIndex];
+                            if (click)
+                            {
+                                ba.hasUnprocessedClick = true;
+                            }
+                        } 
+                    }                      
                 }
+                catch (Exception e)
+                {
+
+                }          
             }
         }
 
@@ -145,6 +162,10 @@ namespace CrewChiefV3
                 {
                     actionId = "TOGGLE_READ_OPPONENT_DELTAS";
                 }
+                else if (buttonAssignment.action == REPEAT_LAST_MESSAGE_BUTTON)
+                {
+                    actionId = "REPEAT_LAST_MESSAGE_BUTTON";
+                }
 
                 if (buttonAssignment.controller != null && buttonAssignment.joystick != null && buttonAssignment.buttonIndex != -1)
                 {
@@ -188,6 +209,13 @@ namespace CrewChiefV3
             if (toggleReadOpponentDeltasButtonIndex != -1 && toggleReadOpponentDeltasDeviceGuid.Length > 0)
             {
                 loadAssignment(parent, TOGGLE_READ_OPPONENT_DELTAS, toggleReadOpponentDeltasButtonIndex, toggleReadOpponentDeltasDeviceGuid);
+            }
+
+            int repeatLastMessageButtonIndex = UserSettings.GetUserSettings().getInt("REPEAT_LAST_MESSAGE_BUTTON_button_index");
+            String repeatLastMessageDeviceGuid = UserSettings.GetUserSettings().getString("REPEAT_LAST_MESSAGE_BUTTON_device_guid");
+            if (repeatLastMessageButtonIndex != -1 && repeatLastMessageDeviceGuid.Length > 0)
+            {
+                loadAssignment(parent, REPEAT_LAST_MESSAGE_BUTTON, repeatLastMessageButtonIndex, repeatLastMessageDeviceGuid);
             }
         }
 

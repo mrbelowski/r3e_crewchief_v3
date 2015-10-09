@@ -428,7 +428,6 @@ namespace CrewChiefV3.PCars
                     switch (nextMessageType)
                     {
                         case NextMessageType.threeWide:
-                            audioPlayer.holdOpenChannel(true);
                             audioPlayer.removeImmediateClip(folderStillThere);
                             audioPlayer.removeImmediateClip(folderCarLeft);
                             audioPlayer.removeImmediateClip(folderCarRight);
@@ -437,7 +436,7 @@ namespace CrewChiefV3.PCars
                             audioPlayer.removeImmediateClip(folderClearRight);
                             QueuedMessage inTheMiddleMessage = new QueuedMessage(folderInTheMiddle, 0, null);
                             inTheMiddleMessage.expiryTime = (DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + inTheMiddleMessageExpiresAfter;
-                            audioPlayer.playClipImmediately(inTheMiddleMessage);
+                            audioPlayer.playClipImmediately(inTheMiddleMessage, true, true);
                             nextMessageType = NextMessageType.stillThere;
                             nextMessageDue = now.Add(repeatHoldFrequency);
                             reportedOverlapLeft = true;
@@ -445,7 +444,6 @@ namespace CrewChiefV3.PCars
                             wasInMiddle = true;
                             break;
                         case NextMessageType.carLeft:
-                            audioPlayer.holdOpenChannel(true);
                             audioPlayer.removeImmediateClip(folderStillThere);
                             audioPlayer.removeImmediateClip(folderInTheMiddle);
                             audioPlayer.removeImmediateClip(folderCarRight);
@@ -454,13 +452,12 @@ namespace CrewChiefV3.PCars
                             audioPlayer.removeImmediateClip(folderClearRight);
                             QueuedMessage carLeftMessage = new QueuedMessage(folderCarLeft, 0, null);
                             carLeftMessage.expiryTime = (DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + holdMessageExpiresAfter;
-                            audioPlayer.playClipImmediately(carLeftMessage);
+                            audioPlayer.playClipImmediately(carLeftMessage, true, true);
                             nextMessageType = NextMessageType.stillThere;
                             nextMessageDue = now.Add(repeatHoldFrequency);
                             reportedOverlapLeft = true;
                             break;
                         case NextMessageType.carRight:
-                            audioPlayer.holdOpenChannel(true);
                             audioPlayer.removeImmediateClip(folderStillThere);
                             audioPlayer.removeImmediateClip(folderCarLeft);
                             audioPlayer.removeImmediateClip(folderInTheMiddle);
@@ -469,7 +466,7 @@ namespace CrewChiefV3.PCars
                             audioPlayer.removeImmediateClip(folderClearRight);
                             QueuedMessage carRightMessage = new QueuedMessage(folderCarRight, 0, null);
                             carRightMessage.expiryTime = (DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + holdMessageExpiresAfter;
-                            audioPlayer.playClipImmediately(carRightMessage);
+                            audioPlayer.playClipImmediately(carRightMessage, true, true);
                             nextMessageType = NextMessageType.stillThere;
                             nextMessageDue = now.Add(repeatHoldFrequency);
                             reportedOverlapRight = true;
@@ -485,7 +482,7 @@ namespace CrewChiefV3.PCars
                                 audioPlayer.removeImmediateClip(folderInTheMiddle);
                                 audioPlayer.removeImmediateClip(folderClearLeft);
                                 audioPlayer.removeImmediateClip(folderClearRight);
-                                audioPlayer.playClipImmediately(clearAllRoundMessage);                                
+                                audioPlayer.playClipImmediately(clearAllRoundMessage, false);                                
                                 nextMessageType = NextMessageType.none;
                             }
                             audioPlayer.closeChannel();
@@ -506,7 +503,7 @@ namespace CrewChiefV3.PCars
                                     audioPlayer.removeImmediateClip(folderInTheMiddle);
                                     audioPlayer.removeImmediateClip(folderClearRight);
                                     audioPlayer.removeImmediateClip(folderClearLeft);
-                                    audioPlayer.playClipImmediately(clearAllRoundMessage);
+                                    audioPlayer.playClipImmediately(clearAllRoundMessage, false);
                                     nextMessageType = NextMessageType.none;   
                                     audioPlayer.closeChannel();
                                     reportedOverlapRight = false;
@@ -522,7 +519,7 @@ namespace CrewChiefV3.PCars
                                     audioPlayer.removeImmediateClip(folderInTheMiddle);
                                     audioPlayer.removeImmediateClip(folderClearRight);
                                     audioPlayer.removeImmediateClip(folderClearAllRound);
-                                    audioPlayer.playClipImmediately(clearLeftMessage);
+                                    audioPlayer.playClipImmediately(clearLeftMessage, false);
                                     nextMessageType = NextMessageType.none;         
                                 }                                                       
                             }
@@ -545,7 +542,7 @@ namespace CrewChiefV3.PCars
                                     audioPlayer.removeImmediateClip(folderInTheMiddle);
                                     audioPlayer.removeImmediateClip(folderClearLeft);
                                     audioPlayer.removeImmediateClip(folderClearRight);
-                                    audioPlayer.playClipImmediately(clearAllRoundMessage);
+                                    audioPlayer.playClipImmediately(clearAllRoundMessage, false);
                                     nextMessageType = NextMessageType.none;
                                     audioPlayer.closeChannel();
                                     reportedOverlapLeft = false;
@@ -561,7 +558,7 @@ namespace CrewChiefV3.PCars
                                     audioPlayer.removeImmediateClip(folderInTheMiddle);
                                     audioPlayer.removeImmediateClip(folderClearLeft);
                                     audioPlayer.removeImmediateClip(folderClearAllRound);
-                                    audioPlayer.playClipImmediately(clearRightMessage);
+                                    audioPlayer.playClipImmediately(clearRightMessage, false);
                                     nextMessageType = NextMessageType.none;
                                 }
                             }
@@ -582,7 +579,7 @@ namespace CrewChiefV3.PCars
                                 audioPlayer.removeImmediateClip(folderClearRight);
                                 audioPlayer.removeImmediateClip(folderClearLeft);
                                 audioPlayer.removeImmediateClip(folderClearAllRound);
-                                audioPlayer.playClipImmediately(holdYourLineMessage);
+                                audioPlayer.playClipImmediately(holdYourLineMessage, true, false);
                                 nextMessageType = NextMessageType.stillThere;
                                 nextMessageDue = now.Add(repeatHoldFrequency);
                             }
@@ -656,14 +653,14 @@ namespace CrewChiefV3.PCars
         public void enableSpotter()
         {
             enabled = true;
-            audioPlayer.playClipImmediately(new QueuedMessage(AudioPlayer.folderEnableSpotter, 0, null));
+            audioPlayer.playClipImmediately(new QueuedMessage(AudioPlayer.folderEnableSpotter, 0, null), false);
             audioPlayer.closeChannel();
         }
 
         public void disableSpotter()
         {
             enabled = false;
-            audioPlayer.playClipImmediately(new QueuedMessage(AudioPlayer.folderDisableSpotter, 0, null));
+            audioPlayer.playClipImmediately(new QueuedMessage(AudioPlayer.folderDisableSpotter, 0, null), false);
             audioPlayer.closeChannel();
         }
     }

@@ -470,15 +470,13 @@ namespace CrewChiefV3.Events
             {
                 if (lastLapTime > 0)
                 {
-                    audioPlayer.openChannel();
                     audioPlayer.playClipImmediately(new QueuedMessage("lapTimeNotRaceTime",
-                        MessageContents(folderLapTimeIntro, TimeSpan.FromSeconds(lastLapTime)), 0, this));
+                        MessageContents(folderLapTimeIntro, TimeSpan.FromSeconds(lastLapTime)), 0, this), false);
                     audioPlayer.closeChannel();
                 }
                 else
                 {
-                    audioPlayer.openChannel();
-                    audioPlayer.playClipImmediately(new QueuedMessage(AudioPlayer.folderNoData, 0, this));
+                    audioPlayer.playClipImmediately(new QueuedMessage(AudioPlayer.folderNoData, 0, this), false);
                     audioPlayer.closeChannel();
                 }
             }
@@ -492,8 +490,7 @@ namespace CrewChiefV3.Events
                     {
                         if (lapToCompare < TimeSpan.FromMilliseconds(50))
                         {
-                            audioPlayer.openChannel();
-                            audioPlayer.playClipImmediately(new QueuedMessage(folderPaceGood, 0, null));
+                            audioPlayer.playClipImmediately(new QueuedMessage(folderPaceGood, 0, null), false);
                             audioPlayer.closeChannel();
                         }
                         else 
@@ -522,8 +519,7 @@ namespace CrewChiefV3.Events
                             {
                                 case LastLapRating.BEST_OVERALL:
                                 case LastLapRating.BEST_IN_CLASS:
-                                    audioPlayer.openChannel();
-                                    audioPlayer.playClipImmediately(new QueuedMessage(folderPaceGood, 0, null));
+                                    audioPlayer.playClipImmediately(new QueuedMessage(folderPaceGood, 0, null), false);
                                     audioPlayer.closeChannel();
                                     break;
                                 case LastLapRating.PERSONAL_BEST_CLOSE_TO_OVERALL_LEADER:
@@ -542,8 +538,7 @@ namespace CrewChiefV3.Events
                                     }
                                     if (messages.Count > 0)
                                     {
-                                        audioPlayer.openChannel();
-                                        audioPlayer.playClipImmediately(new QueuedMessage("lapTimeRacePaceReport", messages, 0, null));
+                                        audioPlayer.playClipImmediately(new QueuedMessage("lapTimeRacePaceReport", messages, 0, null), false);
                                         audioPlayer.closeChannel();
                                     }                                    
                                     break;
@@ -553,21 +548,18 @@ namespace CrewChiefV3.Events
                                     {
                                         messages.Add(MessageFragment.Text(timeToFindFolder));
                                     }
-                                    audioPlayer.openChannel();
-                                    audioPlayer.playClipImmediately(new QueuedMessage("lapTimeRacePaceReport", messages, 0, null));
+                                    audioPlayer.playClipImmediately(new QueuedMessage("lapTimeRacePaceReport", messages, 0, null), false);
                                     audioPlayer.closeChannel();
                                         break;
                                 default:
-                                    audioPlayer.openChannel();
-                                    audioPlayer.playClipImmediately(new QueuedMessage(AudioPlayer.folderNoData, 0, null));
+                                    audioPlayer.playClipImmediately(new QueuedMessage(AudioPlayer.folderNoData, 0, null), false);
                                     audioPlayer.closeChannel();
                                     break;                     
                             }
                         }                        
                     }
                     else {
-                        audioPlayer.openChannel();
-                        audioPlayer.playClipImmediately(new QueuedMessage(AudioPlayer.folderNoData, 0, null));
+                        audioPlayer.playClipImmediately(new QueuedMessage(AudioPlayer.folderNoData, 0, null), false);
                         audioPlayer.closeChannel();
                     }
                 }
@@ -580,23 +572,21 @@ namespace CrewChiefV3.Events
                             {
                                 if (sessionType == SessionType.Qualify && currentPosition == 1)
                                 {
-                                    audioPlayer.openChannel();
-                                    audioPlayer.playClipImmediately(new QueuedMessage(Position.folderPole, 0, null));
+                                    audioPlayer.playClipImmediately(new QueuedMessage(Position.folderPole, 0, null), false);
                                     audioPlayer.closeChannel();
                                 }
                                 else
                                 {
-                                    audioPlayer.openChannel();
                                     if (currentPosition > 1)
                                     {
-                                        audioPlayer.playClipImmediately(new QueuedMessage(Position.folderStub + currentPosition, 0, null));
+                                        audioPlayer.playClipImmediately(new QueuedMessage(Position.folderStub + currentPosition, 0, null), false);
                                     }
                                     if (currentPosition == 1)
                                     {
-                                        audioPlayer.playClipImmediately(new QueuedMessage(folderQuickestOverall, 0, null));
+                                        audioPlayer.playClipImmediately(new QueuedMessage(folderQuickestOverall, 0, null), false);
                                     } else
                                     {
-                                        audioPlayer.playClipImmediately(new QueuedMessage(folderQuickestInClass, 0, null));
+                                        audioPlayer.playClipImmediately(new QueuedMessage(folderQuickestInClass, 0, null), false);
                                     }
                                     audioPlayer.closeChannel();
                                 }
@@ -605,14 +595,12 @@ namespace CrewChiefV3.Events
                             {
                                 if (sessionType == SessionType.Qualify && currentPosition == 1)
                                 {
-                                    audioPlayer.openChannel();
-                                    audioPlayer.playClipImmediately(new QueuedMessage(Position.folderPole, 0, null));
+                                    audioPlayer.playClipImmediately(new QueuedMessage(Position.folderPole, 0, null), false);
                                     audioPlayer.closeChannel();
                                 }
                                 else
                                 {
-                                    audioPlayer.openChannel();
-                                    audioPlayer.playClipImmediately(new QueuedMessage(folderQuickestOverall, 0, null));
+                                    audioPlayer.playClipImmediately(new QueuedMessage(folderQuickestOverall, 0, null), false);
                                     audioPlayer.closeChannel();
                                 }
                             }
@@ -630,31 +618,28 @@ namespace CrewChiefV3.Events
                         }
                         else if (sessionBestLapTimeDeltaToLeader.Seconds == 0 && sessionBestLapTimeDeltaToLeader.Milliseconds < 50)
                         {
-                            audioPlayer.openChannel();
                             if (currentPosition > 1)
                             {
                                 // should always trigger
-                                audioPlayer.playClipImmediately(new QueuedMessage(Position.folderStub + currentPosition, 0, null));
+                                audioPlayer.playClipImmediately(new QueuedMessage(Position.folderStub + currentPosition, 0, null), false);
                             }
-                            audioPlayer.playClipImmediately(new QueuedMessage(folderLessThanATenthOffThePace, 0, null));
+                            audioPlayer.playClipImmediately(new QueuedMessage(folderLessThanATenthOffThePace, 0, null), false);
                             audioPlayer.closeChannel();
                         }
                         else
                         {
-                            audioPlayer.openChannel();
                             if (currentPosition > 1)
                             {
                                 // should always trigger
-                                audioPlayer.playClipImmediately(new QueuedMessage(Position.folderStub + currentPosition, 0, null));
+                                audioPlayer.playClipImmediately(new QueuedMessage(Position.folderStub + currentPosition, 0, null), false);
                             }
                             audioPlayer.playClipImmediately(new QueuedMessage("lapTimeNotRaceGap",
-                                MessageContents(sessionBestLapTimeDeltaToLeader, folderGapOutroOffPace), 0, null));
+                                MessageContents(sessionBestLapTimeDeltaToLeader, folderGapOutroOffPace), 0, null), false);
                             audioPlayer.closeChannel();
                         }
                     }
                     else {
-                        audioPlayer.openChannel();
-                        audioPlayer.playClipImmediately(new QueuedMessage(AudioPlayer.folderNoData, 0, null));
+                        audioPlayer.playClipImmediately(new QueuedMessage(AudioPlayer.folderNoData, 0, null), false);
                         audioPlayer.closeChannel();
                     }
                 }

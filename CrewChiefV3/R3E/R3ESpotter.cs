@@ -184,7 +184,7 @@ namespace CrewChiefV3.RaceRoom
                                     QueuedMessage clearMessage = new QueuedMessage(folderClear, 0, null);
                                     clearMessage.expiryTime = (DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + clearMessageExpiresAfter;
                                     audioPlayer.removeImmediateClip(folderStillThere);
-                                    audioPlayer.playClipImmediately(clearMessage);
+                                    audioPlayer.playClipImmediately(clearMessage, false);
                                     audioPlayer.closeChannel();
                                 }
                                 else
@@ -216,7 +216,7 @@ namespace CrewChiefV3.RaceRoom
                                     timeOfNextHoldMessage = now.Add(repeatHoldFrequency);
                                     QueuedMessage stillThereMessage = new QueuedMessage(folderStillThere, 0, null);
                                     stillThereMessage.expiryTime = (DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + holdMessageExpiresAfter;
-                                    audioPlayer.playClipImmediately(stillThereMessage);
+                                    audioPlayer.playClipImmediately(stillThereMessage, false);
                                 }
                             }
                             else
@@ -238,10 +238,9 @@ namespace CrewChiefV3.RaceRoom
                                         Console.WriteLine("delta behind = " + currentDeltaBehind + " closing speed behind = " + closingSpeedBehind);
                                         timeOfNextHoldMessage = now.Add(repeatHoldFrequency);
                                         isCurrentlyOverlapping = true;
-                                        audioPlayer.holdOpenChannel(true);
                                         QueuedMessage holdMessage = new QueuedMessage(folderHoldYourLine, 0, null);
                                         holdMessage.expiryTime = (DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + holdMessageExpiresAfter;
-                                        audioPlayer.playClipImmediately(holdMessage);                                        
+                                        audioPlayer.playClipImmediately(holdMessage, true, true);                                        
                                     }
                                 }
                             }
@@ -286,14 +285,14 @@ namespace CrewChiefV3.RaceRoom
         public void enableSpotter()
         {
             enabled = true;
-            audioPlayer.playClipImmediately(new QueuedMessage(AudioPlayer.folderEnableSpotter, 0, null));
+            audioPlayer.playClipImmediately(new QueuedMessage(AudioPlayer.folderEnableSpotter, 0, null), false);
             audioPlayer.closeChannel();
         }
 
         public void disableSpotter()
         {
             enabled = false;
-            audioPlayer.playClipImmediately(new QueuedMessage(AudioPlayer.folderDisableSpotter, 0, null));
+            audioPlayer.playClipImmediately(new QueuedMessage(AudioPlayer.folderDisableSpotter, 0, null), false);
             audioPlayer.closeChannel();
         }
     }

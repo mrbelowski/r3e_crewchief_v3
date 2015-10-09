@@ -162,7 +162,7 @@ namespace CrewChiefV3
             {
                 readOpponentDeltasForEveryLap = true;
             }
-            audioPlayer.playClipImmediately(new QueuedMessage(AudioPlayer.folderDeltasEnabled, 0, null));
+            audioPlayer.playClipImmediately(new QueuedMessage(AudioPlayer.folderDeltasEnabled, 0, null), false);
         }
 
         public void disableDeltasMode()
@@ -171,7 +171,7 @@ namespace CrewChiefV3
             {
                 readOpponentDeltasForEveryLap = false;
             }
-            audioPlayer.playClipImmediately(new QueuedMessage(AudioPlayer.folderDeltasDisabled, 0, null));
+            audioPlayer.playClipImmediately(new QueuedMessage(AudioPlayer.folderDeltasDisabled, 0, null), false);
         }
 
         public void toggleSpotterMode()
@@ -226,8 +226,7 @@ namespace CrewChiefV3
 
         public void youWot()
         {
-            audioPlayer.openChannel();
-            audioPlayer.playClipImmediately(new QueuedMessage(AudioPlayer.folderDidntUnderstand, 0, null));
+            audioPlayer.playClipImmediately(new QueuedMessage(AudioPlayer.folderDidntUnderstand, 0, null), false);
             audioPlayer.closeChannel();
         }
 

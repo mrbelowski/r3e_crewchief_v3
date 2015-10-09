@@ -208,25 +208,21 @@ namespace CrewChiefV3.Events
             {
                 if (aeroDamage == DamageLevel.NONE)
                 {
-                    audioPlayer.openChannel();
-                    audioPlayer.playClipImmediately(new QueuedMessage(folderNoAeroDamage, 0, null));
+                    audioPlayer.playClipImmediately(new QueuedMessage(folderNoAeroDamage, 0, null), false);
                     audioPlayer.closeChannel();
                 }
                 else if (aeroDamage == DamageLevel.MAJOR || aeroDamage == DamageLevel.DESTROYED)
                 {
-                    audioPlayer.openChannel();
-                    audioPlayer.playClipImmediately(new QueuedMessage(folderSevereAeroDamage, 0, null));
+                    audioPlayer.playClipImmediately(new QueuedMessage(folderSevereAeroDamage, 0, null), false);
                     audioPlayer.closeChannel();
                 }
                 else if (aeroDamage == DamageLevel.MINOR)
                 {
-                    audioPlayer.openChannel();
-                    audioPlayer.playClipImmediately(new QueuedMessage(folderMinorAeroDamage, 0, null));
+                    audioPlayer.playClipImmediately(new QueuedMessage(folderMinorAeroDamage, 0, null), false);
                 }
                 else if (aeroDamage == DamageLevel.TRIVIAL)
                 {
-                    audioPlayer.openChannel();
-                    audioPlayer.playClipImmediately(new QueuedMessage(folderJustAScratch, 0, null));
+                    audioPlayer.playClipImmediately(new QueuedMessage(folderJustAScratch, 0, null), false);
                     audioPlayer.closeChannel();
                 }
             }
@@ -234,26 +230,22 @@ namespace CrewChiefV3.Events
             {
                 if (trannyDamage == DamageLevel.NONE || trannyDamage == DamageLevel.TRIVIAL)
                 {
-                    audioPlayer.openChannel();
-                    audioPlayer.playClipImmediately(new QueuedMessage(folderNoTransmissionDamage, 0, null));
+                    audioPlayer.playClipImmediately(new QueuedMessage(folderNoTransmissionDamage, 0, null), false);
                     audioPlayer.closeChannel();
                 }
                 else if (trannyDamage == DamageLevel.DESTROYED)
                 {
-                    audioPlayer.openChannel();
-                    audioPlayer.playClipImmediately(new QueuedMessage(folderBustedTransmission, 0, null));
+                    audioPlayer.playClipImmediately(new QueuedMessage(folderBustedTransmission, 0, null), false);
                     audioPlayer.closeChannel();
                 }
                 else if (trannyDamage == DamageLevel.MAJOR)
                 {
-                    audioPlayer.openChannel();
-                    audioPlayer.playClipImmediately(new QueuedMessage(folderSevereTransmissionDamage, 0, null));
+                    audioPlayer.playClipImmediately(new QueuedMessage(folderSevereTransmissionDamage, 0, null), false);
                     audioPlayer.closeChannel();
                 }
                 else if (trannyDamage == DamageLevel.MINOR)
                 {
-                    audioPlayer.openChannel();
-                    audioPlayer.playClipImmediately(new QueuedMessage(folderMinorTransmissionDamage, 0, null));
+                    audioPlayer.playClipImmediately(new QueuedMessage(folderMinorTransmissionDamage, 0, null), false);
                     audioPlayer.closeChannel();
                 }
             }
@@ -261,26 +253,22 @@ namespace CrewChiefV3.Events
             {
                 if (engineDamage == DamageLevel.NONE || engineDamage == DamageLevel.TRIVIAL)
                 {
-                    audioPlayer.openChannel();
-                    audioPlayer.playClipImmediately(new QueuedMessage(folderNoEngineDamage, 0, null));
+                    audioPlayer.playClipImmediately(new QueuedMessage(folderNoEngineDamage, 0, null), false);
                     audioPlayer.closeChannel();
                 }
                 else if (engineDamage == DamageLevel.DESTROYED)
                 {
-                    audioPlayer.openChannel();
-                    audioPlayer.playClipImmediately(new QueuedMessage(folderBustedEngine, 0, null));
+                    audioPlayer.playClipImmediately(new QueuedMessage(folderBustedEngine, 0, null), false);
                     audioPlayer.closeChannel();
                 }
                 else if (engineDamage == DamageLevel.MAJOR)
                 {
-                    audioPlayer.openChannel();
-                    audioPlayer.playClipImmediately(new QueuedMessage(folderSevereEngineDamage, 0, null));
+                    audioPlayer.playClipImmediately(new QueuedMessage(folderSevereEngineDamage, 0, null), false);
                     audioPlayer.closeChannel();
                 }
                 else if (engineDamage == DamageLevel.MINOR)
                 {
-                    audioPlayer.openChannel();
-                    audioPlayer.playClipImmediately(new QueuedMessage(folderMinorEngineDamage, 0, null));
+                    audioPlayer.playClipImmediately(new QueuedMessage(folderMinorEngineDamage, 0, null), false);
                     audioPlayer.closeChannel();
                 }
             }
@@ -288,32 +276,27 @@ namespace CrewChiefV3.Events
             {
                 if (isMissingWheel)
                 {
-                    audioPlayer.openChannel();
-                    audioPlayer.playClipImmediately(new QueuedMessage(folderMissingWheel, 0, null));
+                    audioPlayer.playClipImmediately(new QueuedMessage(folderMissingWheel, 0, null), false);
                     audioPlayer.closeChannel();
                 }
                 if ((maxSuspensionDamage == DamageLevel.NONE || maxSuspensionDamage == DamageLevel.TRIVIAL) && !isMissingWheel)
                 {
-                    audioPlayer.openChannel();
-                    audioPlayer.playClipImmediately(new QueuedMessage(folderNoSuspensionDamage, 0, null));
+                    audioPlayer.playClipImmediately(new QueuedMessage(folderNoSuspensionDamage, 0, null), false);
                     audioPlayer.closeChannel();
                 }
                 else if (maxSuspensionDamage == DamageLevel.DESTROYED)
                 {
-                    audioPlayer.openChannel();
-                    audioPlayer.playClipImmediately(new QueuedMessage(folderBustedSuspension, 0, null));
+                    audioPlayer.playClipImmediately(new QueuedMessage(folderBustedSuspension, 0, null), false);
                     audioPlayer.closeChannel();
                 }
                 else if (maxSuspensionDamage == DamageLevel.MAJOR)
                 {
-                    audioPlayer.openChannel();
-                    audioPlayer.playClipImmediately(new QueuedMessage(folderSevereSuspensionDamage, 0, null));
+                    audioPlayer.playClipImmediately(new QueuedMessage(folderSevereSuspensionDamage, 0, null), false);
                     audioPlayer.closeChannel();
                 }
                 else if (maxSuspensionDamage == DamageLevel.MINOR && !isMissingWheel)
                 {
-                    audioPlayer.openChannel();
-                    audioPlayer.playClipImmediately(new QueuedMessage(folderMinorSuspensionDamage, 0, null));
+                    audioPlayer.playClipImmediately(new QueuedMessage(folderMinorSuspensionDamage, 0, null), false);
                     audioPlayer.closeChannel();
                 }
             }
@@ -321,26 +304,22 @@ namespace CrewChiefV3.Events
             {
                 if (maxBrakeDamage == DamageLevel.NONE || maxBrakeDamage == DamageLevel.TRIVIAL)
                 {
-                    audioPlayer.openChannel();
-                    audioPlayer.playClipImmediately(new QueuedMessage(folderNoBrakeDamage, 0, null));
+                    audioPlayer.playClipImmediately(new QueuedMessage(folderNoBrakeDamage, 0, null), false);
                     audioPlayer.closeChannel();
                 }
                 else if (maxBrakeDamage == DamageLevel.DESTROYED)
                 {
-                    audioPlayer.openChannel();
-                    audioPlayer.playClipImmediately(new QueuedMessage(folderBustedBrakes, 0, null));
+                    audioPlayer.playClipImmediately(new QueuedMessage(folderBustedBrakes, 0, null), false);
                     audioPlayer.closeChannel();
                 }
                 else if (maxBrakeDamage == DamageLevel.MAJOR)
                 {
-                    audioPlayer.openChannel();
-                    audioPlayer.playClipImmediately(new QueuedMessage(folderSevereBrakeDamage, 0, null));
+                    audioPlayer.playClipImmediately(new QueuedMessage(folderSevereBrakeDamage, 0, null), false);
                     audioPlayer.closeChannel();
                 }
                 else if (maxBrakeDamage == DamageLevel.MINOR)
                 {
-                    audioPlayer.openChannel();
-                    audioPlayer.playClipImmediately(new QueuedMessage(folderMinorBrakeDamage, 0, null));
+                    audioPlayer.playClipImmediately(new QueuedMessage(folderMinorBrakeDamage, 0, null), false);
                     audioPlayer.closeChannel();
                 }
             }

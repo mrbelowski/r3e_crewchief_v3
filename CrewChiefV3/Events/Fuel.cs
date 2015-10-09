@@ -292,15 +292,13 @@ namespace CrewChiefV3.Events
                     int lapsOfFuelLeft = (int)Math.Floor(currentFuel / averageUsagePerLap);
                     if (lapsOfFuelLeft > 60)
                     {
-                        audioPlayer.openChannel();
-                        audioPlayer.playClipImmediately(new QueuedMessage(folderPlentyOfFuel, 0, this));
+                        audioPlayer.playClipImmediately(new QueuedMessage(folderPlentyOfFuel, 0, this), false);
                         audioPlayer.closeChannel();
                     }
                     else
                     {
-                        audioPlayer.openChannel();
                         audioPlayer.playClipImmediately(new QueuedMessage("Fuel/estimate",
-                            MessageContents(folderWeEstimate, QueuedMessage.folderNameNumbersStub + lapsOfFuelLeft, folderLapsRemaining), 0, this));
+                            MessageContents(folderWeEstimate, QueuedMessage.folderNameNumbersStub + lapsOfFuelLeft, folderLapsRemaining), 0, this), false);
                         audioPlayer.closeChannel();
                     }                    
                     haveData = true;
@@ -309,15 +307,13 @@ namespace CrewChiefV3.Events
                 {
                     int minutesOfFuelLeft = (int)Math.Floor(currentFuel / averageUsagePerMinute);
                     if (minutesOfFuelLeft > 60) {
-                        audioPlayer.openChannel();
-                        audioPlayer.playClipImmediately(new QueuedMessage(folderPlentyOfFuel, 0, this));
+                        audioPlayer.playClipImmediately(new QueuedMessage(folderPlentyOfFuel, 0, this), false);
                         audioPlayer.closeChannel();
                     }
                     else 
                     {
-                        audioPlayer.openChannel();
                         audioPlayer.playClipImmediately(new QueuedMessage("Fuel/estimate",
-                            MessageContents(folderWeEstimate, QueuedMessage.folderNameNumbersStub + minutesOfFuelLeft, folderMinutesRemaining), 0, this));
+                            MessageContents(folderWeEstimate, QueuedMessage.folderNameNumbersStub + minutesOfFuelLeft, folderMinutesRemaining), 0, this), false);
                         audioPlayer.closeChannel();
                     }                    
                     haveData = true;
@@ -325,14 +321,13 @@ namespace CrewChiefV3.Events
             }
             if (!haveData)
             {
-                audioPlayer.openChannel();
                 if (!fuelUseActive)
                 {
-                    audioPlayer.playClipImmediately(new QueuedMessage(folderPlentyOfFuel, 0, this));
+                    audioPlayer.playClipImmediately(new QueuedMessage(folderPlentyOfFuel, 0, this), false);
                 }
                 else
                 {
-                    audioPlayer.playClipImmediately(new QueuedMessage(AudioPlayer.folderNoData, 0, this));
+                    audioPlayer.playClipImmediately(new QueuedMessage(AudioPlayer.folderNoData, 0, this), false);
                 }
                 audioPlayer.closeChannel();
             }
