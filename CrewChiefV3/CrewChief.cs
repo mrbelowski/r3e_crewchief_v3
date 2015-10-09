@@ -27,6 +27,8 @@ namespace CrewChiefV3
         private Boolean keepQuietEnabled = false;
         private Boolean spotterEnabled = UserSettings.GetUserSettings().getBoolean("enable_spotter");
 
+        private Boolean enableDriverNames = UserSettings.GetUserSettings().getBoolean("enable_driver_names");
+
         public static TimeSpan _timeInterval = TimeSpan.FromMilliseconds(UserSettings.GetUserSettings().getInt("update_interval"));
 
         public static TimeSpan spotterInterval = TimeSpan.FromMilliseconds(UserSettings.GetUserSettings().getInt("spotter_update_interval"));
@@ -420,20 +422,23 @@ namespace CrewChiefV3
                                     faultingEventsCount.Clear();
                                     stateCleared = true;
                                 }
-                                List<String> rawDriverNames = currentGameState.getRawDriverNames();
-                                if (currentGameState.SessionData.DriverRawName != null && currentGameState.SessionData.DriverRawName.Length > 0)
+                                if (enableDriverNames)
                                 {
-                                    rawDriverNames.Add(currentGameState.SessionData.DriverRawName);
-                                }
-                                if (rawDriverNames.Count > 0)
-                                {
-                                    List<String> usableDriverNames = DriverNameHelper.getUsableDriverNames(rawDriverNames, audioPlayer.soundFilesPath);
-                                    if (speechRecogniser != null && speechRecogniser.initialised)
+                                    List<String> rawDriverNames = currentGameState.getRawDriverNames();
+                                    if (currentGameState.SessionData.DriverRawName != null && currentGameState.SessionData.DriverRawName.Length > 0)
                                     {
-                                        speechRecogniser.addNames(usableDriverNames);
+                                        rawDriverNames.Add(currentGameState.SessionData.DriverRawName);
                                     }
-                                    audioPlayer.cacheDriverNames(usableDriverNames);
-                                }
+                                    if (rawDriverNames.Count > 0)
+                                    {
+                                        List<String> usableDriverNames = DriverNameHelper.getUsableDriverNames(rawDriverNames, audioPlayer.soundFilesPath);
+                                        if (speechRecogniser != null && speechRecogniser.initialised)
+                                        {
+                                            speechRecogniser.addNames(usableDriverNames);
+                                        }
+                                        audioPlayer.cacheDriverNames(usableDriverNames);
+                                    }
+                                }                                
                             }
                             else if (!sessionFinished && previousGameState != null &&
                                         (currentGameState.SessionData.SessionRunningTime > previousGameState.SessionData.SessionRunningTime || 

@@ -209,5 +209,8 @@
     <Setting Name="REPEAT_LAST_MESSAGE_BUTTON_device_type" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
+    <Setting Name="enable_driver_names" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

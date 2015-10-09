@@ -847,5 +847,17 @@ namespace CrewChiefV3.Properties {
                 this["REPEAT_LAST_MESSAGE_BUTTON_device_type"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool enable_driver_names {
+            get {
+                return ((bool)(this["enable_driver_names"]));
+            }
+            set {
+                this["enable_driver_names"] = value;
+            }
+        }
     }
 }
