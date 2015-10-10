@@ -105,7 +105,7 @@ namespace CrewChiefV3.Events
 
         override protected void triggerInternal(GameStateData previousGameState, GameStateData currentGameState)
         {
-            if (currentGameState.SessionData.SessionType == SessionType.Race && currentGameState.FuelData.FuelUseActive &&
+            if (currentGameState.FuelData.FuelUseActive &&
                 (currentGameState.SessionData.SessionPhase == SessionPhase.Green || currentGameState.SessionData.SessionPhase == SessionPhase.Checkered))
             {
                 fuelUseActive = true;
@@ -151,7 +151,7 @@ namespace CrewChiefV3.Events
                         averageUsagePerLap = (fuelAfter15Seconds - currentGameState.FuelData.FuelLeft) / currentGameState.SessionData.CompletedLaps;
                     }
                     int estimatedFuelLapsLeft = (int)Math.Floor(currentGameState.FuelData.FuelLeft / averageUsagePerLap);
-                    if (enableFuelMessages && currentGameState.SessionData.CompletedLaps == halfDistance)
+                    if (currentGameState.SessionData.SessionType == SessionType.Race && enableFuelMessages && currentGameState.SessionData.CompletedLaps == halfDistance)
                     {
                         if (estimatedFuelLapsLeft < halfDistance && currentGameState.FuelData.FuelLeft / fuelAfter15Seconds < 0.6)
                         {
@@ -204,7 +204,7 @@ namespace CrewChiefV3.Events
                 {
                     Console.WriteLine("Half race distance. Fuel in tank = " + currentGameState.FuelData.FuelLeft + ", average usage per minute = " + averageUsagePerMinute);
                     playedHalfTimeFuelEstimate = true;
-                    if (enableFuelMessages)
+                    if (currentGameState.SessionData.SessionType == SessionType.Race && enableFuelMessages)
                     {
                         if (averageUsagePerMinute * halfTime / 60 > currentGameState.FuelData.FuelLeft && currentGameState.FuelData.FuelLeft / fuelAfter15Seconds < 0.6)
                         {
