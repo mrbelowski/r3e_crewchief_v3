@@ -2,7 +2,7 @@ CrewChief version 3.
 
 Changelog
 ---------
-Version 3.4.2: fixed a couple of missing damage responses; added 'listen start' beep for when you press the radio button (hold mode only). Can be disabled with use_listen_beep property - I still need to find a suitable sound effect for this; Added more driver names; Fixed edge case bug in radio channel handling that could leave the radio channel open. This version requires a new sound pack (if you want the listen beep)
+Version 3.5.0: fixed a couple of missing damage responses; added 'listen start' beep for when you press the radio button (hold mode only) - can be disabled with use_listen_beep property (I still need to find a suitable sound effect for this); Added more driver names; Fixed edge case bug in radio channel handling that could leave the radio channel open; Added "what's my fuel level" speech recognition; The fuel stuff should now work in practice and qualify and if there's not enough data to estimate the time / number of laps of fuel left (when you ask "how's my fuel") the app will simply tell you the fuel level. This version requires a new sound pack.
 
 Version 3.4.1: Minor cold tyre temp increase (there were too many warnings); added a couple more voice options for switching off deltas; fixed some ignored enable / disable messges flags; added driver names for RaceRoom; use names, rather than array indexes, to track PCars participant data (should behave better when PCars messes up the participant data array - particularly in online practice and qual sessions); re-worked opponent gap monitoring; make wheelspin and lockup warning thresholds (total seconds per lap) configurable; Added "who's leading" voice recognition; Added "Repeat" / "say again" voice recognition. some cold tyre warning temp tweaks. No new sound pack for this version.
 
@@ -52,7 +52,7 @@ I've not finished implementing this but currently the app understands and respon
 
 "how is my [fuel / tyre wear / body work / aero / engine / transmission / suspension / pace ]"
 "how are my [tyre temps / tyre temperatures / brakes / brake temps / brake temperatures / engine temps / engine temperatures]"
-"what's my [gap in front / gap ahead / gap behind / last lap / last lap time / lap time / position]"
+"what's my [gap in front / gap ahead / gap behind / last lap / last lap time / lap time / position / fuel level]"
 "keep quiet / I know what I'm doing / leave me alone" (switches off messages)
 "keep me informed / keep me posted / keep me updated" (switches messages back on)
 "how long's left / how many laps are left / how many laps to go"
@@ -69,7 +69,7 @@ I've not finished implementing this but currently the app understands and respon
 
 Other button assignments
 ------------------------
-You can assign the 'toggle spotter on/off', 'toggle race updates on/off' and 'toggle opponent deltas' to separate buttons if you want to be able to toggle the spotter function and toggle the crew chief's updates on or off during the race. This doesn't require voice recognition to be installed - simply run the app, assign a button to one or both of these functions, and when in-race pressing that button will toggle the spotter / crew chief / opponent deltas on and off.
+You can assign the 'toggle spotter on/off', 'toggle race updates on/off', 'toggle opponent deltas' and 'repeat last message' to separate buttons if you want to be able to toggle the spotter function and toggle the crew chief's updates on or off during the race. This doesn't require voice recognition to be installed - simply run the app, assign a button to one or both of these functions, and when in-race pressing that button will toggle the spotter / crew chief / opponent deltas on and off.
 
 
 Properties
