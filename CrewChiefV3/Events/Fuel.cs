@@ -291,10 +291,10 @@ namespace CrewChiefV3.Events
                     audioPlayer.playClipImmediately(new QueuedMessage(AudioPlayer.folderNoData, 0, null), false);
                     audioPlayer.closeChannel();
                 }
-                else if (currentFuel < 60)
+                else if (currentFuel < 60 && currentFuel >= 2)
                 {
                     audioPlayer.playClipImmediately(new QueuedMessage("Fuel/level",
-                                MessageContents(QueuedMessage.folderNameNumbersStub + currentFuel, folderLitresRemaining), 0, null), false);
+                                MessageContents(QueuedMessage.folderNameNumbersStub + (int)currentFuel, folderLitresRemaining), 0, null), false);
                     audioPlayer.closeChannel();
                 }
                 else
@@ -346,6 +346,12 @@ namespace CrewChiefV3.Events
                     if (!fuelUseActive)
                     {
                         audioPlayer.playClipImmediately(new QueuedMessage(folderPlentyOfFuel, 0, null), false);
+                    }
+                    else if (currentFuel < 60 && currentFuel >= 2)
+                    {
+                        audioPlayer.playClipImmediately(new QueuedMessage("Fuel/level",
+                                    MessageContents(QueuedMessage.folderNameNumbersStub + (int)currentFuel, folderLitresRemaining), 0, null), false);
+                        audioPlayer.closeChannel();
                     }
                     else
                     {
