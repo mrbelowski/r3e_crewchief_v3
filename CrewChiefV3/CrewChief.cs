@@ -381,7 +381,7 @@ namespace CrewChiefV3
                         }
                         catch (Exception e)
                         {
-                            Console.WriteLine("Error mapping game data: ", e.StackTrace);
+                            Console.WriteLine("Error mapping game data: " + e.StackTrace);
                         }
                         
                         if (nextGameState != null)

@@ -36,6 +36,8 @@ namespace CrewChiefV3.Events
 
         public static String folderPlentyOfFuel = "fuel/plenty_of_fuel";
 
+        public static String folderLitresRemaining = "fuel/litres_remaining";
+
         private float averageUsagePerLap;
 
         private float averageUsagePerMinute;
@@ -98,18 +100,16 @@ namespace CrewChiefV3.Events
             fuelUseActive = false;
         }
 
-        public override List<SessionType> applicableSessionTypes
-        {
-            get { return new List<SessionType> { SessionType.Race }; }
-        }
-
         override protected void triggerInternal(GameStateData previousGameState, GameStateData currentGameState)
         {
-            if (currentGameState.FuelData.FuelUseActive &&
-                (currentGameState.SessionData.SessionPhase == SessionPhase.Green || currentGameState.SessionData.SessionPhase == SessionPhase.Checkered))
-            {
-                fuelUseActive = true;
-                currentFuel = currentGameState.FuelData.FuelLeft;
+            fuelUseActive = currentGameState.FuelData.FuelUseActive;
+            currentFuel = currentGameState.FuelData.FuelLeft;
+            if (fuelUseActive && (currentGameState.SessionData.SessionType == SessionType.Race &&
+                (currentGameState.SessionData.SessionPhase == SessionPhase.Green || currentGameState.SessionData.SessionPhase == SessionPhase.Checkered)) ||
+                 ((currentGameState.SessionData.SessionType == SessionType.Qualify || currentGameState.SessionData.SessionType == SessionType.Practice || currentGameState.SessionData.SessionType == SessionType.HotLap) && 
+                (currentGameState.SessionData.SessionPhase == SessionPhase.Green || currentGameState.SessionData.SessionPhase == SessionPhase.Countdown) &&
+                currentGameState.SessionData.LapTimeCurrent > 0))
+            {               
                 // To get the initial fuel, wait for 15 seconds
                 if (!initialised && currentGameState.SessionData.SessionRunningTime > 15)
                 {
@@ -284,53 +284,76 @@ namespace CrewChiefV3.Events
 
         public override void respond(String voiceMessage)
         {
-            Boolean haveData = false;
-            if (initialised && currentFuel > -1)
-            {
-                if (averageUsagePerLap > 0)
-                {
-                    int lapsOfFuelLeft = (int)Math.Floor(currentFuel / averageUsagePerLap);
-                    if (lapsOfFuelLeft > 60)
-                    {
-                        audioPlayer.playClipImmediately(new QueuedMessage(folderPlentyOfFuel, 0, this), false);
-                        audioPlayer.closeChannel();
-                    }
-                    else
-                    {
-                        audioPlayer.playClipImmediately(new QueuedMessage("Fuel/estimate",
-                            MessageContents(folderWeEstimate, QueuedMessage.folderNameNumbersStub + lapsOfFuelLeft, folderLapsRemaining), 0, this), false);
-                        audioPlayer.closeChannel();
-                    }                    
-                    haveData = true;
-                }
-                else if (averageUsagePerMinute > 0)
-                {
-                    int minutesOfFuelLeft = (int)Math.Floor(currentFuel / averageUsagePerMinute);
-                    if (minutesOfFuelLeft > 60) {
-                        audioPlayer.playClipImmediately(new QueuedMessage(folderPlentyOfFuel, 0, this), false);
-                        audioPlayer.closeChannel();
-                    }
-                    else 
-                    {
-                        audioPlayer.playClipImmediately(new QueuedMessage("Fuel/estimate",
-                            MessageContents(folderWeEstimate, QueuedMessage.folderNameNumbersStub + minutesOfFuelLeft, folderMinutesRemaining), 0, this), false);
-                        audioPlayer.closeChannel();
-                    }                    
-                    haveData = true;
-                }
-            }
-            if (!haveData)
+            if (voiceMessage.Contains(SpeechRecogniser.FUEL_LEVEL))
             {
                 if (!fuelUseActive)
                 {
-                    audioPlayer.playClipImmediately(new QueuedMessage(folderPlentyOfFuel, 0, this), false);
+                    audioPlayer.playClipImmediately(new QueuedMessage(AudioPlayer.folderNoData, 0, null), false);
+                    audioPlayer.closeChannel();
+                }
+                else if (currentFuel < 60)
+                {
+                    audioPlayer.playClipImmediately(new QueuedMessage("Fuel/level",
+                                MessageContents(QueuedMessage.folderNameNumbersStub + currentFuel, folderLitresRemaining), 0, null), false);
+                    audioPlayer.closeChannel();
                 }
                 else
                 {
-                    audioPlayer.playClipImmediately(new QueuedMessage(AudioPlayer.folderNoData, 0, this), false);
+                    audioPlayer.playClipImmediately(new QueuedMessage(folderPlentyOfFuel, 0, null), false);
+                    audioPlayer.closeChannel();
                 }
-                audioPlayer.closeChannel();
             }
+            else if (voiceMessage.Contains(SpeechRecogniser.FUEL)) 
+            {
+                Boolean haveData = false;
+                if (initialised && currentFuel > -1)
+                {
+                    if (averageUsagePerLap > 0)
+                    {
+                        int lapsOfFuelLeft = (int)Math.Floor(currentFuel / averageUsagePerLap);
+                        if (lapsOfFuelLeft > 60)
+                        {
+                            audioPlayer.playClipImmediately(new QueuedMessage(folderPlentyOfFuel, 0, null), false);
+                            audioPlayer.closeChannel();
+                        }
+                        else
+                        {
+                            audioPlayer.playClipImmediately(new QueuedMessage("Fuel/estimate",
+                                MessageContents(folderWeEstimate, QueuedMessage.folderNameNumbersStub + lapsOfFuelLeft, folderLapsRemaining), 0, null), false);
+                            audioPlayer.closeChannel();
+                        }
+                        haveData = true;
+                    }
+                    else if (averageUsagePerMinute > 0)
+                    {
+                        int minutesOfFuelLeft = (int)Math.Floor(currentFuel / averageUsagePerMinute);
+                        if (minutesOfFuelLeft > 60)
+                        {
+                            audioPlayer.playClipImmediately(new QueuedMessage(folderPlentyOfFuel, 0, null), false);
+                            audioPlayer.closeChannel();
+                        }
+                        else
+                        {
+                            audioPlayer.playClipImmediately(new QueuedMessage("Fuel/estimate",
+                                MessageContents(folderWeEstimate, QueuedMessage.folderNameNumbersStub + minutesOfFuelLeft, folderMinutesRemaining), 0, null), false);
+                            audioPlayer.closeChannel();
+                        }
+                        haveData = true;
+                    }
+                }
+                if (!haveData)
+                {
+                    if (!fuelUseActive)
+                    {
+                        audioPlayer.playClipImmediately(new QueuedMessage(folderPlentyOfFuel, 0, null), false);
+                    }
+                    else
+                    {
+                        audioPlayer.playClipImmediately(new QueuedMessage(AudioPlayer.folderNoData, 0, null), false);
+                    }
+                    audioPlayer.closeChannel();
+                }
+            }            
         }
     }
 }

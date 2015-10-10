@@ -17,6 +17,7 @@ namespace CrewChiefV3
 
         // externalise these?
         public static String FUEL = "fuel";
+        public static String FUEL_LEVEL = "fuel level";
         public static String TYRE_WEAR = "tyre wear";
         public static String TYRE_TEMPS = "tyre temps";
         public static String TYRE_TEMPERATURES = "tyre temperatures";
@@ -159,7 +160,7 @@ namespace CrewChiefV3
                 Grammar g1 = new Grammar(gb1);
 
                 Choices info2 = new Choices();
-                info2.Add(new string[] { GAP_IN_FRONT, GAP_AHEAD, GAP_BEHIND, LAST_LAP, LAP_TIME, LAST_LAP_TIME, POSITION });
+                info2.Add(new string[] { GAP_IN_FRONT, GAP_AHEAD, GAP_BEHIND, LAST_LAP, LAP_TIME, LAST_LAP_TIME, POSITION, FUEL_LEVEL });
                 GrammarBuilder gb2 = new GrammarBuilder();
                 gb2.Culture = cultureInfo;
                 gb2.Append("what's my");
@@ -213,7 +214,7 @@ namespace CrewChiefV3
                 GrammarBuilder gb9 = new GrammarBuilder();
                 gb9.Culture = cultureInfo;
                 gb9.Append("how are my");
-                gb9.Append(info1);
+                gb9.Append(info9);
                 Grammar g9 = new Grammar(gb9);
 
                 sre.LoadGrammar(g1);
@@ -380,7 +381,7 @@ namespace CrewChiefV3
             {
                 crewChief.disableKeepQuietMode();
             }
-            else if (recognisedSpeech.Contains(FUEL))
+            else if (recognisedSpeech.Contains(FUEL) || recognisedSpeech.Contains(FUEL_LEVEL))
             {
                 return CrewChief.getEvent("Fuel");
             }
