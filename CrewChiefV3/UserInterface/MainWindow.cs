@@ -116,6 +116,7 @@ namespace CrewChiefV3
         {
             InitializeComponent();
             setSelectedGameType();
+            this.app_version.Text = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString();
             this.filenameLabel.Visible = System.Diagnostics.Debugger.IsAttached;
             this.filenameTextbox.Visible = System.Diagnostics.Debugger.IsAttached;
             this.recordSession.Visible = System.Diagnostics.Debugger.IsAttached;

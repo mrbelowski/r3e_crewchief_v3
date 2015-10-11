@@ -131,7 +131,8 @@ namespace CrewChiefV3
             }
             catch (Exception e)
             {
-                Console.WriteLine("Unable to initialise speech recognition engine, check that SpeechPlatformRuntime.msi is installed");
+                Console.WriteLine("Unable to initialise speech recognition engine, check that SpeechPlatformRuntime.msi is installed and " +
+                    " MSSpeech_SR_" + location + "_TELE.msi is installed");
                 Console.WriteLine("Exception message: " + e.Message);
                 return;
             }

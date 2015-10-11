@@ -65,6 +65,7 @@ namespace CrewChiefV3
             this.filenameLabel = new System.Windows.Forms.Label();
             this.recordSession = new System.Windows.Forms.CheckBox();
             this.playbackInterval = new System.Windows.Forms.TextBox();
+            this.app_version = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.messagesVolumeSlider)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.backgroundVolumeSlider)).BeginInit();
@@ -313,18 +314,28 @@ namespace CrewChiefV3
             this.recordSession.Text = "Record";
             this.recordSession.UseVisualStyleBackColor = true;
             // 
-            // playbackRate
+            // playbackInterval
             // 
             this.playbackInterval.Location = new System.Drawing.Point(261, 2);
-            this.playbackInterval.Name = "playbackRate";
+            this.playbackInterval.Name = "playbackInterval";
             this.playbackInterval.Size = new System.Drawing.Size(100, 20);
             this.playbackInterval.TabIndex = 26;
+            // 
+            // app_version
+            // 
+            this.app_version.AutoSize = true;
+            this.app_version.Location = new System.Drawing.Point(1069, 670);
+            this.app_version.Name = "app_version";
+            this.app_version.Size = new System.Drawing.Size(65, 13);
+            this.app_version.TabIndex = 27;
+            this.app_version.Text = "app_version";
             // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1146, 692);
+            this.Controls.Add(this.app_version);
             this.Controls.Add(this.playbackInterval);
             this.Controls.Add(this.recordSession);
             this.Controls.Add(this.filenameLabel);
@@ -386,6 +397,7 @@ namespace CrewChiefV3
         private System.Windows.Forms.Label filenameLabel;
         private System.Windows.Forms.CheckBox recordSession;
         private System.Windows.Forms.TextBox playbackInterval;
+        private System.Windows.Forms.Label app_version;
 
     }
 }
