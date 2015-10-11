@@ -17,11 +17,11 @@ namespace CrewChiefV3.PCars
     class PCarsGameStateMapper : GameStateMapper
     {
         // pit detection parameters
-        float pitLimiterSpeedVariance = 2;
-        float pitLimiterSpeedSingleSpeedAxisVariance = 2;
+        float pitLimiterSpeedVariance = 1;
+        float pitLimiterSpeedSingleSpeedAxisVariance = 1;
         // the speeds are actual speed, rather than speed in one direction
-        float pitLimiterMinSpeed = 15;   // m/s
-        float pitLimiterMaxSpeed = 28;  // m/s
+        float pitLimiterMinSpeed = 17;   // m/s
+        float pitLimiterMaxSpeed = 25;  // m/s
         int updatesPerSecond = CrewChief._timeInterval == TimeSpan.Zero ? 10 : 1000 / CrewChief._timeInterval.Milliseconds;
         int pitDetectionChunksToCheck = 3;
 
@@ -633,7 +633,7 @@ namespace CrewChiefV3.PCars
                                 upateOpponentData(currentOpponentData, currentOpponentRacePosition, currentOpponentLapsCompleted,
                                         currentOpponentSector, isEnteringPits, currentGameState.SessionData.SessionRunningTime, secondsSinceLastUpdate,
                                         opponentPositionAtSector3, new float[] { participantStruct.mWorldPosition[0], participantStruct.mWorldPosition[2] }, previousOpponentWorldPosition,
-                                        previousOpponentSpeed);
+                                        previousOpponentSpeed, shared.mWorldFastestLapTime);
                             }
                         }
                         else
@@ -907,7 +907,8 @@ namespace CrewChiefV3.PCars
         }
 
         private void upateOpponentData(OpponentData opponentData, int racePosition, int completedLaps, int sector, Boolean isEnteringPits,
-            float sessionRunningTime, float secondsSinceLastUpdate, int racePositionAtSector3, float[] currentWorldPosition, float[] previousWorldPosition, float previousSpeed)
+            float sessionRunningTime, float secondsSinceLastUpdate, int racePositionAtSector3, float[] currentWorldPosition, float[] previousWorldPosition, 
+            float previousSpeed, float worldRecordLapTime)
         {
             opponentData.IsEnteringPits = isEnteringPits;
             float speed;
@@ -937,7 +938,11 @@ namespace CrewChiefV3.PCars
                     if (completedLaps == opponentData.CompletedLaps + 1)
                     {
                         float sessionTimeAtEndOfLastLap = opponentData.SessionTimesAtEndOfSectors[3];
-                        opponentData.ApproximateLastLapTime = sessionRunningTime - sessionTimeAtEndOfLastLap;
+                        float lapTimeEstimate = sessionRunningTime - sessionTimeAtEndOfLastLap;
+                        if (lapTimeEstimate > worldRecordLapTime)
+                        {
+                            opponentData.ApproximateLastLapTime = sessionRunningTime - sessionTimeAtEndOfLastLap;
+                        }
                         opponentData.SessionTimesAtEndOfSectors[3] = sessionRunningTime;
 
                         opponentData.LapIsValid = true;
@@ -1152,7 +1157,7 @@ namespace CrewChiefV3.PCars
 
         private Boolean IsOpponentOnPitLimiter(String name)
         {
-            int chunkSize = updatesPerSecond;
+            int chunkSize = updatesPerSecond / 2;
             Boolean onLimiter = false;
             if (OpponentWorldPositions.ContainsKey(name) && OpponentWorldPositions[name].Count > pitDetectionChunksToCheck * chunkSize)
             {
