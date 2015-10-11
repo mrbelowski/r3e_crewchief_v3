@@ -121,7 +121,7 @@ namespace CrewChiefV3
             carClasses.Add(new CarClass(CarClassEnum.F2, new String[] { "FB" }, new String[] { "FB" }, BrakeType.Carbon, TyreType.Unknown_Race, maxExoticRaceSafeWaterTemp, maxExoticRaceSafeOilTemp));
             carClasses.Add(new CarClass(CarClassEnum.F3, new String[] { "FC" }, new String[] { "FC" }, BrakeType.Ceramic, TyreType.Unknown_Race, maxRaceSafeWaterTemp, maxRaceSafeOilTemp));
             carClasses.Add(new CarClass(CarClassEnum.F4, new String[] { "F4" }, new String[] { "F4" }, BrakeType.Iron_Race, TyreType.Unknown_Race, maxRaceSafeWaterTemp, maxRaceSafeOilTemp));
-            carClasses.Add(new CarClass(CarClassEnum.FF, new String[] { "F5" }, new String[] { "F5" }, BrakeType.Iron_Race, TyreType.Road, maxRoadSafeWaterTemp, maxRoadSafeOilTemp));   // formula ford
+            carClasses.Add(new CarClass(CarClassEnum.FF, new String[] { "F5" }, new String[] { "F5" }, BrakeType.Iron_Race, TyreType.Unknown_Race, maxRoadSafeWaterTemp, maxRoadSafeOilTemp));   // formula ford
 
             // here we assume the old race cars (pre-radial tyres) will race on bias ply tyres
             carClasses.Add(new CarClass(CarClassEnum.VINTAGE_RACE_SLICKS, new String[] { "Vintage F1 B", "Vintage F1 C" }, new String[] { "Vintage F1 B", "Vintage F1 C" }, BrakeType.Iron_Race, TyreType.Unknown_Race, maxRaceSafeWaterTemp, maxRaceSafeOilTemp));

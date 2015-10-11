@@ -165,6 +165,7 @@ namespace CrewChiefV3
                 readOpponentDeltasForEveryLap = true;
             }
             audioPlayer.playClipImmediately(new QueuedMessage(AudioPlayer.folderDeltasEnabled, 0, null), false);
+            audioPlayer.closeChannel();
         }
 
         public void disableDeltasMode()
@@ -174,6 +175,7 @@ namespace CrewChiefV3
                 readOpponentDeltasForEveryLap = false;
             }
             audioPlayer.playClipImmediately(new QueuedMessage(AudioPlayer.folderDeltasDisabled, 0, null), false);
+            audioPlayer.closeChannel();
         }
 
         public void toggleSpotterMode()
