@@ -940,7 +940,7 @@ namespace CrewChiefV3.PCars
                         float sessionTimeAtEndOfLastLap = opponentData.SessionTimesAtEndOfSectors[3];
                         float lapTimeEstimate = sessionRunningTime - sessionTimeAtEndOfLastLap;
                         // if the lap time estimate is more than a tenth quicker than the world record, it's probably bollocks
-                        if (lapTimeEstimate < worldRecordLapTime - 0.1)
+                        if (lapTimeEstimate > worldRecordLapTime - 0.1)
                         {
                             opponentData.ApproximateLastLapTime = sessionRunningTime - sessionTimeAtEndOfLastLap;
                         }
