@@ -124,6 +124,8 @@ namespace CrewChiefV3.GameState
 
     public class SessionData    
     {
+        public TrackDefinition TrackDefinition = null;
+
         public Boolean IsDisqualified = false;
 
         public FlagEnum Flag = FlagEnum.GREEN;
@@ -144,13 +146,7 @@ namespace CrewChiefV3.GameState
         public int SessionStartPosition = 0;
 
         public int NumCarsAtStartOfSession = 0;
-
-        public String TrackName = null;
-
-        public String TrackLayout = null;
-
-        public float TrackLength = 0;
-
+        
         // race number in ongoing championship (zero indexed)
         public int EventIndex = 0;
 
@@ -284,6 +280,8 @@ namespace CrewChiefV3.GameState
         public int CurrentSectorNumber = 0;
 
         public Boolean IsEnteringPits = false;
+
+        public Boolean IsLeavingPits = false;
 
         public Dictionary<int, float> SessionTimesAtEndOfSectors = new Dictionary<int, float>();
                

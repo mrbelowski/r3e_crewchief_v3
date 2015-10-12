@@ -187,7 +187,8 @@ namespace CrewChiefV3.RaceRoom
                         Console.WriteLine("SessionRunTime " + currentGameState.SessionData.SessionRunTime);
                         Console.WriteLine("SessionStartPosition " + currentGameState.SessionData.SessionStartPosition);
                         Console.WriteLine("SessionStartTime " + currentGameState.SessionData.SessionStartTime);
-                        Console.WriteLine("TrackName " + currentGameState.SessionData.TrackName);                        
+                        String trackName = currentGameState.SessionData.TrackDefinition == null ? "unknown" : currentGameState.SessionData.TrackDefinition.name;
+                        Console.WriteLine("TrackName " + trackName);                        
                     }
                 }
                 if (!justGoneGreen && previousGameState != null)
@@ -197,7 +198,7 @@ namespace CrewChiefV3.RaceRoom
                     currentGameState.SessionData.SessionNumberOfLaps = previousGameState.SessionData.SessionNumberOfLaps;
                     currentGameState.SessionData.SessionStartPosition = previousGameState.SessionData.SessionStartPosition;
                     currentGameState.SessionData.NumCarsAtStartOfSession = previousGameState.SessionData.NumCarsAtStartOfSession;
-                    currentGameState.SessionData.TrackLength = previousGameState.SessionData.TrackLength;
+                    // TODO: track
                     currentGameState.SessionData.EventIndex = previousGameState.SessionData.EventIndex;
                     currentGameState.SessionData.SessionIteration = previousGameState.SessionData.SessionIteration;
                     currentGameState.SessionData.PitWindowStart = previousGameState.SessionData.PitWindowStart;

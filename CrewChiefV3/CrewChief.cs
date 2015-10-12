@@ -551,7 +551,8 @@ namespace CrewChiefV3
             Console.WriteLine("SessionType " + currentGameState.SessionData.SessionType);
             Console.WriteLine("EventIndex " + currentGameState.SessionData.EventIndex);
             Console.WriteLine("SessionIteration " + currentGameState.SessionData.SessionIteration);
-            Console.WriteLine("TrackName " + currentGameState.SessionData.TrackName);
+            String trackName = currentGameState.SessionData.TrackDefinition == null ? "unknown" : currentGameState.SessionData.TrackDefinition.name;
+            Console.WriteLine("TrackName " + trackName);
         }
     }
 }
