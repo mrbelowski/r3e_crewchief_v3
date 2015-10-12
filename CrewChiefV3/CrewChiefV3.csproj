@@ -112,6 +112,7 @@
     <Compile Include="PCars\_eNums\_EnumGetDescription.cs" />
     <Compile Include="GameDataReadException.cs" />
     <Compile Include="TimeSpanWrapper.cs" />
+    <Compile Include="TrackData.cs" />
     <Compile Include="UserInterface\FloatPropertyControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
