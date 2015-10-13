@@ -58,7 +58,7 @@ namespace CrewChiefV3.Events
             lapNumberAtLastMessage = 0;
             numberOfLapsInLastPlace = 0;
             playedRaceStartMessage = false;
-            startMessageTime = new Random().Next(30, 50);
+            startMessageTime = rand.Next(30, 50);
             isLast = false;
         }
 
@@ -91,7 +91,7 @@ namespace CrewChiefV3.Events
                     playedRaceStartMessage = true;
                     Console.WriteLine("Race start message... isLast = " + isLast +
                         " session start pos = " + currentGameState.SessionData.SessionStartPosition + " current pos = " + currentGameState.SessionData.Position);
-                    if (isLast || currentGameState.SessionData.SessionStartPosition + 1 < currentGameState.SessionData.Position)
+                    if (currentGameState.SessionData.SessionStartPosition + 1 < currentGameState.SessionData.Position)
                     {
                         audioPlayer.queueClip(new QueuedMessage(folderBadStart, 0, this));
                     }
@@ -103,7 +103,7 @@ namespace CrewChiefV3.Events
                     {
                         audioPlayer.queueClip(new QueuedMessage(folderTerribleStart, 0, this));
                     }
-                    else if (new Random().NextDouble() > 0.6)
+                    else if (!isLast && rand.NextDouble() > 0.6)
                     {
                         // only play the OK start message sometimes
                         audioPlayer.queueClip(new QueuedMessage(folderOKStart, 0, this));

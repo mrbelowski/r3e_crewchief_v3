@@ -205,7 +205,7 @@ AOD_Goneshooting [TKR]:gone
 MaverickPilot:mav
 SludgeDetector (R.I.P Toy):sludge
 RamjetX:ramjet
-Jay Van Dijk:van dyke
+Van Dijk:van dyke
 Ki Kwang-Sun:kwang sun
 Vincent De Clercq:de clerk
 Vitor dos Santos:dos santos

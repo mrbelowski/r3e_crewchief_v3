@@ -10,6 +10,7 @@ namespace CrewChiefV3.Events
 {
     class Opponents : AbstractEvent
     {
+        private static String validationDriverAheadKey = "validationDriverAheadKey";
         public static String folderLeaderIsPitting = "opponents/the_leader_is_pitting";
         public static String folderCarAheadIsPitting = "opponents/the_car_ahead_is_pitting";
         public static String folderCarBehindIsPitting = "opponents/the_car_behind_is_pitting";
@@ -26,11 +27,7 @@ namespace CrewChiefV3.Events
         public static String folderIsNowLeading = "opponents/is_now_leading";
         public static String folderNextCarIs = "opponents/next_car_is";
 
-        private List<float> leaderLastLaps = new List<float>();
-
-        private List<float> carAheadLastLaps = new List<float>();
-
-        private List<float> carBehindLastLaps = new List<float>();
+        private Dictionary<String, List<float>> opponentLapTimes = new Dictionary<String, List<float>>();
 
         private GameStateData currentGameState;
 
@@ -46,31 +43,31 @@ namespace CrewChiefV3.Events
         public override void clearState()
         {
             currentGameState = null;
-            leaderLastLaps = new List<float>();
-            carAheadLastLaps = new List<float>();
-            carBehindLastLaps = new List<float>();
+            opponentLapTimes.Clear();
             nextLeadChangeMessage = DateTime.MinValue;
             nextCarAheadChangeMessage = DateTime.MinValue;
         }
 
         public override bool isMessageStillValid(string eventSubType, GameStateData currentGameState, Dictionary<String, Object> validationData)
         {
+            if (validationData != null && validationData.ContainsKey(validationDriverAheadKey)) {
+                String expectedOpponentName = (String)validationData[validationDriverAheadKey];
+                String actualOpponentName = currentGameState.getOpponentNameInFront();
+                if (actualOpponentName != expectedOpponentName)
+                {
+                    if (actualOpponentName != null && expectedOpponentName != null)
+                    {
+                        Console.WriteLine("new car in front message for opponent " + expectedOpponentName +
+                            " no longer valid - driver in front is now " + actualOpponentName);
+                    }
+                    return false;
+                }
+            }
             return true;
         }
 
         override protected void triggerInternal(GameStateData previousGameState, GameStateData currentGameState)
         {
-            /*if (currentGameState.SessionData.IsNewSector && currentGameState.SessionData.CompletedLaps > 0)
-            {
-                foreach (KeyValuePair<String, OpponentData> opp in currentGameState.OpponentData) {
-                    OpponentData.OpponentDelta delta = opp.Value.getTimeDifferenceToPlayer(currentGameState.SessionData);
-                    if (delta != null)
-                    {
-                        Console.WriteLine("DETLA: " + delta.lapDifference + " , " + delta.time + " POSITION " + opp.Value.Position + " PLAYER_POS " + currentGameState.SessionData.Position);
-                    }
-                }
-            }*/
-
             this.currentGameState = currentGameState;
             if (nextCarAheadChangeMessage == DateTime.MinValue)
             {
@@ -80,95 +77,66 @@ namespace CrewChiefV3.Events
             {
                 nextLeadChangeMessage = currentGameState.Now.Add(TimeSpan.FromSeconds(30));
             }
+            foreach (KeyValuePair<String, OpponentData> entry in currentGameState.OpponentData)
+            {
+                String driverName = entry.Key;
+                OpponentData opponentData = entry.Value;
+                if (!opponentLapTimes.ContainsKey(driverName))
+                {
+                    opponentLapTimes.Add(driverName, new List<float>());
+                }
+                if (opponentData.IsNewLap && opponentData.ApproximateLastLapTime > 0)
+                {
+                    // this opponent has just completed a lap - do we need to report it?
+                    if (opponentLapTimes[driverName].Count > 2 && opponentLapTimes[driverName].Min() > opponentData.ApproximateLastLapTime)
+                    {
+                        if (currentGameState.SessionData.Position > 1 && opponentData.Position == 1)
+                        {
+                            // he's leading, and has recorded 2 or more laps, and this one's his fastest
+                            audioPlayer.queueClip(new QueuedMessage("leader_good_laptime", MessageContents(folderLeaderHasJustDoneA,
+                                    TimeSpan.FromSeconds(opponentData.ApproximateLastLapTime)), 0, this));
+                        }
+                        else if (currentGameState.SessionData.Position > 1 && opponentData.Position == currentGameState.SessionData.Position - 1)
+                        {
+                            // he's ahead of us, and has recorded 2 or more laps, and this one's his fastest
+                            audioPlayer.queueClip(new QueuedMessage("car_ahead_good_laptime", MessageContents(folderTheCarAheadHasJustDoneA,
+                                    TimeSpan.FromSeconds(opponentData.ApproximateLastLapTime)), 0, this));
+                        }
+                        else if (!currentGameState.isLast() && opponentData.Position == currentGameState.SessionData.Position + 1)
+                        {
+                            // he's behind us, and has recorded 2 or more laps, and this one's his fastest
+                            audioPlayer.queueClip(new QueuedMessage("car_behind_good_laptime", MessageContents(folderTheCarBehindHasJustDoneA,
+                                    TimeSpan.FromSeconds(opponentData.ApproximateLastLapTime)), 0, this));
+                        }
+                    }
+                    opponentLapTimes[driverName].Add(opponentData.ApproximateLastLapTime);
+                }
+            }
+
             if (currentGameState.SessionData.SessionType == SessionType.Race)
             {
                 if (!currentGameState.SessionData.IsRacingSameCarInFront)
                 {
-                    carAheadLastLaps.Clear();
                     if (currentGameState.SessionData.Position > 2 && currentGameState.Now > nextCarAheadChangeMessage && !currentGameState.PitData.InPitlane
                         && currentGameState.SessionData.CompletedLaps > 0)
                     {
                         OpponentData opponentData = currentGameState.getOpponentAtPosition(currentGameState.SessionData.Position - 1);
                         if (opponentData != null && !opponentData.IsEnteringPits)
                         {
-                            audioPlayer.queueClip(new QueuedMessage("new_car_ahead", MessageContents(folderNextCarIs, opponentData), 0, this));
+                            audioPlayer.queueClip(new QueuedMessage("new_car_ahead", MessageContents(folderNextCarIs, opponentData), 4, this,
+                                new Dictionary<string, object> { { validationDriverAheadKey, opponentData.DriverRawName } }));
                             nextCarAheadChangeMessage = currentGameState.Now.Add(TimeSpan.FromSeconds(30));
                         }                        
                     }
                 }
-                else if (currentGameState.SessionData.Position > 1)
-                {
-                    OpponentData carAheadCurrentState = currentGameState.getOpponentAtPosition(currentGameState.SessionData.Position - 1);
-                    OpponentData carAheadPreviousState = previousGameState == null ? null : previousGameState.getOpponentAtPosition(currentGameState.SessionData.Position - 1);
-                    if (carAheadCurrentState != null && carAheadPreviousState != null && carAheadCurrentState.CompletedLaps == carAheadPreviousState.CompletedLaps + 1 &&
-                        carAheadCurrentState.ApproximateLastLapTime > 0)
-                    {
-                        if (carAheadLastLaps.Count > 2)
-                        {
-                            float previousBest = carAheadLastLaps.Min();
-                            if (previousBest > 0 && previousBest > carAheadCurrentState.ApproximateLastLapTime)
-                            {
-                                // this is his best lap for a while
-                                audioPlayer.queueClip(new QueuedMessage("car_behind_good_laptime", MessageContents(folderTheCarAheadHasJustDoneA,
-                                    TimeSpan.FromSeconds(carAheadCurrentState.ApproximateLastLapTime)), 0, this));
-                            }
-                        } 
-                        carAheadLastLaps.Add(carAheadCurrentState.ApproximateLastLapTime);
-                    }
-                }
-                if (!currentGameState.SessionData.IsRacingSameCarBehind)
-                {
-                    carBehindLastLaps.Clear();
-                }
-                else if (!currentGameState.isLast())
-                {
-                    OpponentData carBehindCurrentState = currentGameState.getOpponentAtPosition(currentGameState.SessionData.Position + 1);
-                    OpponentData carBehindPreviousState = previousGameState == null ? null : previousGameState.getOpponentAtPosition(currentGameState.SessionData.Position + 1);
-                    if (carBehindCurrentState != null && carBehindPreviousState != null && carBehindCurrentState.CompletedLaps == carBehindPreviousState.CompletedLaps + 1 && 
-                        carBehindCurrentState.ApproximateLastLapTime > 0)
-                    {
-                        if (carBehindLastLaps.Count > 2)
-                        {
-                            float previousBest = carBehindLastLaps.Min();
-                            if (previousBest > 0 && previousBest > carBehindCurrentState.ApproximateLastLapTime)
-                            {
-                                // this is his best lap for a while
-                                audioPlayer.queueClip(new QueuedMessage("car_behind_good_laptime", MessageContents(folderTheCarBehindHasJustDoneA,
-                                    TimeSpan.FromSeconds(carBehindCurrentState.ApproximateLastLapTime)), 0, this));
-                            }
-                        } 
-                        carBehindLastLaps.Add(carBehindCurrentState.ApproximateLastLapTime);                       
-                    }
-                }
                 if (currentGameState.SessionData.HasLeadChanged)
                 {
-                    leaderLastLaps.Clear();
                     String name = currentGameState.getOpponentAtPosition(1) != null ? currentGameState.getOpponentAtPosition(1).DriverRawName : "no data";
                     Console.WriteLine("Lead change, current leader is " + name + " laps completed = " + currentGameState.SessionData.CompletedLaps);
                     if (currentGameState.SessionData.Position > 1 && previousGameState.SessionData.Position > 1 && currentGameState.Now > nextLeadChangeMessage)
                     {
                         audioPlayer.queueClip(new QueuedMessage("new_leader", MessageContents(currentGameState.getOpponentAtPosition(1), folderIsNowLeading), 0, this));
                         nextLeadChangeMessage = currentGameState.Now.Add(TimeSpan.FromSeconds(30));
-                    }
-                }
-                else if (currentGameState.SessionData.Position > 1)
-                {
-                    OpponentData leaderCurrentState = currentGameState.getOpponentAtPosition(1);
-                    OpponentData leaderPreviousState = previousGameState == null ? null : previousGameState.getOpponentAtPosition(1);
-                    if (leaderCurrentState != null && leaderPreviousState != null && leaderCurrentState.CompletedLaps == leaderPreviousState.CompletedLaps + 1 &&
-                        leaderCurrentState.ApproximateLastLapTime > 0)
-                    {
-                        if (leaderLastLaps.Count > 2)
-                        {
-                            float previousBest = leaderLastLaps.Min();
-                            if (previousBest > 0 && previousBest > leaderCurrentState.ApproximateLastLapTime)
-                            {
-                                // this is his best lap for a while
-                                audioPlayer.queueClip(new QueuedMessage("leader_good_laptime", MessageContents(folderLeaderHasJustDoneA, 
-                                    TimeSpan.FromSeconds(leaderCurrentState.ApproximateLastLapTime)), 0, this));
-                            }
-                        }
-                        leaderLastLaps.Add(leaderCurrentState.ApproximateLastLapTime);        
                     }
                 }
 
@@ -178,12 +146,14 @@ namespace CrewChiefV3.Events
                     audioPlayer.queueClip(new QueuedMessage("leader_is_pitting", MessageContents(folderTheLeader, currentGameState.getOpponentAtPositionWhenStartingSector3(1), 
                         folderIsPitting), MessageContents(folderLeaderIsPitting), 0, this));
                 }
+
                 if (currentGameState.PitData.CarInFrontIsPitting && currentGameState.SessionData.TimeDeltaFront > 3 &&
                     currentGameState.SessionData.SessionPhase != SessionPhase.Countdown && currentGameState.SessionData.SessionPhase != SessionPhase.Formation)
                 {
                     audioPlayer.queueClip(new QueuedMessage("car_in_front_is_pitting", MessageContents(currentGameState.getOpponentAtPositionWhenStartingSector3(
                         currentGameState.SessionData.Position - 1), folderAheadIsPitting), MessageContents(folderCarAheadIsPitting), 0, this));
                 }
+
                 if (currentGameState.PitData.CarBehindIsPitting && currentGameState.SessionData.TimeDeltaBehind > 3 &&
                     currentGameState.SessionData.SessionPhase != SessionPhase.Countdown && currentGameState.SessionData.SessionPhase != SessionPhase.Formation)
                 {

@@ -2,6 +2,8 @@ CrewChief version 3.
 
 Changelog
 ---------
+Version 3.5.2: Added version number to UI; fixed broken opponent lap time tracking (pace estimates were always incorrect); Fixed missing opponent best-lap reported; More accurate and efficient opponent pitting detection; Added a delay and validation check to 'the next car is...' message; Don't play the 'let's get those places back' message when starting last. No new sound pack for this version.
+
 Version 3.5.1: Fixed channel getting left open after enabling / disabling 'deltas' mode; use slicks for formula-rookie. No new sound pack for this version.
 
 Version 3.5.0: fixed a couple of missing damage responses; added 'listen start' beep for when you press the radio button (hold mode only) - can be disabled with use_listen_beep property (I still need to find a suitable sound effect for this); Added more driver names; Fixed edge case bug in radio channel handling that could leave the radio channel open; Added "what's my fuel level" speech recognition; The fuel stuff should now work in practice and qualify and if there's not enough data to estimate the time / number of laps of fuel left (when you ask "how's my fuel") the app will simply tell you the fuel level; Added optional CPU core affinity start option - run the app from a shortcut with CPUn where n is 1 to 8, for example:

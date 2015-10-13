@@ -16,31 +16,9 @@ namespace CrewChiefV3.PCars
 {
     class PCarsGameStateMapper : GameStateMapper
     {
-        // pit detection parameters
-        float pitLimiterSpeedVariance = 1;
-        float pitLimiterSpeedSingleSpeedAxisVariance = 1;
-        // the speeds are actual speed, rather than speed in one direction
-        float pitLimiterMinSpeed = 17;   // m/s
-        float pitLimiterMaxSpeed = 25;  // m/s
-        int updatesPerSecond = CrewChief._timeInterval == TimeSpan.Zero ? 10 : 1000 / CrewChief._timeInterval.Milliseconds;
-        int pitDetectionChunksToCheck = 3;
-
         private Boolean attemptPitDetection = UserSettings.GetUserSettings().getBoolean("attempt_pcars_opponent_pit_detection");
         public static String steamId = UserSettings.GetUserSettings().getString("pcars_steam_id");
         private static Boolean getPlayerByName = true;
-
-        private class LocationAndTime
-        {
-            public float x;
-            public float y;
-            public long ticks;
-            public LocationAndTime(float x, float y, long ticks)
-            {
-                this.x = x;
-                this.y = y;
-                this.ticks = ticks;
-            }
-        }
 
         private List<CornerData.EnumWithThresholds> suspensionDamageThresholds = new List<CornerData.EnumWithThresholds>();
         private List<CornerData.EnumWithThresholds> tyreWearThresholds = new List<CornerData.EnumWithThresholds>();
@@ -193,7 +171,7 @@ namespace CrewChiefV3.PCars
                 // don't ignore the paused game updates if we're in debug mode
                 return previousGameState;
             }
-
+            
             GameStateData currentGameState = new GameStateData(ticks);
 
             if (shared.mNumParticipants < 1 || 
@@ -896,20 +874,26 @@ namespace CrewChiefV3.PCars
                 {
                     if (completedLaps == opponentData.CompletedLaps + 1)
                     {
-                        float sessionTimeAtEndOfLastLap = opponentData.SessionTimesAtEndOfSectors[3];
-                        float lapTimeEstimate = sessionRunningTime - sessionTimeAtEndOfLastLap;
-                        // if the lap time estimate is more than a tenth quicker than the world record, it's probably bollocks
-                        if (lapTimeEstimate > worldRecordLapTime - 0.1)
+                        if (opponentData.LapIsValid)
                         {
-                            opponentData.ApproximateLastLapTime = sessionRunningTime - sessionTimeAtEndOfLastLap;
+                            float sessionTimeAtEndOfLastLap = opponentData.SessionTimesAtEndOfSectors[3];
+                            float lapTimeEstimate = sessionRunningTime - sessionTimeAtEndOfLastLap;
+                            // if the lap time estimate is more than a tenth quicker than the world record, it's probably bollocks
+                            if (lapTimeEstimate > worldRecordLapTime - 0.1)
+                            {
+                                opponentData.ApproximateLastLapTime = sessionRunningTime - sessionTimeAtEndOfLastLap;
+                            }
+                            else
+                            {
+                                Console.WriteLine("Discarding estimated best lap for opponent " + opponentData.DriverRawName +
+                                    ", estimated time = " + lapTimeEstimate + ", world record = " + worldRecordLapTime);
+                            }
                         }
                         else
                         {
-                            Console.WriteLine("Discarding estimated best lap for opponent " + opponentData.DriverRawName +
-                                ", estimated time = " + lapTimeEstimate + ", world record = " + worldRecordLapTime);
-                        }
+                            Console.WriteLine("Discarding invalid opponent lap");
+                        }                        
                         opponentData.SessionTimesAtEndOfSectors[3] = sessionRunningTime;
-
                         opponentData.LapIsValid = true;
                         opponentData.IsNewLap = true;
                     }

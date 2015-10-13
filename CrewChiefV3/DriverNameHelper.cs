@@ -15,7 +15,7 @@ namespace CrewChiefV3
         // use the last part
         private static Boolean optimisticSurnameExtraction = true;
 
-        private static String[] middleBits = new String[] { "van", "de", "da", "le", "la", "von", "di", "eg", "du" };
+        private static String[] middleBits = new String[] { "van", "de", "da", "le", "la", "von", "di", "eg", "du", "el", "del", "de la", "de le", "saint", "st"};
 
         private static Dictionary<String, String> lowerCaseRawNameToUsableName = new Dictionary<String, String>();
 
@@ -166,6 +166,10 @@ namespace CrewChiefV3
                 else if (middleBits.Contains(fullNameSplit[fullNameSplit.Count() - 2].ToLower()))
                 {
                     return fullNameSplit[fullNameSplit.Count() - 2] + " " + fullNameSplit[fullNameSplit.Count() - 1];
+                }
+                else if (fullNameSplit.Length > 3 && middleBits.Contains((fullNameSplit[fullNameSplit.Count() - 3] + " " + fullNameSplit[fullNameSplit.Count() - 2]).ToLower()))
+                {
+                    return fullNameSplit[fullNameSplit.Count() - 3] + " " + fullNameSplit[fullNameSplit.Count() - 2] + " " + fullNameSplit[fullNameSplit.Count() - 1];
                 }
                 else if (optimisticSurnameExtraction)
                 {
