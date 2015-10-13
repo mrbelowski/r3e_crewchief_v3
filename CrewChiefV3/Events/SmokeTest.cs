@@ -39,11 +39,11 @@ namespace CrewChiefV3.Events
             audioPlayer.queueClip(new QueuedMessage(folderTest, 0, this));
             
             /*List<String> rawDriverNames = new List<string>();
-            OpponentData opponent1 = makeTempDriver("AOD_bozza72", rawDriverNames);
-            OpponentData opponent2 = makeTempDriver("THFS -GN-", rawDriverNames);
-            OpponentData opponent3 = makeTempDriver("akapillarz", rawDriverNames);
-            OpponentData opponent4 = makeTempDriver("hilton", rawDriverNames);
-            OpponentData opponent5 = makeTempDriver("Strattos", rawDriverNames);
+            OpponentData opponent1 = makeTempDriver("haLLunKen henki", rawDriverNames);
+            OpponentData opponent2 = makeTempDriver("haLLunKen hipe", rawDriverNames);
+            OpponentData opponent3 = makeTempDriver("[PRL] Alex Kingston", rawDriverNames);
+            OpponentData opponent4 = makeTempDriver("[PRL] David Bornkessel", rawDriverNames);
+            OpponentData opponent5 = makeTempDriver("[PRL] Brad Roller", rawDriverNames);
 
             List<String> usableDriverNames = DriverNameHelper.getUsableDriverNames(rawDriverNames, audioPlayer.soundFilesPath);
             foreach (String usableDriverName in usableDriverNames)
@@ -52,6 +52,7 @@ namespace CrewChiefV3.Events
             }
             audioPlayer.cacheDriverNames(usableDriverNames);
             Random random = new Random();
+
             audioPlayer.queueClip(new QueuedMessage("Timings/gap_in_front",
                                     MessageContents(Timings.folderTheGapTo, opponent1, Timings.folderAheadIsIncreasing,
                                     TimeSpanWrapper.FromSeconds((float) random.NextDouble() * 10, true)),
@@ -80,7 +81,7 @@ namespace CrewChiefV3.Events
             audioPlayer.queueClip(new QueuedMessage("Timings/gap_behind2",
                                     MessageContents(opponent4, Timings.folderIsReelingYouIn, TimeSpanWrapper.FromSeconds((float)random.NextDouble() * 10, true)),
                                     MessageContents(Timings.folderGapBehindDecreasing, TimeSpanWrapper.FromSeconds((float)random.NextDouble() * 10, true)), 0, this));
-      
+
             audioPlayer.queueClip(new QueuedMessage("opponents_1",
                                     MessageContents(opponent1, Opponents.folderAheadIsPitting), 0, this));
             audioPlayer.queueClip(new QueuedMessage("opponents_2",

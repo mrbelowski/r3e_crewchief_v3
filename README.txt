@@ -2,7 +2,7 @@ CrewChief version 3.
 
 Changelog
 ---------
-Version 3.5.2: Added version number to UI; fixed broken opponent lap time tracking (pace estimates were always incorrect); Fixed missing opponent best-lap reported; More accurate and efficient opponent pitting detection; Added a delay and validation check to 'the next car is...' message; Don't play the 'let's get those places back' message when starting last. No new sound pack for this version.
+Version 3.5.2: Added version number to UI; fixed broken opponent lap time tracking (pace estimates were always incorrect); Fixed missing opponent best-lap reporting; More accurate and efficient opponent pitting detection; Added a delay and validation check to 'the next car is...' message; Don't play the 'let's get those places back' message when starting last. No new sound pack for this version.
 
 Version 3.5.1: Fixed channel getting left open after enabling / disabling 'deltas' mode; use slicks for formula-rookie. No new sound pack for this version.
 

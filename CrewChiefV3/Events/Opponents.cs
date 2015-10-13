@@ -204,7 +204,7 @@ namespace CrewChiefV3.Events
                                     }
                                     else
                                     {
-                                        TimeSpan delta = TimeSpan.FromSeconds(Math.Abs(opponentDelta.time));
+                                        TimeSpanWrapper delta = TimeSpanWrapper.FromSeconds(Math.Abs(opponentDelta.time), true);
                                         String aheadOrBehind = Position.folderAhead;
                                         if (opponentDelta.time < 0)
                                         {
