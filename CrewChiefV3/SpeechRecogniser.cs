@@ -78,6 +78,9 @@ namespace CrewChiefV3
         public static String WHOS_IN_FRONT = "who's in front";
         public static String WHOS_BEHIND = "who's behind";
         public static String WHOS_LEADING = "who's leading";
+        public static String WHAT_WAS = "what was";
+        public static String WHAT_IS = "what is";
+        public static String BEST_LAP = "best lap";
 
         public static String REPEAT_LAST_MESSAGE = "repeat last message";
         public static String SAY_AGAIN = "say again";
@@ -262,12 +265,14 @@ namespace CrewChiefV3
                 foreach (String name in names)
                 {
                     nameChoices.Add(WHERE_IS + " " + name);
-                }
+                    nameChoices.Add(WHAT_WAS + " " + name + "'s " + LAST_LAP);
+                    nameChoices.Add(WHAT_IS + " " + name + "'s " + BEST_LAP);
+                }                
                 nameChoices.Add(WHOS_BEHIND);
                 nameChoices.Add(WHOS_IN_FRONT);
                 nameChoices.Add(WHOS_LEADING);
                 GrammarBuilder nameGB = new GrammarBuilder();
-                nameGB.Culture = cultureInfo;                
+                nameGB.Culture = cultureInfo;
                 nameGB.Append(nameChoices);
                 namesGrammar = new Grammar(nameGB);
                 sre.LoadGrammar(namesGrammar);

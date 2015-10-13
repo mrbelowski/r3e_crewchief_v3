@@ -165,10 +165,52 @@ namespace CrewChiefV3.Events
         
         public override void respond(String voiceMessage)
         {
-            Boolean foundDriver = false;
+            Boolean gotData = false;
             if (currentGameState != null)
             {
-                if (voiceMessage.StartsWith(SpeechRecogniser.WHERE_IS))
+                if (voiceMessage.StartsWith(SpeechRecogniser.WHAT_WAS) && voiceMessage.EndsWith(SpeechRecogniser.LAST_LAP))
+                {
+                    foreach (KeyValuePair<String, OpponentData> entry in currentGameState.OpponentData)
+                    {
+                        String usableDriverName = DriverNameHelper.getUsableNameForRawName(entry.Value.DriverRawName);
+                        if (voiceMessage.Contains(usableDriverName))
+                        {
+                            if (opponentLapTimes.ContainsKey(entry.Value.DriverRawName))
+                            {
+                                List<float> requestedOpponentLapTimes = opponentLapTimes[entry.Value.DriverRawName];
+                                if (requestedOpponentLapTimes.Count > 0)
+                                {
+                                    gotData = true;
+                                    audioPlayer.playClipImmediately(new QueuedMessage("opponentLastLap", MessageContents(
+                                            TimeSpanWrapper.FromSeconds(requestedOpponentLapTimes[requestedOpponentLapTimes.Count - 1], true)), 0, null), false);
+                                        audioPlayer.closeChannel();
+                                }
+                            }
+                        }
+                    }
+                } 
+                else if (voiceMessage.StartsWith(SpeechRecogniser.WHAT_IS) && voiceMessage.EndsWith(SpeechRecogniser.BEST_LAP))
+                {
+                    foreach (KeyValuePair<String, OpponentData> entry in currentGameState.OpponentData)
+                    {
+                        String usableDriverName = DriverNameHelper.getUsableNameForRawName(entry.Value.DriverRawName);
+                        if (voiceMessage.Contains(usableDriverName))
+                        {
+                            if (opponentLapTimes.ContainsKey(entry.Value.DriverRawName))
+                            {
+                                List<float> requestedOpponentLapTimes = opponentLapTimes[entry.Value.DriverRawName];
+                                if (requestedOpponentLapTimes.Count > 0)
+                                {
+                                    gotData = true;
+                                    audioPlayer.playClipImmediately(new QueuedMessage("opponentBestLap", MessageContents(
+                                            TimeSpanWrapper.FromSeconds(requestedOpponentLapTimes.Min(), true)), 0, null), false);
+                                        audioPlayer.closeChannel();                                    
+                                }
+                            }
+                        }
+                    }
+                }
+                else if (voiceMessage.StartsWith(SpeechRecogniser.WHERE_IS))
                 {
                     foreach (KeyValuePair<String, OpponentData> entry in currentGameState.OpponentData)
                     {
@@ -220,7 +262,7 @@ namespace CrewChiefV3.Events
                             {
                                 Console.WriteLine("Driver "+ entry.Value.DriverRawName + " is no longer active in this session");
                             }                            
-                            foundDriver = true;
+                            gotData = true;
                             break;
                         }
                     }
@@ -235,7 +277,7 @@ namespace CrewChiefV3.Events
                         {
                             audioPlayer.playClipImmediately(queuedMessage, false);
                             audioPlayer.closeChannel();
-                            foundDriver = true;
+                            gotData = true;
                         }                        
                     }
                 }
@@ -249,7 +291,7 @@ namespace CrewChiefV3.Events
                         {
                             audioPlayer.playClipImmediately(queuedMessage, false);
                             audioPlayer.closeChannel();
-                            foundDriver = true;
+                            gotData = true;
                         }
                     }
                 }
@@ -263,12 +305,12 @@ namespace CrewChiefV3.Events
                         {
                             audioPlayer.playClipImmediately(queuedMessage, false);
                             audioPlayer.closeChannel();
-                            foundDriver = true;
+                            gotData = true;
                         }
                     }
                 }
             }
-            if (!foundDriver)
+            if (!gotData)
             {
                 audioPlayer.playClipImmediately(new QueuedMessage(AudioPlayer.folderNoData, 0, null), false);
                 audioPlayer.closeChannel();
