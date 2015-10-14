@@ -16,6 +16,10 @@ namespace CrewChiefV3.PCars
 
         // don't activate the spotter unless this many seconds have elapsed (race starts are messy)
         private int timeAfterRaceStartToActivate = UserSettings.GetUserSettings().getInt("time_after_race_start_for_spotter");
+
+        // how long is a car? we use 3.5 meters by default here. Too long and we'll get 'hold your line' messages
+        // when we're clearly directly behind the car
+        private float carLength = UserSettings.GetUserSettings().getFloat("pcars_spotter_car_length");
         
         private Boolean enabled;
 
@@ -33,7 +37,7 @@ namespace CrewChiefV3.PCars
             this.enabled = initialEnabledState;
             this.initialEnabledState = initialEnabledState;
             this.intervalSeconds = intervalSeconds;
-            this.internalSpotter = new NoisyCartesianCoordinateSpotter(audioPlayer, initialEnabledState);
+            this.internalSpotter = new NoisyCartesianCoordinateSpotter(audioPlayer, initialEnabledState, carLength);
         }
 
         public void clearState()

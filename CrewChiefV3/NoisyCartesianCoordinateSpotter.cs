@@ -17,9 +17,7 @@ namespace CrewChiefV3
         private int holdMessageExpiresAfter = 1000;
         private int inTheMiddleMessageExpiresAfter = 1000;
 
-        // how long is a car? we use 3.5 meters by default here. Too long and we'll get 'hold your line' messages
-        // when we're clearly directly behind the car
-        private float carLength = UserSettings.GetUserSettings().getFloat("pcars_spotter_car_length");
+        private float carLength;
 
         // before saying 'clear', we need to be carLength + this value from the other car
         private float gapNeededForClear = UserSettings.GetUserSettings().getFloat("spotter_gap_for_clear");
@@ -92,9 +90,10 @@ namespace CrewChiefV3
             none, clearLeft, clearRight, clearAllRound, carLeft, carRight, threeWide, stillThere
         }
 
-        public NoisyCartesianCoordinateSpotter(AudioPlayer audioPlayer, Boolean initialEnabledState)
+        public NoisyCartesianCoordinateSpotter(AudioPlayer audioPlayer, Boolean initialEnabledState, float carLength)
         {
             this.audioPlayer = audioPlayer;
+            this.carLength = carLength;
             this.longCarLength = carLength + gapNeededForClear;
         }
 
