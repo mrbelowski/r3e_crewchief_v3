@@ -164,114 +164,83 @@ namespace CrewChiefV3.Events
             }
         }
 
+        private List<float> getOpponentLapTimes(String voiceMessage)
+        {
+            Object opponentKey = null;
+            if (voiceMessage.Contains(SpeechRecogniser.THE_LEADER) && currentGameState.SessionData.Position > 1)
+            {
+                opponentKey = currentGameState.getOpponentKeyAtPosition(1);                
+            }
+            if ((voiceMessage.Contains(SpeechRecogniser.THE_CAR_AHEAD) || voiceMessage.Contains(SpeechRecogniser.THE_GUY_AHEAD) ||
+                voiceMessage.Contains(SpeechRecogniser.THE_GUY_IN_FRONT) || voiceMessage.Contains(SpeechRecogniser.THE_CAR_IN_FRONT)) && currentGameState.SessionData.Position > 1)
+            {
+                opponentKey = currentGameState.getOpponentKeyInFront();                
+            }
+            else if ((voiceMessage.Contains(SpeechRecogniser.THE_CAR_BEHIND) || voiceMessage.Contains(SpeechRecogniser.THE_GUY_BEHIND)) &&
+                            !currentGameState.isLast())
+            {
+                opponentKey = currentGameState.getOpponentKeyBehind();                
+            }
+            else if (voiceMessage.Contains(SpeechRecogniser.POSITION) || voiceMessage.Contains(SpeechRecogniser.PEA)) 
+            {
+                for (int i = 1; i<60; i++)
+                {
+                    if (i != currentGameState.SessionData.Position && 
+                        (voiceMessage.Contains(SpeechRecogniser.POSITION + " " + i + "'s ") || (voiceMessage.Contains(SpeechRecogniser.PEA + " " + i + "'s "))))
+                    {
+                        opponentKey = currentGameState.getOpponentKeyAtPosition(i);
+                    }
+                }
+            }
+            else 
+            {
+                foreach (KeyValuePair<Object, OpponentData> entry in currentGameState.OpponentData)
+                {
+                    String usableDriverName = DriverNameHelper.getUsableNameForRawName(entry.Value.DriverRawName);
+                    if (voiceMessage.Contains(usableDriverName)) 
+                    {
+                        opponentKey = entry.Key;
+                        break;
+                    }
+                }
+            }
+                       
+            if (opponentKey != null && opponentLapTimes.ContainsKey(opponentKey) && opponentLapTimes[opponentKey].Count > 0)
+            {
+                return opponentLapTimes[opponentKey];
+            }
+            else
+            {
+                return null;
+            }
+        }
+        
         public override void respond(String voiceMessage)
         {
             Boolean gotData = false;
             if (currentGameState != null)
             {
-                if (voiceMessage.StartsWith(SpeechRecogniser.WHAT_WAS) && voiceMessage.EndsWith(SpeechRecogniser.LAST_LAP))
+                if ((voiceMessage.StartsWith(SpeechRecogniser.WHAT_WAS) && voiceMessage.EndsWith(SpeechRecogniser.LAST_LAP)) || 
+                    (voiceMessage.StartsWith(SpeechRecogniser.WHAT_IS) && voiceMessage.EndsWith(SpeechRecogniser.BEST_LAP)))
                 {
-                    foreach (KeyValuePair<Object, OpponentData> entry in currentGameState.OpponentData)
+                    List<float> lapTimes = getOpponentLapTimes(voiceMessage);
+                    if (lapTimes != null)
                     {
-                        String usableDriverName = DriverNameHelper.getUsableNameForRawName(entry.Value.DriverRawName);
-                        if (voiceMessage.Contains(usableDriverName))
+                        gotData = true;
+                        if (voiceMessage.EndsWith(SpeechRecogniser.LAST_LAP))
                         {
-                            if (opponentLapTimes.ContainsKey(entry.Key))
-                            {
-                                List<float> requestedOpponentLapTimes = opponentLapTimes[entry.Key];
-                                if (requestedOpponentLapTimes.Count > 0)
-                                {
-                                    gotData = true;
-                                    audioPlayer.playClipImmediately(new QueuedMessage("opponentLastLap", MessageContents(
-                                            TimeSpanWrapper.FromSeconds(requestedOpponentLapTimes[requestedOpponentLapTimes.Count - 1], true)), 0, null), false);
-                                        audioPlayer.closeChannel();
-                                }
-                            }
-                            break;
+                            audioPlayer.playClipImmediately(new QueuedMessage("opponentLastLap", MessageContents(
+                                TimeSpanWrapper.FromSeconds(lapTimes[lapTimes.Count - 1], true)), 0, null), false);
+                            audioPlayer.closeChannel();
                         }
-                    }
-                    if (!gotData)
-                    {
-                        if ((voiceMessage.Contains(SpeechRecogniser.THE_CAR_AHEAD) || voiceMessage.Contains(SpeechRecogniser.THE_GUY_AHEAD) ||
-                            voiceMessage.Contains(SpeechRecogniser.THE_GUY_IN_FRONT) || voiceMessage.Contains(SpeechRecogniser.THE_CAR_IN_FRONT)) && currentGameState.SessionData.Position > 1)
+                        else
                         {
-                            Object opponentKey = currentGameState.getOpponentKeyInFront();
-                            if (opponentKey != null && currentGameState.OpponentData.ContainsKey(opponentKey))
-                            {
-                                OpponentData opponent = currentGameState.OpponentData[opponentKey];
-                                if (opponent != null && opponentLapTimes.ContainsKey(opponentKey))
-                                {
-                                    List<float> requestedOpponentLapTimes = opponentLapTimes[opponentKey];
-                                    if (requestedOpponentLapTimes.Count > 0)
-                                    {
-                                        gotData = true;
-                                        if (voiceMessage.Contains(SpeechRecogniser.BEST_LAP))
-                                        {
-                                            audioPlayer.playClipImmediately(new QueuedMessage("opponentLastLap", MessageContents(
-                                                TimeSpanWrapper.FromSeconds(requestedOpponentLapTimes.Min(), true)), 0, null), false);
-                                        }
-                                        else if (voiceMessage.Contains(SpeechRecogniser.LAST_LAP))
-                                        {
-                                            audioPlayer.playClipImmediately(new QueuedMessage("opponentLastLap", MessageContents(
-                                                TimeSpanWrapper.FromSeconds(requestedOpponentLapTimes[requestedOpponentLapTimes.Count - 1], true)), 0, null), false);
-                                        }                                        
-                                        audioPlayer.closeChannel();
-                                    }
-                                }
-                            }
-                        } 
-                        else if ((voiceMessage.Contains(SpeechRecogniser.THE_CAR_BEHIND) || voiceMessage.Contains(SpeechRecogniser.THE_GUY_BEHIND)) && 
-                            !currentGameState.isLast())
-                        {
-                            Object opponentKey = currentGameState.getOpponentKeyBehind();
-                            if (opponentKey != null && currentGameState.OpponentData.ContainsKey(opponentKey))
-                            {
-                                OpponentData opponent = currentGameState.OpponentData[opponentKey];
-                                if (opponent != null && opponentLapTimes.ContainsKey(opponentKey))
-                                {
-                                    List<float> requestedOpponentLapTimes = opponentLapTimes[opponentKey];
-                                    if (requestedOpponentLapTimes.Count > 0)
-                                    {
-                                        gotData = true;
-                                        if (voiceMessage.Contains(SpeechRecogniser.BEST_LAP))
-                                        {
-                                            audioPlayer.playClipImmediately(new QueuedMessage("opponentLastLap", MessageContents(
-                                                TimeSpanWrapper.FromSeconds(requestedOpponentLapTimes.Min(), true)), 0, null), false);
-                                        }
-                                        else if (voiceMessage.Contains(SpeechRecogniser.LAST_LAP))
-                                        {
-                                            audioPlayer.playClipImmediately(new QueuedMessage("opponentLastLap", MessageContents(
-                                                TimeSpanWrapper.FromSeconds(requestedOpponentLapTimes[requestedOpponentLapTimes.Count - 1], true)), 0, null), false);
-                                        }                                        
-                                        audioPlayer.closeChannel();
-                                    }
-                                }
-                            }
-                        }
+                            audioPlayer.playClipImmediately(new QueuedMessage("opponentBestLap", MessageContents(
+                                TimeSpanWrapper.FromSeconds(lapTimes.Min(), true)), 0, null), false);
+                            audioPlayer.closeChannel();
+                        }  
                     }
                 } 
-                else if (voiceMessage.StartsWith(SpeechRecogniser.WHAT_IS) && voiceMessage.EndsWith(SpeechRecogniser.BEST_LAP))
-                {
-                    foreach (KeyValuePair<Object, OpponentData> entry in currentGameState.OpponentData)
-                    {
-                        String usableDriverName = DriverNameHelper.getUsableNameForRawName(entry.Value.DriverRawName);
-                        if (voiceMessage.Contains(usableDriverName))
-                        {
-                            if (opponentLapTimes.ContainsKey(entry.Key))
-                            {
-                                List<float> requestedOpponentLapTimes = opponentLapTimes[entry.Key];
-                                if (requestedOpponentLapTimes.Count > 0)
-                                {
-                                    gotData = true;
-                                    audioPlayer.playClipImmediately(new QueuedMessage("opponentBestLap", MessageContents(
-                                            TimeSpanWrapper.FromSeconds(requestedOpponentLapTimes.Min(), true)), 0, null), false);
-                                        audioPlayer.closeChannel();                                    
-                                }
-                            }
-                            break;
-                        }
-                    }
-                }
                 else if (voiceMessage.StartsWith(SpeechRecogniser.WHERE_IS))
                 {
                     foreach (KeyValuePair<Object, OpponentData> entry in currentGameState.OpponentData)
