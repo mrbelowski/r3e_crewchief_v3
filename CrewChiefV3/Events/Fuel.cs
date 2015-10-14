@@ -43,7 +43,7 @@ namespace CrewChiefV3.Events
         private float averageUsagePerMinute;
 
         // fuel in tank 15 seconds after game start
-        private float fuelAfter15Seconds;
+        private float initialFuelLevel;
 
         private int halfDistance;
 
@@ -74,6 +74,10 @@ namespace CrewChiefV3.Events
 
         private float currentFuel;
 
+        private float gameTimeWhenFuelWasReset = 0;
+
+        private int lapsCompletedWhenFuelWasReset = 0;
+
         private Boolean enableFuelMessages = UserSettings.GetUserSettings().getBoolean("enable_fuel_messages");
 
         public Fuel(AudioPlayer audioPlayer)
@@ -83,12 +87,12 @@ namespace CrewChiefV3.Events
 
         public override void clearState()
         {
-            fuelAfter15Seconds = 0;
+            initialFuelLevel = 0;
             averageUsagePerLap = 0;
-            halfDistance = 0;
+            halfDistance = -1;
             playedHalfTankWarning = false;
             initialised = false;
-            halfTime = 0;
+            halfTime = -1;
             playedHalfTimeFuelEstimate = false;
             fuelUseWindow = new List<float>();
             gameTimeAtLastFuelWindowUpdate = 0;
@@ -98,42 +102,52 @@ namespace CrewChiefV3.Events
             playedTwoMinutesRemaining = false;
             currentFuel = -1;
             fuelUseActive = false;
+            gameTimeWhenFuelWasReset = 0;
+            lapsCompletedWhenFuelWasReset = 0;
         }
 
         override protected void triggerInternal(GameStateData previousGameState, GameStateData currentGameState)
         {
             fuelUseActive = currentGameState.FuelData.FuelUseActive;
             currentFuel = currentGameState.FuelData.FuelLeft;
-            if (fuelUseActive && (currentGameState.SessionData.SessionType == SessionType.Race &&
+            if (fuelUseActive && ((currentGameState.SessionData.SessionType == SessionType.Race &&
                 (currentGameState.SessionData.SessionPhase == SessionPhase.Green || currentGameState.SessionData.SessionPhase == SessionPhase.Checkered)) ||
-                 ((currentGameState.SessionData.SessionType == SessionType.Qualify || currentGameState.SessionData.SessionType == SessionType.Practice || currentGameState.SessionData.SessionType == SessionType.HotLap) && 
-                (currentGameState.SessionData.SessionPhase == SessionPhase.Green || currentGameState.SessionData.SessionPhase == SessionPhase.Countdown) &&
-                currentGameState.SessionData.LapTimeCurrent > 0))
+                 ((currentGameState.SessionData.SessionType == SessionType.Qualify || currentGameState.SessionData.SessionType == SessionType.Practice || 
+                    currentGameState.SessionData.SessionType == SessionType.HotLap) && 
+                    (currentGameState.SessionData.SessionPhase == SessionPhase.Green || currentGameState.SessionData.SessionPhase == SessionPhase.Countdown) &&
+                    currentGameState.SessionData.LapTimeCurrent > 0)))
             {               
                 // To get the initial fuel, wait for 15 seconds
-                if (!initialised && currentGameState.SessionData.SessionRunningTime > 15)
+                if (currentGameState.SessionData.SessionRunningTime > 15 && (!initialised || 
+                    (previousGameState != null && currentGameState.FuelData.FuelLeft > previousGameState.FuelData.FuelLeft + 1)))
                 {
                     fuelUseWindow = new List<float>();
-                    fuelAfter15Seconds = currentGameState.FuelData.FuelLeft;
-                    fuelUseWindow.Add(fuelAfter15Seconds);
+                    initialFuelLevel = currentGameState.FuelData.FuelLeft;
+                    lapsCompletedWhenFuelWasReset = currentGameState.SessionData.CompletedLaps;
+                    gameTimeWhenFuelWasReset = currentGameState.SessionData.SessionRunningTime;
+                    fuelUseWindow.Add(initialFuelLevel);
                     gameTimeAtLastFuelWindowUpdate = currentGameState.SessionData.SessionRunningTime;
-                    Console.WriteLine("Fuel after 15s = " + fuelAfter15Seconds);
+                    Console.WriteLine("Initial fuel level = " + initialFuelLevel);
                     initialised = true;
                     if (currentGameState.SessionData.SessionNumberOfLaps > 0)
                     {
-                        halfDistance = currentGameState.SessionData.SessionNumberOfLaps / 2;
+                        if (halfDistance == -1)
+                        {
+                            halfDistance = currentGameState.SessionData.SessionNumberOfLaps / 2;
+                        }
                     }
-                    else
+                    else if (halfTime == -1)
                     {
                         halfTime = currentGameState.SessionData.SessionRunTime / 2;
                         Console.WriteLine("Half time = " + halfTime);
                     }
                 }
-                if (currentGameState.SessionData.IsNewLap && initialised && currentGameState.SessionData.CompletedLaps > 0 && currentGameState.SessionData.SessionNumberOfLaps > 0)
+                if (currentGameState.SessionData.IsNewLap && initialised && currentGameState.SessionData.CompletedLaps > lapsCompletedWhenFuelWasReset 
+                    && currentGameState.SessionData.SessionNumberOfLaps > 0)
                 {
                     // completed a lap, so store the fuel left at this point:
                     fuelUseWindow.Insert(0, currentGameState.FuelData.FuelLeft);
-                    // if we've got fuelUseWindowLength + 1 samples (note we initialise the window data with fuelAt15Seconds so we always
+                    // if we've got fuelUseWindowLength + 1 samples (note we initialise the window data with initialFuelLevel so we always
                     // have one extra), get the average difference between each pair of values
 
                     // only do this if we have a full window of data + one extra start point
@@ -148,12 +162,12 @@ namespace CrewChiefV3.Events
                     }
                     else
                     {
-                        averageUsagePerLap = (fuelAfter15Seconds - currentGameState.FuelData.FuelLeft) / currentGameState.SessionData.CompletedLaps;
+                        averageUsagePerLap = (initialFuelLevel - currentGameState.FuelData.FuelLeft) / (currentGameState.SessionData.CompletedLaps - lapsCompletedWhenFuelWasReset);
                     }
                     int estimatedFuelLapsLeft = (int)Math.Floor(currentGameState.FuelData.FuelLeft / averageUsagePerLap);
-                    if (currentGameState.SessionData.SessionType == SessionType.Race && enableFuelMessages && currentGameState.SessionData.CompletedLaps == halfDistance)
+                    if (halfDistance != -1 && currentGameState.SessionData.SessionType == SessionType.Race && enableFuelMessages && currentGameState.SessionData.CompletedLaps == halfDistance)
                     {
-                        if (estimatedFuelLapsLeft < halfDistance && currentGameState.FuelData.FuelLeft / fuelAfter15Seconds < 0.6)
+                        if (estimatedFuelLapsLeft < halfDistance && currentGameState.FuelData.FuelLeft / initialFuelLevel < 0.6)
                         {
                             if (currentGameState.PitData.IsRefuellingAllowed) 
                             {
@@ -176,37 +190,37 @@ namespace CrewChiefV3.Events
                     }
                     else if (enableFuelMessages && estimatedFuelLapsLeft == 4)
                     {
-                        Console.WriteLine("4 laps fuel left, starting fuel = " + fuelAfter15Seconds +
+                        Console.WriteLine("4 laps fuel left, starting fuel = " + initialFuelLevel +
                                 ", current fuel = " + currentGameState.FuelData.FuelLeft + ", usage per lap = " + averageUsagePerLap);
                         audioPlayer.queueClip(new QueuedMessage(folderFourLapsEstimate, 0, this));
                     }
                     else if (enableFuelMessages && estimatedFuelLapsLeft == 3)
                     {
-                        Console.WriteLine("3 laps fuel left, starting fuel = " + fuelAfter15Seconds +
+                        Console.WriteLine("3 laps fuel left, starting fuel = " + initialFuelLevel +
                             ", current fuel = " + currentGameState.FuelData.FuelLeft + ", usage per lap = " + averageUsagePerLap);
                         audioPlayer.queueClip(new QueuedMessage(folderThreeLapsEstimate, 0, this));
                     }
                     else if (enableFuelMessages && estimatedFuelLapsLeft == 2)
                     {
-                        Console.WriteLine("2 laps fuel left, starting fuel = " + fuelAfter15Seconds +
+                        Console.WriteLine("2 laps fuel left, starting fuel = " + initialFuelLevel +
                             ", current fuel = " + currentGameState.FuelData.FuelLeft + ", usage per lap = " + averageUsagePerLap);
                         audioPlayer.queueClip(new QueuedMessage(folderTwoLapsEstimate, 0, this));
                     }
                     else if (enableFuelMessages && estimatedFuelLapsLeft == 1)
                     {
-                        Console.WriteLine("1 lap fuel left, starting fuel = " + fuelAfter15Seconds +
+                        Console.WriteLine("1 lap fuel left, starting fuel = " + initialFuelLevel +
                             ", current fuel = " + currentGameState.FuelData.FuelLeft + ", usage per lap = " + averageUsagePerLap);
                         audioPlayer.queueClip(new QueuedMessage(folderOneLapEstimate, 0, this));
                     }
                 }
-                else if (initialised && currentGameState.SessionData.SessionNumberOfLaps <= 0 && !playedHalfTimeFuelEstimate &&
+                else if (initialised && halfTime != -1 && currentGameState.SessionData.SessionNumberOfLaps <= 0 && !playedHalfTimeFuelEstimate &&
                     currentGameState.SessionData.SessionTimeRemaining <= halfTime && currentGameState.SessionData.SessionTimeRemaining > halfTime - 30 && averageUsagePerMinute > 0)
                 {
                     Console.WriteLine("Half race distance. Fuel in tank = " + currentGameState.FuelData.FuelLeft + ", average usage per minute = " + averageUsagePerMinute);
                     playedHalfTimeFuelEstimate = true;
                     if (currentGameState.SessionData.SessionType == SessionType.Race && enableFuelMessages)
                     {
-                        if (averageUsagePerMinute * halfTime / 60 > currentGameState.FuelData.FuelLeft && currentGameState.FuelData.FuelLeft / fuelAfter15Seconds < 0.6)
+                        if (averageUsagePerMinute * halfTime / 60 > currentGameState.FuelData.FuelLeft && currentGameState.FuelData.FuelLeft / initialFuelLevel < 0.6)
                         {
                             if (currentGameState.PitData.IsRefuellingAllowed)
                             {
@@ -250,30 +264,30 @@ namespace CrewChiefV3.Events
                     }
                     else
                     {
-                        averageUsagePerMinute = 60 * (fuelAfter15Seconds - currentGameState.FuelData.FuelLeft) / (float)gameTimeAtLastFuelWindowUpdate;
+                        averageUsagePerMinute = 60 * (initialFuelLevel - currentGameState.FuelData.FuelLeft) / (gameTimeAtLastFuelWindowUpdate - gameTimeWhenFuelWasReset);
                     }
-                    int estimatedFuelMinutesLeft = (int)Math.Floor(currentGameState.FuelData.FuelLeft / averageUsagePerMinute);
+                    float estimatedFuelMinutesLeft = currentGameState.FuelData.FuelLeft / averageUsagePerMinute;
 
-                    if (enableFuelMessages && currentGameState.FuelData.FuelLeft / averageUsagePerMinute < 2 && !playedTwoMinutesRemaining)
+                    if (enableFuelMessages && estimatedFuelMinutesLeft <= 2 && estimatedFuelMinutesLeft > 1.8 && !playedTwoMinutesRemaining)
                     {
                         playedTwoMinutesRemaining = true;
                         playedFiveMinutesRemaining = true;
                         playedTenMinutesRemaining = true;
                         audioPlayer.queueClip(new QueuedMessage(folderTwoMinutesFuel, 0, this));
                     }
-                    else if (enableFuelMessages && currentGameState.FuelData.FuelLeft / averageUsagePerMinute < 5 && !playedFiveMinutesRemaining)
+                    else if (enableFuelMessages && estimatedFuelMinutesLeft <= 5 && estimatedFuelMinutesLeft > 4.8 && !playedFiveMinutesRemaining)
                     {
                         playedFiveMinutesRemaining = true;
                         playedTenMinutesRemaining = true;
                         audioPlayer.queueClip(new QueuedMessage(folderFiveMinutesFuel, 0, this));
                     }
-                    else if (enableFuelMessages && currentGameState.FuelData.FuelLeft / averageUsagePerMinute < 10 && !playedTenMinutesRemaining)
+                    else if (enableFuelMessages && estimatedFuelMinutesLeft <= 10 && estimatedFuelMinutesLeft > 9.8 && !playedTenMinutesRemaining)
                     {
                         playedTenMinutesRemaining = true;
                         audioPlayer.queueClip(new QueuedMessage(folderTenMinutesFuel, 0, this));
                     }
                 }
-                else if (enableFuelMessages && initialised && !playedHalfTankWarning && currentGameState.FuelData.FuelLeft / fuelAfter15Seconds <= 0.50)
+                else if (enableFuelMessages && initialised && !playedHalfTankWarning && currentGameState.FuelData.FuelLeft / initialFuelLevel <= 0.50)
                 {
                     // warning message for fuel left - these play as soon as the fuel reaches 1/2 tank left
                     playedHalfTankWarning = true;
