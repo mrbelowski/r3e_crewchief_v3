@@ -431,10 +431,10 @@ namespace CrewChiefV3.PCars
             else if (previousGameState != null)
             {
                 currentGameState.SessionData.PreviousLapWasValid = previousGameState.SessionData.PreviousLapWasValid;
-            }            
+            }
 
-            currentGameState.SessionData.IsRacingSameCarBehind = previousGameState != null && previousGameState.getOpponentNameBehind() == currentGameState.getOpponentNameBehind();
-            currentGameState.SessionData.IsRacingSameCarInFront = previousGameState != null && previousGameState.getOpponentNameInFront() == currentGameState.getOpponentNameInFront();
+            currentGameState.SessionData.IsRacingSameCarBehind = previousGameState != null && previousGameState.getOpponentKeyBehind() == currentGameState.getOpponentKeyBehind();
+            currentGameState.SessionData.IsRacingSameCarInFront = previousGameState != null && previousGameState.getOpponentKeyInFront() == currentGameState.getOpponentKeyInFront();
 
             currentGameState.SessionData.LapTimePrevious = shared.mLastLapTime;
             if (previousGameState != null && previousGameState.SessionData.LapTimeBestPlayer > 0)

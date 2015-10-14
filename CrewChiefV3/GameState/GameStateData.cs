@@ -544,7 +544,7 @@ namespace CrewChiefV3.GameState
 
         public PositionAndMotionData PositionAndMotionData = new PositionAndMotionData();
 
-        public Dictionary<String, OpponentData> OpponentData = new Dictionary<String, OpponentData>();
+        public Dictionary<Object, OpponentData> OpponentData = new Dictionary<Object, OpponentData>();
 
         public GameStateData(long ticks)
         {
@@ -561,7 +561,7 @@ namespace CrewChiefV3.GameState
         public List<String> getRawDriverNames()
         {
             List<String> rawDriverNames = new List<String>();
-            foreach (KeyValuePair<String, OpponentData> entry in OpponentData)
+            foreach (KeyValuePair<Object, OpponentData> entry in OpponentData)
             {
                 rawDriverNames.Add(entry.Value.DriverRawName);                
             }
@@ -571,10 +571,10 @@ namespace CrewChiefV3.GameState
 
         public OpponentData getOpponentAtPosition(int position) 
         {
-            String opponentName = getOpponentNameAtPosition(position);
-            if (opponentName != null && OpponentData.ContainsKey(opponentName))
+            Object opponentKey = getOpponentKeyAtPosition(position);
+            if (opponentKey != null && OpponentData.ContainsKey(opponentKey))
             {
-                return OpponentData[opponentName];
+                return OpponentData[opponentKey];
             }
             else
             {
@@ -586,7 +586,7 @@ namespace CrewChiefV3.GameState
         {
             if (OpponentData != null && OpponentData.Count != 0)
             {
-                foreach (KeyValuePair<String, OpponentData> entry in OpponentData)
+                foreach (KeyValuePair<Object, OpponentData> entry in OpponentData)
                 {
                     if (entry.Value.PositionAtSector3 == position)
                     {
@@ -597,11 +597,11 @@ namespace CrewChiefV3.GameState
             return null;
         }
 
-        public String getOpponentNameInFront()
+        public Object getOpponentKeyInFront()
         {
             if (SessionData.Position > 1)
             {
-                 return getOpponentNameAtPosition(SessionData.Position - 1);
+                 return getOpponentKeyAtPosition(SessionData.Position - 1);
             }
             else
             {
@@ -609,11 +609,11 @@ namespace CrewChiefV3.GameState
             }
         }
 
-        public String getOpponentNameBehind()
+        public Object getOpponentKeyBehind()
         {
             if (SessionData.Position < SessionData.NumCars)
             {
-                return getOpponentNameAtPosition(SessionData.Position + 1);
+                return getOpponentKeyAtPosition(SessionData.Position + 1);
             }
             else
             {
@@ -621,11 +621,11 @@ namespace CrewChiefV3.GameState
             }
         }
 
-        public String getOpponentNameAtPosition(int position)
+        public Object getOpponentKeyAtPosition(int position)
         {
             if (OpponentData.Count != 0)
             {
-                foreach (KeyValuePair<String, OpponentData> entry in OpponentData)
+                foreach (KeyValuePair<Object, OpponentData> entry in OpponentData)
                 {
                     if (entry.Value.Position == position)
                     {
@@ -639,7 +639,7 @@ namespace CrewChiefV3.GameState
         public float getBestOpponentLapTime()
         {
             float bestLapTime = -1;
-            foreach (KeyValuePair<String, OpponentData> entry in OpponentData)
+            foreach (KeyValuePair<Object, OpponentData> entry in OpponentData)
             {
                 if (entry.Value.ApproximateLastLapTime > 0 &&
                     (bestLapTime == -1 || entry.Value.ApproximateLastLapTime < bestLapTime))
@@ -661,7 +661,7 @@ namespace CrewChiefV3.GameState
         public void displayOpponentData()
         {
             Console.WriteLine("got " + OpponentData.Count + " opponents");
-            foreach (KeyValuePair<String, OpponentData> opponent in OpponentData)
+            foreach (KeyValuePair<Object, OpponentData> opponent in OpponentData)
             {
                 Console.WriteLine("last laptime " + opponent.Value.ApproximateLastLapTime + " completed laps " + opponent.Value.CompletedLaps + 
                     " ID " + opponent.Key + " name " + opponent.Value.DriverRawName + " active " + opponent.Value.IsActive + 

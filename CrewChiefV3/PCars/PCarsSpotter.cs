@@ -72,8 +72,6 @@ namespace CrewChiefV3.PCars
         private TimeSpan timeToWaitBeforeClosingChannelLeftOpen = TimeSpan.FromMilliseconds(500);
 
         private Boolean channelLeftOpenTimerStarted = false;
-
-        private TimeSpan maxTimeToKeepChannelOpenWhileReceivingUnusableData = TimeSpan.FromSeconds(2);
         
         private AudioPlayer audioPlayer;
 

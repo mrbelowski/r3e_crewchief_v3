@@ -27,7 +27,7 @@ namespace CrewChiefV3.Events
         public static String folderIsNowLeading = "opponents/is_now_leading";
         public static String folderNextCarIs = "opponents/next_car_is";
 
-        private Dictionary<String, List<float>> opponentLapTimes = new Dictionary<String, List<float>>();
+        private Dictionary<Object, List<float>> opponentLapTimes = new Dictionary<Object, List<float>>();
 
         private GameStateData currentGameState;
 
@@ -52,7 +52,8 @@ namespace CrewChiefV3.Events
         {
             if (validationData != null && validationData.ContainsKey(validationDriverAheadKey)) {
                 String expectedOpponentName = (String)validationData[validationDriverAheadKey];
-                String actualOpponentName = currentGameState.getOpponentNameInFront();
+                OpponentData opponentInFront = currentGameState.SessionData.Position > 1 ? currentGameState.getOpponentAtPosition(currentGameState.SessionData.Position - 1) : null;
+                String actualOpponentName = opponentInFront == null ? null : opponentInFront.DriverRawName;
                 if (actualOpponentName != expectedOpponentName)
                 {
                     if (actualOpponentName != null && expectedOpponentName != null)
@@ -77,18 +78,18 @@ namespace CrewChiefV3.Events
             {
                 nextLeadChangeMessage = currentGameState.Now.Add(TimeSpan.FromSeconds(30));
             }
-            foreach (KeyValuePair<String, OpponentData> entry in currentGameState.OpponentData)
+            foreach (KeyValuePair<Object, OpponentData> entry in currentGameState.OpponentData)
             {
-                String driverName = entry.Key;
+                Object opponentKey = entry.Key;
                 OpponentData opponentData = entry.Value;
-                if (!opponentLapTimes.ContainsKey(driverName))
+                if (!opponentLapTimes.ContainsKey(opponentKey))
                 {
-                    opponentLapTimes.Add(driverName, new List<float>());
+                    opponentLapTimes.Add(opponentKey, new List<float>());
                 }
                 if (opponentData.IsNewLap && opponentData.ApproximateLastLapTime > 0)
                 {
                     // this opponent has just completed a lap - do we need to report it?
-                    if (opponentLapTimes[driverName].Count > 2 && opponentLapTimes[driverName].Min() > opponentData.ApproximateLastLapTime)
+                    if (opponentLapTimes[opponentKey].Count > 2 && opponentLapTimes[opponentKey].Min() > opponentData.ApproximateLastLapTime)
                     {
                         if (currentGameState.SessionData.Position > 1 && opponentData.Position == 1)
                         {
@@ -109,7 +110,7 @@ namespace CrewChiefV3.Events
                                     TimeSpan.FromSeconds(opponentData.ApproximateLastLapTime)), 0, this));
                         }
                     }
-                    opponentLapTimes[driverName].Add(opponentData.ApproximateLastLapTime);
+                    opponentLapTimes[opponentKey].Add(opponentData.ApproximateLastLapTime);
                 }
             }
 
@@ -162,7 +163,7 @@ namespace CrewChiefV3.Events
                 }
             }
         }
-        
+
         public override void respond(String voiceMessage)
         {
             Boolean gotData = false;
@@ -170,14 +171,14 @@ namespace CrewChiefV3.Events
             {
                 if (voiceMessage.StartsWith(SpeechRecogniser.WHAT_WAS) && voiceMessage.EndsWith(SpeechRecogniser.LAST_LAP))
                 {
-                    foreach (KeyValuePair<String, OpponentData> entry in currentGameState.OpponentData)
+                    foreach (KeyValuePair<Object, OpponentData> entry in currentGameState.OpponentData)
                     {
                         String usableDriverName = DriverNameHelper.getUsableNameForRawName(entry.Value.DriverRawName);
                         if (voiceMessage.Contains(usableDriverName))
                         {
-                            if (opponentLapTimes.ContainsKey(entry.Value.DriverRawName))
+                            if (opponentLapTimes.ContainsKey(entry.Key))
                             {
-                                List<float> requestedOpponentLapTimes = opponentLapTimes[entry.Value.DriverRawName];
+                                List<float> requestedOpponentLapTimes = opponentLapTimes[entry.Key];
                                 if (requestedOpponentLapTimes.Count > 0)
                                 {
                                     gotData = true;
@@ -186,19 +187,79 @@ namespace CrewChiefV3.Events
                                         audioPlayer.closeChannel();
                                 }
                             }
+                            break;
+                        }
+                    }
+                    if (!gotData)
+                    {
+                        if ((voiceMessage.Contains(SpeechRecogniser.THE_CAR_AHEAD) || voiceMessage.Contains(SpeechRecogniser.THE_GUY_AHEAD) ||
+                            voiceMessage.Contains(SpeechRecogniser.THE_GUY_IN_FRONT) || voiceMessage.Contains(SpeechRecogniser.THE_CAR_IN_FRONT)) && currentGameState.SessionData.Position > 1)
+                        {
+                            Object opponentKey = currentGameState.getOpponentKeyInFront();
+                            if (opponentKey != null && currentGameState.OpponentData.ContainsKey(opponentKey))
+                            {
+                                OpponentData opponent = currentGameState.OpponentData[opponentKey];
+                                if (opponent != null && opponentLapTimes.ContainsKey(opponentKey))
+                                {
+                                    List<float> requestedOpponentLapTimes = opponentLapTimes[opponentKey];
+                                    if (requestedOpponentLapTimes.Count > 0)
+                                    {
+                                        gotData = true;
+                                        if (voiceMessage.Contains(SpeechRecogniser.BEST_LAP))
+                                        {
+                                            audioPlayer.playClipImmediately(new QueuedMessage("opponentLastLap", MessageContents(
+                                                TimeSpanWrapper.FromSeconds(requestedOpponentLapTimes.Min(), true)), 0, null), false);
+                                        }
+                                        else if (voiceMessage.Contains(SpeechRecogniser.LAST_LAP))
+                                        {
+                                            audioPlayer.playClipImmediately(new QueuedMessage("opponentLastLap", MessageContents(
+                                                TimeSpanWrapper.FromSeconds(requestedOpponentLapTimes[requestedOpponentLapTimes.Count - 1], true)), 0, null), false);
+                                        }                                        
+                                        audioPlayer.closeChannel();
+                                    }
+                                }
+                            }
+                        } 
+                        else if ((voiceMessage.Contains(SpeechRecogniser.THE_CAR_BEHIND) || voiceMessage.Contains(SpeechRecogniser.THE_GUY_BEHIND)) && 
+                            !currentGameState.isLast())
+                        {
+                            Object opponentKey = currentGameState.getOpponentKeyBehind();
+                            if (opponentKey != null && currentGameState.OpponentData.ContainsKey(opponentKey))
+                            {
+                                OpponentData opponent = currentGameState.OpponentData[opponentKey];
+                                if (opponent != null && opponentLapTimes.ContainsKey(opponentKey))
+                                {
+                                    List<float> requestedOpponentLapTimes = opponentLapTimes[opponentKey];
+                                    if (requestedOpponentLapTimes.Count > 0)
+                                    {
+                                        gotData = true;
+                                        if (voiceMessage.Contains(SpeechRecogniser.BEST_LAP))
+                                        {
+                                            audioPlayer.playClipImmediately(new QueuedMessage("opponentLastLap", MessageContents(
+                                                TimeSpanWrapper.FromSeconds(requestedOpponentLapTimes.Min(), true)), 0, null), false);
+                                        }
+                                        else if (voiceMessage.Contains(SpeechRecogniser.LAST_LAP))
+                                        {
+                                            audioPlayer.playClipImmediately(new QueuedMessage("opponentLastLap", MessageContents(
+                                                TimeSpanWrapper.FromSeconds(requestedOpponentLapTimes[requestedOpponentLapTimes.Count - 1], true)), 0, null), false);
+                                        }                                        
+                                        audioPlayer.closeChannel();
+                                    }
+                                }
+                            }
                         }
                     }
                 } 
                 else if (voiceMessage.StartsWith(SpeechRecogniser.WHAT_IS) && voiceMessage.EndsWith(SpeechRecogniser.BEST_LAP))
                 {
-                    foreach (KeyValuePair<String, OpponentData> entry in currentGameState.OpponentData)
+                    foreach (KeyValuePair<Object, OpponentData> entry in currentGameState.OpponentData)
                     {
                         String usableDriverName = DriverNameHelper.getUsableNameForRawName(entry.Value.DriverRawName);
                         if (voiceMessage.Contains(usableDriverName))
                         {
-                            if (opponentLapTimes.ContainsKey(entry.Value.DriverRawName))
+                            if (opponentLapTimes.ContainsKey(entry.Key))
                             {
-                                List<float> requestedOpponentLapTimes = opponentLapTimes[entry.Value.DriverRawName];
+                                List<float> requestedOpponentLapTimes = opponentLapTimes[entry.Key];
                                 if (requestedOpponentLapTimes.Count > 0)
                                 {
                                     gotData = true;
@@ -207,12 +268,13 @@ namespace CrewChiefV3.Events
                                         audioPlayer.closeChannel();                                    
                                 }
                             }
+                            break;
                         }
                     }
                 }
                 else if (voiceMessage.StartsWith(SpeechRecogniser.WHERE_IS))
                 {
-                    foreach (KeyValuePair<String, OpponentData> entry in currentGameState.OpponentData)
+                    foreach (KeyValuePair<Object, OpponentData> entry in currentGameState.OpponentData)
                     {
                         String usableDriverName = DriverNameHelper.getUsableNameForRawName(entry.Value.DriverRawName);
                         if (voiceMessage.Contains(usableDriverName))
@@ -254,15 +316,15 @@ namespace CrewChiefV3.Events
                                         }
                                         audioPlayer.playClipImmediately(new QueuedMessage("opponentTimeDelta",
                                             MessageContents(delta, aheadOrBehind), 0, null), false);
-                                    }
+                                    }                                    
                                 }
                                 audioPlayer.closeChannel();
+                                gotData = true;
                             }
                             else
                             {
                                 Console.WriteLine("Driver "+ entry.Value.DriverRawName + " is no longer active in this session");
-                            }                            
-                            gotData = true;
+                            }                 
                             break;
                         }
                     }

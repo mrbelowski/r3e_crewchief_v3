@@ -81,6 +81,13 @@ namespace CrewChiefV3
         public static String WHAT_WAS = "what was";
         public static String WHAT_IS = "what is";
         public static String BEST_LAP = "best lap";
+        public static String THE_LEADER = "the leader";
+        public static String THE_CAR_AHEAD = "the car ahead";
+        public static String THE_CAR_IN_FRONT = "the car in front";
+        public static String THE_GUY_AHEAD = "the guy ahead";
+        public static String THE_GUY_IN_FRONT = "the guy in front";
+        public static String THE_CAR_BEHIND = "the car behind";
+        public static String THE_GUY_BEHIND = "the guy behind;";
 
         public static String REPEAT_LAST_MESSAGE = "repeat last message";
         public static String SAY_AGAIN = "say again";
@@ -172,7 +179,8 @@ namespace CrewChiefV3
                 Grammar g2 = new Grammar(gb2);
 
                 Choices info3 = new Choices();
-                info3.Add(new string[] { KEEP_QUIET, SHUT_UP, I_KNOW_WHAT_IM_DOING, LEAVE_ME_ALONE, DONT_TELL_ME_THE_GAPS, DONT_GIVE_ME_THE_DELTAS, DONT_TELL_ME_THE_GAPS });
+                info3.Add(new string[] { KEEP_QUIET, SHUT_UP, I_KNOW_WHAT_IM_DOING, LEAVE_ME_ALONE, DONT_TELL_ME_THE_GAPS, DONT_GIVE_ME_THE_DELTAS, DONT_TELL_ME_THE_GAPS,
+                    NO_MORE_DELTAS, NO_MORE_GAPS});
                 GrammarBuilder gb3 = new GrammarBuilder();
                 gb3.Culture = cultureInfo;
                 gb3.Append(info3);
@@ -267,7 +275,23 @@ namespace CrewChiefV3
                     nameChoices.Add(WHERE_IS + " " + name);
                     nameChoices.Add(WHAT_WAS + " " + name + "'s " + LAST_LAP);
                     nameChoices.Add(WHAT_IS + " " + name + "'s " + BEST_LAP);
-                }                
+                }
+                for (int i = 0; i < 30; i++)
+                {
+                    nameChoices.Add(WHAT_WAS + " position " + i + "'s " + LAST_LAP);
+                    nameChoices.Add(WHAT_IS + " position " + i + "'s " + BEST_LAP);
+                    nameChoices.Add(WHAT_WAS + " p " + i + "'s " + LAST_LAP);
+                    nameChoices.Add(WHAT_IS + " p " + i + "'s " + BEST_LAP);
+                }
+                nameChoices.Add(WHAT_IS + THE_LEADER +"'s " + BEST_LAP);
+                nameChoices.Add(WHAT_WAS + THE_LEADER + "'s " + LAST_LAP);
+                nameChoices.Add(WHAT_IS + THE_GUY_IN_FRONT + "'s " + BEST_LAP);
+                nameChoices.Add(WHAT_WAS + THE_CAR_IN_FRONT + "'s " + LAST_LAP);
+                nameChoices.Add(WHAT_IS + THE_GUY_AHEAD + "'s " + BEST_LAP);
+                nameChoices.Add(WHAT_WAS + THE_CAR_AHEAD + "'s " + LAST_LAP);
+                nameChoices.Add(WHAT_IS + THE_CAR_BEHIND + "'s " + BEST_LAP);
+                nameChoices.Add(WHAT_WAS + THE_GUY_BEHIND + "'s " + LAST_LAP);
+
                 nameChoices.Add(WHOS_BEHIND);
                 nameChoices.Add(WHOS_IN_FRONT);
                 nameChoices.Add(WHOS_LEADING);
