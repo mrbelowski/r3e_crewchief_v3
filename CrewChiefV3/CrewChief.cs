@@ -436,7 +436,7 @@ namespace CrewChiefV3
                                         List<String> usableDriverNames = DriverNameHelper.getUsableDriverNames(rawDriverNames, audioPlayer.soundFilesPath);
                                         if (speechRecogniser != null && speechRecogniser.initialised)
                                         {
-                                            speechRecogniser.addNames(usableDriverNames);
+                                            speechRecogniser.addOpponentSpeechRecognition(usableDriverNames, enableDriverNames);
                                         }
                                         audioPlayer.cacheDriverNames(usableDriverNames);
                                     }

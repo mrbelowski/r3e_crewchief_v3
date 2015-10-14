@@ -220,8 +220,8 @@ namespace CrewChiefV3.Events
             Boolean gotData = false;
             if (currentGameState != null)
             {
-                if ((voiceMessage.StartsWith(SpeechRecogniser.WHAT_WAS) && voiceMessage.EndsWith(SpeechRecogniser.LAST_LAP)) || 
-                    (voiceMessage.StartsWith(SpeechRecogniser.WHAT_IS) && voiceMessage.EndsWith(SpeechRecogniser.BEST_LAP)))
+                if (voiceMessage.StartsWith(SpeechRecogniser.WHATS) && 
+                    (voiceMessage.EndsWith(SpeechRecogniser.LAST_LAP) || voiceMessage.EndsWith(SpeechRecogniser.BEST_LAP)))
                 {
                     List<float> lapTimes = getOpponentLapTimes(voiceMessage);
                     if (lapTimes != null)
