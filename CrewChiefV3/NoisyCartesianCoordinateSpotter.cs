@@ -118,10 +118,10 @@ namespace CrewChiefV3
             DateTime now = DateTime.Now;
 
             float currentPlayerSpeed = getSpeed(currentPlayerPosition, previousPlayerPosition, timeInterval);
-            if (currentPlayerPosition[0] != 0 && currentPlayerPosition[2] != 0 &&
-                currentPlayerPosition[0] != -1 && currentPlayerPosition[2] != -1 &&
-                previousPlayerPosition[0] != 0 && previousPlayerPosition[2] != 0 &&
-                previousPlayerPosition[0] != -1 && previousPlayerPosition[2] != -1 && 
+            if (currentPlayerPosition[0] != 0 && currentPlayerPosition[1] != 0 &&
+                currentPlayerPosition[0] != -1 && currentPlayerPosition[1] != -1 &&
+                previousPlayerPosition[0] != 0 && previousPlayerPosition[1] != 0 &&
+                previousPlayerPosition[0] != -1 && previousPlayerPosition[1] != -1 && 
                 currentPlayerSpeed > minSpeedForSpotterToOperate)
             {
                 int carsOnLeft = 0;
@@ -135,15 +135,15 @@ namespace CrewChiefV3
                     }
                     float[] currentOpponentPosition = currentOpponentPositions[i];
                     float[] previousOpponentPosition = previousOpponentPositions[i];                    
-                    if (currentOpponentPosition[0] != 0 && currentOpponentPosition[2] != 0 &&   
-                        currentOpponentPosition[0] != -1 && currentOpponentPosition[2] != -1 &&                                
-                        previousOpponentPosition[0] != 0 && previousOpponentPosition[2] != 0 &&
-                        previousOpponentPosition[0] != -1 && previousOpponentPosition[2] != -1)
+                    if (currentOpponentPosition[0] != 0 && currentOpponentPosition[1] != 0 &&   
+                        currentOpponentPosition[0] != -1 && currentOpponentPosition[1] != -1 &&                                
+                        previousOpponentPosition[0] != 0 && previousOpponentPosition[1] != 0 &&
+                        previousOpponentPosition[0] != -1 && previousOpponentPosition[1] != -1)
                     {
                         float opponentSpeed = getSpeed(currentOpponentPosition, previousOpponentPosition, timeInterval);
                         if (opponentIsRacing(currentOpponentPosition, currentPlayerPosition, opponentSpeed, currentPlayerSpeed))
                         {
-                            Side side = getSide(playerRotationInRadians, currentPlayerPosition[0], currentPlayerPosition[2], currentOpponentPosition[0], currentOpponentPosition[2]);
+                            Side side = getSide(playerRotationInRadians, currentPlayerPosition[0], currentPlayerPosition[1], currentOpponentPosition[0], currentOpponentPosition[1]);
                             if (side == Side.left)
                             {
                                 carsOnLeft++;
@@ -289,7 +289,7 @@ namespace CrewChiefV3
 
         private float getSpeed(float[] current, float[] previous, float timeInterval)
         {
-            return (float) (Math.Sqrt(Math.Pow(current[0] - previous[0], 2) + Math.Pow(current[2] - previous[2], 2))) / timeInterval;
+            return (float) (Math.Sqrt(Math.Pow(current[0] - previous[0], 2) + Math.Pow(current[1] - previous[1], 2))) / timeInterval;
         }
 
         private Boolean opponentIsRacing(float[] opponentPosition, float[] playerPosition, float opponentSpeed, float playerSpeed)
