@@ -27,6 +27,8 @@ namespace CrewChiefV3.Events
         public static String folderIsNowLeading = "opponents/is_now_leading";
         public static String folderNextCarIs = "opponents/next_car_is";
 
+        public static String folderCantPronounceName = "opponents/cant_pronounce_name";
+
         private Dictionary<Object, List<float>> opponentLapTimes = new Dictionary<Object, List<float>>();
 
         private GameStateData currentGameState;
@@ -308,7 +310,7 @@ namespace CrewChiefV3.Events
                     OpponentData opponent = currentGameState.getOpponentAtPosition(currentGameState.SessionData.Position + 1);
                     if (opponent != null)
                     {
-                        QueuedMessage queuedMessage = new QueuedMessage("opponentName", MessageContents(opponent), 0, null);
+                        QueuedMessage queuedMessage = new QueuedMessage("opponentName", MessageContents(opponent), MessageContents(folderCantPronounceName), 0, null);
                         if (queuedMessage.canBePlayed)
                         {
                             audioPlayer.playClipImmediately(queuedMessage, false);
@@ -322,7 +324,7 @@ namespace CrewChiefV3.Events
                     OpponentData opponent = currentGameState.getOpponentAtPosition(currentGameState.SessionData.Position - 1);
                     if (opponent != null)
                     {
-                        QueuedMessage queuedMessage = new QueuedMessage("opponentName", MessageContents(opponent), 0, null);
+                        QueuedMessage queuedMessage = new QueuedMessage("opponentName", MessageContents(opponent), MessageContents(folderCantPronounceName), 0, null);
                         if (queuedMessage.canBePlayed)
                         {
                             audioPlayer.playClipImmediately(queuedMessage, false);
@@ -336,7 +338,7 @@ namespace CrewChiefV3.Events
                     OpponentData opponent = currentGameState.getOpponentAtPosition(1);
                     if (opponent != null)
                     {
-                        QueuedMessage queuedMessage = new QueuedMessage("opponentName", MessageContents(opponent), 0, null);
+                        QueuedMessage queuedMessage = new QueuedMessage("opponentName", MessageContents(opponent), MessageContents(folderCantPronounceName), 0, null);
                         if (queuedMessage.canBePlayed)
                         {
                             audioPlayer.playClipImmediately(queuedMessage, false);
