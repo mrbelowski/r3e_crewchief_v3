@@ -534,10 +534,6 @@ namespace CrewChiefV3.PCars
                                             {
                                                 isEnteringPits = currentGameState.SessionData.TrackDefinition != null &&
                                                     currentGameState.SessionData.TrackDefinition.isAtPitEntry(participantStruct.mWorldPosition[0], participantStruct.mWorldPosition[2]);
-                                                if (isEnteringPits)
-                                                {
-                                                    Console.WriteLine("opponent " + participantStruct.mName + " at position " + currentOpponentRacePosition + " is entering pits");
-                                                }
                                             }
                                             else
                                             {
@@ -548,10 +544,6 @@ namespace CrewChiefV3.PCars
                                         {
                                             isLeavingPits = currentGameState.SessionData.TrackDefinition != null &&
                                                     currentGameState.SessionData.TrackDefinition.isAtPitExit(participantStruct.mWorldPosition[0], participantStruct.mWorldPosition[2]);
-                                            if (isLeavingPits)
-                                            {
-                                                Console.WriteLine("opponent " + participantStruct.mName + " at position " + currentOpponentRacePosition + " is leaving pits");
-                                            }
                                         }
                                     }
                                     if (isEnteringPits && !previousOpponentIsEnteringPits)
@@ -870,7 +862,7 @@ namespace CrewChiefV3.PCars
             if (opponentData.CurrentSectorNumber != sector)
             {
                 opponentData.CurrentSectorNumber = sector;
-                if (opponentData.CurrentSectorNumber == 1)
+                if (sector == 1)
                 {
                     if (completedLaps == opponentData.CompletedLaps + 1)
                     {
@@ -894,9 +886,9 @@ namespace CrewChiefV3.PCars
                             Console.WriteLine("Discarding invalid opponent lap");
                         }                        
                         opponentData.SessionTimesAtEndOfSectors[3] = sessionRunningTime;
-                        opponentData.LapIsValid = true;
-                        opponentData.IsNewLap = true;
                     }
+                    opponentData.LapIsValid = true;
+                    opponentData.IsNewLap = true;
                 }
                 else if (opponentData.CurrentSectorNumber == 2)
                 {

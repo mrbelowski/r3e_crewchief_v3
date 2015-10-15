@@ -128,7 +128,7 @@ namespace CrewChiefV3
                 this.messageFolders = getMessageFolders(alternateMessageFragments);
                 if (!canBePlayed)
                 {
-                    Console.WriteLine("-----------------------------------Primary and secondary messages for event " +
+                    Console.WriteLine("Primary and secondary messages for event " +
                         messageName + " can't be played");
                 }
             }

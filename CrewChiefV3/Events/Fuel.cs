@@ -38,6 +38,8 @@ namespace CrewChiefV3.Events
 
         public static String folderLitresRemaining = "fuel/litres_remaining";
 
+        public static String folderAboutToRunOut = "fuel/about_to_run_out";
+
         private float averageUsagePerLap;
 
         private float averageUsagePerMinute;
@@ -60,6 +62,8 @@ namespace CrewChiefV3.Events
         private List<float> fuelUseWindow;
 
         private float gameTimeAtLastFuelWindowUpdate;
+
+        private Boolean playedPitForFuelNow;
 
         private Boolean playedTwoMinutesRemaining;
 
@@ -97,6 +101,7 @@ namespace CrewChiefV3.Events
             fuelUseWindow = new List<float>();
             gameTimeAtLastFuelWindowUpdate = 0;
             averageUsagePerMinute = 0;
+            playedPitForFuelNow = false;
             playedFiveMinutesRemaining = false;
             playedTenMinutesRemaining = false;
             playedTwoMinutesRemaining = false;
@@ -141,6 +146,10 @@ namespace CrewChiefV3.Events
                         halfTime = currentGameState.SessionData.SessionRunTime / 2;
                         Console.WriteLine("Half time = " + halfTime);
                     }
+                    playedPitForFuelNow = false;
+                    playedFiveMinutesRemaining = false;
+                    playedTenMinutesRemaining = false;
+                    playedTwoMinutesRemaining = false;
                 }
                 if (currentGameState.SessionData.IsNewLap && initialised && currentGameState.SessionData.CompletedLaps > lapsCompletedWhenFuelWasReset 
                     && currentGameState.SessionData.SessionNumberOfLaps > 0)
@@ -266,9 +275,18 @@ namespace CrewChiefV3.Events
                     {
                         averageUsagePerMinute = 60 * (initialFuelLevel - currentGameState.FuelData.FuelLeft) / (gameTimeAtLastFuelWindowUpdate - gameTimeWhenFuelWasReset);
                     }
+                }
+                if (initialised && currentGameState.SessionData.SessionNumberOfLaps <= 0 && averageUsagePerMinute > 0)
+                {
                     float estimatedFuelMinutesLeft = currentGameState.FuelData.FuelLeft / averageUsagePerMinute;
-
-                    if (enableFuelMessages && estimatedFuelMinutesLeft <= 2 && estimatedFuelMinutesLeft > 1.8 && !playedTwoMinutesRemaining)
+                    if (enableFuelMessages && estimatedFuelMinutesLeft <1.5 && !playedPitForFuelNow)
+                    {
+                        playedPitForFuelNow = true;
+                        playedTwoMinutesRemaining = true;
+                        playedFiveMinutesRemaining = true;
+                        playedTenMinutesRemaining = true;
+                        audioPlayer.queueClip(new QueuedMessage(folderAboutToRunOut, 0, this));
+                    } if (enableFuelMessages && estimatedFuelMinutesLeft <= 2 && estimatedFuelMinutesLeft > 1.8 && !playedTwoMinutesRemaining)
                     {
                         playedTwoMinutesRemaining = true;
                         playedFiveMinutesRemaining = true;
@@ -330,6 +348,12 @@ namespace CrewChiefV3.Events
                             audioPlayer.playClipImmediately(new QueuedMessage(folderPlentyOfFuel, 0, null), false);
                             audioPlayer.closeChannel();
                         }
+                        else if (lapsOfFuelLeft <= 1)
+                        {
+                            audioPlayer.playClipImmediately(new QueuedMessage("Fuel/estimate",
+                                MessageContents(folderAboutToRunOut), 0, null), false);
+                            audioPlayer.closeChannel();
+                        }
                         else
                         {
                             audioPlayer.playClipImmediately(new QueuedMessage("Fuel/estimate",
@@ -344,6 +368,12 @@ namespace CrewChiefV3.Events
                         if (minutesOfFuelLeft > 60)
                         {
                             audioPlayer.playClipImmediately(new QueuedMessage(folderPlentyOfFuel, 0, null), false);
+                            audioPlayer.closeChannel();
+                        }
+                        else if (minutesOfFuelLeft <= 1)
+                        {
+                            audioPlayer.playClipImmediately(new QueuedMessage("Fuel/estimate",
+                                MessageContents(folderAboutToRunOut), 0, null), false);
                             audioPlayer.closeChannel();
                         }
                         else
