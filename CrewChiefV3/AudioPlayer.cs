@@ -262,6 +262,8 @@ namespace CrewChiefV3
         
         public void cacheDriverNames(List<String> driverNames)
         {
+            List<String> namesWithNoSoundFile = new List<string>();
+            namesWithNoSoundFile.AddRange(driverNames);
             try
             {
                 availableDriverNames.Clear();
@@ -282,6 +284,7 @@ namespace CrewChiefV3
                                 driverNameFile.Name.Equals(driverName + ".wav") ||
                                 driverNameFile.Name.ToLowerInvariant().Equals(driverName.ToLower() + ".wav"))
                             {
+                                namesWithNoSoundFile.Remove(driverName);
                                 if (!clips.ContainsKey(driverName))
                                 {
                                     Console.WriteLine("Caching driver name sound file for " + driverName);
@@ -299,6 +302,8 @@ namespace CrewChiefV3
                         }
                     }
                 }
+                //Console.WriteLine("These driver names have no sound file:");
+                //Console.WriteLine(String.Join(System.Environment.NewLine, namesWithNoSoundFile));
             }
             catch (DirectoryNotFoundException)
             {

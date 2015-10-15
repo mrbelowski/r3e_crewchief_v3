@@ -180,7 +180,8 @@ namespace CrewChiefV3.PCars
                 pCarsAPIParticipantStruct playerData = playerDataWithIndex.Item2;
                 float playerX = playerData.mWorldPosition[0];
                 float playerY = playerData.mWorldPosition[2];
-                if (playerX == 0 || playerY == 0 || playerX == -1 || playerY == -1)
+                if (playerX == 0 || playerY == 0 || playerX == -1 || playerY == -1 || 
+                    lastState.mParticipantData == null || lastState.mParticipantData.Length == 0 || lastState.mViewedParticipantIndex < 1)
                 {
                     return;
                 }
