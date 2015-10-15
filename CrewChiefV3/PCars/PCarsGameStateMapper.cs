@@ -860,9 +860,8 @@ namespace CrewChiefV3.PCars
             opponentData.WorldPosition = currentWorldPosition;
             opponentData.IsNewLap = false;
             if (opponentData.CurrentSectorNumber != sector)
-            {
-                opponentData.CurrentSectorNumber = sector;
-                if (sector == 1)
+            {                
+                if (opponentData.CurrentSectorNumber == 3 && sector == 1)
                 {
                     if (completedLaps == opponentData.CompletedLaps + 1)
                     {
@@ -884,20 +883,21 @@ namespace CrewChiefV3.PCars
                         else
                         {
                             Console.WriteLine("Discarding invalid opponent lap");
-                        }                        
-                        opponentData.SessionTimesAtEndOfSectors[3] = sessionRunningTime;
+                        } 
                     }
+                    opponentData.SessionTimesAtEndOfSectors[3] = sessionRunningTime;
                     opponentData.LapIsValid = true;
                     opponentData.IsNewLap = true;
                 }
-                else if (opponentData.CurrentSectorNumber == 2)
+                else if (opponentData.CurrentSectorNumber == 1 && sector == 2)
                 {
                     opponentData.SessionTimesAtEndOfSectors[1] = sessionRunningTime;
                 }
-                else if (opponentData.CurrentSectorNumber == 3)
+                else if (opponentData.CurrentSectorNumber == 2 && opponentData.CurrentSectorNumber == 3)
                 {
                     opponentData.SessionTimesAtEndOfSectors[2] =sessionRunningTime;
                 }
+                opponentData.CurrentSectorNumber = sector;
             }
             opponentData.CompletedLaps = completedLaps;
             opponentData.PositionAtSector3 = racePositionAtSector3;
