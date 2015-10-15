@@ -78,6 +78,7 @@ namespace CrewChiefV3
         public static String WHERE_IS = "where's";
         public static String WHOS_IN_FRONT = "who's in front";
         public static String WHOS_BEHIND = "who's behind";
+        public static String WHOS_IN = "who's in";
         public static String WHOS_LEADING = "who's leading";
         public static String WHATS = "what's";
         public static String BEST_LAP = "best lap";
@@ -252,7 +253,8 @@ namespace CrewChiefV3
                 opponentChoices.Add(WHATS + " " + POSITION + " " + entry.Key + "'s " + LAST_LAP);
                 opponentChoices.Add(WHATS + " " + POSITION + " " + entry.Key + "'s " + BEST_LAP);
                 opponentChoices.Add(WHATS + " " + PEA + " " + entry.Key + "'s " + LAST_LAP);
-                opponentChoices.Add(WHATS + " " + PEA + " " + entry.Key + "'s " + BEST_LAP);              
+                opponentChoices.Add(WHATS + " " + PEA + " " + entry.Key + "'s " + BEST_LAP);
+                opponentChoices.Add(WHOS_IN + " " + PEA + " " + entry.Key);
             }
             opponentChoices.Add(WHATS + " " + THE_LEADER +"'s " + BEST_LAP);
             opponentChoices.Add(WHATS + " " + THE_LEADER + "'s " + LAST_LAP);

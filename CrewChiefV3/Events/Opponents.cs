@@ -29,6 +29,8 @@ namespace CrewChiefV3.Events
 
         public static String folderCantPronounceName = "opponents/cant_pronounce_name";
 
+        public static String folderWeAre = "opponents/we_are";
+
         private Dictionary<Object, List<float>> opponentLapTimes = new Dictionary<Object, List<float>>();
 
         private GameStateData currentGameState;
@@ -36,6 +38,8 @@ namespace CrewChiefV3.Events
         private DateTime nextLeadChangeMessage = DateTime.MinValue;
 
         private DateTime nextCarAheadChangeMessage = DateTime.MinValue;
+
+        private Object positionIsPlayerKey = new Object();
 
         public Opponents(AudioPlayer audioPlayer)
         {
@@ -166,52 +170,8 @@ namespace CrewChiefV3.Events
             }
         }
 
-        private List<float> getOpponentLapTimes(String voiceMessage)
-        {
-            Object opponentKey = null;
-            if (voiceMessage.Contains(SpeechRecogniser.THE_LEADER) && currentGameState.SessionData.Position > 1)
-            {
-                opponentKey = currentGameState.getOpponentKeyAtPosition(1);                
-            }
-            if ((voiceMessage.Contains(SpeechRecogniser.THE_CAR_AHEAD) || voiceMessage.Contains(SpeechRecogniser.THE_GUY_AHEAD) ||
-                voiceMessage.Contains(SpeechRecogniser.THE_GUY_IN_FRONT) || voiceMessage.Contains(SpeechRecogniser.THE_CAR_IN_FRONT)) && currentGameState.SessionData.Position > 1)
-            {
-                opponentKey = currentGameState.getOpponentKeyInFront();                
-            }
-            else if ((voiceMessage.Contains(SpeechRecogniser.THE_CAR_BEHIND) || voiceMessage.Contains(SpeechRecogniser.THE_GUY_BEHIND)) &&
-                            !currentGameState.isLast())
-            {
-                opponentKey = currentGameState.getOpponentKeyBehind();                
-            }
-            else if (voiceMessage.Contains(SpeechRecogniser.POSITION) || voiceMessage.Contains(SpeechRecogniser.PEA)) 
-            {
-                int position = 0;
-                foreach (KeyValuePair<String, int> entry in SpeechRecogniser.numberToNumber)
-                {
-                    if (voiceMessage.Contains(" " + entry.Key + "'s "))
-                    {
-                        position = entry.Value;
-                        break;
-                    }
-                }
-                if (position != currentGameState.SessionData.Position)
-                {
-                    opponentKey = currentGameState.getOpponentKeyAtPosition(position);
-                }
-            }
-            else 
-            {
-                foreach (KeyValuePair<Object, OpponentData> entry in currentGameState.OpponentData)
-                {
-                    String usableDriverName = DriverNameHelper.getUsableNameForRawName(entry.Value.DriverRawName);
-                    if (voiceMessage.Contains(usableDriverName)) 
-                    {
-                        opponentKey = entry.Key;
-                        break;
-                    }
-                }
-            }
-                       
+        private List<float> getOpponentLapTimes(Object opponentKey)
+        {                 
             if (opponentKey != null && opponentLapTimes.ContainsKey(opponentKey) && opponentLapTimes[opponentKey].Count > 0)
             {
                 return opponentLapTimes[opponentKey];
@@ -220,6 +180,76 @@ namespace CrewChiefV3.Events
             {
                 return null;
             }
+        }
+
+        private Object getOpponentKey(String voiceMessage, String expectedNumberSuffix)
+        {
+            Object opponentKey = null;
+            if (voiceMessage.Contains(SpeechRecogniser.THE_LEADER))
+            {
+                if (currentGameState.SessionData.Position > 1)
+                {
+                    opponentKey = currentGameState.getOpponentKeyAtPosition(1);
+                }
+                else if (currentGameState.SessionData.Position == 1)
+                {
+                    opponentKey = positionIsPlayerKey;
+                }
+            }
+            if ((voiceMessage.Contains(SpeechRecogniser.THE_CAR_AHEAD) || voiceMessage.Contains(SpeechRecogniser.THE_GUY_AHEAD) ||
+                voiceMessage.Contains(SpeechRecogniser.THE_GUY_IN_FRONT) || voiceMessage.Contains(SpeechRecogniser.THE_CAR_IN_FRONT)) && currentGameState.SessionData.Position > 1)
+            {
+                opponentKey = currentGameState.getOpponentKeyInFront();
+            }
+            else if ((voiceMessage.Contains(SpeechRecogniser.THE_CAR_BEHIND) || voiceMessage.Contains(SpeechRecogniser.THE_GUY_BEHIND)) &&
+                            !currentGameState.isLast())
+            {
+                opponentKey = currentGameState.getOpponentKeyBehind();
+            }
+            else if (voiceMessage.Contains(SpeechRecogniser.POSITION) || voiceMessage.Contains(SpeechRecogniser.PEA))
+            {
+                int position = 0;
+                foreach (KeyValuePair<String, int> entry in SpeechRecogniser.numberToNumber)
+                {
+                    if (expectedNumberSuffix.Length > 0)
+                    {
+                        if (voiceMessage.Contains(" " + entry.Key + expectedNumberSuffix))
+                        {
+                            position = entry.Value;
+                            break;
+                        }
+                    }
+                    else
+                    {
+                        if (voiceMessage.EndsWith(" " + entry.Key))
+                        {
+                            position = entry.Value;
+                            break;
+                        }
+                    }
+                }
+                if (position != currentGameState.SessionData.Position)
+                {
+                    opponentKey = currentGameState.getOpponentKeyAtPosition(position);
+                }
+                else
+                {
+                    opponentKey = positionIsPlayerKey;
+                }
+            }
+            else
+            {
+                foreach (KeyValuePair<Object, OpponentData> entry in currentGameState.OpponentData)
+                {
+                    String usableDriverName = DriverNameHelper.getUsableNameForRawName(entry.Value.DriverRawName);
+                    if (voiceMessage.Contains(usableDriverName))
+                    {
+                        opponentKey = entry.Key;
+                        break;
+                    }
+                }
+            }
+            return opponentKey;
         }
         
         public override void respond(String voiceMessage)
@@ -230,7 +260,7 @@ namespace CrewChiefV3.Events
                 if (voiceMessage.StartsWith(SpeechRecogniser.WHATS) && 
                     (voiceMessage.EndsWith(SpeechRecogniser.LAST_LAP) || voiceMessage.EndsWith(SpeechRecogniser.BEST_LAP)))
                 {
-                    List<float> lapTimes = getOpponentLapTimes(voiceMessage);
+                    List<float> lapTimes = getOpponentLapTimes(getOpponentKey(voiceMessage, "'s "));
                     if (lapTimes != null)
                     {
                         gotData = true;
@@ -344,6 +374,30 @@ namespace CrewChiefV3.Events
                             audioPlayer.playClipImmediately(queuedMessage, false);
                             audioPlayer.closeChannel();
                             gotData = true;
+                        }
+                    }
+                }
+                else if (voiceMessage.StartsWith(SpeechRecogniser.WHOS_IN))
+                {
+                    Object opponentKey = getOpponentKey(voiceMessage, "");
+                    if (opponentKey != null)
+                    {
+                        if (opponentKey == positionIsPlayerKey)
+                        {
+                            audioPlayer.playClipImmediately(new QueuedMessage(folderWeAre, 0, null), false);
+                            audioPlayer.closeChannel();
+                            gotData = true;
+                        }
+                        else if (currentGameState.OpponentData.ContainsKey(opponentKey))
+                        {
+                            OpponentData opponent = currentGameState.OpponentData[opponentKey];
+                            QueuedMessage queuedMessage = new QueuedMessage("opponentName", MessageContents(opponent), MessageContents(folderCantPronounceName), 0, null);
+                            if (queuedMessage.canBePlayed)
+                            {
+                                audioPlayer.playClipImmediately(queuedMessage, false);
+                                audioPlayer.closeChannel();
+                                gotData = true;
+                            }
                         }
                     }
                 }

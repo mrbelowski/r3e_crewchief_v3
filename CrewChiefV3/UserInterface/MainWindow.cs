@@ -328,7 +328,7 @@ namespace CrewChiefV3
             }
             else
             {
-                if (voiceOption == VoiceOptionEnum.ALWAYS_ON)
+                if (voiceOption == VoiceOptionEnum.ALWAYS_ON && crewChief.speechRecogniser.initialised)
                 {
                     Console.WriteLine("Stopping listening...");
                     crewChief.speechRecogniser.recognizeAsyncCancel();
