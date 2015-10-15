@@ -38,8 +38,8 @@ namespace CrewChiefV3.RaceRoom
         private float severeEngineDamageThreshold = 0.4f;
         private float severeAeroDamageThreshold = 0.9f;
 
-        private float destroyedTransmissionThreshold = 0.0f;
-        private float destroyedEngineThreshold = 0.0f;
+        private float destroyedTransmissionThreshold = 0.1f;
+        private float destroyedEngineThreshold = 0.1f;
         private float destroyedAeroThreshold = 0.0f;
 
         // Oil temps are typically 1 or 2 units (I'm assuming celcius) higher than water temps. Typical temps while racing tend to be
@@ -316,7 +316,7 @@ namespace CrewChiefV3.RaceRoom
                     if (currentGameState.SessionData.Position > 1)
                     {
                         // we're not first. We don't care what position we're in here (2 or more cars could have
-                        // dropped out) - we just want to know if the car immediately in front or behind as dropped out.
+                        // dropped out) - we just want to know if the car immediately in front or behind has dropped out.
                         // To test this we see if the gap has changed by more than the time interval - if the car in front 
                         // has stopped completely we'd catch him in a single time interval. If the gap change is larger than
                         // a single time interval he must have disappeared. He might still have dropped out, but the next 
