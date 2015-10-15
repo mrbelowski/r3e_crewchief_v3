@@ -101,11 +101,17 @@ namespace CrewChiefV3
 
         public MainWindow.VoiceOptionEnum voiceOptionEnum;
 
-        private Grammar namesGrammar = null;
+        private Grammar opponentGrammar = null;
         
-        private List<String> loadedDriverNames;
-
         private System.Globalization.CultureInfo cultureInfo;
+
+        public static Dictionary<String, int> numberToNumber = new Dictionary<String, int>(){
+            {"one", 1}, {"two", 2}, {"three", 3}, {"four", 4}, {"five", 5}, {"six", 6}, {"seven", 7}, {"eight", 8}, 
+            {"nine", 9}, {"ten", 10}, {"eleven", 11}, {"twelve", 12},  {"thirteen", 13}, {"fourteen", 14}, {"fifteen", 15}, {"sixteen", 16}, 
+            {"seventeen", 17}, {"eighteen", 18}, {"nineteen", 19}, {"twenty", 20}, {"twenty-one", 21}, 
+            {"twenty-two", 22}, {"twenty-three", 23}, {"twenty-four", 24}, {"twenty-five", 25}, {"twenty-six", 26}, 
+            {"twenty-seven", 27}, {"twenty-eight", 28}, {"twenty-nine", 29}, {"thirty", 30}
+        };
 
         public void Dispose()
         {
@@ -180,65 +186,27 @@ namespace CrewChiefV3
                 Grammar g2 = new Grammar(gb2);
 
                 Choices info3 = new Choices();
-                info3.Add(new string[] { KEEP_QUIET, SHUT_UP, I_KNOW_WHAT_IM_DOING, LEAVE_ME_ALONE, DONT_TELL_ME_THE_GAPS, DONT_GIVE_ME_THE_DELTAS, DONT_TELL_ME_THE_GAPS,
-                    NO_MORE_DELTAS, NO_MORE_GAPS});
+                info3.Add(new string[] { TYRE_TEMPS, TYRE_TEMPERATURES, BRAKE_TEMPS, BRAKE_TEMPERATURES, BRAKES, ENGINE_TEMPS, ENGINE_TEMPERATURES });
                 GrammarBuilder gb3 = new GrammarBuilder();
                 gb3.Culture = cultureInfo;
+                gb3.Append("how are my");
                 gb3.Append(info3);
                 Grammar g3 = new Grammar(gb3);
 
                 Choices info4 = new Choices();
-                info4.Add(new string[] { KEEP_ME_INFORMED, KEEP_ME_POSTED, KEEP_ME_UPDATED, TELL_ME_THE_GAPS, GIVE_ME_THE_DELTAS, TELL_ME_THE_DELTAS });
+                info4.Add(new string[] { KEEP_QUIET, SHUT_UP, I_KNOW_WHAT_IM_DOING, LEAVE_ME_ALONE, DONT_TELL_ME_THE_GAPS, DONT_GIVE_ME_THE_DELTAS, DONT_TELL_ME_THE_GAPS,
+                    NO_MORE_DELTAS, NO_MORE_GAPS, KEEP_ME_INFORMED, KEEP_ME_POSTED, KEEP_ME_UPDATED, TELL_ME_THE_GAPS, GIVE_ME_THE_DELTAS, TELL_ME_THE_DELTAS,
+                    HOW_LONGS_LEFT, HOW_MANY_LAPS_LEFT, HOW_MANY_LAPS_TO_GO, SPOT, DONT_SPOT, REPEAT_LAST_MESSAGE, SAY_AGAIN,HAVE_I_SERVED_MY_PENALTY, DO_I_HAVE_A_PENALTY, DO_I_STILL_HAVE_A_PENALTY,
+                    DO_I_HAVE_A_MANDATORY_PIT_STOP, DO_I_NEED_TO_PIT, DO_I_HAVE_A_MANDATORY_STOP, DO_I_HAVE_TO_MAKE_A_PIT_STOP, DO_I_HAVE_TO_PIT});
                 GrammarBuilder gb4 = new GrammarBuilder();
                 gb4.Culture = cultureInfo;
                 gb4.Append(info4);
                 Grammar g4 = new Grammar(gb4);
 
-                Choices info5 = new Choices();
-                info5.Add(new string[] { HOW_LONGS_LEFT, HOW_MANY_LAPS_LEFT, HOW_MANY_LAPS_TO_GO });
-                GrammarBuilder gb5 = new GrammarBuilder();
-                gb5.Culture = cultureInfo;
-                gb5.Append(info5);
-                Grammar g5 = new Grammar(gb5);
-
-                Choices info6 = new Choices();
-                info6.Add(new string[] { SPOT, DONT_SPOT, REPEAT_LAST_MESSAGE, SAY_AGAIN });
-                GrammarBuilder gb6 = new GrammarBuilder();
-                gb6.Culture = cultureInfo;
-                gb6.Append(info6);
-                Grammar g6 = new Grammar(gb6);
-
-                Choices info7 = new Choices();
-                info7.Add(new string[] { HAVE_I_SERVED_MY_PENALTY, DO_I_HAVE_A_PENALTY, DO_I_STILL_HAVE_A_PENALTY });
-                GrammarBuilder gb7 = new GrammarBuilder();
-                gb7.Culture = cultureInfo;
-                gb7.Append(info7);
-                Grammar g7 = new Grammar(gb7);
-
-                Choices info8 = new Choices();
-                info8.Add(new string[] { DO_I_HAVE_A_MANDATORY_PIT_STOP, DO_I_NEED_TO_PIT, DO_I_HAVE_A_MANDATORY_STOP, DO_I_HAVE_TO_MAKE_A_PIT_STOP, DO_I_HAVE_TO_PIT });
-                GrammarBuilder gb8 = new GrammarBuilder();
-                gb8.Culture = cultureInfo;
-                gb8.Append(info8);
-                Grammar g8 = new Grammar(gb8);
-
-                Choices info9 = new Choices();
-                info9.Add(new string[] { TYRE_TEMPS, TYRE_TEMPERATURES, BRAKE_TEMPS, BRAKE_TEMPERATURES, BRAKES, ENGINE_TEMPS, ENGINE_TEMPERATURES });
-                GrammarBuilder gb9 = new GrammarBuilder();
-                gb9.Culture = cultureInfo;
-                gb9.Append("how are my");
-                gb9.Append(info9);
-                Grammar g9 = new Grammar(gb9);
-
                 sre.LoadGrammar(g1);
                 sre.LoadGrammar(g2);
                 sre.LoadGrammar(g3);
                 sre.LoadGrammar(g4);
-                sre.LoadGrammar(g5);
-                sre.LoadGrammar(g6);
-                sre.LoadGrammar(g7);
-                sre.LoadGrammar(g8);
-                sre.LoadGrammar(g9);
             }
             catch (Exception e)
             {
@@ -262,55 +230,45 @@ namespace CrewChiefV3
 
         public void addOpponentSpeechRecognition(List<String> names, Boolean useNames)
         {
-            if (loadedDriverNames == null ||
-                !loadedDriverNames.All(names.Contains))
+            if (opponentGrammar != null)
             {
-                if (namesGrammar != null)
+                sre.UnloadGrammar(opponentGrammar);
+                Console.WriteLine("Unloaded names");
+            }
+            Choices opponentChoices = new Choices();
+            if (useNames)
+            {
+                foreach (String name in names)
                 {
-                    sre.UnloadGrammar(namesGrammar);
-                    Console.WriteLine("Unloaded names");
+                    opponentChoices.Add(WHERE_IS + " " + name);
+                    opponentChoices.Add(WHAT_WAS + " " + name + "'s " + LAST_LAP);
+                    opponentChoices.Add(WHATS + " " + name + "'s " + BEST_LAP);
                 }
-                Choices nameChoices = new Choices();
-                if (useNames)
-                {
-                    foreach (String name in names)
-                    {
-                        nameChoices.Add(WHERE_IS + " " + name);
-                        nameChoices.Add(WHAT_WAS + " " + name + "'s " + LAST_LAP);
-                        nameChoices.Add(WHATS + " " + name + "'s " + BEST_LAP);
-                    }
-                }
-                for (int i = 0; i < 30; i++)
-                {
-                    nameChoices.Add(WHATS + " " + POSITION + " " + i + "'s " + LAST_LAP);
-                    nameChoices.Add(WHATS + " " + POSITION + " " + i + "'s " + BEST_LAP);
-                    nameChoices.Add(WHATS + " " + PEA + " " + i + "'s " + LAST_LAP);
-                    nameChoices.Add(WHATS + " " + PEA + " " + i + "'s " + BEST_LAP);
-                }
-                nameChoices.Add(WHATS + " " + THE_LEADER +"'s " + BEST_LAP);
-                nameChoices.Add(WHATS + " " + THE_LEADER + "'s " + LAST_LAP);
-                nameChoices.Add(WHATS + " " + THE_GUY_IN_FRONT + "'s " + BEST_LAP);
-                nameChoices.Add(WHATS + " " + THE_CAR_IN_FRONT + "'s " + LAST_LAP);
-                nameChoices.Add(WHATS + " " + THE_GUY_AHEAD + "'s " + BEST_LAP);
-                nameChoices.Add(WHATS + " " + THE_CAR_AHEAD + "'s " + LAST_LAP);
-                nameChoices.Add(WHATS + " " + THE_CAR_BEHIND + "'s " + BEST_LAP);
-                nameChoices.Add(WHATS + " " + THE_GUY_BEHIND + "'s " + LAST_LAP);
+            }
+            foreach (KeyValuePair<String, int> entry in numberToNumber)
+            {
+                opponentChoices.Add(WHATS + " " + POSITION + " " + entry.Key + "'s " + LAST_LAP);
+                opponentChoices.Add(WHATS + " " + POSITION + " " + entry.Key + "'s " + BEST_LAP);
+                opponentChoices.Add(WHATS + " " + PEA + " " + entry.Key + "'s " + LAST_LAP);
+                opponentChoices.Add(WHATS + " " + PEA + " " + entry.Key + "'s " + BEST_LAP);
+            }
+            opponentChoices.Add(WHATS + " " + THE_LEADER +"'s " + BEST_LAP);
+            opponentChoices.Add(WHATS + " " + THE_LEADER + "'s " + LAST_LAP);
+            opponentChoices.Add(WHATS + " " + THE_GUY_IN_FRONT + "'s " + BEST_LAP);
+            opponentChoices.Add(WHATS + " " + THE_CAR_IN_FRONT + "'s " + LAST_LAP);
+            opponentChoices.Add(WHATS + " " + THE_GUY_AHEAD + "'s " + BEST_LAP);
+            opponentChoices.Add(WHATS + " " + THE_CAR_AHEAD + "'s " + LAST_LAP);
+            opponentChoices.Add(WHATS + " " + THE_CAR_BEHIND + "'s " + BEST_LAP);
+            opponentChoices.Add(WHATS + " " + THE_GUY_BEHIND + "'s " + LAST_LAP);
 
-                nameChoices.Add(WHOS_BEHIND);
-                nameChoices.Add(WHOS_IN_FRONT);
-                nameChoices.Add(WHOS_LEADING);
-                GrammarBuilder nameGB = new GrammarBuilder();
-                nameGB.Culture = cultureInfo;
-                nameGB.Append(nameChoices);
-                namesGrammar = new Grammar(nameGB);
-                sre.LoadGrammar(namesGrammar);
-                Console.WriteLine("loaded names: " + String.Join(", ", names));
-                loadedDriverNames = names;
-            }
-            else
-            {
-                Console.WriteLine("Driver names are already loaded");
-            }
+            opponentChoices.Add(WHOS_BEHIND);
+            opponentChoices.Add(WHOS_IN_FRONT);
+            opponentChoices.Add(WHOS_LEADING);
+            GrammarBuilder opponentGrammarBuilder = new GrammarBuilder();
+            opponentGrammarBuilder.Culture = cultureInfo;
+            opponentGrammarBuilder.Append(opponentChoices);
+            opponentGrammar = new Grammar(opponentGrammarBuilder);
+            sre.LoadGrammar(opponentGrammar);
         }
         
         void sre_SpeechRecognized(object sender, SpeechRecognizedEventArgs e)
@@ -320,7 +278,7 @@ namespace CrewChiefV3
             {
                 try
                 {
-                    if (e.Result.Grammar == namesGrammar)
+                    if (e.Result.Grammar == opponentGrammar)
                     {
                         CrewChief.getEvent("Opponents").respond(e.Result.Text);
                     }

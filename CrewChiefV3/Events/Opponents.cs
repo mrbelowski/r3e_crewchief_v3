@@ -183,13 +183,18 @@ namespace CrewChiefV3.Events
             }
             else if (voiceMessage.Contains(SpeechRecogniser.POSITION) || voiceMessage.Contains(SpeechRecogniser.PEA)) 
             {
-                for (int i = 1; i<60; i++)
+                int position = 0;
+                foreach (KeyValuePair<String, int> entry in SpeechRecogniser.numberToNumber)
                 {
-                    if (i != currentGameState.SessionData.Position && 
-                        (voiceMessage.Contains(SpeechRecogniser.POSITION + " " + i + "'s ") || (voiceMessage.Contains(SpeechRecogniser.PEA + " " + i + "'s "))))
+                    if (voiceMessage.Contains(" " + entry.Key + "'s "))
                     {
-                        opponentKey = currentGameState.getOpponentKeyAtPosition(i);
+                        position = entry.Value;
+                        break;
                     }
+                }
+                if (position != currentGameState.SessionData.Position)
+                {
+                    opponentKey = currentGameState.getOpponentKeyAtPosition(position);
                 }
             }
             else 
