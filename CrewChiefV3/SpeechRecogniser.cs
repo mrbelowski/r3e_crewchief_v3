@@ -79,7 +79,6 @@ namespace CrewChiefV3
         public static String WHOS_IN_FRONT = "who's in front";
         public static String WHOS_BEHIND = "who's behind";
         public static String WHOS_LEADING = "who's leading";
-        public static String WHAT_WAS = "what was";
         public static String WHATS = "what's";
         public static String BEST_LAP = "best lap";
         public static String THE_LEADER = "the leader";
@@ -110,7 +109,9 @@ namespace CrewChiefV3
             {"nine", 9}, {"ten", 10}, {"eleven", 11}, {"twelve", 12},  {"thirteen", 13}, {"fourteen", 14}, {"fifteen", 15}, {"sixteen", 16}, 
             {"seventeen", 17}, {"eighteen", 18}, {"nineteen", 19}, {"twenty", 20}, {"twenty-one", 21}, 
             {"twenty-two", 22}, {"twenty-three", 23}, {"twenty-four", 24}, {"twenty-five", 25}, {"twenty-six", 26}, 
-            {"twenty-seven", 27}, {"twenty-eight", 28}, {"twenty-nine", 29}, {"thirty", 30}
+            {"twenty-seven", 27}, {"twenty-eight", 28}, {"twenty-nine", 29}, {"thirty", 30}, {"thirty-one", 31}, 
+            {"thirty-two", 32}, {"thirty-three", 33}, {"thirty-four", 34}, {"thirty-five", 35}, {"thirty-six", 36}, 
+            {"thirty-seven", 37}, {"thirty-eight", 38}, {"thirty-nine", 39}, {"fourty", 40}
         };
 
         public void Dispose()
@@ -241,16 +242,17 @@ namespace CrewChiefV3
                 foreach (String name in names)
                 {
                     opponentChoices.Add(WHERE_IS + " " + name);
-                    opponentChoices.Add(WHAT_WAS + " " + name + "'s " + LAST_LAP);
+                    opponentChoices.Add(WHATS + " " + name + "'s " + LAST_LAP);
                     opponentChoices.Add(WHATS + " " + name + "'s " + BEST_LAP);
                 }
             }
             foreach (KeyValuePair<String, int> entry in numberToNumber)
             {
                 opponentChoices.Add(WHATS + " " + POSITION + " " + entry.Key + "'s " + LAST_LAP);
+                opponentChoices.Add(WHATS + " " + POSITION + " " + entry.Key + "'s " + LAST_LAP);
                 opponentChoices.Add(WHATS + " " + POSITION + " " + entry.Key + "'s " + BEST_LAP);
                 opponentChoices.Add(WHATS + " " + PEA + " " + entry.Key + "'s " + LAST_LAP);
-                opponentChoices.Add(WHATS + " " + PEA + " " + entry.Key + "'s " + BEST_LAP);
+                opponentChoices.Add(WHATS + " " + PEA + " " + entry.Key + "'s " + BEST_LAP);              
             }
             opponentChoices.Add(WHATS + " " + THE_LEADER +"'s " + BEST_LAP);
             opponentChoices.Add(WHATS + " " + THE_LEADER + "'s " + LAST_LAP);

@@ -2,6 +2,8 @@ CrewChief version 3.
 
 Changelog
 ---------
+Version 3.5.3: Added voice recognition to get laps (last and best) by car position as well as name ("what's p4's best lap" type stuff); Added voice recognition to get the car front or behinds best & last laps ("what's the car ahead's last lap"); Fuel remaining estimate fixes; Make the fuel event cope with refuelling; Some internal rewiring for Raceroom. No new sound pack for this version.
+
 Version 3.5.2: Added version number to UI; fixed broken opponent lap time tracking (pace estimates were always incorrect); Fixed missing opponent best-lap reporting; More accurate and efficient opponent pitting detection; Added a delay and validation check to 'the next car is...' message; Don't play the 'let's get those places back' message when starting last; Added opponent last / best lap response ("what was bob's last lap" / "what is bob's best lap"). No new sound pack for this version.
 
 Version 3.5.1: Fixed channel getting left open after enabling / disabling 'deltas' mode; use slicks for formula-rookie. No new sound pack for this version.
@@ -66,8 +68,14 @@ I've not finished implementing this but currently the app understands and respon
 "do I still have a penalty / do I have a penalty / have I served my penalty"
 "do I have to pit / do I need to pit / do I have a mandatory pit stop / do I have a mandatory stop / do I have to make a pit stop"
 "where's [opponent driver last name]"
-"what was [opponent driver last name]'s last lap"
-"what is [opponent driver last name]'s best lap"
+"what's [opponent driver last name]'s last lap"
+"what's [opponent driver last name]'s best lap"
+"what's [opponent race position]'s last lap"
+"what's [opponent race position]'s best lap"
+"what's [the car in front / the guy in front / the car ahead / the guy ahead]'s last lap"
+"what's [the car in front / the guy in front / the car ahead / the guy ahead]'s best lap"
+"what's [the car behind / the guy behind]'s last lap"
+"what's [the car behind / the guy behind]'s best lap"
 "who's leading" (this one only works if you have the driver name recording for the lead car)
 "who's [ahead / behind]" (this one only works if you have the driver name recording for that driver)
 "tell me the gaps / give me the gaps / tell me the deltas / give me the deltas" (switch on 'deltas' mode where the time deltas in front and behind get read out on each lap. Note that these messages will play even if you have disabled messages)
