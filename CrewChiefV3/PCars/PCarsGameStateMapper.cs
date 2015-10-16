@@ -513,7 +513,7 @@ namespace CrewChiefV3.PCars
                                 {
                                     currentGameState.SessionData.LeaderHasFinishedRace = true;
                                 }
-                                if (currentOpponentRacePosition == 1 && previousOpponentPosition != 1)
+                                if (currentOpponentRacePosition == 1 && previousOpponentPosition > 1)
                                 {
                                     currentGameState.SessionData.HasLeadChanged = true;
                                 }
@@ -874,16 +874,7 @@ namespace CrewChiefV3.PCars
                             {
                                 opponentData.ApproximateLastLapTime = sessionRunningTime - sessionTimeAtEndOfLastLap;
                             }
-                            else
-                            {
-                                Console.WriteLine("Discarding estimated best lap for opponent " + opponentData.DriverRawName +
-                                    ", estimated time = " + lapTimeEstimate + ", world record = " + worldRecordLapTime);
-                            }
                         }
-                        else
-                        {
-                            Console.WriteLine("Discarding invalid opponent lap");
-                        } 
                     }
                     opponentData.SessionTimesAtEndOfSectors[3] = sessionRunningTime;
                     opponentData.LapIsValid = true;

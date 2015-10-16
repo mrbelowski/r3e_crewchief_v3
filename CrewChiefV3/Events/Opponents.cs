@@ -139,13 +139,17 @@ namespace CrewChiefV3.Events
                 }
                 if (currentGameState.SessionData.HasLeadChanged)
                 {
-                    String name = currentGameState.getOpponentAtPosition(1) != null ? currentGameState.getOpponentAtPosition(1).DriverRawName : "no data";
-                    Console.WriteLine("Lead change, current leader is " + name + " laps completed = " + currentGameState.SessionData.CompletedLaps);
-                    if (currentGameState.SessionData.Position > 1 && previousGameState.SessionData.Position > 1 && currentGameState.Now > nextLeadChangeMessage)
+                    OpponentData leader = currentGameState.getOpponentAtPosition(1);
+                    if (leader != null)
                     {
-                        audioPlayer.queueClip(new QueuedMessage("new_leader", MessageContents(currentGameState.getOpponentAtPosition(1), folderIsNowLeading), 0, this));
-                        nextLeadChangeMessage = currentGameState.Now.Add(TimeSpan.FromSeconds(30));
-                    }
+                        String name = leader.DriverRawName;
+                        if (currentGameState.SessionData.Position > 1 && previousGameState.SessionData.Position > 1 && currentGameState.Now > nextLeadChangeMessage)
+                        {
+                            Console.WriteLine("Lead change, current leader is " + name + " laps completed = " + currentGameState.SessionData.CompletedLaps);
+                            audioPlayer.queueClip(new QueuedMessage("new_leader", MessageContents(currentGameState.getOpponentAtPosition(1), folderIsNowLeading), 0, this));
+                            nextLeadChangeMessage = currentGameState.Now.Add(TimeSpan.FromSeconds(30));
+                        }
+                    }                    
                 }
 
                 if (currentGameState.PitData.LeaderIsPitting && 
