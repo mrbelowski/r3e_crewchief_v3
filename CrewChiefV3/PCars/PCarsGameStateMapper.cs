@@ -173,7 +173,10 @@ namespace CrewChiefV3.PCars
             }
             
             GameStateData currentGameState = new GameStateData(ticks);
-
+            Console.WriteLine(shared.mTrackLength);
+            Console.WriteLine(shared.mTrackLocation);
+            Console.WriteLine(shared.mTrackVariation);
+            Console.WriteLine(shared.mParticipantData[shared.mViewedParticipantIndex].mWorldPosition[0] + " : " + shared.mParticipantData[shared.mViewedParticipantIndex].mWorldPosition[2]);
             if (shared.mNumParticipants < 1 || 
                 ((shared.mEventTimeRemaining == -1 || shared.mEventTimeRemaining == 0) && shared.mLapsInEvent == 0) ||
                 shared.mTrackLocation == null || shared.mTrackLocation.Length == 0)
@@ -182,6 +185,7 @@ namespace CrewChiefV3.PCars
                 return null;
             }
             Tuple<int, pCarsAPIParticipantStruct> playerData = getPlayerDataStruct(shared.mParticipantData, shared.mViewedParticipantIndex);
+            
             int playerDataIndex = playerData.Item1;
             pCarsAPIParticipantStruct viewedParticipant = playerData.Item2;
             NameValidator.validateName(viewedParticipant.mName);

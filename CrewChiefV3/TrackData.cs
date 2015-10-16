@@ -24,6 +24,10 @@ namespace CrewChiefV3
             new TrackDefinition("Circuit de Barcelona-Catalunya:National", 3, 2948.298f, new float[] {622.7108f, -137.3975f}, new float[] {26.52858f, -167.9301f}),
             new TrackDefinition("Circuit de Spa-Francorchamps:", 2.5f, 6997.816f, new float[] {-685.1871f, 1238.607f}, new float[] {-952.3125f, 1656.81f}),
             new TrackDefinition("Le Mans:Circuit des 24 Heures du Mans", 3, 13595.01f, new float[] {-737.9395f, 1107.367f}, new float[] {-721.3452f, 1582.873f}),
+            new TrackDefinition("Dubai Autodrome:Club", 3, 2525.363f, new float[] {971.8023f, 199.1564f}, new float[] {452.5084f, 126.7626f}),
+            new TrackDefinition("Dubai Autodrome:Grand Prix", 3, 5372.706f, new float[] {971.8023f, 199.1564f}, new float[] {452.5084f, 126.7626f}),
+            new TrackDefinition("Dubai Autodrome:International", 3, 4290.958f, new float[] {971.8023f, 199.1564f}, new float[] {452.5084f, 126.7626f}),
+            new TrackDefinition("Dubai Autodrome:National", 3, 3570.053f, new float[] {971.8023f, 199.1564f}, new float[] {452.5084f, 126.7626f}),
             new TrackDefinition("Donington Park:Grand Prix", 2, 3982.949f, new float[] {200.8843f, 144.8465f}, new float[] {486.4654f, 119.9713f}),
             new TrackDefinition("Donington Park:National", 2, 3175.802f, new float[] {200.8843f, 144.8465f}, new float[] {486.4654f, 119.9713f}),
             new TrackDefinition("Hockenheim:Grand Prix", 3, 4563.47f, new float[] {-483.1076f, -428.47f}, new float[] {-704.3397f, 11.15407f}),
@@ -55,10 +59,15 @@ namespace CrewChiefV3
             new TrackDefinition("Snetterton:100 Circuit", 1544.868f),
             new TrackDefinition("Snetterton:200 Circuit", 2, 3170.307f, new float[] {228.4838f, -25.23679f}, new float[] {-44.5122f, -55.82156f}),
             new TrackDefinition("Snetterton:300 Circuit", 2, 4747.875f, new float[] {228.4838f, -25.23679f}, new float[] {-44.5122f, -55.82156f}),
+            new TrackDefinition("Sonoma Raceway:Grand Prix", 2, 4025.978f, new float[] {-592.7792f, 87.43731f}, new float[] {-152.6224f, -30.71386f}),
+            new TrackDefinition("Sonoma Raceway:National", 2, 3792.239f, new float[] {-592.7792f, 87.43731f}, new float[] {-152.6224f, -30.71386f}),
+            new TrackDefinition("Sonoma Raceway:Short", 2, 3174.824f, new float[] {-592.7792f, 87.43731f}, new float[] {-152.6224f, -30.71386f}),
             new TrackDefinition("Watkins Glen International:Grand Prix", 3, 5112.122f, new float[] {589.6273f, -928.2814f}, new float[] {542.0042f, -1410.464f}),
             new TrackDefinition("Watkins Glen International:Short Circuit", 3, 3676.561f, new float[] {589.6273f, -928.2814f}, new float[] {542.0042f, -1410.464f}),
+            new TrackDefinition("Willow Springs:Short Circuit", 3, 1627.787f, new float[] {-386.1919f, 818.131f}, new float[] {-317.1366f, 641.947f}),
+            new TrackDefinition("Willow Springs:International Raceway", 3, 4038.008f, new float[] {319.4275f, -21.51243f}, new float[] {-44.84023f -23.41344f}),
             new TrackDefinition("Zhuhai:International Circuit", 3, 4293.098f, new float[] {-193.7068f, 123.679f}, new float[] {64.56277f, -71.51254f}),
-            new TrackDefinition("Zolder:Grand Prix", 4146.733f, 4, new float[] {112.9851f, 120.8965f}, new float[] {682.2009f, 179.8147f})
+            new TrackDefinition("Zolder:Grand Prix", 4146.733f, 4, new float[] {138.3811f, 132.7747f}, new float[] {682.2009f, 179.8147f})
             // TODO: dubai, willow springs, sonoma
         };
 
