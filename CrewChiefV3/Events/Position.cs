@@ -95,7 +95,7 @@ namespace CrewChiefV3.Events
                     {
                         audioPlayer.queueClip(new QueuedMessage(folderBadStart, 0, this));
                     }
-                    else if (currentGameState.SessionData.Position == 1 || currentGameState.SessionData.SessionStartPosition >= currentGameState.SessionData.Position)
+                    else if (!isLast && currentGameState.SessionData.Position == 1 || currentGameState.SessionData.SessionStartPosition > currentGameState.SessionData.Position)
                     {
                         audioPlayer.queueClip(new QueuedMessage(folderGoodStart, 0, this));
                     }

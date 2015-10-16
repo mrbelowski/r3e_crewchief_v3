@@ -46,7 +46,7 @@ namespace CrewChiefV3.PCars
 
         private float trivialSuspensionDamageThreshold = 0.02f;
         private float minorSuspensionDamageThreshold = 0.10f;
-        private float severeSuspensionDamageThreshold = 0.35f;
+        private float severeSuspensionDamageThreshold = 0.25f;
         private float destroyedSuspensionDamageThreshold = 0.60f;
 
         private float trivialBrakeDamageThreshold = 0.1f;
