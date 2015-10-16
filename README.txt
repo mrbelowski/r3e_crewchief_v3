@@ -58,7 +58,7 @@ You need to speak clearly and your mic needs to be properly set up - you might n
 
 I've not finished implementing this but currently the app understands and responds to the following commands:
 
-"how is my [fuel / tyre wear / body work / aero / engine / transmission / suspension / pace ]"
+"how's my [fuel / tyre wear / body work / aero / engine / transmission / suspension / pace ]"
 "how are my [tyre temps / tyre temperatures / brakes / brake temps / brake temperatures / engine temps / engine temperatures]"
 "what's my [gap in front / gap ahead / gap behind / last lap / last lap time / lap time / position / fuel level]"
 "keep quiet / I know what I'm doing / leave me alone" (switches off messages)
@@ -70,7 +70,7 @@ I've not finished implementing this but currently the app understands and respon
 "where's [opponent driver last name]"
 "what's [opponent driver last name]'s last lap"
 "what's [opponent driver last name]'s best lap"
-"what's [opponent race position]'s last lap"
+"what's [opponent race position]'s last lap" (for example, "what's p 4's best lap", or "what's position 4's last lap")
 "what's [opponent race position]'s best lap"
 "what's [the car in front / the guy in front / the car ahead / the guy ahead]'s last lap"
 "what's [the car in front / the guy in front / the car ahead / the guy ahead]'s best lap"
