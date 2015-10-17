@@ -592,17 +592,20 @@ namespace CrewChiefV3.GameState
             float furthestDistanceBehind = 0;
             foreach (KeyValuePair<Object, OpponentData> opponent in OpponentData)
             {
-                if (opponent.Value.DistanceRoundTrack > PositionAndMotionData.DistanceRoundTrack &&
-                    opponent.Value.DistanceRoundTrack - PositionAndMotionData.DistanceRoundTrack < closestDistanceFront)
+                if (opponent.Value.Speed > 0.5 && !opponent.Value.IsEnteringPits)
                 {
-                    closestDistanceFront = opponent.Value.DistanceRoundTrack - PositionAndMotionData.DistanceRoundTrack;
-                    opponentKeyClosestInFront = opponent.Value;
-                }
-                else if (opponent.Value.DistanceRoundTrack < PositionAndMotionData.DistanceRoundTrack &&
-                    PositionAndMotionData.DistanceRoundTrack - opponent.Value.DistanceRoundTrack > furthestDistanceBehind)
-                {
-                    furthestDistanceBehind = PositionAndMotionData.DistanceRoundTrack - opponent.Value.DistanceRoundTrack;
-                    opponentKeyFurthestBehind = opponent.Value;
+                    if (opponent.Value.DistanceRoundTrack > PositionAndMotionData.DistanceRoundTrack &&
+                        opponent.Value.DistanceRoundTrack - PositionAndMotionData.DistanceRoundTrack < closestDistanceFront)
+                    {
+                        closestDistanceFront = opponent.Value.DistanceRoundTrack - PositionAndMotionData.DistanceRoundTrack;
+                        opponentKeyClosestInFront = opponent.Value;
+                    }
+                    else if (opponent.Value.DistanceRoundTrack < PositionAndMotionData.DistanceRoundTrack &&
+                        PositionAndMotionData.DistanceRoundTrack - opponent.Value.DistanceRoundTrack > furthestDistanceBehind)
+                    {
+                        furthestDistanceBehind = PositionAndMotionData.DistanceRoundTrack - opponent.Value.DistanceRoundTrack;
+                        opponentKeyFurthestBehind = opponent.Value;
+                    }
                 }
             }
             if (opponentKeyClosestInFront != null)
@@ -623,17 +626,20 @@ namespace CrewChiefV3.GameState
             float furthestDistanceInFront = 0;
             foreach (KeyValuePair<Object, OpponentData> opponent in OpponentData)
             {
-                if (PositionAndMotionData.DistanceRoundTrack > opponent.Value.DistanceRoundTrack &&
-                    PositionAndMotionData.DistanceRoundTrack - opponent.Value.DistanceRoundTrack < closestDistanceBehind)
+                if (opponent.Value.Speed > 0.5 && !opponent.Value.IsEnteringPits)
                 {
-                    closestDistanceBehind = PositionAndMotionData.DistanceRoundTrack - opponent.Value.DistanceRoundTrack;
-                    opponentKeyClosestBehind = opponent.Value;
-                }
-                else if (PositionAndMotionData.DistanceRoundTrack < opponent.Value.DistanceRoundTrack &&
-                    opponent.Value.DistanceRoundTrack - PositionAndMotionData.DistanceRoundTrack > furthestDistanceInFront)
-                {
-                    furthestDistanceInFront = opponent.Value.DistanceRoundTrack - PositionAndMotionData.DistanceRoundTrack;
-                    opponentKeyFurthestInFront = opponent.Value;
+                    if (PositionAndMotionData.DistanceRoundTrack > opponent.Value.DistanceRoundTrack &&
+                        PositionAndMotionData.DistanceRoundTrack - opponent.Value.DistanceRoundTrack < closestDistanceBehind)
+                    {
+                        closestDistanceBehind = PositionAndMotionData.DistanceRoundTrack - opponent.Value.DistanceRoundTrack;
+                        opponentKeyClosestBehind = opponent.Value;
+                    }
+                    else if (PositionAndMotionData.DistanceRoundTrack < opponent.Value.DistanceRoundTrack &&
+                        opponent.Value.DistanceRoundTrack - PositionAndMotionData.DistanceRoundTrack > furthestDistanceInFront)
+                    {
+                        furthestDistanceInFront = opponent.Value.DistanceRoundTrack - PositionAndMotionData.DistanceRoundTrack;
+                        opponentKeyFurthestInFront = opponent.Value;
+                    }
                 }
             }
             if (opponentKeyClosestBehind != null)
