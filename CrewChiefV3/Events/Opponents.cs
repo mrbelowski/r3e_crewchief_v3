@@ -403,7 +403,8 @@ namespace CrewChiefV3.Events
                         }
                     }
                 }
-                else if (voiceMessage.StartsWith(SpeechRecogniser.WHOS_IN_FRONT_ON_TRACK) || voiceMessage.StartsWith(SpeechRecogniser.WHOS_AHEAD))
+                else if (voiceMessage.StartsWith(SpeechRecogniser.WHOS_IN_FRONT_ON_TRACK) || voiceMessage.StartsWith(SpeechRecogniser.WHOS_AHEAD_ON_TRACK) ||
+                    voiceMessage.StartsWith(SpeechRecogniser.WHOS_IN_FRONT) || voiceMessage.StartsWith(SpeechRecogniser.WHOS_AHEAD))
                 {
                     Object opponentKey = currentGameState.getOpponentKeyInFrontOnTrack();
                     if (opponentKey != null)
