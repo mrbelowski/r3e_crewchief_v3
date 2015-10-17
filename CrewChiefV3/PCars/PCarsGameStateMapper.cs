@@ -569,7 +569,7 @@ namespace CrewChiefV3.PCars
                                 upateOpponentData(currentOpponentData, currentOpponentRacePosition, currentOpponentLapsCompleted,
                                         currentOpponentSector, isEnteringPits, isLeavingPits, currentGameState.SessionData.SessionRunningTime, secondsSinceLastUpdate,
                                         opponentPositionAtSector3, new float[] { participantStruct.mWorldPosition[0], participantStruct.mWorldPosition[2] }, previousOpponentWorldPosition,
-                                        previousOpponentSpeed, shared.mWorldFastestLapTime);
+                                        previousOpponentSpeed, shared.mWorldFastestLapTime, participantStruct.mCurrentLapDistance);
                             }
                         }
                         else
@@ -835,9 +835,10 @@ namespace CrewChiefV3.PCars
         }
 
         private void upateOpponentData(OpponentData opponentData, int racePosition, int completedLaps, int sector, Boolean isEnteringPits, Boolean isLeavingPits,
-            float sessionRunningTime, float secondsSinceLastUpdate, int racePositionAtSector3, float[] currentWorldPosition, float[] previousWorldPosition, 
-            float previousSpeed, float worldRecordLapTime)
+            float sessionRunningTime, float secondsSinceLastUpdate, int racePositionAtSector3, float[] currentWorldPosition, float[] previousWorldPosition,
+            float previousSpeed, float worldRecordLapTime, float distanceRoundTrack)
         {
+            opponentData.DistanceRoundTrack = distanceRoundTrack;
             opponentData.IsEnteringPits = isEnteringPits;
             opponentData.IsLeavingPits = isLeavingPits;
             float speed;
@@ -902,6 +903,7 @@ namespace CrewChiefV3.PCars
             opponentData.CompletedLaps = (int)participantStruct.mLapsCompleted;
             opponentData.CurrentSectorNumber = (int)participantStruct.mCurrentSector;
             opponentData.WorldPosition = new float[] { participantStruct.mWorldPosition[0], participantStruct.mWorldPosition[2] };
+            opponentData.DistanceRoundTrack = participantStruct.mCurrentLapDistance;
             return opponentData;
         }
         

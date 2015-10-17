@@ -340,6 +340,40 @@ namespace CrewChiefV3.Events
                         }
                     }
                 }
+                else if (voiceMessage.StartsWith(SpeechRecogniser.WHOS_BEHIND_ON_TRACK))
+                {
+                    Object opponentKey = currentGameState.getOpponentKeyBehindOnTrack();
+                    if (opponentKey != null)
+                    {
+                        OpponentData opponent = currentGameState.OpponentData[opponentKey];
+                        QueuedMessage queuedMessage = new QueuedMessage("opponentNameAndPosition", MessageContents(currentGameState.OpponentData[opponentKey],
+                            Position.folderStub, QueuedMessage.folderNameNumbersStub + opponent.Position), 
+                            MessageContents(Position.folderStub, QueuedMessage.folderNameNumbersStub + opponent.Position, folderCantPronounceName), 0, null);
+                        if (queuedMessage.canBePlayed)
+                        {
+                            audioPlayer.playClipImmediately(queuedMessage, false);
+                            audioPlayer.closeChannel();
+                            gotData = true;
+                        }
+                    }
+                }
+                else if (voiceMessage.StartsWith(SpeechRecogniser.WHOS_IN_FRONT_ON_TRACK) || voiceMessage.StartsWith(SpeechRecogniser.WHOS_AHEAD_ON_TRACK))
+                {
+                    Object opponentKey = currentGameState.getOpponentKeyInFrontOnTrack();
+                    if (opponentKey != null)
+                    {
+                        OpponentData opponent = currentGameState.OpponentData[opponentKey];
+                        QueuedMessage queuedMessage = new QueuedMessage("opponentName", MessageContents(currentGameState.OpponentData[opponentKey],
+                            Position.folderStub, QueuedMessage.folderNameNumbersStub + opponent.Position), 
+                            MessageContents(Position.folderStub, QueuedMessage.folderNameNumbersStub + opponent.Position, folderCantPronounceName), 0, null);
+                        if (queuedMessage.canBePlayed)
+                        {
+                            audioPlayer.playClipImmediately(queuedMessage, false);
+                            audioPlayer.closeChannel();
+                            gotData = true;
+                        }
+                    }
+                }
                 else if (voiceMessage.StartsWith(SpeechRecogniser.WHOS_BEHIND) && !currentGameState.isLast())
                 {
                     OpponentData opponent = currentGameState.getOpponentAtPosition(currentGameState.SessionData.Position + 1);
@@ -354,7 +388,8 @@ namespace CrewChiefV3.Events
                         }                        
                     }
                 }
-                else if (voiceMessage.StartsWith(SpeechRecogniser.WHOS_IN_FRONT) && currentGameState.SessionData.Position > 1)
+                else if ((voiceMessage.StartsWith(SpeechRecogniser.WHOS_IN_FRONT) || voiceMessage.StartsWith(SpeechRecogniser.WHOS_AHEAD)) &&
+                    currentGameState.SessionData.Position > 1)
                 {
                     OpponentData opponent = currentGameState.getOpponentAtPosition(currentGameState.SessionData.Position - 1);
                     if (opponent != null)

@@ -77,7 +77,11 @@ namespace CrewChiefV3
 
         public static String WHERE_IS = "where's";
         public static String WHOS_IN_FRONT = "who's in front";
-        public static String WHOS_BEHIND = "who's behind";
+        public static String WHOS_AHEAD = "who's ahead";
+        public static String WHOS_BEHIND = "who's behind"; 
+        public static String WHOS_IN_FRONT_ON_TRACK = "who's in front on track";
+        public static String WHOS_AHEAD_ON_TRACK = "who's ahead on track";
+        public static String WHOS_BEHIND_ON_TRACK = "who's behind on track";
         public static String WHOS_IN = "who's in";
         public static String WHOS_LEADING = "who's leading";
         public static String WHATS = "what's";
@@ -267,6 +271,10 @@ namespace CrewChiefV3
 
             opponentChoices.Add(WHOS_BEHIND);
             opponentChoices.Add(WHOS_IN_FRONT);
+            opponentChoices.Add(WHOS_AHEAD); 
+            opponentChoices.Add(WHOS_BEHIND_ON_TRACK);
+            opponentChoices.Add(WHOS_IN_FRONT_ON_TRACK);
+            opponentChoices.Add(WHOS_AHEAD_ON_TRACK);
             opponentChoices.Add(WHOS_LEADING);
             GrammarBuilder opponentGrammarBuilder = new GrammarBuilder();
             opponentGrammarBuilder.Culture = cultureInfo;

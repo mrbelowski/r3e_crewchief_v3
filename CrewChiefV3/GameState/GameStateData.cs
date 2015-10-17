@@ -293,6 +293,8 @@ namespace CrewChiefV3.GameState
 
         public Boolean IsNewLap = false;
 
+        public float DistanceRoundTrack = 0;
+
         public OpponentData()
         {
             SessionTimesAtEndOfSectors.Add(1, -1); 
@@ -579,6 +581,68 @@ namespace CrewChiefV3.GameState
             else
             {
                 return null;
+            }
+        }
+
+        public Object getOpponentKeyInFrontOnTrack()
+        {
+            Object opponentKeyClosestInFront = null;
+            Object opponentKeyFurthestBehind = null;
+            float closestDistanceFront = SessionData.TrackDefinition.trackLength;
+            float furthestDistanceBehind = 0;
+            foreach (KeyValuePair<Object, OpponentData> opponent in OpponentData)
+            {
+                if (opponent.Value.DistanceRoundTrack > PositionAndMotionData.DistanceRoundTrack &&
+                    opponent.Value.DistanceRoundTrack - PositionAndMotionData.DistanceRoundTrack < closestDistanceFront)
+                {
+                    closestDistanceFront = opponent.Value.DistanceRoundTrack - PositionAndMotionData.DistanceRoundTrack;
+                    opponentKeyClosestInFront = opponent.Value;
+                }
+                else if (opponent.Value.DistanceRoundTrack < PositionAndMotionData.DistanceRoundTrack &&
+                    PositionAndMotionData.DistanceRoundTrack - opponent.Value.DistanceRoundTrack > furthestDistanceBehind)
+                {
+                    furthestDistanceBehind = PositionAndMotionData.DistanceRoundTrack - opponent.Value.DistanceRoundTrack;
+                    opponentKeyFurthestBehind = opponent.Value;
+                }
+            }
+            if (opponentKeyClosestInFront != null)
+            {
+                return opponentKeyClosestInFront;
+            }
+            else
+            {
+                return opponentKeyFurthestBehind;
+            }
+        }
+
+        public Object getOpponentKeyBehindOnTrack()
+        {
+            Object opponentKeyClosestBehind = null;
+            Object opponentKeyFurthestInFront = null;
+            float closestDistanceBehind = SessionData.TrackDefinition.trackLength;
+            float furthestDistanceInFront = 0;
+            foreach (KeyValuePair<Object, OpponentData> opponent in OpponentData)
+            {
+                if (PositionAndMotionData.DistanceRoundTrack > opponent.Value.DistanceRoundTrack &&
+                    PositionAndMotionData.DistanceRoundTrack - opponent.Value.DistanceRoundTrack < closestDistanceBehind)
+                {
+                    closestDistanceBehind = PositionAndMotionData.DistanceRoundTrack - opponent.Value.DistanceRoundTrack;
+                    opponentKeyClosestBehind = opponent.Value;
+                }
+                else if (PositionAndMotionData.DistanceRoundTrack < opponent.Value.DistanceRoundTrack &&
+                    opponent.Value.DistanceRoundTrack - PositionAndMotionData.DistanceRoundTrack > furthestDistanceInFront)
+                {
+                    furthestDistanceInFront = opponent.Value.DistanceRoundTrack - PositionAndMotionData.DistanceRoundTrack;
+                    opponentKeyFurthestInFront = opponent.Value;
+                }
+            }
+            if (opponentKeyClosestBehind != null)
+            {
+                return opponentKeyClosestBehind;
+            }
+            else
+            {
+                return opponentKeyFurthestInFront;
             }
         }
 
