@@ -173,10 +173,6 @@ namespace CrewChiefV3.PCars
             }
             
             GameStateData currentGameState = new GameStateData(ticks);
-            Console.WriteLine(shared.mTrackLength);
-            Console.WriteLine(shared.mTrackLocation);
-            Console.WriteLine(shared.mTrackVariation);
-            Console.WriteLine(shared.mParticipantData[shared.mViewedParticipantIndex].mWorldPosition[0] + " : " + shared.mParticipantData[shared.mViewedParticipantIndex].mWorldPosition[2]);
             if (shared.mNumParticipants < 1 || 
                 ((shared.mEventTimeRemaining == -1 || shared.mEventTimeRemaining == 0) && shared.mLapsInEvent == 0) ||
                 shared.mTrackLocation == null || shared.mTrackLocation.Length == 0)

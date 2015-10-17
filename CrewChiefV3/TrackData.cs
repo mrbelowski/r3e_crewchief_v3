@@ -67,8 +67,7 @@ namespace CrewChiefV3
             new TrackDefinition("Willow Springs:Short Circuit", 3, 1627.787f, new float[] {-386.1919f, 818.131f}, new float[] {-317.1366f, 641.947f}),
             new TrackDefinition("Willow Springs:International Raceway", 3, 4038.008f, new float[] {319.4275f, -21.51243f}, new float[] {-44.84023f -23.41344f}),
             new TrackDefinition("Zhuhai:International Circuit", 3, 4293.098f, new float[] {-193.7068f, 123.679f}, new float[] {64.56277f, -71.51254f}),
-            new TrackDefinition("Zolder:Grand Prix", 4146.733f, 4, new float[] {138.3811f, 132.7747f}, new float[] {682.2009f, 179.8147f})
-            // TODO: dubai, willow springs, sonoma
+            new TrackDefinition("Zolder:Grand Prix", 4, 4146.733f, new float[] {138.3811f, 132.7747f}, new float[] {682.2009f, 179.8147f})
         };
 
         public static TrackDefinition getTrackDefinition(String trackName, float trackLength, GameEnum game)
