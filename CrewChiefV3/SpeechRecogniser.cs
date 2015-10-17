@@ -76,6 +76,9 @@ namespace CrewChiefV3
         public static String DO_I_HAVE_TO_MAKE_A_PIT_STOP = "do I have to make a pit stop";
 
         public static String WHERE_IS = "where's";
+        public static String WHOS_IN_FRONT_IN_THE_RACE = "who's in front in the race";
+        public static String WHOS_AHEAD_IN_THE_RACE = "who's ahead in the race";
+        public static String WHOS_BEHIND_IN_THE_RACE = "who's behind in the race"; 
         public static String WHOS_IN_FRONT = "who's in front";
         public static String WHOS_AHEAD = "who's ahead";
         public static String WHOS_BEHIND = "who's behind"; 
@@ -269,9 +272,9 @@ namespace CrewChiefV3
             opponentChoices.Add(WHATS + " " + THE_CAR_BEHIND + "'s " + BEST_LAP);
             opponentChoices.Add(WHATS + " " + THE_GUY_BEHIND + "'s " + LAST_LAP);
 
-            opponentChoices.Add(WHOS_BEHIND);
-            opponentChoices.Add(WHOS_IN_FRONT);
-            opponentChoices.Add(WHOS_AHEAD); 
+            opponentChoices.Add(WHOS_BEHIND_IN_THE_RACE);
+            opponentChoices.Add(WHOS_IN_FRONT_IN_THE_RACE);
+            opponentChoices.Add(WHOS_AHEAD_IN_THE_RACE); 
             opponentChoices.Add(WHOS_BEHIND_ON_TRACK);
             opponentChoices.Add(WHOS_IN_FRONT_ON_TRACK);
             opponentChoices.Add(WHOS_AHEAD_ON_TRACK);
