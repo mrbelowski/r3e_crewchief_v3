@@ -19,7 +19,7 @@ namespace CrewChiefV3
             propertyHelp.Add("update_interval", "The time (milliseconds) between app updates");
             propertyHelp.Add("use_sweary_messages", "A few messages contain swearing - then enables / disables these");
             propertyHelp.Add("enable_spotter", "The spotter can be enabled and disabled with a button. This setting sets it initial state");
-            propertyHelp.Add("speech_recognition_location", "The localisation to use for speech recognition. Must be en-[something]");
+            propertyHelp.Add("speech_recognition_location", "Optional - the localisation to use for speech recognition. If this isn't set, the app will use which ever English pack you've installed (or the first it finds if you have more than one). If you set it, the value must be en-[something].");
             propertyHelp.Add("spotter_car_length", "The length of a car, used to check if there's an overlap. Decrease this if the spotter calls 'hold your line' when you're not overlapping. "+
                 "Increase it if the spotter doesn't call 'hold your line' when you clearly are overlapping");
             propertyHelp.Add("time_after_race_start_for_spotter", "Wait this many seconds after race start before enabling the spotter");

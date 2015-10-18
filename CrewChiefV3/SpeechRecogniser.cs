@@ -15,6 +15,8 @@ namespace CrewChiefV3
 
         private String location = UserSettings.GetUserSettings().getString("speech_recognition_location");
 
+        private static String defaultLocale = "en";
+
         // externalise these?
         public static String FUEL = "fuel";
         public static String FUEL_LEVEL = "fuel level";
@@ -137,32 +139,48 @@ namespace CrewChiefV3
             this.crewChief = crewChief;
         }
 
+        private void initWithLocale(String locale)
+        {
+            cultureInfo = new System.Globalization.CultureInfo(locale);
+            this.sre = new SpeechRecognitionEngine(cultureInfo);
+        }
+
         public void initialiseSpeechEngine()
         {
             initialised = false;
-            try
+            if (location != null && location.Length > 0)
             {
-                cultureInfo = new System.Globalization.CultureInfo(location);
+                try
+                {
+                    Console.WriteLine("Attempting to initialise speech recognition for user specified location " + location);
+                    initWithLocale(location);
+                    Console.WriteLine("Success");
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("Unable to initialise speech engine with voice recognition pack for location " + location +
+                        ". Check that SpeechPlatformRuntime.msi and MSSpeech_SR_" + location + "_TELE.msi are installed.");
+                    Console.WriteLine("Exception message: " + e.Message);
+                    return;
+                }
             }
-            catch (Exception e)
+            else
             {
-                Console.WriteLine("Unable to initialise culture info object for location " + location +
-                    ". Check that MSSpeech_SR_" + location + "_TELE.msi is installed");
-                Console.WriteLine("Exception message: " + e.Message);
-                return;
+                try
+                {
+                    Console.WriteLine("Attempting to initialise speech recognition for any English locale");
+                    initWithLocale(defaultLocale);
+                    Console.WriteLine("Success");
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("Unable to initialise speech engine with the OS's default English voice recognition pack (location name " + defaultLocale + "). " +
+                        "Check that SpeechPlatformRuntime.msi and at least one of MSSpeech_SR_en-GB_TELE.msi, MSSpeech_SR_en-US_TELE.msi, " + 
+                        "MSSpeech_SR_en-AU_TELE.msi, MSSpeech_SR_en-CA_TELE.msi or MSSpeech_SR_en-IN_TELE.msi are installed.");
+                    Console.WriteLine("Exception message: " + e.Message);
+                    return;
+                }
             }
-            try
-            {
-                this.sre = new SpeechRecognitionEngine(cultureInfo);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine("Unable to initialise speech recognition engine, check that SpeechPlatformRuntime.msi is installed and " +
-                    " MSSpeech_SR_" + location + "_TELE.msi is installed");
-                Console.WriteLine("Exception message: " + e.Message);
-                return;
-            }
-
             try
             {
                 sre.SetInputToDefaultAudioDevice();
