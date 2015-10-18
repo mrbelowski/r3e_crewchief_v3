@@ -89,9 +89,9 @@ namespace CrewChiefV3.PCars
             right, left, none
         }
 
-        private Dictionary<int, Side> lastKnownOpponentState = new Dictionary<int, Side>();
+        private Dictionary<String, Side> lastKnownOpponentState = new Dictionary<String, Side>();
 
-        private Dictionary<int, int> lastKnownOpponentStateUseCounter = new Dictionary<int, int>();
+        private Dictionary<String, int> lastKnownOpponentStateUseCounter = new Dictionary<String, int>();
 
         private int maxSavedStateReuse = 10;
 
@@ -232,60 +232,61 @@ namespace CrewChiefV3.PCars
                                 if (side == Side.left)
                                 {
                                     carsOnLeft++;
-                                    if (lastKnownOpponentState.ContainsKey(i))
+                                    if (lastKnownOpponentState.ContainsKey(opponentData.mName))
                                     {
-                                        lastKnownOpponentState[i] = Side.left;
+                                        lastKnownOpponentState[opponentData.mName] = Side.left;
                                     }
                                     else
                                     {
-                                        lastKnownOpponentState.Add(i, Side.left);
+                                        lastKnownOpponentState.Add(opponentData.mName, Side.left);
                                     }
                                 }
                                 else if (side == Side.right)
                                 {
                                     carsOnRight++;
-                                    if (lastKnownOpponentState.ContainsKey(i))
+                                    if (lastKnownOpponentState.ContainsKey(opponentData.mName))
                                     {
-                                        lastKnownOpponentState[i] = Side.right;
+                                        lastKnownOpponentState[opponentData.mName] = Side.right;
                                     }
                                     else
                                     {
-                                        lastKnownOpponentState.Add(i, Side.right);
+                                        lastKnownOpponentState.Add(opponentData.mName, Side.right);
                                     }
                                 }
                                 else
                                 {
-                                    if (lastKnownOpponentState.ContainsKey(i))
+                                    if (lastKnownOpponentState.ContainsKey(opponentData.mName))
                                     {
-                                        lastKnownOpponentState[i] = Side.none;
+                                        lastKnownOpponentState[opponentData.mName] = Side.none;
                                     }
                                     else
                                     {
-                                        lastKnownOpponentState.Add(i, Side.none);
+                                        lastKnownOpponentState.Add(opponentData.mName, Side.none);
                                     }
                                 }                             
                             }
                             else
                             {
                                 // no usable position data, use the last known state
-                                if (lastKnownOpponentState.ContainsKey(i)) {
+                                if (lastKnownOpponentState.ContainsKey(opponentData.mName))
+                                {
                                     int lastStateUseCount = 1;
-                                    if (lastKnownOpponentStateUseCounter.ContainsKey(i))
+                                    if (lastKnownOpponentStateUseCounter.ContainsKey(opponentData.mName))
                                     {
-                                        lastStateUseCount = lastKnownOpponentStateUseCounter[i] + 1;
+                                        lastStateUseCount = lastKnownOpponentStateUseCounter[opponentData.mName] + 1;
                                     }
                                     else
                                     {
-                                        lastKnownOpponentStateUseCounter.Add(i, 0);
+                                        lastKnownOpponentStateUseCounter.Add(opponentData.mName, 0);
                                     }
                                     if (lastStateUseCount < maxSavedStateReuse)
                                     {
-                                        lastKnownOpponentStateUseCounter[i] = lastStateUseCount;
-                                        if (lastKnownOpponentState[i] == Side.left)
+                                        lastKnownOpponentStateUseCounter[opponentData.mName] = lastStateUseCount;
+                                        if (lastKnownOpponentState[opponentData.mName] == Side.left)
                                         {
                                             carsOnLeft++;
                                         }
-                                        else if (lastKnownOpponentState[i] == Side.right)
+                                        else if (lastKnownOpponentState[opponentData.mName] == Side.right)
                                         {
                                             carsOnRight++;
                                         }
@@ -293,8 +294,8 @@ namespace CrewChiefV3.PCars
                                     else
                                     {
                                         // we've used too many saved states for this missing opponent position
-                                        lastKnownOpponentState.Remove(i);
-                                        lastKnownOpponentStateUseCounter.Remove(i);
+                                        lastKnownOpponentState.Remove(opponentData.mName);
+                                        lastKnownOpponentStateUseCounter.Remove(opponentData.mName);
                                     }
                                 }
                             }
@@ -572,9 +573,6 @@ namespace CrewChiefV3.PCars
                             {
                                 QueuedMessage holdYourLineMessage = new QueuedMessage(folderStillThere, 0, null);
                                 holdYourLineMessage.expiryTime = (DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + holdMessageExpiresAfter;
-                                audioPlayer.removeImmediateClip(folderCarLeft);
-                                audioPlayer.removeImmediateClip(folderCarRight);
-                                audioPlayer.removeImmediateClip(folderInTheMiddle);
                                 audioPlayer.removeImmediateClip(folderClearRight);
                                 audioPlayer.removeImmediateClip(folderClearLeft);
                                 audioPlayer.removeImmediateClip(folderClearAllRound);

@@ -340,7 +340,7 @@ namespace CrewChiefV3.Events
                         }
                     }
                 }
-                else if (voiceMessage.StartsWith(SpeechRecogniser.WHOS_BEHIND_IN_THE_RACE))
+                else if (voiceMessage.StartsWith(SpeechRecogniser.WHOS_BEHIND_IN_THE_RACE) || voiceMessage.StartsWith(SpeechRecogniser.WHOS_BEHIND))
                 {
                     if (currentGameState.isLast())
                     {
@@ -363,7 +363,8 @@ namespace CrewChiefV3.Events
                         }
                     }
                 }
-                else if ((voiceMessage.StartsWith(SpeechRecogniser.WHOS_IN_FRONT_IN_THE_RACE) || voiceMessage.StartsWith(SpeechRecogniser.WHOS_AHEAD_IN_THE_RACE)))
+                else if (voiceMessage.StartsWith(SpeechRecogniser.WHOS_IN_FRONT_IN_THE_RACE) || voiceMessage.StartsWith(SpeechRecogniser.WHOS_AHEAD_IN_THE_RACE)
+                    || voiceMessage.StartsWith(SpeechRecogniser.WHOS_IN_FRONT) || voiceMessage.StartsWith(SpeechRecogniser.WHOS_AHEAD))
                 {
                     if (currentGameState.SessionData.Position == 1)
                     {
@@ -386,7 +387,7 @@ namespace CrewChiefV3.Events
                         }
                     }
                 }
-                else if (voiceMessage.StartsWith(SpeechRecogniser.WHOS_BEHIND_ON_TRACK) || voiceMessage.StartsWith(SpeechRecogniser.WHOS_BEHIND))
+                else if (voiceMessage.StartsWith(SpeechRecogniser.WHOS_BEHIND_ON_TRACK))
                 {
                     Object opponentKey = currentGameState.getOpponentKeyBehindOnTrack();
                     if (opponentKey != null)
@@ -403,8 +404,7 @@ namespace CrewChiefV3.Events
                         }
                     }
                 }
-                else if (voiceMessage.StartsWith(SpeechRecogniser.WHOS_IN_FRONT_ON_TRACK) || voiceMessage.StartsWith(SpeechRecogniser.WHOS_AHEAD_ON_TRACK) ||
-                    voiceMessage.StartsWith(SpeechRecogniser.WHOS_IN_FRONT) || voiceMessage.StartsWith(SpeechRecogniser.WHOS_AHEAD))
+                else if (voiceMessage.StartsWith(SpeechRecogniser.WHOS_IN_FRONT_ON_TRACK) || voiceMessage.StartsWith(SpeechRecogniser.WHOS_AHEAD_ON_TRACK))
                 {
                     Object opponentKey = currentGameState.getOpponentKeyInFrontOnTrack();
                     if (opponentKey != null)
