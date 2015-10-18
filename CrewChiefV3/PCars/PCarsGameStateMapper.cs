@@ -72,6 +72,8 @@ namespace CrewChiefV3.PCars
         private float maxTyreCirumference = 1.2f * (float)Math.PI;
 
         private TimeSpan minimumSessionParticipationTime = TimeSpan.FromSeconds(6);
+
+        private Dictionary<String, int> previousSpeedReuseCount = new Dictionary<string, int>();
         
         public PCarsGameStateMapper()
         {
@@ -128,7 +130,7 @@ namespace CrewChiefV3.PCars
             }
             return pCarsAPIParticipantStructArray[index];
         }
-
+        
         public static Tuple<int, pCarsAPIParticipantStruct> getPlayerDataStruct(pCarsAPIParticipantStruct[] pCarsAPIParticipantStructArray, int viewedParticipantIndex)
         {
             if (!getPlayerByName)
@@ -165,7 +167,8 @@ namespace CrewChiefV3.PCars
 
             // game state is 3 for paused, 5 for replay. No idea what 4 is...
             if (shared.mGameState == (uint)eGameState.GAME_FRONT_END ||
-                (shared.mGameState == (uint)eGameState.GAME_INGAME_PAUSED && !System.Diagnostics.Debugger.IsAttached) || 
+                //(shared.mGameState == (uint)eGameState.GAME_INGAME_PAUSED && !System.Diagnostics.Debugger.IsAttached) ||
+                (shared.mGameState == (uint)eGameState.GAME_INGAME_PAUSED) || 
                 shared.mGameState == (uint)eGameState.GAME_VIEWING_REPLAY || shared.mGameState == (uint)eGameState.GAME_EXITED)
             {
                 // don't ignore the paused game updates if we're in debug mode
@@ -238,15 +241,22 @@ namespace CrewChiefV3.PCars
                 sessionTimeRemaining = shared.mEventTimeRemaining;
             }
             currentGameState.SessionData.TrackDefinition = TrackData.getTrackDefinition(shared.mTrackLocation + ":" + shared.mTrackVariation, shared.mTrackLength, GameEnum.PCARS_64BIT);
-            
+            // Console.WriteLine(lastSessionPhase + ", " + currentGameState.SessionData.SessionPhase + "; " + lastSessionType + ", " + currentGameState.SessionData.SessionType);
             // now check if this is a new session...
-            if (currentGameState.SessionData.SessionType != SessionType.Unavailable && (lastSessionType != currentGameState.SessionData.SessionType ||
+            Boolean raceRestarted = currentGameState.SessionData.SessionType == SessionType.Race &&
+                lastSessionPhase == SessionPhase.Green && currentGameState.SessionData.SessionPhase == SessionPhase.Countdown;
+            if (raceRestarted || 
+                (currentGameState.SessionData.SessionType != SessionType.Unavailable && (lastSessionType != currentGameState.SessionData.SessionType ||
                 lastSessionHasFixedTime != currentGameState.SessionData.SessionHasFixedTime || 
                 lastSessionTrack != currentGameState.SessionData.TrackDefinition || lastSessionLapsCompleted > currentGameState.SessionData.CompletedLaps ||
                 (numberOfLapsInSession > 0 && lastSessionNumberOfLaps > 0 && lastSessionNumberOfLaps != numberOfLapsInSession) ||
-                (sessionTimeRemaining > 0 && sessionTimeRemaining > lastSessionRunTime)))
+                (sessionTimeRemaining > 0 && sessionTimeRemaining > lastSessionRunTime))))
             {
-                Console.WriteLine("New session, trigger...");  
+                Console.WriteLine("New session, trigger...");
+                if (raceRestarted)
+                {
+                    Console.WriteLine("Race restarted (green -> countdown)");
+                }
                 if (lastSessionType != currentGameState.SessionData.SessionType) 
                 {
                     Console.WriteLine("lastSessionType = " + lastSessionType + " currentGameState.SessionData.SessionType = " + currentGameState.SessionData.SessionType);
@@ -855,6 +865,27 @@ namespace CrewChiefV3.PCars
                 // faster than 500m/s (1000+mph) suggests the player has quit to the pit. Might need to reassess this as the data are quite noisy
                 opponentData.LapIsValid = false;
                 opponentData.Speed = 0;
+            }
+            else if (speed == 0 && previousSpeed > 5)
+            {
+                if (previousSpeedReuseCount.ContainsKey(opponentData.DriverRawName))
+                {
+                    if (previousSpeedReuseCount[opponentData.DriverRawName] > 5)
+                    {
+                        // we've reused 5 previous values, reset
+                        previousSpeedReuseCount[opponentData.DriverRawName] = 0;
+                    }
+                    else
+                    {
+                        speed = previousSpeed;
+                        previousSpeedReuseCount[opponentData.DriverRawName] = previousSpeedReuseCount[opponentData.DriverRawName] + 1;
+                    }
+                }
+                else
+                {
+                    previousSpeedReuseCount.Add(opponentData.DriverRawName, 1);
+                    speed = previousSpeed;
+                }
             }
             opponentData.Speed = speed;
             opponentData.Position = racePosition;

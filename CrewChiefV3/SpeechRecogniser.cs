@@ -291,8 +291,11 @@ namespace CrewChiefV3
             opponentChoices.Add(WHATS + " " + THE_GUY_BEHIND + "'s " + LAST_LAP);
 
             opponentChoices.Add(WHOS_BEHIND_IN_THE_RACE);
+            opponentChoices.Add(WHOS_BEHIND);
             opponentChoices.Add(WHOS_IN_FRONT_IN_THE_RACE);
-            opponentChoices.Add(WHOS_AHEAD_IN_THE_RACE); 
+            opponentChoices.Add(WHOS_IN_FRONT);
+            opponentChoices.Add(WHOS_AHEAD_IN_THE_RACE);
+            opponentChoices.Add(WHOS_AHEAD);
             opponentChoices.Add(WHOS_BEHIND_ON_TRACK);
             opponentChoices.Add(WHOS_IN_FRONT_ON_TRACK);
             opponentChoices.Add(WHOS_AHEAD_ON_TRACK);

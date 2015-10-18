@@ -598,13 +598,13 @@ namespace CrewChiefV3.GameState
                         opponent.Value.DistanceRoundTrack - PositionAndMotionData.DistanceRoundTrack < closestDistanceFront)
                     {
                         closestDistanceFront = opponent.Value.DistanceRoundTrack - PositionAndMotionData.DistanceRoundTrack;
-                        opponentKeyClosestInFront = opponent.Value;
+                        opponentKeyClosestInFront = opponent.Key;
                     }
                     else if (opponent.Value.DistanceRoundTrack < PositionAndMotionData.DistanceRoundTrack &&
                         PositionAndMotionData.DistanceRoundTrack - opponent.Value.DistanceRoundTrack > furthestDistanceBehind)
                     {
                         furthestDistanceBehind = PositionAndMotionData.DistanceRoundTrack - opponent.Value.DistanceRoundTrack;
-                        opponentKeyFurthestBehind = opponent.Value;
+                        opponentKeyFurthestBehind = opponent.Key;
                     }
                 }
             }
@@ -632,13 +632,13 @@ namespace CrewChiefV3.GameState
                         PositionAndMotionData.DistanceRoundTrack - opponent.Value.DistanceRoundTrack < closestDistanceBehind)
                     {
                         closestDistanceBehind = PositionAndMotionData.DistanceRoundTrack - opponent.Value.DistanceRoundTrack;
-                        opponentKeyClosestBehind = opponent.Value;
+                        opponentKeyClosestBehind = opponent.Key;
                     }
                     else if (PositionAndMotionData.DistanceRoundTrack < opponent.Value.DistanceRoundTrack &&
                         opponent.Value.DistanceRoundTrack - PositionAndMotionData.DistanceRoundTrack > furthestDistanceInFront)
                     {
                         furthestDistanceInFront = opponent.Value.DistanceRoundTrack - PositionAndMotionData.DistanceRoundTrack;
-                        opponentKeyFurthestInFront = opponent.Value;
+                        opponentKeyFurthestInFront = opponent.Key;
                     }
                 }
             }

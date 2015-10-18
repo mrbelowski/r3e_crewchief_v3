@@ -2,6 +2,8 @@ CrewChief version 3.
 
 Changelog
 ---------
+Version 3.6.2: Reset game state when restarting a race (will still fail if you restart during the countdown phase); Added "who's in front / behind on track" response - gives driver name & position of the guy in front / behind regardless of his race position (if he's moving and not in the pits); Fixed some issues in the spotter handling re-ordered participants array; Make opponent speed calculation handle noise data better. No new sound pack for this version.
+
 Version 3.6.1: Minor damage and start message tweaks; added missing pit detection for Willow Springs, Dubai and Sonoma; Tweaked Zolder pit detection. No new sound pack for this version.
 
 Version 3.6.0: Added voice recognition to get laps (last and best) by car position as well as name ("what's p4's best lap" type stuff); Added voice recognition to get the car front or behinds best & last laps ("what's the car ahead's last lap"); Fuel remaining estimate fixes; Make the fuel event cope with refuelling; Added 'can't pronounce it' response for when the app hasn't got the voice file for an opponent; Added 'nearly empty' fuel warning; Fixed missing first lap in app's timings (time for first completed lap was being ignored); Don't play opponent best lap messages unless this lap is more than a tenth quicker than their previous best; A few fixes; Some internal rewiring for Raceroom. This version requires a new sound pack.
