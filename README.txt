@@ -81,7 +81,8 @@ I've not finished implementing this but currently the app understands and respon
 "what's [the car behind / the guy behind]'s last lap"
 "what's [the car behind / the guy behind]'s best lap"
 "who's leading" (this one only works if you have the driver name recording for the lead car)
-"who's [ahead / behind]" (this one only works if you have the driver name recording for that driver)
+"who's [ahead / ahead in the race / in front / in front in the race / behind / behind in the race]" (gives the name of the car in front / behind in the race or on the timing sheet for qual / practice. This one only works if you have the driver name recording for that driver)
+"who's [ahead on track / in front on track / behind on track]" (gives the name of the car in front / behind in on track, regardless of his race / qual position. This one only works if you have the driver name recording for that driver)
 "tell me the gaps / give me the gaps / tell me the deltas / give me the deltas" (switch on 'deltas' mode where the time deltas in front and behind get read out on each lap. Note that these messages will play even if you have disabled messages)
 "don't tell me the gaps / don't tell me the deltas / no more gaps / no more deltas" (switch off deltas mode)
 "repeat last message / say again" (replays the last message)
