@@ -520,7 +520,15 @@ namespace CrewChiefV3.PCars
                                     audioPlayer.removeImmediateClip(folderClearRight);
                                     audioPlayer.removeImmediateClip(folderClearAllRound);
                                     audioPlayer.playClipImmediately(clearLeftMessage, false);
-                                    nextMessageType = NextMessageType.none;         
+                                    if (wasInMiddle)
+                                    {
+                                        nextMessageType = NextMessageType.carRight;
+                                        nextMessageDue = now.Add(repeatHoldFrequency);
+                                    }
+                                    else
+                                    {
+                                        nextMessageType = NextMessageType.none;         
+                                    }
                                 }                                                       
                             }
                             if (carsOnRightCount == 0)
@@ -559,7 +567,15 @@ namespace CrewChiefV3.PCars
                                     audioPlayer.removeImmediateClip(folderClearLeft);
                                     audioPlayer.removeImmediateClip(folderClearAllRound);
                                     audioPlayer.playClipImmediately(clearRightMessage, false);
-                                    nextMessageType = NextMessageType.none;
+                                    if (wasInMiddle)
+                                    {
+                                        nextMessageType = NextMessageType.carLeft;
+                                        nextMessageDue = now.Add(repeatHoldFrequency);
+                                    }
+                                    else
+                                    {
+                                        nextMessageType = NextMessageType.none;
+                                    }
                                 }
                             }
                             if (carsOnLeftCount == 0)

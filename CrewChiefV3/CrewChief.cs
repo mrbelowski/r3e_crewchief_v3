@@ -438,6 +438,7 @@ namespace CrewChiefV3
                                         {
                                             speechRecogniser.addOpponentSpeechRecognition(usableDriverNames, enableDriverNames);
                                         }
+                                        Console.WriteLine("Loading sound files for names " + String.Join(", ", usableDriverNames));
                                         audioPlayer.cacheDriverNames(usableDriverNames);
                                     }
                                 }                                
