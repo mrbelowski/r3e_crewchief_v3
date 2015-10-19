@@ -15,6 +15,9 @@ namespace CrewChiefV3
 
         private String location = UserSettings.GetUserSettings().getString("speech_recognition_location");
 
+        private float minimum_name_voice_recognition_confidence = UserSettings.GetUserSettings().getFloat("minimum_name_voice_recognition_confidence");
+        private float minimum_voice_recognition_confidence = UserSettings.GetUserSettings().getFloat("minimum_voice_recognition_confidence");
+
         private static String defaultLocale = "en";
 
         // externalise these?
@@ -102,8 +105,6 @@ namespace CrewChiefV3
         public static String REPEAT_LAST_MESSAGE = "repeat last message";
         public static String SAY_AGAIN = "say again";
 
-        private float confidenceLimit = 0.5f;
-
         private CrewChief crewChief;
 
         public Boolean initialised = false;
@@ -137,6 +138,14 @@ namespace CrewChiefV3
         public SpeechRecogniser(CrewChief crewChief)
         {
             this.crewChief = crewChief;
+            if (minimum_name_voice_recognition_confidence < 0 || minimum_name_voice_recognition_confidence > 1)
+            {
+                minimum_name_voice_recognition_confidence = 0.4f;
+            }
+            if (minimum_voice_recognition_confidence < 0 || minimum_voice_recognition_confidence > 1)
+            {
+                minimum_voice_recognition_confidence = 0.5f;
+            }
         }
 
         private void initWithLocale(String locale)
@@ -310,15 +319,22 @@ namespace CrewChiefV3
         void sre_SpeechRecognized(object sender, SpeechRecognizedEventArgs e)
         {
             Console.WriteLine("recognised : " + e.Result.Text + " confidence = " + e.Result.Confidence);
-            if (e.Result.Confidence > confidenceLimit)
+            try
             {
-                try
+                if (e.Result.Grammar == opponentGrammar)
                 {
-                    if (e.Result.Grammar == opponentGrammar)
+                    if (e.Result.Confidence > minimum_name_voice_recognition_confidence)
                     {
                         CrewChief.getEvent("Opponents").respond(e.Result.Text);
                     }
-                    else if (e.Result.Text.Contains(REPEAT_LAST_MESSAGE) || e.Result.Text.Contains(SAY_AGAIN))
+                    else
+                    {
+                        crewChief.youWot();
+                    }
+                }
+                else if (e.Result.Confidence > minimum_voice_recognition_confidence)
+                {
+                    if (e.Result.Text.Contains(REPEAT_LAST_MESSAGE) || e.Result.Text.Contains(SAY_AGAIN))
                     {
                         crewChief.audioPlayer.repeatLastMessage();
                     }
@@ -331,15 +347,15 @@ namespace CrewChiefV3
                         }
                     }
                 }
-                catch (Exception exception)
+                else 
                 {
-                    Console.WriteLine("Unable to respond - error message: " + exception.Message);
+                    crewChief.youWot();
                 }
             }
-            else
+            catch (Exception exception)
             {
-                crewChief.youWot();
-            }
+                Console.WriteLine("Unable to respond - error message: " + exception.Message);
+            }         
 
             recognizeAsyncStop();
             Thread.Sleep(500);

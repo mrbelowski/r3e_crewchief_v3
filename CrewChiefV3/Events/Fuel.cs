@@ -141,18 +141,21 @@ namespace CrewChiefV3.Events
                             halfDistance = currentGameState.SessionData.SessionNumberOfLaps / 2;
                         }
                     }
-                    else if (halfTime == -1)
+                    else if (currentGameState.SessionData.SessionRunTime > 0)
                     {
-                        halfTime = currentGameState.SessionData.SessionRunTime / 2;
-                        Console.WriteLine("Half time = " + halfTime);
-                    }
+                        if (halfTime == -1)
+                        {
+                            halfTime = currentGameState.SessionData.SessionRunTime / 2;
+                            Console.WriteLine("Half time = " + halfTime);
+                        }
+                    }                    
                     playedPitForFuelNow = false;
                     playedFiveMinutesRemaining = false;
                     playedTenMinutesRemaining = false;
                     playedTwoMinutesRemaining = false;
                 }
                 if (currentGameState.SessionData.IsNewLap && initialised && currentGameState.SessionData.CompletedLaps > lapsCompletedWhenFuelWasReset 
-                    && currentGameState.SessionData.SessionNumberOfLaps > 0)
+                    && (currentGameState.SessionData.SessionNumberOfLaps > 0 || currentGameState.SessionData.SessionType == SessionType.HotLap))
                 {
                     // completed a lap, so store the fuel left at this point:
                     fuelUseWindow.Insert(0, currentGameState.FuelData.FuelLeft);
@@ -252,7 +255,7 @@ namespace CrewChiefV3.Events
                         }
                     }
                 }
-                else if (initialised && currentGameState.SessionData.SessionNumberOfLaps <= 0 && 
+                else if (initialised && currentGameState.SessionData.SessionNumberOfLaps <= 0 && currentGameState.SessionData.SessionRunTime > 0 &&
                     currentGameState.SessionData.SessionRunningTime > gameTimeAtLastFuelWindowUpdate + (60 * fuelUseSampleTime))
                 {
                     // it's 2 minutes since the last fuel window check
@@ -276,7 +279,7 @@ namespace CrewChiefV3.Events
                         averageUsagePerMinute = 60 * (initialFuelLevel - currentGameState.FuelData.FuelLeft) / (gameTimeAtLastFuelWindowUpdate - gameTimeWhenFuelWasReset);
                     }
                 }
-                if (initialised && currentGameState.SessionData.SessionNumberOfLaps <= 0 && averageUsagePerMinute > 0)
+                if (initialised && currentGameState.SessionData.SessionNumberOfLaps <= 0 && currentGameState.SessionData.SessionRunTime > 0 && averageUsagePerMinute > 0)
                 {
                     float estimatedFuelMinutesLeft = currentGameState.FuelData.FuelLeft / averageUsagePerMinute;
                     if (enableFuelMessages && estimatedFuelMinutesLeft <1.5 && !playedPitForFuelNow)

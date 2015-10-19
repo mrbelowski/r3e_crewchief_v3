@@ -17,7 +17,8 @@ namespace CrewChiefV3.PCars
     class PCarsGameStateMapper : GameStateMapper
     {
         private Boolean attemptPitDetection = UserSettings.GetUserSettings().getBoolean("attempt_pcars_opponent_pit_detection");
-        public static String steamId = UserSettings.GetUserSettings().getString("pcars_steam_id");
+        private static String userSpecifiedSteamId = UserSettings.GetUserSettings().getString("pcars_steam_id");
+        private static String playerSteamId = null;
         private static Boolean getPlayerByName = true;
 
         private List<CornerData.EnumWithThresholds> suspensionDamageThresholds = new List<CornerData.EnumWithThresholds>();
@@ -137,27 +138,37 @@ namespace CrewChiefV3.PCars
             {
                 return new Tuple<int, pCarsAPIParticipantStruct>(viewedParticipantIndex, pCarsAPIParticipantStructArray[viewedParticipantIndex]);
             }
-            else if (steamId == null || steamId.Length == 0)
+            else if (playerSteamId == null)
             {
-                pCarsAPIParticipantStruct likelyParticipantData = pCarsAPIParticipantStructArray[viewedParticipantIndex];
-                steamId = likelyParticipantData.mName;
-                // if the player name contains certain characters, it's blank in the block...
-                getPlayerByName = steamId != null && steamId.Length > 0;
-                return new Tuple<int, pCarsAPIParticipantStruct>(viewedParticipantIndex, likelyParticipantData);
-            }
-            else
-            {
-                for (int i=0; i<pCarsAPIParticipantStructArray.Length; i++) 
+                if (userSpecifiedSteamId == null || userSpecifiedSteamId.Length == 0)
                 {
-                    if (pCarsAPIParticipantStructArray[i].mName == steamId)
+                    // get the player ID from the first viewed participant the app 'sees' and use this for the remainder of the app's run time
+                    pCarsAPIParticipantStruct likelyParticipantData = pCarsAPIParticipantStructArray[viewedParticipantIndex];
+                    playerSteamId = likelyParticipantData.mName;
+                    Console.WriteLine("Using player steam ID " + playerSteamId + " from the first reported viewed participant");
+                    if (playerSteamId == null || playerSteamId.Length == 0) 
                     {
-                        return new Tuple<int, pCarsAPIParticipantStruct> (i,pCarsAPIParticipantStructArray[i]);
+                        getPlayerByName = false;
+                        Console.WriteLine("Player steam ID is not valid, falling back to viewedParticipantIndex");
                     }
+                    return new Tuple<int, pCarsAPIParticipantStruct>(viewedParticipantIndex, likelyParticipantData);
                 }
-                // no match in the block, so use the viewParticipantIndex
-                getPlayerByName = false;
-                return new Tuple<int, pCarsAPIParticipantStruct>(viewedParticipantIndex, pCarsAPIParticipantStructArray[viewedParticipantIndex]);
+                else
+                {
+                    // use the steamID provided
+                    playerSteamId = userSpecifiedSteamId;
+                }
             }
+            for (int i=0; i<pCarsAPIParticipantStructArray.Length; i++) 
+            {
+                if (pCarsAPIParticipantStructArray[i].mName == playerSteamId)
+                {
+                    return new Tuple<int, pCarsAPIParticipantStruct> (i,pCarsAPIParticipantStructArray[i]);
+                }
+            }
+            // no match in the block, so use the viewParticipantIndex
+            getPlayerByName = false;
+            return new Tuple<int, pCarsAPIParticipantStruct>(viewedParticipantIndex, pCarsAPIParticipantStructArray[viewedParticipantIndex]);            
         }
 
         public GameStateData mapToGameStateData(Object memoryMappedFileStruct, GameStateData previousGameState)
@@ -167,7 +178,7 @@ namespace CrewChiefV3.PCars
 
             // game state is 3 for paused, 5 for replay. No idea what 4 is...
             if (shared.mGameState == (uint)eGameState.GAME_FRONT_END ||
-                //(shared.mGameState == (uint)eGameState.GAME_INGAME_PAUSED && !System.Diagnostics.Debugger.IsAttached) ||
+                (shared.mGameState == (uint)eGameState.GAME_INGAME_PAUSED && !System.Diagnostics.Debugger.IsAttached) ||
                 (shared.mGameState == (uint)eGameState.GAME_INGAME_PAUSED) || 
                 shared.mGameState == (uint)eGameState.GAME_VIEWING_REPLAY || shared.mGameState == (uint)eGameState.GAME_EXITED)
             {
@@ -176,14 +187,19 @@ namespace CrewChiefV3.PCars
             }
             
             GameStateData currentGameState = new GameStateData(ticks);
-            if (shared.mNumParticipants < 1 || 
-                ((shared.mEventTimeRemaining == -1 || shared.mEventTimeRemaining == 0) && shared.mLapsInEvent == 0) ||
+            if (shared.mNumParticipants < 1 ||
+                ((shared.mEventTimeRemaining == -1 || shared.mEventTimeRemaining == 0) && shared.mLapsInEvent == 0 && 
+                    (shared.mSessionState != (int) eSessionState.SESSION_TIME_ATTACK && shared.mSessionState != (int) eSessionState.SESSION_PRACTICE)) ||
                 shared.mTrackLocation == null || shared.mTrackLocation.Length == 0)
             {
                 // Unusable data in the block
                 return null;
-            }
+            }            
             Tuple<int, pCarsAPIParticipantStruct> playerData = getPlayerDataStruct(shared.mParticipantData, shared.mViewedParticipantIndex);
+            if (getPlayerByName && playerSteamId != shared.mParticipantData[shared.mViewedParticipantIndex].mName)
+            {
+                return null;
+            }
             
             int playerDataIndex = playerData.Item1;
             pCarsAPIParticipantStruct viewedParticipant = playerData.Item2;

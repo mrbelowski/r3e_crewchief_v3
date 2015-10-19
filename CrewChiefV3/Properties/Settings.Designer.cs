@@ -859,5 +859,29 @@ namespace CrewChiefV3.Properties {
                 this["enable_driver_names"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0.4")]
+        public float minimum_name_voice_recognition_confidence {
+            get {
+                return ((float)(this["minimum_name_voice_recognition_confidence"]));
+            }
+            set {
+                this["minimum_name_voice_recognition_confidence"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0.5")]
+        public float minimum_voice_recognition_confidence {
+            get {
+                return ((float)(this["minimum_voice_recognition_confidence"]));
+            }
+            set {
+                this["minimum_voice_recognition_confidence"] = value;
+            }
+        }
     }
 }

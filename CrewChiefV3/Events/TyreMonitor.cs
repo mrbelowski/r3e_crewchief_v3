@@ -486,7 +486,7 @@ namespace CrewChiefV3.Events
             {
                 // 1/3 through the tyre's life
                 reportedEstimatedTimeLeft = true;
-                if (lapsInSession > 0)
+                if (lapsInSession > 0 || timeInSession == 0)
                 {
                     int lapsRemainingOnTheseTyres = (int)(completedLaps / (maxWearPercent / 100)) - completedLaps - 1;
                     playEstimatedTypeLifeLaps(lapsRemainingOnTheseTyres, immediate);

@@ -212,5 +212,11 @@
     <Setting Name="enable_driver_names" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
+    <Setting Name="minimum_name_voice_recognition_confidence" Type="System.Single" Scope="User">
+      <Value Profile="(Default)">0.4</Value>
+    </Setting>
+    <Setting Name="minimum_voice_recognition_confidence" Type="System.Single" Scope="User">
+      <Value Profile="(Default)">0.5</Value>
+    </Setting>
   </Settings>
 </SettingsFile>
