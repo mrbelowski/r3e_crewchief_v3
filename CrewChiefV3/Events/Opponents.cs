@@ -31,8 +31,6 @@ namespace CrewChiefV3.Events
 
         public static String folderWeAre = "opponents/we_are";
 
-        private Dictionary<Object, List<float>> opponentLapTimes = new Dictionary<Object, List<float>>();
-
         private GameStateData currentGameState;
 
         private DateTime nextLeadChangeMessage = DateTime.MinValue;
@@ -49,7 +47,6 @@ namespace CrewChiefV3.Events
         public override void clearState()
         {
             currentGameState = null;
-            opponentLapTimes.Clear();
             nextLeadChangeMessage = DateTime.MinValue;
             nextCarAheadChangeMessage = DateTime.MinValue;
         }
@@ -88,36 +85,31 @@ namespace CrewChiefV3.Events
             {
                 Object opponentKey = entry.Key;
                 OpponentData opponentData = entry.Value;
-                if (!opponentLapTimes.ContainsKey(opponentKey))
-                {
-                    opponentLapTimes.Add(opponentKey, new List<float>());
-                }
-                if (opponentData.IsNewLap && opponentData.ApproximateLastLapTime > 0)
+                if (opponentData.IsNewLap && opponentData.LastLapTime > 0 && opponentData.OpponentLapData.Count > 2)
                 {
                     // this opponent has just completed a lap - do we need to report it? if it's more than
                     // a tenth quicker then his previous best we do...
-                    if (opponentLapTimes[opponentKey].Count > 2 &&  opponentData.ApproximateLastLapTime < opponentLapTimes[opponentKey].Min() - 0.1f)
+                    if (opponentData.LastLapTime < opponentData.BestLapTime - 0.1f)
                     {
                         if (currentGameState.SessionData.Position > 1 && opponentData.Position == 1)
                         {
                             // he's leading, and has recorded 3 or more laps, and this one's his fastest
                             audioPlayer.queueClip(new QueuedMessage("leader_good_laptime", MessageContents(folderLeaderHasJustDoneA,
-                                    TimeSpan.FromSeconds(opponentData.ApproximateLastLapTime)), 0, this));
+                                    TimeSpan.FromSeconds(opponentData.LastLapTime)), 0, this));
                         }
                         else if (currentGameState.SessionData.Position > 1 && opponentData.Position == currentGameState.SessionData.Position - 1)
                         {
                             // he's ahead of us, and has recorded 3 or more laps, and this one's his fastest
                             audioPlayer.queueClip(new QueuedMessage("car_ahead_good_laptime", MessageContents(folderTheCarAheadHasJustDoneA,
-                                    TimeSpan.FromSeconds(opponentData.ApproximateLastLapTime)), 0, this));
+                                    TimeSpan.FromSeconds(opponentData.LastLapTime)), 0, this));
                         }
                         else if (!currentGameState.isLast() && opponentData.Position == currentGameState.SessionData.Position + 1)
                         {
                             // he's behind us, and has recorded 3 or more laps, and this one's his fastest
                             audioPlayer.queueClip(new QueuedMessage("car_behind_good_laptime", MessageContents(folderTheCarBehindHasJustDoneA,
-                                    TimeSpan.FromSeconds(opponentData.ApproximateLastLapTime)), 0, this));
+                                    TimeSpan.FromSeconds(opponentData.LastLapTime)), 0, this));
                         }
                     }
-                    opponentLapTimes[opponentKey].Add(opponentData.ApproximateLastLapTime);
                 }
             }
 
@@ -129,7 +121,7 @@ namespace CrewChiefV3.Events
                         && currentGameState.SessionData.CompletedLaps > 0)
                     {
                         OpponentData opponentData = currentGameState.getOpponentAtPosition(currentGameState.SessionData.Position - 1);
-                        if (opponentData != null && !opponentData.IsEnteringPits)
+                        if (opponentData != null && !opponentData.isEnteringPits())
                         {
                             audioPlayer.queueClip(new QueuedMessage("new_car_ahead", MessageContents(folderNextCarIs, opponentData), 4, this,
                                 new Dictionary<string, object> { { validationDriverAheadKey, opponentData.DriverRawName } }));
@@ -155,35 +147,23 @@ namespace CrewChiefV3.Events
                 if (currentGameState.PitData.LeaderIsPitting && 
                     currentGameState.SessionData.SessionPhase != SessionPhase.Countdown && currentGameState.SessionData.SessionPhase != SessionPhase.Formation)
                 {
-                    audioPlayer.queueClip(new QueuedMessage("leader_is_pitting", MessageContents(folderTheLeader, currentGameState.getOpponentAtPositionWhenStartingSector3(1), 
+                    audioPlayer.queueClip(new QueuedMessage("leader_is_pitting", MessageContents(folderTheLeader, currentGameState.PitData.OpponentForLeaderPitting, 
                         folderIsPitting), MessageContents(folderLeaderIsPitting), 0, this));
                 }
 
                 if (currentGameState.PitData.CarInFrontIsPitting && currentGameState.SessionData.TimeDeltaFront > 3 &&
                     currentGameState.SessionData.SessionPhase != SessionPhase.Countdown && currentGameState.SessionData.SessionPhase != SessionPhase.Formation)
                 {
-                    audioPlayer.queueClip(new QueuedMessage("car_in_front_is_pitting", MessageContents(currentGameState.getOpponentAtPositionWhenStartingSector3(
-                        currentGameState.SessionData.Position - 1), folderAheadIsPitting), MessageContents(folderCarAheadIsPitting), 0, this));
+                    audioPlayer.queueClip(new QueuedMessage("car_in_front_is_pitting", MessageContents(currentGameState.PitData.OpponentForCarAheadPitting, 
+                        folderAheadIsPitting), MessageContents(folderCarAheadIsPitting), 0, this));
                 }
 
                 if (currentGameState.PitData.CarBehindIsPitting && currentGameState.SessionData.TimeDeltaBehind > 3 &&
                     currentGameState.SessionData.SessionPhase != SessionPhase.Countdown && currentGameState.SessionData.SessionPhase != SessionPhase.Formation)
                 {
-                    audioPlayer.queueClip(new QueuedMessage("car_behind_is_pitting", MessageContents(currentGameState.getOpponentAtPositionWhenStartingSector3(
-                        currentGameState.SessionData.Position + 1), folderBehindIsPitting), MessageContents(folderCarBehindIsPitting), 0, this));
+                    audioPlayer.queueClip(new QueuedMessage("car_behind_is_pitting", MessageContents(currentGameState.PitData.OpponentForCarBehindPitting,
+                        folderBehindIsPitting), MessageContents(folderCarBehindIsPitting), 0, this));
                 }
-            }
-        }
-
-        private List<float> getOpponentLapTimes(Object opponentKey)
-        {                 
-            if (opponentKey != null && opponentLapTimes.ContainsKey(opponentKey) && opponentLapTimes[opponentKey].Count > 0)
-            {
-                return opponentLapTimes[opponentKey];
-            }
-            else
-            {
-                return null;
             }
         }
 
@@ -256,6 +236,24 @@ namespace CrewChiefV3.Events
             }
             return opponentKey;
         }
+
+        private float getOpponentLastLap(Object opponentKey)
+        {
+            if (opponentKey != null && currentGameState.OpponentData.ContainsKey(opponentKey))
+            {
+                return currentGameState.OpponentData[opponentKey].LastLapTime;
+            }
+            return -1;
+        }
+
+        private float getOpponentBestLap(Object opponentKey)
+        {
+            if (opponentKey != null && currentGameState.OpponentData.ContainsKey(opponentKey))
+            {
+                return currentGameState.OpponentData[opponentKey].BestLapTime;
+            }
+            return -1;
+        }
         
         public override void respond(String voiceMessage)
         {
@@ -265,23 +263,28 @@ namespace CrewChiefV3.Events
                 if (voiceMessage.StartsWith(SpeechRecogniser.WHATS) && 
                     (voiceMessage.EndsWith(SpeechRecogniser.LAST_LAP) || voiceMessage.EndsWith(SpeechRecogniser.BEST_LAP)))
                 {
-                    List<float> lapTimes = getOpponentLapTimes(getOpponentKey(voiceMessage, "'s "));
-                    if (lapTimes != null)
+                    if (voiceMessage.EndsWith(SpeechRecogniser.LAST_LAP))
                     {
-                        gotData = true;
-                        if (voiceMessage.EndsWith(SpeechRecogniser.LAST_LAP))
+                        float lastLap = getOpponentLastLap(getOpponentKey(voiceMessage, "'s "));
+                        if (lastLap != -1)
                         {
+                            gotData = true;
                             audioPlayer.playClipImmediately(new QueuedMessage("opponentLastLap", MessageContents(
-                                TimeSpanWrapper.FromSeconds(lapTimes[lapTimes.Count - 1], true)), 0, null), false);
+                                TimeSpanWrapper.FromSeconds(lastLap, true)), 0, null), false);
+                            audioPlayer.closeChannel();
+                        }                       
+                    }
+                    else
+                    {
+                        float bestLap = getOpponentBestLap(getOpponentKey(voiceMessage, "'s "));
+                        if (bestLap != -1)
+                        {
+                            gotData = true;
+                            audioPlayer.playClipImmediately(new QueuedMessage("opponentBestLap", MessageContents(
+                                TimeSpanWrapper.FromSeconds(bestLap, true)), 0, null), false);
                             audioPlayer.closeChannel();
                         }
-                        else
-                        {
-                            audioPlayer.playClipImmediately(new QueuedMessage("opponentBestLap", MessageContents(
-                                TimeSpanWrapper.FromSeconds(lapTimes.Min(), true)), 0, null), false);
-                            audioPlayer.closeChannel();
-                        }  
-                    }
+                    }  
                 } 
                 else if (voiceMessage.StartsWith(SpeechRecogniser.WHERE_IS))
                 {
