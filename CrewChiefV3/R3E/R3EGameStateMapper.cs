@@ -140,11 +140,12 @@ namespace CrewChiefV3.RaceRoom
                 for (int i = 0; i < shared.all_drivers_data.Length; i++)
                 {
                     DriverData participantStruct = shared.all_drivers_data[i];
-                    if (participantStruct.driver_info.slot_id != shared.slot_id && participantStruct.driver_info.name != null && participantStruct.driver_info.name.Length > 0)
+                    String driverName = getNameFromBytes(participantStruct.driver_info.nameByteArray);
+                    if (participantStruct.driver_info.slot_id != shared.slot_id && driverName != null && driverName.Length > 0)
                     {
                         if (!currentGameState.OpponentData.ContainsKey(participantStruct.driver_info.slot_id))
                         {
-                            currentGameState.OpponentData.Add(participantStruct.driver_info.slot_id, createOpponentData(participantStruct));
+                            currentGameState.OpponentData.Add(participantStruct.driver_info.slot_id, createOpponentData(participantStruct, driverName));
                         }
                     }
                 }
@@ -386,10 +387,11 @@ namespace CrewChiefV3.RaceRoom
                     }
                     else
                     {
-                        if (participantStruct.driver_info.name != null && participantStruct.driver_info.name.Length > 0)
+                        String driverName = getNameFromBytes(participantStruct.driver_info.nameByteArray);
+                        if (driverName != null && driverName.Length > 0)
                         {
-                            Console.WriteLine("Creating opponent for name " + participantStruct.driver_info.name);
-                            currentGameState.OpponentData.Add(participantStruct.driver_info.slot_id, createOpponentData(participantStruct));
+                            Console.WriteLine("Creating opponent for name " + driverName);
+                            currentGameState.OpponentData.Add(participantStruct.driver_info.slot_id, createOpponentData(participantStruct, driverName));
                         }
                     }
                 }
@@ -957,16 +959,21 @@ namespace CrewChiefV3.RaceRoom
             opponentData.CompletedLaps = completedLaps;
         }
 
-        private OpponentData createOpponentData(DriverData participantStruct)
+        private OpponentData createOpponentData(DriverData participantStruct, String driverName)
         {
             OpponentData opponentData = new OpponentData();
-            opponentData.DriverRawName = participantStruct.driver_info.name.Trim();
+            opponentData.DriverRawName = driverName.Trim();
             opponentData.Position = participantStruct.place;
             opponentData.CompletedLaps = participantStruct.completed_laps;
             opponentData.CurrentSectorNumber = participantStruct.track_sector;
             opponentData.WorldPosition = new float[] { participantStruct.position.X, participantStruct.position.Y };
             opponentData.DistanceRoundTrack = participantStruct.lap_distance;
             return opponentData;
+        }
+
+        private String getNameFromBytes(byte[] name)
+        {
+            return Encoding.UTF8.GetString(name).TrimEnd('\0');
         }
     }
 }

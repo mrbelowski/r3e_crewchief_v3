@@ -323,8 +323,8 @@ namespace CrewChiefV3.RaceRoom
         [StructLayout(LayoutKind.Sequential, CharSet=CharSet.Ansi, Pack = 1)]
         public struct DriverInfo
         {
-            [MarshalAsAttribute(UnmanagedType.ByValTStr, SizeConst = 64)]
-	        public string name;
+            [MarshalAsAttribute(UnmanagedType.ByValArray, SizeConst = 64)]
+            public byte[] nameByteArray;
 	        public Int32 car_number;
 	        public Int32 class_id;
 	        public Int32 model_id;

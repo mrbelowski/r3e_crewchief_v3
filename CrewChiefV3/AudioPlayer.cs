@@ -302,8 +302,8 @@ namespace CrewChiefV3
                         }
                     }
                 }
-                //Console.WriteLine("These driver names have no sound file:");
-                //Console.WriteLine(String.Join(System.Environment.NewLine, namesWithNoSoundFile));
+                Console.WriteLine("These driver names have no sound file:");
+                Console.WriteLine(String.Join(System.Environment.NewLine, namesWithNoSoundFile));
             }
             catch (DirectoryNotFoundException)
             {
