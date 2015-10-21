@@ -19,7 +19,7 @@ namespace CrewChiefV3
             "CrewChiefV3.PCars.PCarsSharedMemoryReader", "CrewChiefV3.PCars.PCarsGameStateMapper", "CrewChiefV3.PCars.PCarsSpotter",
             "pcars32_launch_exe", "pcars32_launch_params", "launch_pcars");
         public static GameDefinition raceRoom = new GameDefinition(GameEnum.RACE_ROOM, "Race Room", "RRRE",
-            "CrewChiefV3.RaceRoom.R3ESharedMemoryReader", "CrewChiefV3.RaceRoom.R3EGameStateMapper", "CrewChiefV3.RaceRoom.R3ESpotter",
+            "CrewChiefV3.RaceRoom.R3ESharedMemoryReader", "CrewChiefV3.RaceRoom.R3EGameStateMapper", "CrewChiefV3.RaceRoom.R3ESpotterv2",
             "r3e_launch_exe", "r3e_launch_params", "launch_raceroom");
 
         public static List<GameDefinition> getAllGameDefinitions()

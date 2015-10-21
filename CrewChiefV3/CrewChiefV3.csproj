@@ -113,6 +113,7 @@
     <Compile Include="PCars\_eNums\eVector.cs" />
     <Compile Include="PCars\_eNums\_EnumGetDescription.cs" />
     <Compile Include="GameDataReadException.cs" />
+    <Compile Include="R3E\R3ESpotterv2.cs" />
     <Compile Include="TimeSpanWrapper.cs" />
     <Compile Include="TrackData.cs" />
     <Compile Include="UserInterface\FloatPropertyControl.cs">

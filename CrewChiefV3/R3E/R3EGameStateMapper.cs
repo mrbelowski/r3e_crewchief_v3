@@ -386,7 +386,7 @@ namespace CrewChiefV3.RaceRoom
                                     currentOpponentSector, sectorTime, participantStruct.lap_time_current_self, 
                                     isEnteringPits, isLeavingPits, participantStruct.current_lap_valid == 1,
                                     currentGameState.SessionData.SessionRunningTime, secondsSinceLastUpdate,
-                                    new float[] { participantStruct.position.X, participantStruct.position.Y }, previousOpponentWorldPosition,
+                                    new float[] { participantStruct.position.X, participantStruct.position.Z }, previousOpponentWorldPosition,
                                     participantStruct.lap_distance);
                         }
                     }
@@ -712,9 +712,7 @@ namespace CrewChiefV3.RaceRoom
             currentGameState.TyreData.LeftRearBrakeTemp = shared.BrakeTemperatures.RearLeft;
             currentGameState.TyreData.RightRearBrakeTemp = shared.BrakeTemperatures.RearRight;
 
-            // Tyre slip speed seems to peak at about 30 with big lock or wheelspin (in Sauber Merc). It's noisy as hell and is frequently bouncing around
-            // in single figures, with the noise varying between cars.
-            // tyreRPS is much cleaner but we don't know the diameter of the tyre so can't compare it (accurately) to the car's speed
+            // some simple locking / spinning checks
             if (shared.CarSpeed > 7)
             {
                 float minRotatingSpeed = 2 * (float)Math.PI * shared.CarSpeed / maxTyreCirumference;
@@ -990,7 +988,7 @@ namespace CrewChiefV3.RaceRoom
             opponentData.Position = participantStruct.place;
             opponentData.CompletedLaps = participantStruct.completed_laps;
             opponentData.CurrentSectorNumber = participantStruct.track_sector;
-            opponentData.WorldPosition = new float[] { participantStruct.position.X, participantStruct.position.Y };
+            opponentData.WorldPosition = new float[] { participantStruct.position.X, participantStruct.position.Z };
             opponentData.DistanceRoundTrack = participantStruct.lap_distance;
             return opponentData;
         }

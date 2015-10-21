@@ -404,7 +404,7 @@ namespace CrewChiefV3.GameState
                 LapData lapData = OpponentLapData[OpponentLapData.Count - 1];
                 if (lastSectorTime <= 0)
                 {
-                    lastSectorTime = providedLapTime - lapData.SectorTimes[0] - lapData.SectorTimes[2];
+                    lastSectorTime = providedLapTime;
                 }
                 AddSectorData(position, lastSectorTime, gameTimeAtLapEnd, lapIsValid, isPitting, isRaining, trackTemp, airTemp);
                 lapData.LapTime = providedLapTime;

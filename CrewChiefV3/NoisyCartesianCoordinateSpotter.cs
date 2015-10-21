@@ -371,7 +371,7 @@ namespace CrewChiefV3
             return true;
         }
 
-        private void playNextMessage(int carsOnLeftCount, int carsOnRightCount, DateTime now) 
+        private void playNextMessage(int carsOnLeftCount, int carsOnRightCount, DateTime now)
         {
             if (nextMessageType != NextMessageType.none && now > nextMessageDue)
             {
@@ -434,7 +434,7 @@ namespace CrewChiefV3
                                 audioPlayer.removeImmediateClip(folderInTheMiddle);
                                 audioPlayer.removeImmediateClip(folderClearLeft);
                                 audioPlayer.removeImmediateClip(folderClearRight);
-                                audioPlayer.playClipImmediately(clearAllRoundMessage, false);                                
+                                audioPlayer.playClipImmediately(clearAllRoundMessage, false);
                                 nextMessageType = NextMessageType.none;
                             }
                             audioPlayer.closeChannel();
@@ -456,7 +456,7 @@ namespace CrewChiefV3
                                     audioPlayer.removeImmediateClip(folderClearRight);
                                     audioPlayer.removeImmediateClip(folderClearLeft);
                                     audioPlayer.playClipImmediately(clearAllRoundMessage, false);
-                                    nextMessageType = NextMessageType.none;   
+                                    nextMessageType = NextMessageType.none;
                                     audioPlayer.closeChannel();
                                     reportedOverlapRight = false;
                                     wasInMiddle = false;
@@ -472,8 +472,16 @@ namespace CrewChiefV3
                                     audioPlayer.removeImmediateClip(folderClearRight);
                                     audioPlayer.removeImmediateClip(folderClearAllRound);
                                     audioPlayer.playClipImmediately(clearLeftMessage, false);
-                                    nextMessageType = NextMessageType.none;         
-                                }                                                       
+                                    if (wasInMiddle)
+                                    {
+                                        nextMessageType = NextMessageType.carRight;
+                                        nextMessageDue = now.Add(repeatHoldFrequency);
+                                    }
+                                    else
+                                    {
+                                        nextMessageType = NextMessageType.none;
+                                    }
+                                }
                             }
                             if (carsOnRightCount == 0)
                             {
@@ -511,7 +519,15 @@ namespace CrewChiefV3
                                     audioPlayer.removeImmediateClip(folderClearLeft);
                                     audioPlayer.removeImmediateClip(folderClearAllRound);
                                     audioPlayer.playClipImmediately(clearRightMessage, false);
-                                    nextMessageType = NextMessageType.none;
+                                    if (wasInMiddle)
+                                    {
+                                        nextMessageType = NextMessageType.carLeft;
+                                        nextMessageDue = now.Add(repeatHoldFrequency);
+                                    }
+                                    else
+                                    {
+                                        nextMessageType = NextMessageType.none;
+                                    }
                                 }
                             }
                             if (carsOnLeftCount == 0)
@@ -525,9 +541,6 @@ namespace CrewChiefV3
                             {
                                 QueuedMessage holdYourLineMessage = new QueuedMessage(folderStillThere, 0, null);
                                 holdYourLineMessage.expiryTime = (DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond) + holdMessageExpiresAfter;
-                                audioPlayer.removeImmediateClip(folderCarLeft);
-                                audioPlayer.removeImmediateClip(folderCarRight);
-                                audioPlayer.removeImmediateClip(folderInTheMiddle);
                                 audioPlayer.removeImmediateClip(folderClearRight);
                                 audioPlayer.removeImmediateClip(folderClearLeft);
                                 audioPlayer.removeImmediateClip(folderClearAllRound);
