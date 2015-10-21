@@ -369,10 +369,10 @@ namespace CrewChiefV3.GameState
             OpponentLapData.Add(thisLapData);
         }
 
-        public void CompleteLapWithEstimatedLapTime(int position, float lastSectorTime, float gameTimeAtLapEnd, float worldRecordLapTime,
+        public void CompleteLapWithEstimatedLapTime(int position, float gameTimeAtLapEnd, float worldRecordLapTime,
             Boolean lapIsValid, Boolean isPitting, Boolean isRaining, float trackTemp, float airTemp)
         {
-            AddSectorData(position, lastSectorTime, gameTimeAtLapEnd, lapIsValid, isPitting, isRaining, trackTemp, airTemp);
+            AddSectorData(position, -1, gameTimeAtLapEnd, lapIsValid, isPitting, isRaining, trackTemp, airTemp);
             if (OpponentLapData.Count > 0)
             {
                 LapData lapData = OpponentLapData[OpponentLapData.Count - 1];
@@ -396,17 +396,13 @@ namespace CrewChiefV3.GameState
             }
         }
 
-        public void CompleteLapWithProvidedLapTime(int position, float lastSectorTime, float gameTimeAtLapEnd, float providedLapTime,
+        public void CompleteLapWithProvidedLapTime(int position, float gameTimeAtLapEnd, float providedLapTime,
             Boolean lapIsValid, Boolean isPitting, Boolean isRaining, float trackTemp, float airTemp)
         {            
             if (OpponentLapData.Count > 0)
             {                
                 LapData lapData = OpponentLapData[OpponentLapData.Count - 1];
-                if (lastSectorTime <= 0)
-                {
-                    lastSectorTime = providedLapTime;
-                }
-                AddSectorData(position, lastSectorTime, gameTimeAtLapEnd, lapIsValid, isPitting, isRaining, trackTemp, airTemp);
+                AddSectorData(position, providedLapTime, gameTimeAtLapEnd, lapIsValid, isPitting, isRaining, trackTemp, airTemp);
                 lapData.LapTime = providedLapTime;
                 LastLapTime = providedLapTime;
                 if (lapData.IsValid && (BestLapTime == -1 || BestLapTime > lapData.LapTime))
@@ -416,18 +412,20 @@ namespace CrewChiefV3.GameState
             }
         }
 
-        public void AddSectorData(int position, float thisSectorTime, float gameTimeAtSectorEnd, Boolean lapIsValid, Boolean isPitting, Boolean isRaining, float trackTemp, float airTemp)
+        public void AddSectorData(int position, float cumulativeSectorTime, float gameTimeAtSectorEnd, Boolean lapIsValid, 
+            Boolean isPitting, Boolean isRaining, float trackTemp, float airTemp)
         {
             if (OpponentLapData.Count > 0)
             {
                 LapData lapData = OpponentLapData[OpponentLapData.Count - 1];
-                if (thisSectorTime <= 0)
+                if (cumulativeSectorTime <= 0)
                 {
-                    thisSectorTime = gameTimeAtSectorEnd - lapData.GameTimeAtLapStart;
-                    foreach (float sectorTime in lapData.SectorTimes)
-                    {
-                        thisSectorTime = thisSectorTime - sectorTime;
-                    }
+                    cumulativeSectorTime = gameTimeAtSectorEnd - lapData.GameTimeAtLapStart;                    
+                }
+                float thisSectorTime = cumulativeSectorTime;
+                foreach (float sectorTime in lapData.SectorTimes)
+                {
+                    thisSectorTime = thisSectorTime - sectorTime;
                 }
                 lapData.SectorTimes.Add(thisSectorTime);
                 lapData.SectorPositions.Add(position);

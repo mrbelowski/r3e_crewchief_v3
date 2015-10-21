@@ -917,7 +917,7 @@ namespace CrewChiefV3.PCars
                     // use -1 for provided lap time and let the AddSectorData method calculate it from the game time
                     if (opponentData.OpponentLapData.Count > 0)
                     {
-                        opponentData.CompleteLapWithEstimatedLapTime(racePosition, -1, sessionRunningTime, worldRecordLapTime, validSpeed,
+                        opponentData.CompleteLapWithEstimatedLapTime(racePosition, sessionRunningTime, worldRecordLapTime, validSpeed,
                             isEnteringPits, isRaining, trackTemp, airTemp);
                     }
                     opponentData.StartNewLap(completedLaps + 1, racePosition, isEnteringPits, sessionRunningTime, isRaining, trackTemp, airTemp);

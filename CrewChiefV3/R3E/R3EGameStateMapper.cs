@@ -146,7 +146,14 @@ namespace CrewChiefV3.RaceRoom
                 {
                     DriverData participantStruct = shared.all_drivers_data[i];
                     String driverName = getNameFromBytes(participantStruct.driver_info.nameByteArray);
-                    if (participantStruct.driver_info.slot_id != shared.slot_id && driverName != null && driverName.Length > 0)
+                    if (participantStruct.driver_info.slot_id == shared.slot_id)
+                    {
+                        currentGameState.SessionData.SectorNumber = participantStruct.track_sector;
+                        currentGameState.SessionData.DriverRawName = driverName;
+                        currentGameState.PitData.InPitlane = participantStruct.in_pitlane == 1;
+                        currentGameState.PositionAndMotionData.DistanceRoundTrack = participantStruct.lap_distance;
+                    }
+                    else if (driverName != null && driverName.Length > 0)
                     {
                         if (!currentGameState.OpponentData.ContainsKey(participantStruct.driver_info.slot_id))
                         {
@@ -294,7 +301,32 @@ namespace CrewChiefV3.RaceRoom
 
             foreach (DriverData participantStruct in shared.all_drivers_data)
             {
-                if (participantStruct.driver_info.slot_id != -1 && participantStruct.driver_info.slot_id != shared.slot_id)
+                if (participantStruct.driver_info.slot_id == shared.slot_id)
+                {
+                    if (currentGameState.SessionData.SectorNumber != participantStruct.track_sector)
+                    {
+                        currentGameState.SessionData.IsNewSector = true;
+                    }
+                    currentGameState.SessionData.SectorNumber = participantStruct.track_sector;
+                    currentGameState.PitData.InPitlane = participantStruct.in_pitlane == 1;
+                    currentGameState.PositionAndMotionData.DistanceRoundTrack = participantStruct.lap_distance;
+                    if (participantStruct.track_sector == 3 && currentGameState.PitData.InPitlane)
+                    {
+                        currentGameState.PitData.OnInLap = true;
+                        currentGameState.PitData.OnOutLap = false;
+                    }
+                    else if (participantStruct.track_sector == 1 && currentGameState.PitData.InPitlane)
+                    {
+                        currentGameState.PitData.OnInLap = false;
+                        currentGameState.PitData.OnOutLap = true;
+                    }
+                    else if (currentGameState.SessionData.IsNewLap)
+                    {
+                        currentGameState.PitData.OnInLap = false;
+                        currentGameState.PitData.OnOutLap = false;
+                    }
+                }
+                else if (participantStruct.driver_info.slot_id != -1)
                 {
                     if (currentGameState.OpponentData.ContainsKey(participantStruct.driver_info.slot_id))
                     {
@@ -411,27 +443,6 @@ namespace CrewChiefV3.RaceRoom
                 currentGameState.SessionData.LeaderHasFinishedRace = true;
             }
 
-            // sector information
-            if (previousGameState == null || currentGameState.SessionData.IsNewLap)
-            {
-                currentGameState.SessionData.SectorNumber = 1;
-                currentGameState.SessionData.IsNewSector = true;
-            } else 
-            {
-                currentGameState.SessionData.SectorNumber = previousGameState.SessionData.SectorNumber;
-                if (previousGameState.SessionData.SectorNumber == 1 &&
-                    previousGameState.SessionData.Sector1TimeDeltaSelf != currentGameState.SessionData.Sector1TimeDeltaSelf)
-                {
-                    currentGameState.SessionData.SectorNumber = 2;
-                }
-                else if (previousGameState.SessionData.SectorNumber == 2 &&
-                    previousGameState.SessionData.Sector2TimeDeltaSelf != currentGameState.SessionData.Sector2TimeDeltaSelf)
-                {
-                    currentGameState.SessionData.SectorNumber = 3;
-                }
-                currentGameState.SessionData.IsNewSector = currentGameState.SessionData.SectorNumber != previousGameState.SessionData.SectorNumber;
-            }
-       
             // racing same car in front / behind?
             if (previousGameState != null)
             {
@@ -584,20 +595,7 @@ namespace CrewChiefV3.RaceRoom
             currentGameState.PenaltiesData.NumPenalties = shared.NumPenalties;
 
 
-            //------------------------ Pit stop data -----------------------
-            currentGameState.PitData.InPitlane = shared.Player.GameSimulationTime > 60 && currentGameState.SessionData.SessionPhase == SessionPhase.Green &&
-                    currentGameState.ControlData.ControlType == ControlType.AI && !currentGameState.SessionData.LeaderHasFinishedRace;
-            if (currentGameState.PitData.InPitlane && shared.CompletedLaps > currentGameState.PitData.LapCountWhenLastEnteredPits &&
-                !currentGameState.PitData.OnInLap && !currentGameState.PitData.OnOutLap)
-            {
-                currentGameState.PitData.LapCountWhenLastEnteredPits = shared.CompletedLaps;
-                currentGameState.PitData.OnInLap = true;
-            }
-            currentGameState.PitData.OnOutLap = shared.CompletedLaps > 0 && shared.CompletedLaps == currentGameState.PitData.LapCountWhenLastEnteredPits + 1;
-            if (currentGameState.PitData.OnOutLap && currentGameState.PitData.OnInLap)
-            {
-                currentGameState.PitData.OnInLap = false;
-            }
+            //------------------------ Pit stop data -----------------------            
             currentGameState.PitData.PitWindow = mapToPitWindow(shared.PitWindowStatus);
             currentGameState.PitData.IsMakingMandatoryPitStop = (currentGameState.PitData.PitWindow == PitWindow.Open || currentGameState.PitData.PitWindow == PitWindow.StopInProgress) &&
                (currentGameState.PitData.OnInLap || currentGameState.PitData.OnOutLap);
@@ -605,11 +603,10 @@ namespace CrewChiefV3.RaceRoom
             {
                 currentGameState.PitData.IsAtPitExit = false;
             }
-            else if (currentGameState.PitData.OnInLap && currentGameState.ControlData.ControlType == ControlType.Player && previousGameState.ControlData.ControlType == ControlType.AI)
+            else if (currentGameState.PitData.OnOutLap && currentGameState.ControlData.ControlType == ControlType.Player && previousGameState.ControlData.ControlType == ControlType.AI)
             {
                 currentGameState.PitData.IsAtPitExit = true;
             }
-
 
             //------------------------ Car position / motion data -----------------------
             currentGameState.PositionAndMotionData.CarSpeed = shared.CarSpeed;
@@ -962,10 +959,9 @@ namespace CrewChiefV3.RaceRoom
                 // TODO: use the actual times here
                 if (opponentData.CurrentSectorNumber == 3 && sector == 1)
                 {
-                    // use -1 for provided lap time and let the AddSectorData method calculate it from the game time
                     if (opponentData.OpponentLapData.Count > 0)
                     {
-                        opponentData.CompleteLapWithProvidedLapTime(racePosition, sectorTime, sessionRunningTime, opponentData.CurrentLapTime,
+                        opponentData.CompleteLapWithProvidedLapTime(racePosition, sessionRunningTime, opponentData.CurrentLapTime,
                             lapIsValid && validSpeed, isEnteringPits, false, 20, 20);
                     }
                     opponentData.StartNewLap(completedLaps + 1, racePosition, isEnteringPits, sessionRunningTime, false, 20, 20);
