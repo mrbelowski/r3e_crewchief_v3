@@ -23,7 +23,7 @@ namespace CrewChiefV3.RaceRoom
             Formation = 3,
             Countdown = 4,
             Green = 5,
-            Checkered = 6, 
+            Checkered = 6,
             Terminated = 7 // seems to be 7 when the session is 'killed'
         }
 
@@ -51,6 +51,42 @@ namespace CrewChiefV3.RaceRoom
             Unavailable = -1,
             DTM_Option = 0,
             Prime = 1
+        }
+
+        public enum PitStopStatus
+        {
+            // No mandatory pitstops
+            R3E_PITSTOP_STATUS_UNAVAILABLE = -1,
+
+            // Mandatory pitstop not served yet
+            R3E_PITSTOP_STATUS_UNSERVED = 0,
+
+            // Mandatory pitstop served
+            R3E_PITSTOP_STATUS_SERVED = 1
+        }
+
+        public enum FinishStatus
+        {
+            // N/A
+            R3E_FINISH_STATUS_UNAVAILABLE = -1,
+
+            // Still on track, not finished
+            R3E_FINISH_STATUS_NONE = 0,
+
+            // Finished session normally
+            R3E_FINISH_STATUS_FINISHED = 1,
+
+            // Did not finish
+            R3E_FINISH_STATUS_DNF = 2,
+
+            // Did not qualify
+            R3E_FINISH_STATUS_DNQ = 3,
+
+            // Did not start
+            R3E_FINISH_STATUS_DNS = 4,
+
+            // Disqualified
+            R3E_FINISH_STATUS_DQ = 5
         }
     }
 
@@ -247,6 +283,82 @@ namespace CrewChiefV3.RaceRoom
             public T Sector2;
             public T Sector3;
         }
+
+        [StructLayout(LayoutKind.Sequential, Pack = 1)]
+        public struct TyreDirt
+        {
+            public Single front_left;
+            public Single front_right;
+            public Single rear_left;
+            public Single rear_right;
+        } 
+
+        [StructLayout(LayoutKind.Sequential, Pack = 1)]
+        public struct WheelSpeed
+        {
+            public Single front_left;
+            public Single front_right;
+            public Single rear_left;
+            public Single rear_right;
+        } 
+
+        [StructLayout(LayoutKind.Sequential, Pack = 1)]
+        public struct TrackInfo
+        {
+	        public Int32 track_id;
+	        public Int32 layout_id;
+	        public Single length;
+        } 
+
+        [StructLayout(LayoutKind.Sequential, Pack = 1)]
+        public struct PushToPass
+        {
+	        public Int32 available;
+	        public Int32 engaged;
+	        public Int32 amount_left;
+	        public Single engaged_time_left;
+	        public Single wait_time_left;
+        }
+
+        [StructLayout(LayoutKind.Sequential, CharSet=CharSet.Ansi, Pack = 1)]
+        public struct DriverInfo
+        {
+            [MarshalAsAttribute(UnmanagedType.ByValTStr, SizeConst = 64)]
+	        public string name;
+	        public Int32 car_number;
+	        public Int32 class_id;
+	        public Int32 model_id;
+	        public Int32 team_id;
+	        public Int32 livery_id;
+	        public Int32 manufacturer_id;
+	        public Int32 slot_id;
+	        public Int32 class_performance_index;
+        }
+
+        [StructLayout(LayoutKind.Sequential, Pack = 1)]
+        public struct DriverData
+        {
+	        public DriverInfo driver_info;
+            public Int32 finish_status;
+	        public Int32 place;
+	        public Single lap_distance;
+	        public Vector3<Single> position;
+	        public Int32 track_sector;
+            public Int32 completed_laps;
+	        public Int32 current_lap_valid;
+            public Single lap_time_current_self;
+            public Sectors<Single> sector_time_current_self;
+            public Sectors<Single> sector_time_previous_self;
+            public Sectors<Single> sector_time_best_self;
+            public Single time_delta_front;
+            public Single time_delta_behind;
+            public Int32 pitstop_status;
+	        public Int32 in_pitlane;
+	        public Int32 num_pitstops;
+            public CutTrackPenalties penalties;
+            public Single car_speed;
+            public Int32 tire_type;
+        }     
 
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
         public struct RaceRoomShared
@@ -448,6 +560,31 @@ namespace CrewChiefV3.RaceRoom
 
             // ...
             public CarDamage CarDamage;
+
+            public Int32 slot_id;
+
+	        // Amount of dirt built up per tyre
+	        // Range: 0.0 - 1.0
+	        public TyreDirt tyre_dirt;
+
+	        // -1 = no data
+	        //  0 = not active
+	        //  1 = active
+	        public Int32 pit_limiter;
+
+	        // Wheel speed
+	        // Unit: Radians per second (rad/s)
+	        public WheelSpeed wheel_speed;
+
+	        // Info about track and layout
+	        public TrackInfo track_info;
+
+	        // Push to pass data
+	        //public PushToPass push_to_pass;
+
+	        // Contains name and vehicle info for all drivers in place order
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 128)]
+	        public DriverData[] all_drivers_data;
         }
     }
 }

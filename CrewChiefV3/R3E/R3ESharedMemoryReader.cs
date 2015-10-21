@@ -14,6 +14,14 @@ namespace CrewChiefV3.RaceRoom
 {
     public class R3ESharedMemoryReader : GameDataReader
     {
+        private MemoryMappedFile memoryMappedFile;
+        private GCHandle handle;
+        private int sharedmemorysize;
+        private byte[] sharedMemoryReadBuffer;
+        private Boolean initialised = false;
+        private List<R3EStructWrapper> dataToDump;
+        private R3EStructWrapper[] dataReadFromFile = null;
+        private int dataReadFromFileIndex = 0;
 
         public class R3EStructWrapper
         {
@@ -21,11 +29,13 @@ namespace CrewChiefV3.RaceRoom
             public RaceRoomShared data;
         }
 
-        private MemoryMappedFile _file;
-        private MemoryMappedViewAccessor _view;
-        private List<R3EStructWrapper> dataToDump = null;
-        private R3EStructWrapper[] dataReadFromFile = null;
-        private int dataReadFromFileIndex = 0;
+        public override void DumpRawGameData()
+        {
+            if (dumpToFile && dataToDump != null && dataToDump.Count > 0 && filenameToDump != null)
+            {
+                SerializeObject(dataToDump.ToArray<R3EStructWrapper>(), filenameToDump);
+            }
+        }
 
         public override Object ReadGameDataFromFile(String filename)
         {
@@ -36,9 +46,9 @@ namespace CrewChiefV3.RaceRoom
             }
             if (dataReadFromFile.Length > dataReadFromFileIndex)
             {
-                R3EStructWrapper data = dataReadFromFile[dataReadFromFileIndex];
+                R3EStructWrapper structWrapperData = dataReadFromFile[dataReadFromFileIndex];
                 dataReadFromFileIndex++;
-                return data;
+                return structWrapperData;
             }
             else
             {
@@ -46,14 +56,6 @@ namespace CrewChiefV3.RaceRoom
             }
         }
 
-        public override void DumpRawGameData() 
-        {
-            if (dumpToFile && dataToDump != null && dataToDump.Count > 0 && filenameToDump!= null)
-            {
-                SerializeObject(dataToDump.ToArray<R3EStructWrapper>(), filenameToDump);
-            }
-        }
-        
         protected override Boolean InitialiseInternal()
         {
             if (dumpToFile)
@@ -62,51 +64,68 @@ namespace CrewChiefV3.RaceRoom
             }
             lock (this)
             {
-                try
+                if (!initialised)
                 {
-                    _file = MemoryMappedFile.OpenExisting(RaceRoomConstant.SharedMemoryName);
-                    _view = _file.CreateViewAccessor(0, Marshal.SizeOf(typeof(RaceRoomShared)));
-                    return true;
+                    try
+                    {
+                        memoryMappedFile = MemoryMappedFile.OpenExisting(RaceRoomConstant.SharedMemoryName);
+                        sharedmemorysize = Marshal.SizeOf(typeof(RaceRoomShared));
+                        sharedMemoryReadBuffer = new byte[sharedmemorysize];
+                        initialised = true;
+                        Console.WriteLine("Initialised raceroom shared memory");
+                    }
+                    catch (Exception ex)
+                    {
+                        initialised = false;
+                    }
                 }
-                catch (FileNotFoundException)
-                {
-                    return false;
-                }
-            }            
+                return initialised;
+            }
         }
 
         public override Object ReadGameData()
         {
             lock (this)
             {
-                if (_view == null && _file == null)
+                RaceRoomShared _raceroomapistruct = new RaceRoomShared();
+                if (!initialised)
                 {
-                    InitialiseInternal();
+                    if (!InitialiseInternal())
+                    {
+                        throw new GameDataReadException("Failed to initialise shared memory");
+                    }
                 }
-                RaceRoomShared currentState = new RaceRoomShared();
-                _view.Read(0, out currentState);
-                R3EStructWrapper wrapper = new R3EStructWrapper();
-                wrapper.ticksWhenRead = DateTime.Now.Ticks;
-                wrapper.data = currentState;
-                if (dumpToFile && dataToDump != null)
+                try
                 {
-                    dataToDump.Add(wrapper);
+                    using (var sharedMemoryStreamView = memoryMappedFile.CreateViewStream())
+                    {
+                        BinaryReader _SharedMemoryStream = new BinaryReader(sharedMemoryStreamView);
+                        sharedMemoryReadBuffer = _SharedMemoryStream.ReadBytes(sharedmemorysize);
+                        handle = GCHandle.Alloc(sharedMemoryReadBuffer, GCHandleType.Pinned);
+                        _raceroomapistruct = (RaceRoomShared)Marshal.PtrToStructure(handle.AddrOfPinnedObject(), typeof(RaceRoomShared));
+                        handle.Free();
+                    }
+                    R3EStructWrapper structWrapper = new R3EStructWrapper();
+                    structWrapper.ticksWhenRead = DateTime.Now.Ticks;
+                    structWrapper.data = _raceroomapistruct;
+                    if (dumpToFile && dataToDump != null)
+                    {
+                        dataToDump.Add(structWrapper);
+                    }
+                    return structWrapper;
                 }
-                return wrapper;
-            }            
+                catch (Exception ex)
+                {
+                    throw new GameDataReadException(ex.Message, ex);
+                }
+            }
         }
 
         public override void Dispose()
         {
-            if (_view != null)
+            if (memoryMappedFile != null)
             {
-                _view.Dispose();
-                _view = null;
-            }
-            if (_file != null)
-            {
-                _file.Dispose();
-                _file = null;
+                memoryMappedFile.Dispose();
             }
         }
     }

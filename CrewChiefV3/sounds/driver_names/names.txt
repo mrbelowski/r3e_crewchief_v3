@@ -252,3 +252,6 @@ dreadnaught:dread nort
 eckhchri:ek cree
 maerkel:merkel
 big_e:big ee
+Mattias EkstrÃ¶m:Ekstrom
+AntÃ³nio FÃ©lix da Costa:da costa
+Nico MÃ¼ller:muller
