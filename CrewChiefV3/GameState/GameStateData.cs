@@ -408,6 +408,7 @@ namespace CrewChiefV3.GameState
                 }
                 AddSectorData(position, lastSectorTime, gameTimeAtLapEnd, lapIsValid, isPitting, isRaining, trackTemp, airTemp);
                 lapData.LapTime = providedLapTime;
+                LastLapTime = providedLapTime;
                 if (lapData.IsValid && (BestLapTime == -1 || BestLapTime > lapData.LapTime))
                 {
                     BestLapTime = lapData.LapTime;
