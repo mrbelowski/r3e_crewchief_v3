@@ -297,16 +297,14 @@ namespace CrewChiefV3.RaceRoom
             if (previousGameState != null)
             {
                 currentGameState.OpponentData = previousGameState.OpponentData;
+                currentGameState.SessionData.SectorNumber = previousGameState.SessionData.SectorNumber;
             }
 
             foreach (DriverData participantStruct in shared.all_drivers_data)
             {
                 if (participantStruct.driver_info.slot_id == shared.slot_id)
                 {
-                    if (currentGameState.SessionData.SectorNumber != participantStruct.track_sector)
-                    {
-                        currentGameState.SessionData.IsNewSector = true;
-                    }
+                    currentGameState.SessionData.IsNewSector = participantStruct.track_sector != 0 && currentGameState.SessionData.SectorNumber != participantStruct.track_sector;
                     currentGameState.SessionData.SectorNumber = participantStruct.track_sector;
                     currentGameState.PitData.InPitlane = participantStruct.in_pitlane == 1;
                     currentGameState.PositionAndMotionData.DistanceRoundTrack = participantStruct.lap_distance;
