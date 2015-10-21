@@ -15,6 +15,10 @@ namespace CrewChiefV3.RaceRoom
     {
         private TimeSpan minimumSessionParticipationTime = TimeSpan.FromSeconds(6);
 
+        // for locking / spinning check - the tolerance values are built into these tyre diameter values
+        private float minTyreCirumference = 0.4f * (float)Math.PI;  // 0.4m diameter
+        private float maxTyreCirumference = 1.2f * (float)Math.PI;
+
         private List<CornerData.EnumWithThresholds> suspensionDamageThresholds = new List<CornerData.EnumWithThresholds>();
         private List<CornerData.EnumWithThresholds> tyreWearThresholds = new List<CornerData.EnumWithThresholds>();
         private List<CornerData.EnumWithThresholds> brakeDamageThresholds = new List<CornerData.EnumWithThresholds>();
@@ -136,7 +140,8 @@ namespace CrewChiefV3.RaceRoom
                 currentGameState.SessionData.SessionIteration = shared.SessionIteration;
                 currentGameState.SessionData.SessionStartTime = currentGameState.Now;
                 currentGameState.carClass = CarData.getCarClass(null, GameEnum.RACE_ROOM);  // TODO: change this null to the actual class identifier
-
+                currentGameState.OpponentData.Clear();
+                currentGameState.SessionData.TrackDefinition = TrackData.getTrackDefinition(null, shared.track_info.length, GameEnum.RACE_ROOM);
                 for (int i = 0; i < shared.all_drivers_data.Length; i++)
                 {
                     DriverData participantStruct = shared.all_drivers_data[i];
@@ -179,6 +184,7 @@ namespace CrewChiefV3.RaceRoom
                         if (previousGameState != null)
                         {
                             currentGameState.OpponentData = previousGameState.OpponentData;
+                            currentGameState.SessionData.TrackDefinition = previousGameState.SessionData.TrackDefinition;
                         }
 
                         // reset the engine temp monitor stuff
@@ -216,12 +222,12 @@ namespace CrewChiefV3.RaceRoom
                     currentGameState.SessionData.SessionNumberOfLaps = previousGameState.SessionData.SessionNumberOfLaps;
                     currentGameState.SessionData.SessionStartPosition = previousGameState.SessionData.SessionStartPosition;
                     currentGameState.SessionData.NumCarsAtStartOfSession = previousGameState.SessionData.NumCarsAtStartOfSession;
-                    // TODO: track
                     currentGameState.SessionData.EventIndex = previousGameState.SessionData.EventIndex;
                     currentGameState.SessionData.SessionIteration = previousGameState.SessionData.SessionIteration;
                     currentGameState.SessionData.PitWindowStart = previousGameState.SessionData.PitWindowStart;
                     currentGameState.SessionData.PitWindowEnd = previousGameState.SessionData.PitWindowEnd;
                     currentGameState.SessionData.HasMandatoryPitStop = previousGameState.SessionData.HasMandatoryPitStop;
+                    currentGameState.SessionData.TrackDefinition = previousGameState.SessionData.TrackDefinition;
                 }
             }
 
@@ -376,9 +382,8 @@ namespace CrewChiefV3.RaceRoom
                                 }
                             }
                             float secondsSinceLastUpdate = (float)new TimeSpan(currentGameState.Ticks - previousGameState.Ticks).TotalSeconds;
-
                             upateOpponentData(currentOpponentData, currentOpponentRacePosition, currentOpponentLapsCompleted,
-                                    currentOpponentSector, sectorTime, participantStruct.lap_time_current_self,
+                                    currentOpponentSector, sectorTime, participantStruct.lap_time_current_self, 
                                     isEnteringPits, isLeavingPits, participantStruct.current_lap_valid == 1,
                                     currentGameState.SessionData.SessionRunningTime, secondsSinceLastUpdate,
                                     new float[] { participantStruct.position.X, participantStruct.position.Y }, previousOpponentWorldPosition,
@@ -707,6 +712,24 @@ namespace CrewChiefV3.RaceRoom
             currentGameState.TyreData.LeftRearBrakeTemp = shared.BrakeTemperatures.RearLeft;
             currentGameState.TyreData.RightRearBrakeTemp = shared.BrakeTemperatures.RearRight;
 
+            // Tyre slip speed seems to peak at about 30 with big lock or wheelspin (in Sauber Merc). It's noisy as hell and is frequently bouncing around
+            // in single figures, with the noise varying between cars.
+            // tyreRPS is much cleaner but we don't know the diameter of the tyre so can't compare it (accurately) to the car's speed
+            if (shared.CarSpeed > 7)
+            {
+                float minRotatingSpeed = 2 * (float)Math.PI * shared.CarSpeed / maxTyreCirumference;
+                // I think the tyreRPS is actually radians per second...
+                currentGameState.TyreData.LeftFrontIsLocked = Math.Abs(shared.wheel_speed.front_left) < minRotatingSpeed;
+                currentGameState.TyreData.RightFrontIsLocked = Math.Abs(shared.wheel_speed.front_right) < minRotatingSpeed;
+                currentGameState.TyreData.LeftRearIsLocked = Math.Abs(shared.wheel_speed.rear_left) < minRotatingSpeed;
+                currentGameState.TyreData.RightRearIsLocked = Math.Abs(shared.wheel_speed.rear_right) < minRotatingSpeed;
+
+                float maxRotatingSpeed = 2 * (float)Math.PI * shared.CarSpeed / minTyreCirumference;
+                currentGameState.TyreData.LeftFrontIsSpinning = Math.Abs(shared.wheel_speed.front_left) > maxRotatingSpeed;
+                currentGameState.TyreData.RightFrontIsSpinning = Math.Abs(shared.wheel_speed.front_right) > maxRotatingSpeed;
+                currentGameState.TyreData.LeftRearIsSpinning = Math.Abs(shared.wheel_speed.rear_left) > maxRotatingSpeed;
+                currentGameState.TyreData.RightRearIsSpinning = Math.Abs(shared.wheel_speed.rear_right) > maxRotatingSpeed;
+            }
             return currentGameState;
         }
         
@@ -919,7 +942,7 @@ namespace CrewChiefV3.RaceRoom
         }
 
         private void upateOpponentData(OpponentData opponentData, int racePosition, int completedLaps, int sector, float sectorTime, 
-            float lapTime, Boolean isEnteringPits, Boolean isLeavingPits,
+            float currentLapTime, Boolean isEnteringPits, Boolean isLeavingPits,
             Boolean lapIsValid, float sessionRunningTime, float secondsSinceLastUpdate, float[] currentWorldPosition, float[] previousWorldPosition, float distanceRoundTrack)
         {
             opponentData.DistanceRoundTrack = distanceRoundTrack;
@@ -935,7 +958,7 @@ namespace CrewChiefV3.RaceRoom
             opponentData.Speed = speed;
             opponentData.Position = racePosition;
             opponentData.WorldPosition = currentWorldPosition;
-            opponentData.IsNewLap = false;
+            opponentData.IsNewLap = false;            
             if (opponentData.CurrentSectorNumber != sector)
             {
                 // TODO: use the actual times here
@@ -944,7 +967,7 @@ namespace CrewChiefV3.RaceRoom
                     // use -1 for provided lap time and let the AddSectorData method calculate it from the game time
                     if (opponentData.OpponentLapData.Count > 0)
                     {
-                        opponentData.CompleteLapWithProvidedLapTime(racePosition, sectorTime, sessionRunningTime, lapTime,
+                        opponentData.CompleteLapWithProvidedLapTime(racePosition, sectorTime, sessionRunningTime, opponentData.CurrentLapTime,
                             lapIsValid && validSpeed, isEnteringPits, false, 20, 20);
                     }
                     opponentData.StartNewLap(completedLaps + 1, racePosition, isEnteringPits, sessionRunningTime, false, 20, 20);
@@ -957,6 +980,7 @@ namespace CrewChiefV3.RaceRoom
                 opponentData.CurrentSectorNumber = sector;
             }
             opponentData.CompletedLaps = completedLaps;
+            opponentData.CurrentLapTime = currentLapTime;
         }
 
         private OpponentData createOpponentData(DriverData participantStruct, String driverName)

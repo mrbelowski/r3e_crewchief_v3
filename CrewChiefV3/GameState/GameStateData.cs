@@ -288,6 +288,8 @@ namespace CrewChiefV3.GameState
         
         public List<LapData> OpponentLapData = new List<LapData>();
 
+        public float CurrentLapTime = 0;
+
         public LapData getCurrentLapData()
         {
             if (OpponentLapData.Count > 0)
@@ -396,11 +398,15 @@ namespace CrewChiefV3.GameState
 
         public void CompleteLapWithProvidedLapTime(int position, float lastSectorTime, float gameTimeAtLapEnd, float providedLapTime,
             Boolean lapIsValid, Boolean isPitting, Boolean isRaining, float trackTemp, float airTemp)
-        {
-            AddSectorData(position, lastSectorTime, gameTimeAtLapEnd, lapIsValid, isPitting, isRaining, trackTemp, airTemp);
+        {            
             if (OpponentLapData.Count > 0)
-            {
+            {                
                 LapData lapData = OpponentLapData[OpponentLapData.Count - 1];
+                if (lastSectorTime <= 0)
+                {
+                    lastSectorTime = providedLapTime - lapData.SectorTimes[0] - lapData.SectorTimes[2];
+                }
+                AddSectorData(position, lastSectorTime, gameTimeAtLapEnd, lapIsValid, isPitting, isRaining, trackTemp, airTemp);
                 lapData.LapTime = providedLapTime;
                 if (lapData.IsValid && (BestLapTime == -1 || BestLapTime > lapData.LapTime))
                 {
