@@ -30,7 +30,7 @@
       <Value Profile="(Default)">en</Value>
     </Setting>
     <Setting Name="r3e_spotter_car_length" Type="System.Single" Scope="User">
-      <Value Profile="(Default)">3.6</Value>
+      <Value Profile="(Default)">4.6</Value>
     </Setting>
     <Setting Name="spotter_gap_for_clear" Type="System.Single" Scope="User">
       <Value Profile="(Default)">0.8</Value>

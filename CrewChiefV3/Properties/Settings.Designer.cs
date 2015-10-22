@@ -130,7 +130,7 @@ namespace CrewChiefV3.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("3.6")]
+        [global::System.Configuration.DefaultSettingValueAttribute("4.6")]
         public float r3e_spotter_car_length {
             get {
                 return ((float)(this["r3e_spotter_car_length"]));
