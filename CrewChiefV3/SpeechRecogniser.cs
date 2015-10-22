@@ -265,22 +265,25 @@ namespace CrewChiefV3
         }
 
         public void addNewOpponentName(String rawDriverName)
-        {
+        {            
             String usableName = DriverNameHelper.getUsableDriverName(rawDriverName, crewChief.audioPlayer.soundFilesPath);
             if (usableName != null && usableName.Length > 0)
             {
                 crewChief.audioPlayer.cacheDriverName(usableName);
-                Choices opponentChoices = new Choices();
-                opponentChoices.Add(WHERE_IS + " " + usableName);
-                opponentChoices.Add(WHATS + " " + usableName + "'s " + LAST_LAP);
-                opponentChoices.Add(WHATS + " " + usableName + "'s " + BEST_LAP);
+                if (initialised)
+                {
+                    Choices opponentChoices = new Choices();
+                    opponentChoices.Add(WHERE_IS + " " + usableName);
+                    opponentChoices.Add(WHATS + " " + usableName + "'s " + LAST_LAP);
+                    opponentChoices.Add(WHATS + " " + usableName + "'s " + BEST_LAP);
 
-                GrammarBuilder opponentGrammarBuilder = new GrammarBuilder();
-                opponentGrammarBuilder.Culture = cultureInfo;
-                opponentGrammarBuilder.Append(opponentChoices);
-                Grammar newOpponentGrammar = new Grammar(opponentGrammarBuilder);
-                sre.LoadGrammar(newOpponentGrammar);
-                opponentGrammarList.Add(newOpponentGrammar);
+                    GrammarBuilder opponentGrammarBuilder = new GrammarBuilder();
+                    opponentGrammarBuilder.Culture = cultureInfo;
+                    opponentGrammarBuilder.Append(opponentChoices);
+                    Grammar newOpponentGrammar = new Grammar(opponentGrammarBuilder);
+                    sre.LoadGrammar(newOpponentGrammar);
+                    opponentGrammarList.Add(newOpponentGrammar);
+                }
             }
         }
 

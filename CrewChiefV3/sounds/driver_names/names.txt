@@ -252,3 +252,6 @@ dreadnaught:dread nort
 eckhchri:ek cree
 maerkel:merkel
 big_e:big ee
+Dušan Borković:borkovic
+Pedrag Knežević:knezevic
+Murgeza Stefanović:Stefanovic

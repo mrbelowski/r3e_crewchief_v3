@@ -2,6 +2,8 @@ CrewChief version 3.
 
 Changelog
 ---------
+Version 3.6.3: Major overhaul of RaceRoom side of the app to use driver names, load driver names mid-session (for Raceroom ADAC GTM driver swaps - not implemented for PCars yet), proper RaceRoom opponent lap / sector times, pit info, wheel-spin / locking etc; Lots more driver names; New RaceRoom spotter implementation (similar to PCars version); No new sound pack for this version (but the latest driver_names pack has lots of new names).
+
 Version 3.6.2: Reset game state when restarting a race (will still fail if you restart during the countdown phase); Added "who's in front / behind on track" response - gives driver name & position of the guy in front / behind regardless of his race position (if he's moving and not in the pits); Fixed missing "who's ahead" response (wasn't wired up in the speech recogniser); Fixed some issues in the spotter handling re-ordered participants array; Spotter now calls "car left" / "car right" after the other side goes clear following a three-wide; Make opponent speed calculation handle noisy data better; Added options to set the minimum required voice recognition confidence for regular requests ("what's my position?" and stuff - defaults to 50%), and a separate confidence level for driver-name requests ("where's Bob?" - defaults to 40%); Fixed app playing messages when monitoring other cars; Fixed app not running in free practice mode; Fixed missing program start arguments when restarting app after altering properties. No new sound pack for this version.
 
 Version 3.6.1: Minor damage and start message tweaks; added missing pit detection for Willow Springs, Dubai and Sonoma; Tweaked Zolder pit detection. No new sound pack for this version.
