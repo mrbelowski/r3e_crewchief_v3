@@ -74,10 +74,16 @@ namespace CrewChiefV3.RaceRoom
 
             RaceRoomShared lastState = ((CrewChiefV3.RaceRoom.R3ESharedMemoryReader.R3EStructWrapper)lastStateObj).data;
             RaceRoomShared currentState = ((CrewChiefV3.RaceRoom.R3ESharedMemoryReader.R3EStructWrapper)currentStateObj).data;
+            
+            if (R3EGameStateMapper.firstViewedDriverSlotId != -1 && currentState.slot_id != -1 && R3EGameStateMapper.firstViewedDriverSlotId != currentState.slot_id)
+            {
+                audioPlayer.closeChannel();
+                return;
+            }
+
             if (!enabled || currentState.Player.GameSimulationTime < timeAfterRaceStartToActivate ||
                 currentState.ControlType != (int)RaceRoomConstant.Control.Player || currentState.all_drivers_data.Count() <= 1)
             {
-                audioPlayer.closeChannel();
                 return;
             }
 

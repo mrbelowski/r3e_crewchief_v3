@@ -13,6 +13,8 @@ namespace CrewChiefV3.RaceRoom
 {
     public class R3EGameStateMapper : GameStateMapper
     {
+        public static int firstViewedDriverSlotId = -1;
+
         private TimeSpan minimumSessionParticipationTime = TimeSpan.FromSeconds(6);
 
         // for locking / spinning check - the tolerance values are built into these tyre diameter values
@@ -95,18 +97,31 @@ namespace CrewChiefV3.RaceRoom
         {
             this.speechRecogniser = speechRecogniser;
         }
-           
+
         public GameStateData mapToGameStateData(Object memoryMappedFileStruct, GameStateData previousGameState)
         {
             CrewChiefV3.RaceRoom.R3ESharedMemoryReader.R3EStructWrapper wrapper = (CrewChiefV3.RaceRoom.R3ESharedMemoryReader.R3EStructWrapper)memoryMappedFileStruct;
             GameStateData currentGameState = new GameStateData(wrapper.ticksWhenRead);
             RaceRoomData.RaceRoomShared shared = wrapper.data;
 
-            if (shared.Player.GameSimulationTime <= 0 ||
+            if (shared.Player.GameSimulationTime <= 0 || shared.slot_id < 0 ||
                 shared.ControlType == (int)RaceRoomConstant.Control.Remote || shared.ControlType ==(int)RaceRoomConstant.Control.Replay)
             {
                 return null;
             }
+
+            if (firstViewedDriverSlotId == -1)
+            {
+                if (shared.slot_id >= 0)
+                {
+                    firstViewedDriverSlotId = shared.slot_id;
+                }
+            }
+            else if (shared.slot_id != firstViewedDriverSlotId)
+            {
+                return null;
+            }
+
             Boolean isCarRunning = CheckIsCarRunning(shared);
 
             SessionPhase lastSessionPhase = SessionPhase.Unavailable;
@@ -977,9 +992,9 @@ namespace CrewChiefV3.RaceRoom
             return opponentData;
         }
 
-        private String getNameFromBytes(byte[] name)
+        public static String getNameFromBytes(byte[] name)
         {
             return Encoding.UTF8.GetString(name).TrimEnd('\0').Trim();
-        }
+        } 
     }
 }
