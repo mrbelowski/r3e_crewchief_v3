@@ -111,17 +111,14 @@ namespace CrewChiefV3
             audioPlayer.closeChannel();
         }
         
-        public void triggerInternal(float playerRotationInRadians, float[] currentPlayerPosition, float[] previousPlayerPosition, 
-            List<float[]> currentOpponentPositions, List<float[]> previousOpponentPositions, float timeInterval)
+        public void triggerInternal(float playerRotationInRadians, float[] currentPlayerPosition,
+            float playerSpeed, List<float> opponentSpeeds, List<float[]> currentOpponentPositions, float timeInterval)
         {
             DateTime now = DateTime.Now;
 
-            float currentPlayerSpeed = getSpeed(currentPlayerPosition, previousPlayerPosition, timeInterval);
             if (currentPlayerPosition[0] != 0 && currentPlayerPosition[1] != 0 &&
                 currentPlayerPosition[0] != -1 && currentPlayerPosition[1] != -1 &&
-                previousPlayerPosition[0] != 0 && previousPlayerPosition[1] != 0 &&
-                previousPlayerPosition[0] != -1 && previousPlayerPosition[1] != -1 && 
-                currentPlayerSpeed > minSpeedForSpotterToOperate)
+                playerSpeed > minSpeedForSpotterToOperate)
             {
                 int carsOnLeft = 0;
                 int carsOnRight = 0;
@@ -133,14 +130,11 @@ namespace CrewChiefV3
                         break;
                     }
                     float[] currentOpponentPosition = currentOpponentPositions[i];
-                    float[] previousOpponentPosition = previousOpponentPositions[i];                    
                     if (currentOpponentPosition[0] != 0 && currentOpponentPosition[1] != 0 &&   
-                        currentOpponentPosition[0] != -1 && currentOpponentPosition[1] != -1 &&                                
-                        previousOpponentPosition[0] != 0 && previousOpponentPosition[1] != 0 &&
-                        previousOpponentPosition[0] != -1 && previousOpponentPosition[1] != -1)
+                        currentOpponentPosition[0] != -1 && currentOpponentPosition[1] != -1)
                     {
-                        float opponentSpeed = getSpeed(currentOpponentPosition, previousOpponentPosition, timeInterval);
-                        if (opponentIsRacing(currentOpponentPosition, currentPlayerPosition, opponentSpeed, currentPlayerSpeed))
+                        float opponentSpeed = opponentSpeeds[i];
+                        if (opponentIsRacing(currentOpponentPosition, currentPlayerPosition, opponentSpeed, playerSpeed))
                         {
                             Side side = getSide(playerRotationInRadians, currentPlayerPosition[0], currentPlayerPosition[1], currentOpponentPosition[0], currentOpponentPosition[1]);
                             if (side == Side.left)
@@ -248,6 +242,7 @@ namespace CrewChiefV3
             float alignedXCoordinate = ((float)Math.Cos(playerRotationInRadians) * rawXCoordinate) + ((float)Math.Sin(playerRotationInRadians) * rawYCoordinate);
             float alignedYCoordinate = ((float)Math.Cos(playerRotationInRadians) * rawYCoordinate) - ((float)Math.Sin(playerRotationInRadians) * rawXCoordinate);
 
+            Console.WriteLine("raw x " + rawXCoordinate + ", raw y = " + rawYCoordinate + ", aligned x " + alignedXCoordinate + ", aligned y " + alignedYCoordinate);
 
             // when checking for an overlap, use the 'short' (actual) car length if we're not already overlapping on that side.
             // If we're already overlapping, use the 'long' car length - this means we don't call 'clear' till there's a small gap
@@ -284,11 +279,6 @@ namespace CrewChiefV3
                 }
             }
             return Side.none;
-        }
-
-        private float getSpeed(float[] current, float[] previous, float timeInterval)
-        {
-            return (float) (Math.Sqrt(Math.Pow(current[0] - previous[0], 2) + Math.Pow(current[1] - previous[1], 2))) / timeInterval;
         }
 
         private Boolean opponentIsRacing(float[] opponentPosition, float[] playerPosition, float opponentSpeed, float playerSpeed)
@@ -333,20 +323,45 @@ namespace CrewChiefV3
             {
                 // new 'in the middle'
                 Console.WriteLine("3 wide, carsOnLeftCount " + carsOnLeftCount + " carsOnRightCount " + carsOnRightCount + " hasCarLeft " + hasCarLeft + " hasCarRight " + hasCarRight);
-                nextMessageType = NextMessageType.threeWide;
-                nextMessageDue = now;
+                // if there's a 'pending clear' at this point (that is, we would have said "clear" but the delay time isn't up yet), then we're 
+                // still in overlap-mode so don't want to say this immediately
+                if (reportedOverlapLeft && reportedOverlapLeft)
+                {
+                    nextMessageDue = now.Add(repeatHoldFrequency);
+                }
+                else
+                {
+                    nextMessageDue = now;
+                }
+                nextMessageType = NextMessageType.threeWide;                
             }
             else if (carsOnLeftCount > 0 && carsOnRightCount == 0 && !hasCarLeft && !hasCarRight)
             {
                 Console.WriteLine("car left, carsOnLeftCount " + carsOnLeftCount + " carsOnRightCount " + carsOnRightCount + " hasCarLeft " + hasCarLeft + " hasCarRight " + hasCarRight);
+                // if there's a 'pending clear' at this point (that is, we would have said "clear" but the delay time isn't up yet), then we're 
+                // still in overlap-mode so don't want to say this immediately
+                if (reportedOverlapLeft)
+                {
+                    nextMessageDue = now.Add(repeatHoldFrequency);
+                }
+                else
+                {
+                    nextMessageDue = now;
+                }
                 nextMessageType = NextMessageType.carLeft;
-                nextMessageDue = now;
             }
             else if (carsOnLeftCount == 0 && carsOnRightCount > 0 && !hasCarLeft && !hasCarRight)
             {
                 Console.WriteLine("car right, carsOnLeftCount " + carsOnLeftCount + " carsOnRightCount " + carsOnRightCount + " hasCarLeft " + hasCarLeft + " hasCarRight " + hasCarRight);
+                if (reportedOverlapRight)
+                {
+                    nextMessageDue = now.Add(repeatHoldFrequency);
+                }
+                else
+                {
+                    nextMessageDue = now;
+                }
                 nextMessageType = NextMessageType.carRight;
-                nextMessageDue = now;
             }
         }
 

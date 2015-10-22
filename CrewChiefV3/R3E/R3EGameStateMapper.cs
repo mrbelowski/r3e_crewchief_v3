@@ -77,6 +77,19 @@ namespace CrewChiefV3.RaceRoom
 
         private SpeechRecogniser speechRecogniser;
 
+        private Dictionary<int, PendingRacePositionChange> PendingRacePositionChanges = new Dictionary<int, PendingRacePositionChange>();
+        private TimeSpan PositionChangeLag = TimeSpan.FromSeconds(1);
+        class PendingRacePositionChange
+        {
+            public int newPosition;
+            public DateTime positionChangeTime;
+            public PendingRacePositionChange(int newPosition, DateTime positionChangeTime)
+            {
+                this.newPosition = newPosition;
+                this.positionChangeTime = positionChangeTime;
+            }
+        }
+
         public R3EGameStateMapper()
         {
             tyreWearThresholds.Add(new CornerData.EnumWithThresholds(TyreCondition.NEW, -10000, scrubbedTyreWearPercent));
@@ -376,7 +389,7 @@ namespace CrewChiefV3.RaceRoom
                                 previousOpponentSpeed = previousOpponentData.Speed;
                             }
 
-                            int currentOpponentRacePosition = participantStruct.place;
+                            int currentOpponentRacePosition = getRacePosition(participantStruct.driver_info.slot_id, previousOpponentPosition, participantStruct.place, currentGameState.Now);
                             int currentOpponentLapsCompleted = participantStruct.completed_laps;
                             int currentOpponentSector = participantStruct.track_sector;
                             if (currentOpponentSector == 0)
@@ -394,6 +407,7 @@ namespace CrewChiefV3.RaceRoom
                             }
                             if (currentOpponentRacePosition == 1 && previousOpponentPosition > 1)
                             {
+                                Console.WriteLine("lead change, new leader = " + getNameFromBytes(participantStruct.driver_info.nameByteArray) + ", race time = "+ shared.Player.GameSimulationTime);
                                 currentGameState.SessionData.HasLeadChanged = true;
                             }
                             int opponentPositionAtSector3 = previousOpponentPosition;
@@ -701,7 +715,50 @@ namespace CrewChiefV3.RaceRoom
             }
             return currentGameState;
         }
-        
+
+        private int getRacePosition(int slot_id, int oldPosition, int newPosition, DateTime now)
+        {
+            if (oldPosition == newPosition) 
+            {
+                // clear any pending position change
+                if (PendingRacePositionChanges.ContainsKey(slot_id))
+                {
+                    PendingRacePositionChanges.Remove(slot_id);
+                }
+                return oldPosition;
+            }
+            else if (PendingRacePositionChanges.ContainsKey(slot_id))
+            {
+                PendingRacePositionChange pendingRacePositionChange = PendingRacePositionChanges[slot_id];
+                if (newPosition == pendingRacePositionChange.newPosition)
+                {
+                    // R3E is still reporting this driver is in the same race position, see if it's been long enough...
+                    if (now > pendingRacePositionChange.positionChangeTime + PositionChangeLag)
+                    {
+                        int positionToReturn = newPosition;
+                        PendingRacePositionChanges.Remove(slot_id);
+                        return positionToReturn;
+                    }
+                    else
+                    {
+                        return oldPosition;
+                    }
+                }
+                else
+                {
+                    // the new position is not consistent with the pending position change, bit of an edge case here
+                    pendingRacePositionChange.newPosition = newPosition;
+                    pendingRacePositionChange.positionChangeTime = now;
+                    return oldPosition;
+                }
+            }
+            else
+            {
+                PendingRacePositionChanges.Add(slot_id, new PendingRacePositionChange(newPosition, now));
+                return oldPosition;
+            }
+        }
+
         private TyreType mapToTyreType(int r3eTyreType)
         {
             if ((int)RaceRoomConstant.TireType.DTM_Option == r3eTyreType)

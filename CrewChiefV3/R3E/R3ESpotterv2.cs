@@ -83,23 +83,21 @@ namespace CrewChiefV3.RaceRoom
 
             DateTime now = DateTime.Now;
             DriverData currentPlayerData;
-            DriverData previousPlayerData;
             try
             {
                 currentPlayerData = getDriverData(currentState, currentState.slot_id);
-                previousPlayerData = getDriverData(lastState, currentState.slot_id);
             }
             catch (Exception e)
             {
                 return;
             }
             float[] currentPlayerPosition = new float[] { currentPlayerData.position.X, currentPlayerData.position.Z };
-            float[] previousPlayerPosition = new float[] { previousPlayerData.position.X, previousPlayerData.position.Z };
 
             if (currentPlayerData.in_pitlane == 0)
             {
                 List<float[]> currentOpponentPositions = new List<float[]>();
-                List<float[]> previousOpponentPositions = new List<float[]>();
+                List<float> opponentsSpeeds = new List<float>();
+                float playerSpeed = currentState.CarSpeed;
 
                 foreach (DriverData driverData in currentState.all_drivers_data)
                 {
@@ -108,17 +106,7 @@ namespace CrewChiefV3.RaceRoom
                         continue;
                     }
                     currentOpponentPositions.Add(new float[] { driverData.position.X, driverData.position.Z });
-                    try
-                    {
-                        DriverData previousOpponentData = getDriverData(lastState, driverData.driver_info.slot_id);
-                        previousOpponentPositions.Add(new float[] { previousOpponentData.position.X, driverData.position.Z });
-                    }
-                    catch (Exception e)
-                    {
-                        // ignore - the mParticipantData array is frequently full of crap
-                        previousOpponentPositions.Add(new float[] { 0, 0 });
-                    }
-                    
+                    opponentsSpeeds.Add(driverData.car_speed);
                 }
                 float playerRotation = currentState.CarOrientation.Yaw;                
                 if (playerRotation < 0)
@@ -126,8 +114,7 @@ namespace CrewChiefV3.RaceRoom
                     playerRotation = (float)(2 * Math.PI) + playerRotation;
                 }
                 playerRotation = (float)(2 * Math.PI) - playerRotation;
-                internalSpotter.triggerInternal(playerRotation, currentPlayerPosition, previousPlayerPosition, currentOpponentPositions,
-                    previousOpponentPositions, this.intervalSeconds);
+                internalSpotter.triggerInternal(playerRotation, currentPlayerPosition, playerSpeed, opponentsSpeeds, currentOpponentPositions, this.intervalSeconds);
             }
         }
 

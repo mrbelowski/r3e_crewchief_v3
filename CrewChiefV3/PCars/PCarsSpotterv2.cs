@@ -96,14 +96,12 @@ namespace CrewChiefV3.PCars
                 int playerIndex = playerDataWithIndex.Item1;
                 pCarsAPIParticipantStruct playerData = playerDataWithIndex.Item2;
                 float[] currentPlayerPosition = new float[] { playerData.mWorldPosition[0], playerData.mWorldPosition[2] };
-                Tuple<int, pCarsAPIParticipantStruct> previousPlayerDataWithIndex = PCarsGameStateMapper.getPlayerDataStruct(lastState.mParticipantData, lastState.mViewedParticipantIndex);
-                pCarsAPIParticipantStruct previousPlayerData = previousPlayerDataWithIndex.Item2;
-                float[] previousPlayerPosition = new float[] { previousPlayerData.mWorldPosition[0], previousPlayerData.mWorldPosition[2] };
 
                 if (currentState.mPitMode == (uint)ePitMode.PIT_MODE_NONE)
                 {
                     List<float[]> currentOpponentPositions = new List<float[]>();
-                    List<float[]> previousOpponentPositions = new List<float[]>();
+                    List<float> opponentSpeeds = new List<float>();
+                    float playerSpeed = currentState.mSpeed;
 
                     for (int i = 0; i < currentState.mParticipantData.Count(); i++)
                     {
@@ -114,16 +112,17 @@ namespace CrewChiefV3.PCars
                         pCarsAPIParticipantStruct opponentData = currentState.mParticipantData[i];
                         if (opponentData.mIsActive)
                         {
-                            currentOpponentPositions.Add(new float[] { opponentData.mWorldPosition[0], opponentData.mWorldPosition[2] });
+                            float[] currentPositions = new float[] { opponentData.mWorldPosition[0], opponentData.mWorldPosition[2] };
+                            currentOpponentPositions.Add(currentPositions);
                             try
                             {
                                 pCarsAPIParticipantStruct previousOpponentData = PCarsGameStateMapper.getParticipantDataForName(lastState.mParticipantData, opponentData.mName, i);
-                                previousOpponentPositions.Add(new float[] { previousOpponentData.mWorldPosition[0], previousOpponentData.mWorldPosition[2] });
+                                float[] previousPositions = new float[] { previousOpponentData.mWorldPosition[0], previousOpponentData.mWorldPosition[2] };
+                                opponentSpeeds.Add(getSpeed(currentPositions, previousPositions, this.intervalSeconds));
                             }
                             catch (Exception e)
                             {
-                                // ignore - the mParticipantData array is frequently full of crap
-                                previousOpponentPositions.Add(new float[] { 0, 0 });
+                                opponentSpeeds.Add(playerSpeed);
                             }
                         }
                     }
@@ -133,8 +132,7 @@ namespace CrewChiefV3.PCars
                         playerRotation = (float)(2 * Math.PI) + playerRotation;
                     }
                     playerRotation = (float)(2 * Math.PI) - playerRotation;
-                    internalSpotter.triggerInternal(playerRotation, currentPlayerPosition, previousPlayerPosition, currentOpponentPositions,
-                        previousOpponentPositions, this.intervalSeconds);
+                    internalSpotter.triggerInternal(playerRotation, currentPlayerPosition, playerSpeed, opponentSpeeds, currentOpponentPositions, this.intervalSeconds);
                 }
             }
         }
@@ -151,6 +149,11 @@ namespace CrewChiefV3.PCars
             enabled = false;
             audioPlayer.playClipImmediately(new QueuedMessage(AudioPlayer.folderDisableSpotter, 0, null), false);
             audioPlayer.closeChannel();
+        }
+
+        private float getSpeed(float[] current, float[] previous, float timeInterval)
+        {
+            return (float)(Math.Sqrt(Math.Pow(current[0] - previous[0], 2) + Math.Pow(current[1] - previous[1], 2))) / timeInterval;
         }
     }
 }
