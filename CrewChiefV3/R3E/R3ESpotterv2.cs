@@ -74,13 +74,7 @@ namespace CrewChiefV3.RaceRoom
 
             RaceRoomShared lastState = ((CrewChiefV3.RaceRoom.R3ESharedMemoryReader.R3EStructWrapper)lastStateObj).data;
             RaceRoomShared currentState = ((CrewChiefV3.RaceRoom.R3ESharedMemoryReader.R3EStructWrapper)currentStateObj).data;
-            
-            if (R3EGameStateMapper.firstViewedDriverSlotId != -1 && currentState.slot_id != -1 && R3EGameStateMapper.firstViewedDriverSlotId != currentState.slot_id)
-            {
-                audioPlayer.closeChannel();
-                return;
-            }
-
+          
             if (!enabled || currentState.Player.GameSimulationTime < timeAfterRaceStartToActivate ||
                 currentState.ControlType != (int)RaceRoomConstant.Control.Player || currentState.all_drivers_data.Count() <= 1)
             {
@@ -88,10 +82,17 @@ namespace CrewChiefV3.RaceRoom
             }
 
             DateTime now = DateTime.Now;
-           
-            DriverData currentPlayerData = getDriverData(currentState, currentState.slot_id);
-
-            DriverData previousPlayerData = getDriverData(lastState, currentState.slot_id);
+            DriverData currentPlayerData;
+            DriverData previousPlayerData;
+            try
+            {
+                currentPlayerData = getDriverData(currentState, currentState.slot_id);
+                previousPlayerData = getDriverData(lastState, currentState.slot_id);
+            }
+            catch (Exception e)
+            {
+                return;
+            }
             float[] currentPlayerPosition = new float[] { currentPlayerData.position.X, currentPlayerData.position.Z };
             float[] previousPlayerPosition = new float[] { previousPlayerData.position.X, previousPlayerData.position.Z };
 

@@ -13,8 +13,6 @@ namespace CrewChiefV3.RaceRoom
 {
     public class R3EGameStateMapper : GameStateMapper
     {
-        public static int firstViewedDriverSlotId = -1;
-
         private TimeSpan minimumSessionParticipationTime = TimeSpan.FromSeconds(6);
 
         // for locking / spinning check - the tolerance values are built into these tyre diameter values
@@ -105,19 +103,7 @@ namespace CrewChiefV3.RaceRoom
             RaceRoomData.RaceRoomShared shared = wrapper.data;
 
             if (shared.Player.GameSimulationTime <= 0 || shared.slot_id < 0 ||
-                shared.ControlType == (int)RaceRoomConstant.Control.Remote || shared.ControlType ==(int)RaceRoomConstant.Control.Replay)
-            {
-                return null;
-            }
-
-            if (firstViewedDriverSlotId == -1)
-            {
-                if (shared.slot_id >= 0)
-                {
-                    firstViewedDriverSlotId = shared.slot_id;
-                }
-            }
-            else if (shared.slot_id != firstViewedDriverSlotId)
+                shared.ControlType == (int)RaceRoomConstant.Control.Remote || shared.ControlType == (int)RaceRoomConstant.Control.Replay)
             {
                 return null;
             }
@@ -148,6 +134,8 @@ namespace CrewChiefV3.RaceRoom
                 previousLapsCompleted, shared.CompletedLaps, isCarRunning);
 
             if ((lastSessionPhase != currentGameState.SessionData.SessionPhase && (lastSessionPhase == SessionPhase.Unavailable || lastSessionPhase == SessionPhase.Finished)) ||
+                ((lastSessionPhase == SessionPhase.Checkered || lastSessionPhase == SessionPhase.Finished || lastSessionPhase == SessionPhase.Green) && 
+                    currentGameState.SessionData.SessionPhase == SessionPhase.Countdown) ||
                 lastSessionRunningTime > currentGameState.SessionData.SessionRunningTime)
             {
                 currentGameState.SessionData.IsNewSession = true;
@@ -439,7 +427,7 @@ namespace CrewChiefV3.RaceRoom
                                     isEnteringPits || isLeavingPits, participantStruct.current_lap_valid == 1,
                                     currentGameState.SessionData.SessionRunningTime, secondsSinceLastUpdate,
                                     new float[] { participantStruct.position.X, participantStruct.position.Z }, previousOpponentWorldPosition,
-                                    participantStruct.lap_distance);
+                                    participantStruct.lap_distance, shared.Player.GameSimulationTime > 60);
                         }
                     }
                     else
@@ -924,9 +912,9 @@ namespace CrewChiefV3.RaceRoom
 
         private void upateOpponentData(OpponentData opponentData, String driverName, int racePosition, int completedLaps, int sector, float sectorTime, 
             float currentLapTime, Boolean isInPits, Boolean lapIsValid, float sessionRunningTime, float secondsSinceLastUpdate, float[] currentWorldPosition, 
-            float[] previousWorldPosition, float distanceRoundTrack)
+            float[] previousWorldPosition, float distanceRoundTrack, Boolean updateDriverName)
         {
-            if (driverName != opponentData.DriverRawName)
+            if (updateDriverName && driverName != opponentData.DriverRawName)
             {
                 Console.WriteLine("driver swap - " + opponentData.DriverRawName + " has now been replaced with " + driverName);
                 if (CrewChief.enableDriverNames) 
