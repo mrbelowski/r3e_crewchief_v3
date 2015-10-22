@@ -33,6 +33,10 @@ namespace CrewChiefV3.RaceRoom
         {
             if (dumpToFile && dataToDump != null && dataToDump.Count > 0 && filenameToDump != null)
             {
+                foreach (R3EStructWrapper wrapper in dataToDump)
+                {
+                    wrapper.data.all_drivers_data = getPopulatedDriverDataArray(wrapper.data.all_drivers_data);
+                }
                 SerializeObject(dataToDump.ToArray<R3EStructWrapper>(), filenameToDump);
             }
         }
@@ -83,7 +87,7 @@ namespace CrewChiefV3.RaceRoom
             }
         }
 
-        public override Object ReadGameData()
+        public override Object ReadGameData(Boolean allowRecording)
         {
             lock (this)
             {
@@ -108,7 +112,7 @@ namespace CrewChiefV3.RaceRoom
                     R3EStructWrapper structWrapper = new R3EStructWrapper();
                     structWrapper.ticksWhenRead = DateTime.Now.Ticks;
                     structWrapper.data = _raceroomapistruct;
-                    if (dumpToFile && dataToDump != null)
+                    if (allowRecording && dumpToFile && dataToDump != null)
                     {
                         dataToDump.Add(structWrapper);
                     }
@@ -119,6 +123,23 @@ namespace CrewChiefV3.RaceRoom
                     throw new GameDataReadException(ex.Message, ex);
                 }
             }
+        }
+
+        private DriverData[] getPopulatedDriverDataArray(DriverData[] raw)
+        {
+            List<DriverData> populated = new List<DriverData>();
+            foreach (DriverData rawData in raw)
+            {
+                if (rawData.place > 0)
+                {
+                    populated.Add(rawData);
+                }
+            }
+            if (populated.Count == 0)
+            {
+                populated.Add(raw[0]);
+            }
+            return populated.ToArray();
         }
 
         public override void Dispose()

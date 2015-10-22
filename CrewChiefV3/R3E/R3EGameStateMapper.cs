@@ -421,7 +421,7 @@ namespace CrewChiefV3.RaceRoom
                             float secondsSinceLastUpdate = (float)new TimeSpan(currentGameState.Ticks - previousGameState.Ticks).TotalSeconds;
                             upateOpponentData(currentOpponentData, getNameFromBytes(participantStruct.driver_info.nameByteArray), currentOpponentRacePosition, currentOpponentLapsCompleted,
                                     currentOpponentSector, sectorTime, participantStruct.lap_time_current_self, 
-                                    isEnteringPits, isLeavingPits, participantStruct.current_lap_valid == 1,
+                                    isEnteringPits || isLeavingPits, participantStruct.current_lap_valid == 1,
                                     currentGameState.SessionData.SessionRunningTime, secondsSinceLastUpdate,
                                     new float[] { participantStruct.position.X, participantStruct.position.Z }, previousOpponentWorldPosition,
                                     participantStruct.lap_distance);
@@ -449,44 +449,9 @@ namespace CrewChiefV3.RaceRoom
                 currentGameState.SessionData.LeaderHasFinishedRace = true;
             }
 
-            // racing same car in front / behind?
-            if (previousGameState != null)
-            {
-                if (previousGameState.SessionData.NumCars == currentGameState.SessionData.NumCars)
-                {
-                    currentGameState.SessionData.IsRacingSameCarInFront = previousGameState.SessionData.Position == currentGameState.SessionData.Position;
-                    currentGameState.SessionData.IsRacingSameCarBehind = previousGameState.SessionData.Position == currentGameState.SessionData.Position;
-                }
-                else
-                {
-                    // someone's dropped out of the race so see if it's the car immediately in front or behind
-                    if (currentGameState.SessionData.Position == 1)
-                    {
-                        currentGameState.SessionData.IsRacingSameCarInFront = false;
-                    }
-                    if (currentGameState.SessionData.Position == currentGameState.SessionData.NumCars)
-                    {
-                        currentGameState.SessionData.IsRacingSameCarBehind = false;
-                    }
-                    if (currentGameState.SessionData.Position > 1)
-                    {
-                        // we're not first. We don't care what position we're in here (2 or more cars could have
-                        // dropped out) - we just want to know if the car immediately in front or behind has dropped out.
-                        // To test this we see if the gap has changed by more than the time interval - if the car in front 
-                        // has stopped completely we'd catch him in a single time interval. If the gap change is larger than
-                        // a single time interval he must have disappeared. He might still have dropped out, but the next 
-                        // car is very close to us - can't detect this but it shouldn't be a major issue.
-                        currentGameState.SessionData.IsRacingSameCarInFront = 
-                            Math.Abs(currentGameState.SessionData.TimeDeltaFront - previousGameState.SessionData.TimeDeltaFront) * 1000 < CrewChief._timeInterval.Milliseconds;
-                    }
-                    if (currentGameState.SessionData.Position < currentGameState.SessionData.NumCars)
-                    {
-                        currentGameState.SessionData.IsRacingSameCarBehind = 
-                            Math.Abs(currentGameState.SessionData.TimeDeltaBehind - previousGameState.SessionData.TimeDeltaBehind) * 1000 < CrewChief._timeInterval.Milliseconds;
-                    }
-                }
-            }
-
+            currentGameState.SessionData.IsRacingSameCarBehind = previousGameState != null && previousGameState.getOpponentKeyBehind() == currentGameState.getOpponentKeyBehind();
+            currentGameState.SessionData.IsRacingSameCarInFront = previousGameState != null && previousGameState.getOpponentKeyInFront() == currentGameState.getOpponentKeyInFront();
+                        
             //------------------------ Car damage data -----------------------
             currentGameState.CarDamageData.DamageEnabled = shared.CarDamage.Aerodynamics != -1 &&
                 shared.CarDamage.Transmission != -1 && shared.CarDamage.Engine != -1;
@@ -943,8 +908,8 @@ namespace CrewChiefV3.RaceRoom
         }
 
         private void upateOpponentData(OpponentData opponentData, String driverName, int racePosition, int completedLaps, int sector, float sectorTime, 
-            float currentLapTime, Boolean isEnteringPits, Boolean isLeavingPits,
-            Boolean lapIsValid, float sessionRunningTime, float secondsSinceLastUpdate, float[] currentWorldPosition, float[] previousWorldPosition, float distanceRoundTrack)
+            float currentLapTime, Boolean isInPits, Boolean lapIsValid, float sessionRunningTime, float secondsSinceLastUpdate, float[] currentWorldPosition, 
+            float[] previousWorldPosition, float distanceRoundTrack)
         {
             if (driverName != opponentData.DriverRawName)
             {
@@ -977,19 +942,23 @@ namespace CrewChiefV3.RaceRoom
                     if (opponentData.OpponentLapData.Count > 0)
                     {
                         opponentData.CompleteLapWithProvidedLapTime(racePosition, sessionRunningTime, opponentData.CurrentLapTime,
-                            lapIsValid && validSpeed, isEnteringPits, false, 20, 20);
+                            lapIsValid && validSpeed, false, 20, 20);
                     }
-                    opponentData.StartNewLap(completedLaps + 1, racePosition, isEnteringPits, sessionRunningTime, false, 20, 20);
+                    opponentData.StartNewLap(completedLaps + 1, racePosition, isInPits, sessionRunningTime, false, 20, 20);
                     opponentData.IsNewLap = true;
                 }
                 else if (opponentData.CurrentSectorNumber == 1 && sector == 2 || opponentData.CurrentSectorNumber == 2 && sector == 3)
                 {
-                    opponentData.AddSectorData(racePosition, sectorTime, sessionRunningTime, lapIsValid && validSpeed, isEnteringPits, false, 20, 20);
+                    opponentData.AddSectorData(racePosition, sectorTime, sessionRunningTime, lapIsValid && validSpeed, false, 20, 20);
                 }
                 opponentData.CurrentSectorNumber = sector;
             }
             opponentData.CompletedLaps = completedLaps;
             opponentData.CurrentLapTime = currentLapTime;
+            if (sector == 3 && isInPits)
+            {
+                opponentData.setInLap();
+            }
         }
 
         private OpponentData createOpponentData(DriverData participantStruct, String driverName, Boolean loadDriverName)

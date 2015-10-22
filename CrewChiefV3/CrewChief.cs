@@ -259,7 +259,7 @@ namespace CrewChiefV3
                 DateTime now = DateTime.Now;
                 if (now > nextRunTime && spotter != null)
                 {
-                    currentSpotterState = gameDataReader.ReadGameData();
+                    currentSpotterState = gameDataReader.ReadGameData(false);
                     if (lastSpotterState != null && currentSpotterState != null)
                     {
                         try
@@ -298,10 +298,6 @@ namespace CrewChiefV3
                     audioPlayer.mute = true;
                 }
                 dumpToFile = false;
-            }
-            if (dumpToFile)
-            {
-                spotterEnabled = false;
             }
             
             gameStateMapper = (GameStateMapper)Activator.CreateInstance(Type.GetType(gameDefinition.gameStateMapperName));
@@ -373,7 +369,7 @@ namespace CrewChiefV3
                         }
                         else
                         {
-                            rawGameData = gameDataReader.ReadGameData();
+                            rawGameData = gameDataReader.ReadGameData(true);
                         }
                         gameStateMapper.versionCheck(rawGameData);
 
@@ -464,7 +460,7 @@ namespace CrewChiefV3
                                         triggerEvent(entry.Key, entry.Value, previousGameState, currentGameState);
                                     }
                                 }
-                                if (spotter != null && spotterEnabled && !spotterIsRunning && !dumpToFile && !loadDataFromFile)
+                                if (spotter != null && spotterEnabled && !spotterIsRunning && !loadDataFromFile)
                                 {
                                     Console.WriteLine("********** starting spotter***********");
                                     spotter.clearState();

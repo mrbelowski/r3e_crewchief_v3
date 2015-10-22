@@ -16,7 +16,7 @@ namespace CrewChiefV3
 
         protected abstract Boolean InitialiseInternal();
 
-        public abstract Object ReadGameData();
+        public abstract Object ReadGameData(Boolean allowRecording);
                 
         public abstract void Dispose();
 

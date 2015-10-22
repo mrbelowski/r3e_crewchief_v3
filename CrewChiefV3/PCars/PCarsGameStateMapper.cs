@@ -603,7 +603,7 @@ namespace CrewChiefV3.PCars
                                 }
                                 float secondsSinceLastUpdate = (float)new TimeSpan(currentGameState.Ticks - previousGameState.Ticks).TotalSeconds;
                                 upateOpponentData(currentOpponentData, currentOpponentRacePosition, currentOpponentLapsCompleted,
-                                        currentOpponentSector, isEnteringPits, isLeavingPits, currentGameState.SessionData.SessionRunningTime, secondsSinceLastUpdate,
+                                        currentOpponentSector, isEnteringPits || isLeavingPits, currentGameState.SessionData.SessionRunningTime, secondsSinceLastUpdate,
                                         new float[] { participantStruct.mWorldPosition[0], participantStruct.mWorldPosition[2] }, previousOpponentWorldPosition,
                                         previousOpponentSpeed, shared.mWorldFastestLapTime, participantStruct.mCurrentLapDistance, shared.mRainDensity == 1, 
                                         shared.mAmbientTemperature, shared.mTrackTemperature);
@@ -871,7 +871,7 @@ namespace CrewChiefV3.PCars
             }
         }
 
-        private void upateOpponentData(OpponentData opponentData, int racePosition, int completedLaps, int sector, Boolean isEnteringPits, Boolean isLeavingPits,
+        private void upateOpponentData(OpponentData opponentData, int racePosition, int completedLaps, int sector, Boolean isInPits,
             float sessionRunningTime, float secondsSinceLastUpdate, float[] currentWorldPosition, float[] previousWorldPosition,
             float previousSpeed, float worldRecordLapTime, float distanceRoundTrack, Boolean isRaining, float trackTemp, float airTemp)
         {
@@ -925,16 +925,20 @@ namespace CrewChiefV3.PCars
                     if (opponentData.OpponentLapData.Count > 0)
                     {
                         opponentData.CompleteLapWithEstimatedLapTime(racePosition, sessionRunningTime, worldRecordLapTime, validSpeed,
-                            isEnteringPits, isRaining, trackTemp, airTemp);
+                            isRaining, trackTemp, airTemp);
                     }
-                    opponentData.StartNewLap(completedLaps + 1, racePosition, isEnteringPits, sessionRunningTime, isRaining, trackTemp, airTemp);
+                    opponentData.StartNewLap(completedLaps + 1, racePosition, isInPits, sessionRunningTime, isRaining, trackTemp, airTemp);
                     opponentData.IsNewLap = true;
                 }
                 else if (opponentData.CurrentSectorNumber == 1 && sector == 2 || opponentData.CurrentSectorNumber == 2 && sector == 3)
                 {
-                    opponentData.AddSectorData(racePosition, -1, sessionRunningTime, validSpeed, isEnteringPits, isRaining, trackTemp, airTemp);
+                    opponentData.AddSectorData(racePosition, -1, sessionRunningTime, validSpeed, isRaining, trackTemp, airTemp);
                 }
                 opponentData.CurrentSectorNumber = sector;
+            }
+            if (sector == 3 && isInPits) 
+            {
+                opponentData.setInLap();
             }
             opponentData.CompletedLaps = completedLaps;
         }
