@@ -5,7 +5,7 @@ using System.Text;
 
 namespace CrewChiefV3
 {
-    class PearlsOfWisdom
+    public class PearlsOfWisdom
     {
         public static Boolean enablePearlsOfWisdom = UserSettings.GetUserSettings().getBoolean("enable_pearls_of_wisdom");
         public static float pearlsLikelihood = UserSettings.GetUserSettings().getFloat("pearls_of_wisdom_likelihood");

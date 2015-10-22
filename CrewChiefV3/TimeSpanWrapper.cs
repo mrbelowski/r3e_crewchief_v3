@@ -5,7 +5,7 @@ using System.Text;
 
 namespace CrewChiefV3
 {
-    class TimeSpanWrapper
+    public class TimeSpanWrapper
     {
         public TimeSpan timeSpan;
 

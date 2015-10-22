@@ -13,7 +13,7 @@ using System.Collections;
 
 namespace CrewChiefV3
 {
-    class AudioPlayer
+    public class AudioPlayer
     {
         public Boolean disablePearlsOfWisdom = false;   // used for the last 2 laps / 3 minutes of a race session only
         public Boolean mute = false;
@@ -258,6 +258,41 @@ namespace CrewChiefV3
             {
                 Console.WriteLine("Unable to find sounds directory - path: " + soundFolderName);
             }
+        }
+
+        public void cacheDriverName(String driverName)
+        {
+            DirectoryInfo driverNamesSoundDirectory = new DirectoryInfo(driverNamesFolderPath);
+            if (!driverNamesSoundDirectory.Exists)
+            {
+                Console.WriteLine("Unable to find driver names directory " + driverNamesSoundDirectory.FullName);
+                return;
+            }
+            FileInfo[] driverNamesFiles = driverNamesSoundDirectory.GetFiles();
+            foreach (FileInfo driverNameFile in driverNamesFiles)
+            {
+                if (driverNameFile.Name.EndsWith(".wav"))
+                {
+                    if (driverNameFile.Name.ToLower().Equals(driverName.ToLower() + ".wav") ||
+                            driverNameFile.Name.Equals(driverName + ".wav") ||
+                        driverNameFile.Name.ToLowerInvariant().Equals(driverName.ToLower() + ".wav"))
+                    {
+                        if (!clips.ContainsKey(driverName))
+                        {
+                            Console.WriteLine("Caching driver name sound file for " + driverName);
+                            SoundPlayer clip = new SoundPlayer(driverNameFile.FullName);
+                            clip.Load();
+                            List<SoundPlayer> driverNameClips = new List<SoundPlayer>();
+                            driverNameClips.Add(clip);
+                            clips.Add(driverName, driverNameClips);
+                        }
+                        if (!availableDriverNames.Contains(driverName))
+                        {
+                            availableDriverNames.Add(driverName);
+                        }
+                    }
+                }
+            }            
         }
         
         public void cacheDriverNames(List<String> driverNames)

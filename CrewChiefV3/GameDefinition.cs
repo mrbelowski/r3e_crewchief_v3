@@ -10,7 +10,7 @@ namespace CrewChiefV3
     {
         RACE_ROOM, PCARS_64BIT, PCARS_32BIT
     }
-    class GameDefinition
+    public class GameDefinition
     {
         public static GameDefinition pCars64Bit = new GameDefinition(GameEnum.PCARS_64BIT, "Project Cars (64 bit)", "pCARS64",
             "CrewChiefV3.PCars.PCarsSharedMemoryReader", "CrewChiefV3.PCars.PCarsGameStateMapper", "CrewChiefV3.PCars.PCarsSpotter",

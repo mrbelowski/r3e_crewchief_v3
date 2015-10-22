@@ -9,7 +9,7 @@ using System.Threading;
 
 namespace CrewChiefV3
 {
-    class SpeechRecogniser : IDisposable
+    public class SpeechRecogniser : IDisposable
     {
         private SpeechRecognitionEngine sre;
 
@@ -111,7 +111,7 @@ namespace CrewChiefV3
 
         public MainWindow.VoiceOptionEnum voiceOptionEnum;
 
-        private Grammar opponentGrammar = null;
+        private List<Grammar> opponentGrammarList = new List<Grammar>();
         
         private System.Globalization.CultureInfo cultureInfo;
 
@@ -264,13 +264,33 @@ namespace CrewChiefV3
             initialised = true;
         }
 
+        public void addNewOpponentName(String rawDriverName)
+        {
+            String usableName = DriverNameHelper.getUsableDriverName(rawDriverName, crewChief.audioPlayer.soundFilesPath);
+            if (usableName != null && usableName.Length > 0)
+            {
+                crewChief.audioPlayer.cacheDriverName(usableName);
+                Choices opponentChoices = new Choices();
+                opponentChoices.Add(WHERE_IS + " " + usableName);
+                opponentChoices.Add(WHATS + " " + usableName + "'s " + LAST_LAP);
+                opponentChoices.Add(WHATS + " " + usableName + "'s " + BEST_LAP);
+
+                GrammarBuilder opponentGrammarBuilder = new GrammarBuilder();
+                opponentGrammarBuilder.Culture = cultureInfo;
+                opponentGrammarBuilder.Append(opponentChoices);
+                Grammar newOpponentGrammar = new Grammar(opponentGrammarBuilder);
+                sre.LoadGrammar(newOpponentGrammar);
+                opponentGrammarList.Add(newOpponentGrammar);
+            }
+        }
+
         public void addOpponentSpeechRecognition(List<String> names, Boolean useNames)
         {
-            if (opponentGrammar != null)
+            foreach (Grammar opponentGrammar in opponentGrammarList)
             {
                 sre.UnloadGrammar(opponentGrammar);
-                Console.WriteLine("Unloaded names");
             }
+            opponentGrammarList.Clear();
             Choices opponentChoices = new Choices();
             if (useNames)
             {
@@ -312,8 +332,9 @@ namespace CrewChiefV3
             GrammarBuilder opponentGrammarBuilder = new GrammarBuilder();
             opponentGrammarBuilder.Culture = cultureInfo;
             opponentGrammarBuilder.Append(opponentChoices);
-            opponentGrammar = new Grammar(opponentGrammarBuilder);
-            sre.LoadGrammar(opponentGrammar);
+            Grammar newOpponentGrammar = new Grammar(opponentGrammarBuilder);
+            sre.LoadGrammar(newOpponentGrammar);
+            opponentGrammarList.Add(newOpponentGrammar);
         }
         
         void sre_SpeechRecognized(object sender, SpeechRecognizedEventArgs e)
@@ -321,7 +342,7 @@ namespace CrewChiefV3
             Console.WriteLine("recognised : " + e.Result.Text + " confidence = " + e.Result.Confidence);
             try
             {
-                if (e.Result.Grammar == opponentGrammar)
+                if (opponentGrammarList.Contains(e.Result.Grammar))
                 {
                     if (e.Result.Confidence > minimum_name_voice_recognition_confidence)
                     {

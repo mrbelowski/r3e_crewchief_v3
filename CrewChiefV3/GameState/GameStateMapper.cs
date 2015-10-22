@@ -13,5 +13,7 @@ namespace CrewChiefV3.GameState
         void versionCheck(Object memoryMappedFileStruct);
         
         SessionType mapToSessionType(Object memoryMappedFileStruct);
+
+        void setSpeechRecogniser(SpeechRecogniser speechRecogniser);
     }
 }

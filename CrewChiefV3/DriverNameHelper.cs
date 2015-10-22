@@ -100,6 +100,50 @@ namespace CrewChiefV3
             return null;
         }
 
+        public static String getUsableDriverName(String rawDriverName, String soundsFolderName)
+        {
+            String usableDriverName = null;
+            if (!usableNamesForSession.ContainsKey(rawDriverName))
+            {
+                readRawNamesToUsableNamesFile(soundsFolderName);
+                if (lowerCaseRawNameToUsableName.ContainsKey(rawDriverName.ToLower()))
+                {
+                    usableDriverName = lowerCaseRawNameToUsableName[rawDriverName.ToLower()];
+                    Console.WriteLine("Using mapped drivername " + usableDriverName + " for raw driver name " + rawDriverName);
+                    usableNamesForSession.Add(rawDriverName, usableDriverName);
+                }
+                else
+                {
+                    usableDriverName = validateAndCleanUpName(rawDriverName);
+                    if (usableDriverName != null)
+                    {
+                        Boolean usedLastName = false;
+                        if (useLastNameWherePossible)
+                        {
+                            String lastName = getUnambiguousLastName(usableDriverName);
+                            if (lastName != null && lastName.Count() > 0)
+                            {
+                                Console.WriteLine("Using unmapped driver last name " + lastName + " for raw driver name " + rawDriverName);
+                                usableDriverName = lastName;
+                                usableNamesForSession.Add(rawDriverName, usableDriverName);
+                                usedLastName = true;
+                            }
+                        }
+                        if (!usedLastName)
+                        {
+                            Console.WriteLine("Using unmapped drivername " + usableDriverName + " for raw driver name " + rawDriverName);
+                            usableNamesForSession.Add(rawDriverName, usableDriverName);
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("Unable to create a usable driver name for " + rawDriverName);
+                    }
+                }
+            }
+            return usableDriverName;
+        }
+
         public static List<String> getUsableDriverNames(List<String> rawDriverNames, String soundsFolderName)
         {
             readRawNamesToUsableNamesFile(soundsFolderName);

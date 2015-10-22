@@ -15,7 +15,7 @@ using CrewChiefV3.RaceRoom.RaceRoomData;
 
 namespace CrewChiefV3
 {
-    class CrewChief : IDisposable
+    public class CrewChief : IDisposable
     {
         public static Boolean loadDataFromFile = false;
 
@@ -27,7 +27,7 @@ namespace CrewChiefV3
         private Boolean keepQuietEnabled = false;
         private Boolean spotterEnabled = UserSettings.GetUserSettings().getBoolean("enable_spotter");
 
-        private Boolean enableDriverNames = UserSettings.GetUserSettings().getBoolean("enable_driver_names");
+        public static Boolean enableDriverNames = UserSettings.GetUserSettings().getBoolean("enable_driver_names");
 
         public static TimeSpan _timeInterval = TimeSpan.FromMilliseconds(UserSettings.GetUserSettings().getInt("update_interval"));
 
@@ -305,6 +305,7 @@ namespace CrewChiefV3
             }
             
             gameStateMapper = (GameStateMapper)Activator.CreateInstance(Type.GetType(gameDefinition.gameStateMapperName));
+            gameStateMapper.setSpeechRecogniser(speechRecogniser);
             gameDataReader = (GameDataReader)Activator.CreateInstance(Type.GetType(gameDefinition.gameDataReaderName));
             gameDataReader.dumpToFile = System.Diagnostics.Debugger.IsAttached && dumpToFile;
             if (gameDefinition.spotterName != null)

@@ -75,6 +75,8 @@ namespace CrewChiefV3.PCars
         private TimeSpan minimumSessionParticipationTime = TimeSpan.FromSeconds(6);
 
         private Dictionary<String, int> previousSpeedReuseCount = new Dictionary<string, int>();
+
+        private SpeechRecogniser speechRecogniser;
         
         public PCarsGameStateMapper()
         {
@@ -115,6 +117,11 @@ namespace CrewChiefV3.PCars
             {
                 throw new GameDataReadException("Expected shared data version " + expectedVersion + " but got version " + currentVersion);
             }
+        }
+
+        public void setSpeechRecogniser(SpeechRecogniser speechRecogniser)
+        {
+            this.speechRecogniser = speechRecogniser;
         }
 
         public static pCarsAPIParticipantStruct getParticipantDataForName(pCarsAPIParticipantStruct[] pCarsAPIParticipantStructArray, String name, int index)
@@ -935,7 +942,7 @@ namespace CrewChiefV3.PCars
         private OpponentData createOpponentData(pCarsAPIParticipantStruct participantStruct)
         {
             OpponentData opponentData = new OpponentData();
-            opponentData.DriverRawName = participantStruct.mName.Trim();            
+            opponentData.DriverRawName = participantStruct.mName.Trim();
             opponentData.Position = (int)participantStruct.mRacePosition;
             opponentData.CompletedLaps = (int)participantStruct.mLapsCompleted;
             opponentData.CurrentSectorNumber = (int)participantStruct.mCurrentSector;

@@ -7,7 +7,7 @@ using CrewChiefV3.GameState;
 
 namespace CrewChiefV3
 {
-    class MessageFragment
+    public class MessageFragment
     {
         public enum FragmentType
         {
@@ -49,7 +49,7 @@ namespace CrewChiefV3
         }
     }
 
-    class QueuedMessage
+    public class QueuedMessage
     {
         private static String compoundMessageIdentifier = "COMPOUND_";
 

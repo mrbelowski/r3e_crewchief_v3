@@ -75,6 +75,8 @@ namespace CrewChiefV3.RaceRoom
         private float targetEngineWaterTemp = 88;
         private float targetEngineOilTemp = 105;
 
+        private SpeechRecogniser speechRecogniser;
+
         public R3EGameStateMapper()
         {
             tyreWearThresholds.Add(new CornerData.EnumWithThresholds(TyreCondition.NEW, -10000, scrubbedTyreWearPercent));
@@ -87,6 +89,11 @@ namespace CrewChiefV3.RaceRoom
         public void versionCheck(Object memoryMappedFileStruct)
         {
             // no version number in r3e shared data so this is a no-op
+        }
+
+        public void setSpeechRecogniser(SpeechRecogniser speechRecogniser)
+        {
+            this.speechRecogniser = speechRecogniser;
         }
            
         public GameStateData mapToGameStateData(Object memoryMappedFileStruct, GameStateData previousGameState)
@@ -157,7 +164,7 @@ namespace CrewChiefV3.RaceRoom
                     {
                         if (!currentGameState.OpponentData.ContainsKey(participantStruct.driver_info.slot_id))
                         {
-                            currentGameState.OpponentData.Add(participantStruct.driver_info.slot_id, createOpponentData(participantStruct, driverName));
+                            currentGameState.OpponentData.Add(participantStruct.driver_info.slot_id, createOpponentData(participantStruct, driverName, false));
                         }
                     }
                 }
@@ -412,7 +419,7 @@ namespace CrewChiefV3.RaceRoom
                                 }
                             }
                             float secondsSinceLastUpdate = (float)new TimeSpan(currentGameState.Ticks - previousGameState.Ticks).TotalSeconds;
-                            upateOpponentData(currentOpponentData, currentOpponentRacePosition, currentOpponentLapsCompleted,
+                            upateOpponentData(currentOpponentData, getNameFromBytes(participantStruct.driver_info.nameByteArray), currentOpponentRacePosition, currentOpponentLapsCompleted,
                                     currentOpponentSector, sectorTime, participantStruct.lap_time_current_self, 
                                     isEnteringPits, isLeavingPits, participantStruct.current_lap_valid == 1,
                                     currentGameState.SessionData.SessionRunningTime, secondsSinceLastUpdate,
@@ -426,7 +433,8 @@ namespace CrewChiefV3.RaceRoom
                         if (driverName != null && driverName.Length > 0)
                         {
                             Console.WriteLine("Creating opponent for name " + driverName);
-                            currentGameState.OpponentData.Add(participantStruct.driver_info.slot_id, createOpponentData(participantStruct, driverName));
+                            currentGameState.OpponentData.Add(participantStruct.driver_info.slot_id, createOpponentData(participantStruct, driverName, 
+                                shared.Player.GameSimulationTime > 60));
                         }
                     }
                 }
@@ -934,10 +942,19 @@ namespace CrewChiefV3.RaceRoom
             }
         }
 
-        private void upateOpponentData(OpponentData opponentData, int racePosition, int completedLaps, int sector, float sectorTime, 
+        private void upateOpponentData(OpponentData opponentData, String driverName, int racePosition, int completedLaps, int sector, float sectorTime, 
             float currentLapTime, Boolean isEnteringPits, Boolean isLeavingPits,
             Boolean lapIsValid, float sessionRunningTime, float secondsSinceLastUpdate, float[] currentWorldPosition, float[] previousWorldPosition, float distanceRoundTrack)
         {
+            if (driverName != opponentData.DriverRawName)
+            {
+                Console.WriteLine("driver swap - " + opponentData.DriverRawName + " has now been replaced with " + driverName);
+                if (CrewChief.enableDriverNames) 
+                {
+                    speechRecogniser.addNewOpponentName(driverName);
+                }
+                opponentData.DriverRawName = driverName;                
+            }
             opponentData.DistanceRoundTrack = distanceRoundTrack;
             float speed;
             Boolean validSpeed = true;
@@ -975,10 +992,14 @@ namespace CrewChiefV3.RaceRoom
             opponentData.CurrentLapTime = currentLapTime;
         }
 
-        private OpponentData createOpponentData(DriverData participantStruct, String driverName)
+        private OpponentData createOpponentData(DriverData participantStruct, String driverName, Boolean loadDriverName)
         {
+            if (loadDriverName && CrewChief.enableDriverNames)
+            {
+                speechRecogniser.addNewOpponentName(driverName);
+            } 
             OpponentData opponentData = new OpponentData();
-            opponentData.DriverRawName = driverName.Trim();
+            opponentData.DriverRawName = driverName;
             opponentData.Position = participantStruct.place;
             opponentData.CompletedLaps = participantStruct.completed_laps;
             opponentData.CurrentSectorNumber = participantStruct.track_sector;
@@ -989,7 +1010,7 @@ namespace CrewChiefV3.RaceRoom
 
         private String getNameFromBytes(byte[] name)
         {
-            return Encoding.UTF8.GetString(name).TrimEnd('\0');
+            return Encoding.UTF8.GetString(name).TrimEnd('\0').Trim();
         }
     }
 }

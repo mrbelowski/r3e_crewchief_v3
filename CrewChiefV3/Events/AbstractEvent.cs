@@ -6,12 +6,11 @@ using CrewChiefV3.GameState;
 
 namespace CrewChiefV3.Events
 {
-    abstract class AbstractEvent
+    public abstract class AbstractEvent
     {
         protected AudioPlayer audioPlayer;
 
         protected PearlsOfWisdom pearlsOfWisdom;
-
 
         // some convienence methods for building up compound messages
         public static List<MessageFragment> MessageContents(Object o1, Object o2, Object o3, Object o4, Object o5)
