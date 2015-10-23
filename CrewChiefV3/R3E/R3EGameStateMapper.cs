@@ -1010,7 +1010,6 @@ namespace CrewChiefV3.RaceRoom
             opponentData.IsNewLap = false;            
             if (opponentData.CurrentSectorNumber != sector)
             {
-                // TODO: use the actual times here
                 if (opponentData.CurrentSectorNumber == 3 && sector == 1)
                 {
                     if (opponentData.OpponentLapData.Count > 0)

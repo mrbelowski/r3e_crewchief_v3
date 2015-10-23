@@ -296,7 +296,6 @@ namespace CrewChiefV3
             return true;
         }
 
-        // TODO: "clear all round" will never play here unless both sides go clear during the same update, which is really unlikely
         private void getNextMessage(int carsOnLeftCount, int carsOnRightCount, DateTime now)
         {
             if (carsOnLeftCount == 0 && carsOnRightCount == 0 && hasCarLeft && hasCarRight)

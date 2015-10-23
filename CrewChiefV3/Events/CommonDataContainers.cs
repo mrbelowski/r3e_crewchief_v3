@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-// TODO: actually finish this - one CornerData instance per data type (brake temp, tyre wear, ...)
 namespace CrewChiefV3.Events
 {
     public class CornerData {

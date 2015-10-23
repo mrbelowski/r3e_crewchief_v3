@@ -967,7 +967,6 @@ namespace CrewChiefV3.Events
         private void checkWheelSpinning()
         {
             int messageDelay = random.Next(0, 5);
-            // TODO: are delayed messages bust?
             if (!warnedOnWheelspinForLap)
             {
                 if (timeLeftFrontIsSpinningForLap > initialTotalWheelspinThreshold)

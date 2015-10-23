@@ -122,12 +122,11 @@ namespace CrewChiefV3.Events
                     mandatoryStopMissed = false;
                     Console.WriteLine("pit start = " + currentGameState.SessionData.PitWindowStart + ", pit end = " + currentGameState.SessionData.PitWindowEnd);
 
-                    // TODO: DTM 2015, race 1 (event iteration 1) - 40mins long, no mandatory stop. Race 2 - 60 mins with stop (middle 1/3rd of race)
                     if (currentGameState.SessionData.SessionNumberOfLaps > 0)
                     {
                         pitWindowOpenLap = currentGameState.SessionData.PitWindowStart;
                         pitWindowClosedLap = currentGameState.SessionData.PitWindowEnd;
-                        // DTM specific stuff...
+                        // DTM 2014 specific stuff...
                         if (currentGameState.carClass.carClassEnum == CarData.CarClassEnum.DTM_2014 && currentGameState.TyreData.FrontLeftTyreType == TyreType.DTM_Option)
                         {
                             onOptions = true;

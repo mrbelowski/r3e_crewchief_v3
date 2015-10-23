@@ -12,8 +12,6 @@ namespace CrewChiefV3
         // some temperatures - maybe externalise these
         // These are the peaks. If the tyre exceeds these temps even for one tick over a lap, we'll warn about it. This is why they look so high
 
-        // TODO: car class mapping for Raceroom
-
         private static float maxColdRoadTyreTempPeak = 65;
         private static float maxWarmRoadTyreTempPeak = 95;
         private static float maxHotRoadTyreTempPeak = 115;
