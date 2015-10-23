@@ -93,6 +93,10 @@ namespace CrewChiefV3.Events
             {
                 // estimate the number of remaining laps - be optimistic...
                 int numLapsLeft = (int)Math.Ceiling((double)currentGameState.SessionData.SessionTimeRemaining / (double)currentGameState.SessionData.LapTimeBestPlayer);
+                if (currentGameState.carClass.carClassEnum == CarData.CarClassEnum.DTM_2015)
+                {
+                    numLapsLeft = numLapsLeft + 1;
+                }
                 playedNearEndTimePush = checkGaps(currentGameState, numLapsLeft);
             }
             else if (currentGameState.SessionData.SessionNumberOfLaps > 0 && currentGameState.SessionData.SessionNumberOfLaps - currentGameState.SessionData.CompletedLaps <= 4 &&

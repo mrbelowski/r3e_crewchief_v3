@@ -44,6 +44,10 @@ namespace CrewChiefV3.Events
         private int lapsLeft;
         private float timeLeft;
 
+        private Boolean addExtraLapForDTM2015;
+
+        private Boolean startedDTM2015ExtraLap;
+
         private Boolean leaderHasFinishedRace;
 
         private Boolean sessionLengthIsTime;
@@ -63,10 +67,13 @@ namespace CrewChiefV3.Events
             timeLeft = 0;
             sessionLengthIsTime = false;
             leaderHasFinishedRace = false;
+            addExtraLapForDTM2015 = false;
+            startedDTM2015ExtraLap = false;
         }
 
         override protected void triggerInternal(GameStateData previousGameState, GameStateData currentGameState)
         {
+            addExtraLapForDTM2015 = currentGameState.carClass.carClassEnum == CarData.CarClassEnum.DTM_2015;
             leaderHasFinishedRace = currentGameState.SessionData.LeaderHasFinishedRace;
             timeLeft = currentGameState.SessionData.SessionTimeRemaining;
             if (currentGameState.SessionData.SessionNumberOfLaps > 0)
@@ -80,6 +87,10 @@ namespace CrewChiefV3.Events
             }
             if (sessionLengthIsTime)
             {
+                if (addExtraLapForDTM2015 && gotHalfTime && timeLeft <= 0 && currentGameState.SessionData.IsNewLap)
+                {
+                    startedDTM2015ExtraLap = true;
+                }
                 if (!gotHalfTime)
                 {
                     Console.WriteLine("Session time remaining = " + timeLeft);
@@ -109,7 +120,9 @@ namespace CrewChiefV3.Events
                 // crosses the line :(
                 if (currentGameState.SessionData.SessionType == SessionType.Race && currentGameState.SessionData.IsNewLap &&
                     currentGameState.SessionData.SessionRunningTime > 60 && !playedLastLap &&
-                    currentGameState.SessionData.Position == 1 && timeLeft > 0 && timeLeft < currentGameState.SessionData.LapTimeBestPlayer)
+                    currentGameState.SessionData.Position == 1 && 
+                    ((!addExtraLapForDTM2015 && timeLeft > 0 && timeLeft < currentGameState.SessionData.LapTimeBestPlayer) ||
+                    (addExtraLapForDTM2015 && timeLeft <= 0)))
                 {
                     playedLastLap = true;
                     played2mins = true;
@@ -227,10 +240,18 @@ namespace CrewChiefV3.Events
                 }
                 else if (timeLeft <= 0)
                 {
-                    // TODO: check these - if the timeLeft value contains -1 for some reason this message will be wrong
-                    Console.WriteLine("Playing last lap message, timeleft = " + timeLeft);
-                    audioPlayer.playClipImmediately(new QueuedMessage(folderThisIsTheLastLap, 0, this), false);
-                    audioPlayer.closeChannel();
+                    if (addExtraLapForDTM2015 && !startedDTM2015ExtraLap)
+                    {
+                        Console.WriteLine("Playing DTM one more lap message, timeleft = " + timeLeft);
+                        audioPlayer.playClipImmediately(new QueuedMessage(folderOneLapAfterThisOne, 0, this), false);
+                        audioPlayer.closeChannel();
+                    }
+                    else 
+                    {
+                        Console.WriteLine("Playing last lap message, timeleft = " + timeLeft);
+                        audioPlayer.playClipImmediately(new QueuedMessage(folderThisIsTheLastLap, 0, this), false);
+                        audioPlayer.closeChannel();
+                    }                   
                 }
                 else if (timeLeft < 60)
                 {

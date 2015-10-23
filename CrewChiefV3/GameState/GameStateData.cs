@@ -294,6 +294,9 @@ namespace CrewChiefV3.GameState
 
         public CarData.CarClass CarClass = CarData.getDefaultCarClass();
 
+        // for DTM 2015
+        public Boolean HasStartedExtraLap = false;
+
         public LapData getCurrentLapData()
         {
             if (OpponentLapData.Count > 0)
