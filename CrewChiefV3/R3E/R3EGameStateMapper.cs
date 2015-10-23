@@ -292,7 +292,10 @@ namespace CrewChiefV3.RaceRoom
                 (shared.CompletedLaps == previousGameState.SessionData.CompletedLaps + 1 ||
                 ((lastSessionPhase == SessionPhase.Countdown || lastSessionPhase == SessionPhase.Formation || lastSessionPhase == SessionPhase.Garage)
                 && currentGameState.SessionData.SessionPhase == SessionPhase.Green));
-            currentGameState.SessionData.playerLapTimes.Add(shared.LapTimePrevious);
+            if (currentGameState.SessionData.IsNewLap)
+            {
+                currentGameState.SessionData.playerLapTimes.Add(shared.LapTimePrevious);
+            }
             if (previousGameState != null)
             {
                 currentGameState.OpponentData = previousGameState.OpponentData;

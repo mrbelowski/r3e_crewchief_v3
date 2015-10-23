@@ -255,7 +255,7 @@ big_e:big ee
 Dušan Borković:borkovic
 Pedrag Knežević:knezevic
 Murgeza Stefanović:Stefanovic
-Bullett:Bullet
+Bullett:Bullitt
 static_energy:Static
 ClagMeister:Clag Meister
 Nooonotreally:Not Really
