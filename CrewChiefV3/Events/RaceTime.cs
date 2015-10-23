@@ -118,6 +118,8 @@ namespace CrewChiefV3.Events
 
                 // this event only works if we're leading because we don't know when the leader 
                 // crosses the line :(
+
+                // TODO: the above is no longer true - rework this
                 if (currentGameState.SessionData.SessionType == SessionType.Race && currentGameState.SessionData.IsNewLap &&
                     currentGameState.SessionData.SessionRunningTime > 60 && !playedLastLap &&
                     currentGameState.SessionData.Position == 1 && 
