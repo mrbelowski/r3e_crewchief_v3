@@ -85,29 +85,30 @@ namespace CrewChiefV3.Events
             {
                 Object opponentKey = entry.Key;
                 OpponentData opponentData = entry.Value;
-                if (opponentData.IsNewLap && opponentData.LastLapTime > 0 && opponentData.OpponentLapData.Count > 2)
+                if (opponentData.IsNewLap && opponentData.LastLapTime > 0 && opponentData.OpponentLapData.Count > 2 &&
+                    opponentData.CurrentBestLapTime != -1 && opponentData.PreviousBestLapTime != -1)
                 {
                     // this opponent has just completed a lap - do we need to report it? if it's more than
                     // a tenth quicker then his previous best we do...
-                    if (opponentData.LastLapTime < opponentData.BestLapTime - 0.1f)
+                    if (opponentData.CurrentBestLapTime < opponentData.PreviousBestLapTime - 0.1f)
                     {
                         if (currentGameState.SessionData.Position > 1 && opponentData.Position == 1)
                         {
                             // he's leading, and has recorded 3 or more laps, and this one's his fastest
                             audioPlayer.queueClip(new QueuedMessage("leader_good_laptime", MessageContents(folderLeaderHasJustDoneA,
-                                    TimeSpan.FromSeconds(opponentData.LastLapTime)), 0, this));
+                                    TimeSpan.FromSeconds(opponentData.CurrentBestLapTime)), 0, this));
                         }
                         else if (currentGameState.SessionData.Position > 1 && opponentData.Position == currentGameState.SessionData.Position - 1)
                         {
                             // he's ahead of us, and has recorded 3 or more laps, and this one's his fastest
                             audioPlayer.queueClip(new QueuedMessage("car_ahead_good_laptime", MessageContents(folderTheCarAheadHasJustDoneA,
-                                    TimeSpan.FromSeconds(opponentData.LastLapTime)), 0, this));
+                                    TimeSpan.FromSeconds(opponentData.CurrentBestLapTime)), 0, this));
                         }
                         else if (!currentGameState.isLast() && opponentData.Position == currentGameState.SessionData.Position + 1)
                         {
                             // he's behind us, and has recorded 3 or more laps, and this one's his fastest
                             audioPlayer.queueClip(new QueuedMessage("car_behind_good_laptime", MessageContents(folderTheCarBehindHasJustDoneA,
-                                    TimeSpan.FromSeconds(opponentData.LastLapTime)), 0, this));
+                                    TimeSpan.FromSeconds(opponentData.CurrentBestLapTime)), 0, this));
                         }
                     }
                 }
@@ -250,7 +251,7 @@ namespace CrewChiefV3.Events
         {
             if (opponentKey != null && currentGameState.OpponentData.ContainsKey(opponentKey))
             {
-                return currentGameState.OpponentData[opponentKey].BestLapTime;
+                return currentGameState.OpponentData[opponentKey].CurrentBestLapTime;
             }
             return -1;
         }

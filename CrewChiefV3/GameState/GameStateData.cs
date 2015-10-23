@@ -284,7 +284,9 @@ namespace CrewChiefV3.GameState
 
         public float DistanceRoundTrack = 0;
 
-        public float BestLapTime = -1;
+        public float CurrentBestLapTime = -1;
+
+        public float PreviousBestLapTime = -1;
 
         public float LastLapTime = -1;
         
@@ -390,9 +392,10 @@ namespace CrewChiefV3.GameState
                     {
                         lapData.LapTime = estimatedLapTime;
                         LastLapTime = estimatedLapTime;
-                        if (lapData.IsValid && (BestLapTime == -1 || BestLapTime > lapData.LapTime))
+                        if (lapData.IsValid && (PreviousBestLapTime == -1 || PreviousBestLapTime > lapData.LapTime))
                         {
-                            BestLapTime = lapData.LapTime;
+                            PreviousBestLapTime = CurrentBestLapTime;
+                            CurrentBestLapTime = lapData.LapTime;
                         }
                     }
                     else
@@ -412,9 +415,10 @@ namespace CrewChiefV3.GameState
                 AddSectorData(position, providedLapTime, gameTimeAtLapEnd, lapIsValid, isRaining, trackTemp, airTemp);
                 lapData.LapTime = providedLapTime;
                 LastLapTime = providedLapTime;
-                if (lapData.IsValid && (BestLapTime == -1 || BestLapTime > lapData.LapTime))
+                if (lapData.IsValid && (PreviousBestLapTime == -1 || PreviousBestLapTime > lapData.LapTime))
                 {
-                    BestLapTime = lapData.LapTime;
+                    PreviousBestLapTime = CurrentBestLapTime;
+                    CurrentBestLapTime = lapData.LapTime;
                 }
             }
         }
@@ -880,10 +884,10 @@ namespace CrewChiefV3.GameState
             float bestLapTime = -1;
             foreach (KeyValuePair<Object, OpponentData> entry in OpponentData)
             {
-                if (entry.Value.BestLapTime > 0 &&
-                    (bestLapTime == -1 || entry.Value.BestLapTime < bestLapTime))
+                if (entry.Value.CurrentBestLapTime > 0 &&
+                    (bestLapTime == -1 || entry.Value.CurrentBestLapTime < bestLapTime))
                 {
-                    bestLapTime = entry.Value.BestLapTime;
+                    bestLapTime = entry.Value.CurrentBestLapTime;
                 }
             }
             return bestLapTime;

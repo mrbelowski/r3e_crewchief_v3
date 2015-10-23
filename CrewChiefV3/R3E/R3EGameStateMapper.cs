@@ -450,19 +450,19 @@ namespace CrewChiefV3.RaceRoom
                             
                             if (newOpponentLap)
                             {
-                                if (currentOpponentData.BestLapTime > 0)
+                                if (currentOpponentData.CurrentBestLapTime > 0)
                                 {
                                     if (currentGameState.SessionData.LapTimeSessionBest == -1 ||
-                                        currentOpponentData.BestLapTime < currentGameState.SessionData.LapTimeSessionBest)
+                                        currentOpponentData.CurrentBestLapTime < currentGameState.SessionData.LapTimeSessionBest)
                                     {
-                                        currentGameState.SessionData.LapTimeSessionBest = currentOpponentData.BestLapTime;
+                                        currentGameState.SessionData.LapTimeSessionBest = currentOpponentData.CurrentBestLapTime;
                                     }
                                     if (currentOpponentData.CarClass.carClassEnum == currentGameState.carClass.carClassEnum)
                                     {
                                         if (currentGameState.SessionData.LapTimeSessionBestPlayerClass == -1 ||
-                                            currentOpponentData.BestLapTime < currentGameState.SessionData.LapTimeSessionBestPlayerClass)
+                                            currentOpponentData.CurrentBestLapTime < currentGameState.SessionData.LapTimeSessionBestPlayerClass)
                                         {
-                                            currentGameState.SessionData.LapTimeSessionBestPlayerClass = currentOpponentData.BestLapTime;
+                                            currentGameState.SessionData.LapTimeSessionBestPlayerClass = currentOpponentData.CurrentBestLapTime;
                                         }
                                     }
                                 }
