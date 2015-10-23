@@ -2,7 +2,7 @@ CrewChief version 3.
 
 Changelog
 ---------
-Version 3.6.4: Raceroom and PCars spotter overhaul (more reliable, less CPU intensive); Added blue flag warnings to Raceroom; Work around noise in Raceroom opponent race place data; Fixed best lap time playing in Raceroom when it shouldn't; Added lots of car class data and Raceroom now uses this (the app knows which car class each driver is using - still some work to be done to make the best use of this info); Fixed app properties not persisting between app updates; Added session lap times to console window at end of session. No new sound pack for this version.
+Version 3.6.4: Raceroom and PCars spotter overhaul (more reliable, less CPU intensive); Added blue flag warnings to Raceroom; Work around noise in Raceroom opponent race place data; Fixed best lap time playing in Raceroom when it shouldn't; Added lots of car class data and Raceroom now uses this (the app knows which car class each driver is using - still some work to be done to make the best use of this info); Fixed app properties not persisting between app updates; Added session lap times to console window at end of session; Added a load of driver names. No new sound pack for this version.
 
 Version 3.6.3: Major overhaul of RaceRoom side of the app to use driver names, load driver names mid-session (for Raceroom ADAC GTM driver swaps - not implemented for PCars yet), proper RaceRoom opponent lap / sector times, pit info, wheel-spin / locking etc; Lots more driver names; New RaceRoom spotter implementation (similar to PCars version); No new sound pack for this version (but the latest driver_names pack has lots of new names).
 
