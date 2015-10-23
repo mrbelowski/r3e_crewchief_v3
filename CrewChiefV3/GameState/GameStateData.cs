@@ -124,6 +124,8 @@ namespace CrewChiefV3.GameState
 
     public class SessionData    
     {
+        public List<float> playerLapTimes = new List<float>();
+
         public TrackDefinition TrackDefinition = null;
 
         public Boolean IsDisqualified = false;
@@ -199,9 +201,9 @@ namespace CrewChiefV3.GameState
         public Single SessionTimeRemaining = 0;
 
         // ...
-        public Single LapTimeSessionBest = 0;
+        public Single LapTimeSessionBest = -1;
 
-        public Single LapTimeSessionBestPlayerClass = 0;
+        public Single LapTimeSessionBestPlayerClass = -1;
 
         // ...
         public Single LapTimeDeltaSelf = 0;

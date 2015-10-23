@@ -883,5 +883,17 @@ namespace CrewChiefV3.Properties {
                 this["minimum_voice_recognition_confidence"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool display_session_lap_times {
+            get {
+                return ((bool)(this["display_session_lap_times"]));
+            }
+            set {
+                this["display_session_lap_times"] = value;
+            }
+        }
     }
 }

@@ -218,5 +218,8 @@
     <Setting Name="minimum_voice_recognition_confidence" Type="System.Single" Scope="User">
       <Value Profile="(Default)">0.5</Value>
     </Setting>
+    <Setting Name="display_session_lap_times" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

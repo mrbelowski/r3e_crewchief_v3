@@ -258,6 +258,7 @@ namespace CrewChiefV3.RaceRoom
                     currentGameState.SessionData.PitWindowEnd = previousGameState.SessionData.PitWindowEnd;
                     currentGameState.SessionData.HasMandatoryPitStop = previousGameState.SessionData.HasMandatoryPitStop;
                     currentGameState.SessionData.TrackDefinition = previousGameState.SessionData.TrackDefinition;
+                    currentGameState.SessionData.playerLapTimes = previousGameState.SessionData.playerLapTimes;
                 }
             }
 
@@ -271,12 +272,12 @@ namespace CrewChiefV3.RaceRoom
             float lapTimeBestLeaderClass = shared.LapTimeBestLeaderClass;
             float lapTimeBestPlayer = shared.LapTimeBest;
             if (lapTimeBestLeader > 0 && 
-                (currentGameState.SessionData.LapTimeSessionBest <= 0 || currentGameState.SessionData.LapTimeSessionBest > lapTimeBestLeader))
+                (currentGameState.SessionData.LapTimeSessionBest == -1 || currentGameState.SessionData.LapTimeSessionBest > lapTimeBestLeader))
             {
                 currentGameState.SessionData.LapTimeSessionBest = lapTimeBestLeader;
             }
             if (lapTimeBestLeaderClass > 0 &&
-                (currentGameState.SessionData.LapTimeSessionBestPlayerClass <= 0 || currentGameState.SessionData.LapTimeSessionBestPlayerClass > lapTimeBestLeaderClass))
+                (currentGameState.SessionData.LapTimeSessionBestPlayerClass == -1 || currentGameState.SessionData.LapTimeSessionBestPlayerClass > lapTimeBestLeaderClass))
             {
                 currentGameState.SessionData.LapTimeSessionBestPlayerClass = lapTimeBestLeaderClass;
                 if (lapTimeBestLeaderClass < currentGameState.SessionData.LapTimeSessionBest)
@@ -285,7 +286,7 @@ namespace CrewChiefV3.RaceRoom
                 }
             }
             if (lapTimeBestPlayer > 0 &&
-                (currentGameState.SessionData.LapTimeBestPlayer <= 0 || currentGameState.SessionData.LapTimeBestPlayer > lapTimeBestPlayer))
+                (currentGameState.SessionData.LapTimeBestPlayer == -1 || currentGameState.SessionData.LapTimeBestPlayer > lapTimeBestPlayer))
             {
                 currentGameState.SessionData.LapTimeBestPlayer = lapTimeBestPlayer;
                 if (lapTimeBestPlayer < currentGameState.SessionData.LapTimeSessionBestPlayerClass)
@@ -304,7 +305,7 @@ namespace CrewChiefV3.RaceRoom
             currentGameState.SessionData.LapTimeDeltaLeaderClass = shared.LapTimeDeltaLeaderClass;
             currentGameState.SessionData.LapTimeDeltaSelf = shared.LapTimeDeltaSelf;
             currentGameState.SessionData.LapTimePrevious = shared.LapTimePrevious;
-            currentGameState.SessionData.PreviousLapWasValid = shared.LapTimePrevious != -1;
+            currentGameState.SessionData.PreviousLapWasValid = shared.LapTimePrevious > 0;
             currentGameState.SessionData.Sector1TimeDeltaSelf = shared.SectorTimeDeltaSelf.Sector1;
             currentGameState.SessionData.Sector2TimeDeltaSelf = shared.SectorTimeDeltaSelf.Sector2;
             currentGameState.SessionData.Sector3TimeDeltaSelf = shared.SectorTimeDeltaSelf.Sector3;
@@ -317,6 +318,7 @@ namespace CrewChiefV3.RaceRoom
                 (shared.CompletedLaps == previousGameState.SessionData.CompletedLaps + 1 ||
                 ((lastSessionPhase == SessionPhase.Countdown || lastSessionPhase == SessionPhase.Formation || lastSessionPhase == SessionPhase.Garage)
                 && currentGameState.SessionData.SessionPhase == SessionPhase.Green));
+            currentGameState.SessionData.playerLapTimes.Add(shared.LapTimePrevious);
             if (previousGameState != null)
             {
                 currentGameState.OpponentData = previousGameState.OpponentData;

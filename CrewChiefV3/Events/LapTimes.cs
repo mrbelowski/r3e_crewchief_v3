@@ -416,7 +416,7 @@ namespace CrewChiefV3.Events
 
         private LastLapRating getLastLapRating(GameStateData currentGameState)
         {
-            if (currentGameState.SessionData.PreviousLapWasValid)
+            if (currentGameState.SessionData.PreviousLapWasValid && currentGameState.SessionData.LapTimePrevious > 0)
             {
                 float closeThreshold = currentGameState.SessionData.LapTimePrevious * goodLapPercent / 100;
                 if (currentGameState.SessionData.LapTimeSessionBest >= currentGameState.SessionData.LapTimePrevious)
@@ -437,7 +437,7 @@ namespace CrewChiefV3.Events
                     {
                         return LastLapRating.PERSONAL_BEST_CLOSE_TO_CLASS_LEADER;
                     }
-                    else
+                    else if (currentGameState.SessionData.LapTimeSessionBest > 0 || currentGameState.SessionData.LapTimeSessionBestPlayerClass > 0)
                     {
                         return LastLapRating.PERSONAL_BEST_STILL_SLOW;
                     }
@@ -454,7 +454,7 @@ namespace CrewChiefV3.Events
                 {
                     return LastLapRating.CLOSE_TO_PERSONAL_BEST;
                 }
-                else
+                else if (currentGameState.SessionData.LapTimeBestPlayer > 0)
                 {
                     return LastLapRating.MEH;
                 }

@@ -48,6 +48,7 @@ namespace CrewChiefV3
             propertyHelp.Add("cumulative_lap_wheelspin_warning_threshold", "If the player has wheelspin for more than this many seconds over the course of a lap, play a warning");
             propertyHelp.Add("minimum_name_voice_recognition_confidence", "When processing voice commands asking about opponent drivers, the speech recognition engine must be at least this confident it understood before the app responds (0.0 - 1.0, default 0.4)");
             propertyHelp.Add("minimum_voice_recognition_confidence", "When processing voice commands, the speech recognition engine must be at least this confident it understood before the app responds (0.0 - 1.0, default 0.5)");
+            propertyHelp.Add("display_session_lap_times", "Write all the lap times from the completed session to the console (separated by ;)");
         }
 
         public String getHelp(String propertyId)

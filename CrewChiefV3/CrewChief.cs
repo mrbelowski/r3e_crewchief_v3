@@ -32,6 +32,8 @@ namespace CrewChiefV3
         public static TimeSpan _timeInterval = TimeSpan.FromMilliseconds(UserSettings.GetUserSettings().getInt("update_interval"));
 
         public static TimeSpan spotterInterval = TimeSpan.FromMilliseconds(UserSettings.GetUserSettings().getInt("spotter_update_interval"));
+
+        private Boolean displaySessionLapTimes = UserSettings.GetUserSettings().getBoolean("display_session_lap_times");
         
         private static Dictionary<String, AbstractEvent> eventsList = new Dictionary<String, AbstractEvent>();
 
@@ -391,6 +393,11 @@ namespace CrewChiefV3
                                 && previousGameState != null)
                             {
                                 audioPlayer.purgeQueues();
+                                if (displaySessionLapTimes)
+                                {
+                                    Console.WriteLine("Session lap times:");
+                                    Console.WriteLine(String.Join(";", currentGameState.SessionData.playerLapTimes));
+                                }
                                 sessionEndMessages.trigger(previousGameState.SessionData.SessionRunningTime, previousGameState.SessionData.SessionType, currentGameState.SessionData.SessionPhase,
                                     previousGameState.SessionData.Position, previousGameState.SessionData.NumCarsAtStartOfSession, previousGameState.SessionData.CompletedLaps, 
                                     previousGameState.SessionData.IsDisqualified);

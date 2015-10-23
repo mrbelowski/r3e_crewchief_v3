@@ -421,6 +421,7 @@ namespace CrewChiefV3.PCars
                     currentGameState.PitData.IsRefuellingAllowed = previousGameState.PitData.IsRefuellingAllowed;
                     currentGameState.SessionData.SessionTimesAtEndOfSectors = previousGameState.SessionData.SessionTimesAtEndOfSectors;
                     currentGameState.PenaltiesData.CutTrackWarnings = previousGameState.PenaltiesData.CutTrackWarnings;
+                    currentGameState.SessionData.playerLapTimes = previousGameState.SessionData.playerLapTimes;
                 }                
             }            
             
@@ -460,6 +461,7 @@ namespace CrewChiefV3.PCars
             if (currentGameState.SessionData.IsNewLap)
             {
                 currentGameState.SessionData.PreviousLapWasValid = previousGameState != null && previousGameState.SessionData.CurrentLapIsValid;
+                currentGameState.SessionData.playerLapTimes.Add(shared.mLastLapTime);
             }
             else if (previousGameState != null)
             {
