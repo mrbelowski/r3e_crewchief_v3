@@ -444,7 +444,8 @@ namespace CrewChiefV3.RaceRoom
                                     }
                                 }
                             }
-                            if ((!isEnteringPits || isLeavingPits) && currentGameState.PositionAndMotionData.DistanceRoundTrack != 0 &&
+                            if (currentGameState.SessionData.SessionType == SessionType.Race && 
+                                (!isEnteringPits || isLeavingPits) && currentGameState.PositionAndMotionData.DistanceRoundTrack != 0 &&
                                 currentOpponentData.Position < shared.Position && 
                                 isBehindWithinDistance(shared.track_info.length, 100, currentGameState.PositionAndMotionData.DistanceRoundTrack, participantStruct.lap_distance)) {
                                     currentGameState.SessionData.Flag = FlagEnum.BLUE;
