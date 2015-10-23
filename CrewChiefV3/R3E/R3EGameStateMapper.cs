@@ -322,8 +322,12 @@ namespace CrewChiefV3.RaceRoom
                         currentGameState.PitData.OnInLap = false;
                         currentGameState.PitData.OnOutLap = false;
                     }
+                    break;
                 }
-                else if (participantStruct.driver_info.slot_id != -1)
+            }
+            foreach (DriverData participantStruct in shared.all_drivers_data)
+            {
+                if (participantStruct.driver_info.slot_id != -1)
                 {
                     if (currentGameState.OpponentData.ContainsKey(participantStruct.driver_info.slot_id))
                     {
@@ -439,6 +443,11 @@ namespace CrewChiefV3.RaceRoom
                                         }
                                     }
                                 }
+                            }
+                            if ((!isEnteringPits || isLeavingPits) && currentGameState.PositionAndMotionData.DistanceRoundTrack != 0 &&
+                                currentOpponentData.Position < shared.Position && 
+                                isBehindWithinDistance(shared.track_info.length, 100, currentGameState.PositionAndMotionData.DistanceRoundTrack, participantStruct.lap_distance)) {
+                                    currentGameState.SessionData.Flag = FlagEnum.BLUE;
                             }
                         }
                     }
@@ -1043,6 +1052,18 @@ namespace CrewChiefV3.RaceRoom
                 opponentData.CarClass.carClassEnum + " (class ID " + participantStruct.driver_info.class_id + ")");
 
             return opponentData;
+        }
+
+        public Boolean isBehindWithinDistance(float trackLength, float distance, float playerTrackDistance, float opponentTrackDistance)
+        {
+            if (playerTrackDistance - opponentTrackDistance > 0)
+            {
+                return playerTrackDistance - opponentTrackDistance < distance;
+            }
+            else
+            {
+                return (playerTrackDistance + trackLength) - opponentTrackDistance < distance;
+            }
         }
 
         public static String getNameFromBytes(byte[] name)

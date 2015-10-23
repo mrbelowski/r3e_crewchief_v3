@@ -95,7 +95,7 @@ namespace CrewChiefV3.Events
             pitDataInitialised = false;
             onOptions = false;
             onPrimes = false;
-            tyreChangeLap = 0;
+            tyreChangeLap = -1;
             playBoxNowMessage = false;
             play2minOpenWarning = false;
             play2minCloseWarning = false;
@@ -121,18 +121,20 @@ namespace CrewChiefV3.Events
                     mandatoryStopBoxThisLap = false;
                     mandatoryStopMissed = false;
                     Console.WriteLine("pit start = " + currentGameState.SessionData.PitWindowStart + ", pit end = " + currentGameState.SessionData.PitWindowEnd);
+
+                    // TODO: DTM 2015, race 1 (event iteration 1) - 40mins long, no mandatory stop. Race 2 - 60 mins with stop (middle 1/3rd of race)
                     if (currentGameState.SessionData.SessionNumberOfLaps > 0)
                     {
                         pitWindowOpenLap = currentGameState.SessionData.PitWindowStart;
                         pitWindowClosedLap = currentGameState.SessionData.PitWindowEnd;
                         // DTM specific stuff...
-                        if (currentGameState.TyreData.HasMatchedTyreTypes && currentGameState.TyreData.FrontLeftTyreType == TyreType.DTM_Option)
+                        if (currentGameState.carClass.carClassEnum == CarData.CarClassEnum.DTM_2014 && currentGameState.TyreData.FrontLeftTyreType == TyreType.DTM_Option)
                         {
                             onOptions = true;
                             // when we've completed half distance - 1 laps, we need to come in at the end of the current lap
                             tyreChangeLap = (int)Math.Floor((double)currentGameState.SessionData.SessionNumberOfLaps / 2d) - 1;
                         }
-                        else if (currentGameState.TyreData.HasMatchedTyreTypes && currentGameState.TyreData.FrontLeftTyreType == TyreType.DTM_Prime)
+                        else if (currentGameState.carClass.carClassEnum == CarData.CarClassEnum.DTM_2014 && currentGameState.TyreData.FrontLeftTyreType == TyreType.DTM_Prime)
                         {
                             onPrimes = true;
                             tyreChangeLap = (int)Math.Floor((double)currentGameState.SessionData.SessionNumberOfLaps / 2d);
