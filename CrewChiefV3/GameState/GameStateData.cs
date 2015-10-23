@@ -292,6 +292,8 @@ namespace CrewChiefV3.GameState
 
         public float CurrentLapTime = 0;
 
+        public CarData.CarClass CarClass = CarData.getDefaultCarClass();
+
         public LapData getCurrentLapData()
         {
             if (OpponentLapData.Count > 0)

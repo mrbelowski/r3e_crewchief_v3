@@ -335,7 +335,7 @@ namespace CrewChiefV3.PCars
                         }
                     }
                 }
-                currentGameState.carClass = CarData.getCarClass(shared.mCarClassName, GameEnum.PCARS_64BIT);
+                currentGameState.carClass = CarData.getCarClassForPCarsClassName(shared.mCarClassName);
                 brakeTempThresholdsForPlayersCar = CarData.getBrakeTempThresholds(carClass, shared.mCarName);
                 // no tyre data in the block so get the default tyre types for this car
                 defaultTyreTypeForPlayersCar = CarData.getDefaultTyreType(carClass, shared.mCarName);

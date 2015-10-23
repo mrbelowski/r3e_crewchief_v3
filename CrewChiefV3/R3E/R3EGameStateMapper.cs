@@ -47,6 +47,8 @@ namespace CrewChiefV3.RaceRoom
         private float destroyedEngineThreshold = 0.1f;
         private float destroyedAeroThreshold = 0.0f;
 
+        private List<CornerData.EnumWithThresholds> brakeTempThresholdsForPlayersCar = null;
+
         // Oil temps are typically 1 or 2 units (I'm assuming celcius) higher than water temps. Typical temps while racing tend to be
         // mid - high 50s, with some in-traffic running this creeps up to the mid 60s. To get it into the 
         // 70s you have to really try. Any higher requires you to sit by the side of the road bouncing off the
@@ -162,7 +164,6 @@ namespace CrewChiefV3.RaceRoom
                 currentGameState.SessionData.EventIndex = shared.EventIndex;
                 currentGameState.SessionData.SessionIteration = shared.SessionIteration;
                 currentGameState.SessionData.SessionStartTime = currentGameState.Now;
-                currentGameState.carClass = CarData.getCarClass(null, GameEnum.RACE_ROOM);  // TODO: change this null to the actual class identifier
                 currentGameState.OpponentData.Clear();
                 currentGameState.SessionData.TrackDefinition = TrackData.getTrackDefinition(null, shared.track_info.length, GameEnum.RACE_ROOM);
                 for (int i = 0; i < shared.all_drivers_data.Length; i++)
@@ -175,6 +176,10 @@ namespace CrewChiefV3.RaceRoom
                         currentGameState.SessionData.DriverRawName = driverName;
                         currentGameState.PitData.InPitlane = participantStruct.in_pitlane == 1;
                         currentGameState.PositionAndMotionData.DistanceRoundTrack = participantStruct.lap_distance;
+                        currentGameState.carClass = CarData.getCarClassForRaceRoomId(participantStruct.driver_info.class_id);
+                        Console.WriteLine("Player is using car class " + currentGameState.carClass.carClassEnum + " (class ID " + participantStruct.driver_info.class_id + ")");
+
+                        brakeTempThresholdsForPlayersCar = CarData.getBrakeTempThresholds(currentGameState.carClass, null);
                     }
                     else if (driverName != null && driverName.Length > 0)
                     {
@@ -215,6 +220,8 @@ namespace CrewChiefV3.RaceRoom
                         {
                             currentGameState.OpponentData = previousGameState.OpponentData;
                             currentGameState.SessionData.TrackDefinition = previousGameState.SessionData.TrackDefinition;
+                            currentGameState.carClass = previousGameState.carClass;
+                            currentGameState.SessionData.DriverRawName = previousGameState.SessionData.DriverRawName;
                         }
 
                         // reset the engine temp monitor stuff
@@ -223,12 +230,6 @@ namespace CrewChiefV3.RaceRoom
                         baselineEngineDataOilTemp = 0;
                         baselineEngineDataWaterTemp = 0;
 
-                        // no car class info in the block, but if we've got DTM tyres on we can use that
-                        if ((int)RaceRoomConstant.TireType.DTM_Option == shared.TireType || (int)RaceRoomConstant.TireType.Prime == shared.TireType)
-                        {
-                            Console.WriteLine("Using DTM car class data");
-                            currentGameState.carClass = CarData.getCarClassFromEnum(CarData.CarClassEnum.DTM);
-                        }
                         Console.WriteLine("SessionType " + currentGameState.SessionData.SessionType);
                         Console.WriteLine("SessionPhase " + currentGameState.SessionData.SessionPhase);
                         Console.WriteLine("EventIndex " + currentGameState.SessionData.EventIndex);
@@ -261,6 +262,8 @@ namespace CrewChiefV3.RaceRoom
                     currentGameState.SessionData.playerLapTimes = previousGameState.SessionData.playerLapTimes;
                     currentGameState.SessionData.LapTimeSessionBestPlayerClass = previousGameState.SessionData.LapTimeSessionBestPlayerClass;
                     currentGameState.SessionData.LapTimeSessionBest = previousGameState.SessionData.LapTimeSessionBest;
+                    currentGameState.carClass = previousGameState.carClass;
+                    currentGameState.SessionData.DriverRawName = previousGameState.SessionData.DriverRawName;
                 }
             }
 
@@ -420,10 +423,21 @@ namespace CrewChiefV3.RaceRoom
                             
                             if (newOpponentLap)
                             {
-                                if (currentOpponentData.BestLapTime > 0 && (currentGameState.SessionData.LapTimeSessionBest == -1 ||
-                                    currentOpponentData.BestLapTime < currentGameState.SessionData.LapTimeSessionBest))
+                                if (currentOpponentData.BestLapTime > 0)
                                 {
-                                    currentGameState.SessionData.LapTimeSessionBest = currentOpponentData.BestLapTime;
+                                    if (currentGameState.SessionData.LapTimeSessionBest == -1 ||
+                                        currentOpponentData.BestLapTime < currentGameState.SessionData.LapTimeSessionBest)
+                                    {
+                                        currentGameState.SessionData.LapTimeSessionBest = currentOpponentData.BestLapTime;
+                                    }
+                                    if (currentOpponentData.CarClass.carClassEnum == currentGameState.carClass.carClassEnum)
+                                    {
+                                        if (currentGameState.SessionData.LapTimeSessionBestPlayerClass == -1 ||
+                                            currentOpponentData.BestLapTime < currentGameState.SessionData.LapTimeSessionBestPlayerClass)
+                                        {
+                                            currentGameState.SessionData.LapTimeSessionBestPlayerClass = currentOpponentData.BestLapTime;
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -441,11 +455,18 @@ namespace CrewChiefV3.RaceRoom
                 }
             }
 
-            if (currentGameState.SessionData.IsNewLap && currentGameState.SessionData.PreviousLapWasValid && 
-                    (currentGameState.SessionData.LapTimeSessionBest == -1 ||
-                     currentGameState.SessionData.LapTimePrevious < currentGameState.SessionData.LapTimeSessionBest))
+            if (currentGameState.SessionData.IsNewLap && currentGameState.SessionData.PreviousLapWasValid)
             {
-                currentGameState.SessionData.LapTimeSessionBest = currentGameState.SessionData.LapTimePrevious;
+                if ((currentGameState.SessionData.LapTimeSessionBest == -1 ||
+                     currentGameState.SessionData.LapTimePrevious < currentGameState.SessionData.LapTimeSessionBest))
+                {
+                    currentGameState.SessionData.LapTimeSessionBest = currentGameState.SessionData.LapTimePrevious;
+                }
+                if ((currentGameState.SessionData.LapTimeSessionBestPlayerClass == -1 ||
+                     currentGameState.SessionData.LapTimePrevious < currentGameState.SessionData.LapTimeSessionBestPlayerClass))
+                {
+                    currentGameState.SessionData.LapTimeSessionBestPlayerClass = currentGameState.SessionData.LapTimePrevious;
+                }
             }
 
             // TODO: lap time previous for invalid laps, sector time stuff.
@@ -672,15 +693,7 @@ namespace CrewChiefV3.RaceRoom
                 currentGameState.TyreData.PeakFrontLeftTemperatureForLap, currentGameState.TyreData.PeakFrontRightTemperatureForLap,
                 currentGameState.TyreData.PeakRearLeftTemperatureForLap, currentGameState.TyreData.PeakRearRightTemperatureForLap);
 
-            // TODO: the brake temp thresholds here are for 'iron race brakes'. We don't know what kind of car the player is driving...
-            List<CornerData.EnumWithThresholds> brakeTempThresholdsToUse;
-            if  (tyreType == TyreType.DTM_Option || tyreType == TyreType.DTM_Prime)
-            {
-                brakeTempThresholdsToUse = CarData.brakeTempThresholds[BrakeType.Carbon];
-            } else {
-                brakeTempThresholdsToUse = CarData.brakeTempThresholds[BrakeType.Iron_Race];
-            }
-            currentGameState.TyreData.BrakeTempStatus = CornerData.getCornerData(brakeTempThresholdsToUse, shared.BrakeTemperatures.FrontLeft, 
+            currentGameState.TyreData.BrakeTempStatus = CornerData.getCornerData(brakeTempThresholdsForPlayersCar, shared.BrakeTemperatures.FrontLeft, 
                 shared.BrakeTemperatures.FrontRight, shared.BrakeTemperatures.RearLeft, shared.BrakeTemperatures.RearRight);
             
             currentGameState.TyreData.LeftFrontBrakeTemp = shared.BrakeTemperatures.FrontLeft;
@@ -1025,6 +1038,10 @@ namespace CrewChiefV3.RaceRoom
             opponentData.CurrentSectorNumber = participantStruct.track_sector;
             opponentData.WorldPosition = new float[] { participantStruct.position.X, participantStruct.position.Z };
             opponentData.DistanceRoundTrack = participantStruct.lap_distance;
+            opponentData.CarClass = CarData.getCarClassForRaceRoomId(participantStruct.driver_info.class_id);
+            Console.WriteLine("Driver " + driverName + " is using car class " +
+                opponentData.CarClass.carClassEnum + " (class ID " + participantStruct.driver_info.class_id + ")");
+
             return opponentData;
         }
 
