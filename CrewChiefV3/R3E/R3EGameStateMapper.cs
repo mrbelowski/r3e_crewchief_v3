@@ -80,7 +80,7 @@ namespace CrewChiefV3.RaceRoom
         private SpeechRecogniser speechRecogniser;
 
         private Dictionary<int, PendingRacePositionChange> PendingRacePositionChanges = new Dictionary<int, PendingRacePositionChange>();
-        private TimeSpan PositionChangeLag = TimeSpan.FromSeconds(1);
+        private TimeSpan PositionChangeLag = TimeSpan.FromMilliseconds(500);
         class PendingRacePositionChange
         {
             public int newPosition;
@@ -464,10 +464,11 @@ namespace CrewChiefV3.RaceRoom
                                     }
                                 }
                             }
+                            // TODO: fix this properly - hack to work around issue with lagging position updates
                             if (currentGameState.SessionData.SessionType == SessionType.Race && 
                                 (!isEnteringPits || isLeavingPits) && currentGameState.PositionAndMotionData.DistanceRoundTrack != 0 &&
-                                currentOpponentData.Position < shared.Position && 
-                                isBehindWithinDistance(shared.track_info.length, 100, currentGameState.PositionAndMotionData.DistanceRoundTrack, participantStruct.lap_distance)) {
+                                currentOpponentData.Position + 1 < shared.Position && 
+                                isBehindWithinDistance(shared.track_info.length, 10, 100, currentGameState.PositionAndMotionData.DistanceRoundTrack, participantStruct.lap_distance)) {
                                     currentGameState.SessionData.Flag = FlagEnum.BLUE;
                             }
                         }
@@ -1074,15 +1075,17 @@ namespace CrewChiefV3.RaceRoom
             return opponentData;
         }
 
-        public Boolean isBehindWithinDistance(float trackLength, float distance, float playerTrackDistance, float opponentTrackDistance)
+        public Boolean isBehindWithinDistance(float trackLength, float minDistance, float maxDistance, float playerTrackDistance, float opponentTrackDistance)
         {
-            if (playerTrackDistance - opponentTrackDistance > 0)
+            float difference = playerTrackDistance - opponentTrackDistance;
+            if (difference > 0)
             {
-                return playerTrackDistance - opponentTrackDistance < distance;
+                return difference < maxDistance && difference > minDistance;
             }
             else
             {
-                return (playerTrackDistance + trackLength) - opponentTrackDistance < distance;
+                difference = (playerTrackDistance + trackLength) - opponentTrackDistance;
+                return difference < maxDistance && difference > minDistance;
             }
         }
 
