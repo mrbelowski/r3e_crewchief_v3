@@ -242,7 +242,7 @@ namespace CrewChiefV3
             float alignedXCoordinate = ((float)Math.Cos(playerRotationInRadians) * rawXCoordinate) + ((float)Math.Sin(playerRotationInRadians) * rawYCoordinate);
             float alignedYCoordinate = ((float)Math.Cos(playerRotationInRadians) * rawYCoordinate) - ((float)Math.Sin(playerRotationInRadians) * rawXCoordinate);
 
-            Console.WriteLine("raw x " + rawXCoordinate + ", raw y = " + rawYCoordinate + ", aligned x " + alignedXCoordinate + ", aligned y " + alignedYCoordinate);
+            //Console.WriteLine("raw x " + rawXCoordinate + ", raw y = " + rawYCoordinate + ", aligned x " + alignedXCoordinate + ", aligned y " + alignedYCoordinate);
 
             // when checking for an overlap, use the 'short' (actual) car length if we're not already overlapping on that side.
             // If we're already overlapping, use the 'long' car length - this means we don't call 'clear' till there's a small gap

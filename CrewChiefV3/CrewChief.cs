@@ -17,6 +17,8 @@ namespace CrewChiefV3
 {
     public class CrewChief : IDisposable
     {
+        public static String Version = "3.6.4";
+
         public static Boolean loadDataFromFile = false;
 
         public SpeechRecogniser speechRecogniser;

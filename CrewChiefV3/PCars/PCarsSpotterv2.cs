@@ -30,6 +30,8 @@ namespace CrewChiefV3.PCars
         private DateTime timeToStartSpotting = DateTime.Now;
 
         private float intervalSeconds = 50 / 1000;
+
+        private Dictionary<String, List<float>> previousOpponentSpeeds = new Dictionary<String, List<float>>();
         
         public PCarsSpotterv2(AudioPlayer audioPlayer, Boolean initialEnabledState, float intervalSeconds)
         {
@@ -118,7 +120,24 @@ namespace CrewChiefV3.PCars
                             {
                                 pCarsAPIParticipantStruct previousOpponentData = PCarsGameStateMapper.getParticipantDataForName(lastState.mParticipantData, opponentData.mName, i);
                                 float[] previousPositions = new float[] { previousOpponentData.mWorldPosition[0], previousOpponentData.mWorldPosition[2] };
-                                opponentSpeeds.Add(getSpeed(currentPositions, previousPositions, this.intervalSeconds));
+                                float opponentSpeed = getSpeed(currentPositions, previousPositions, this.intervalSeconds);
+                                if (previousOpponentSpeeds.ContainsKey(opponentData.mName))
+                                {
+                                    List<float> speeds = previousOpponentSpeeds[opponentData.mName];
+                                    speeds.Add(opponentSpeed);
+                                    if (speeds.Count == 5)
+                                    {
+                                        speeds.RemoveAt(0);
+                                        opponentSpeed = speeds.Average();
+                                    }
+                                }
+                                else
+                                {
+                                    List<float> speeds = new List<float>();
+                                    speeds.Add(opponentSpeed);
+                                    previousOpponentSpeeds.Add(opponentData.mName, speeds);
+                                }
+                                opponentSpeeds.Add(opponentSpeed);
                             }
                             catch (Exception e)
                             {
