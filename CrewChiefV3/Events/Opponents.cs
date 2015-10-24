@@ -92,9 +92,10 @@ namespace CrewChiefV3.Events
                     if (opponentData.IsNewLap && opponentData.LastLapTime > 0 && opponentData.OpponentLapData.Count > 2 &&
                         opponentData.CurrentBestLapTime != -1 && opponentData.PreviousBestLapTime != -1)
                     {
-                        // this opponent has just completed a lap - do we need to report it? if it's more than
+                        // this opponent has just completed a lap - do we need to report it? if it's fast overall and more than
                         // a tenth quicker then his previous best we do...
-                        if (opponentData.CurrentBestLapTime < opponentData.PreviousBestLapTime - 0.1f)
+                        if (opponentData.CurrentBestLapTime < opponentData.PreviousBestLapTime - 0.1f &&
+                            opponentData.CurrentBestLapTime < currentGameState.SessionData.LapTimeSessionBest + 0.5f)
                         {
                             if (currentGameState.SessionData.Position > 1 && opponentData.Position == 1)
                             {

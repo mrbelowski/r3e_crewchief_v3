@@ -385,6 +385,7 @@ namespace CrewChiefV3.Events
                 if (damageToReportNext.Item2 == DamageLevel.DESTROYED)
                 {
                     audioPlayer.queueClip(new QueuedMessage(folderBustedEngine, 0, this));
+                    audioPlayer.disablePearlsOfWisdom = true;
                     playMissingWheel = false;
                 }
                 else if (damageToReportNext.Item2 == DamageLevel.MAJOR)
@@ -401,6 +402,7 @@ namespace CrewChiefV3.Events
                 if (damageToReportNext.Item2 == DamageLevel.DESTROYED)
                 {
                     audioPlayer.queueClip(new QueuedMessage(folderBustedTransmission, 0, this));
+                    audioPlayer.disablePearlsOfWisdom = true;
                     playMissingWheel = false;
                 }
                 else if (damageToReportNext.Item2 == DamageLevel.MAJOR)
@@ -417,6 +419,7 @@ namespace CrewChiefV3.Events
                 if (damageToReportNext.Item2 == DamageLevel.DESTROYED)
                 {
                     audioPlayer.queueClip(new QueuedMessage(folderBustedSuspension, 0, this));
+                    audioPlayer.disablePearlsOfWisdom = true;
                     playMissingWheel = false;
                 }
                 else if (damageToReportNext.Item2 == DamageLevel.MAJOR)
@@ -433,6 +436,7 @@ namespace CrewChiefV3.Events
                 if (damageToReportNext.Item2 == DamageLevel.DESTROYED)
                 {
                     audioPlayer.queueClip(new QueuedMessage(folderBustedBrakes, 0, this));
+                    audioPlayer.disablePearlsOfWisdom = true;
                     playMissingWheel = false;
                 }
                 else if (damageToReportNext.Item2 == DamageLevel.MAJOR)
@@ -449,6 +453,7 @@ namespace CrewChiefV3.Events
                 if (damageToReportNext.Item2 == DamageLevel.DESTROYED)
                 {
                     audioPlayer.queueClip(new QueuedMessage(folderSevereAeroDamage, 0, this));
+                    audioPlayer.disablePearlsOfWisdom = true;
                 }
                 else if (damageToReportNext.Item2 == DamageLevel.MAJOR)
                 {
