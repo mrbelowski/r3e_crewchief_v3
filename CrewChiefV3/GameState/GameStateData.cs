@@ -753,7 +753,10 @@ namespace CrewChiefV3.GameState
             List<String> rawDriverNames = new List<String>();
             foreach (KeyValuePair<Object, OpponentData> entry in OpponentData)
             {
-                rawDriverNames.Add(entry.Value.DriverRawName);                
+                if (!rawDriverNames.Contains(entry.Value.DriverRawName))
+                {
+                    rawDriverNames.Add(entry.Value.DriverRawName);                
+                }
             }
             rawDriverNames.Sort();
             return rawDriverNames;

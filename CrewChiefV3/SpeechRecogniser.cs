@@ -265,8 +265,9 @@ namespace CrewChiefV3
         }
 
         public void addNewOpponentName(String rawDriverName)
-        {            
+        {
             String usableName = DriverNameHelper.getUsableDriverName(rawDriverName, crewChief.audioPlayer.soundFilesPath);
+            Console.WriteLine("Adding opponent name " + rawDriverName + " to speech recogniser, using " + usableName);
             if (usableName != null && usableName.Length > 0)
             {
                 crewChief.audioPlayer.cacheDriverName(usableName);
@@ -289,6 +290,7 @@ namespace CrewChiefV3
 
         public void addOpponentSpeechRecognition(List<String> names, Boolean useNames)
         {
+            Console.WriteLine("adding opponent names to speech recogniser");
             foreach (Grammar opponentGrammar in opponentGrammarList)
             {
                 sre.UnloadGrammar(opponentGrammar);

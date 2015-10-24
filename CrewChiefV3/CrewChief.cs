@@ -406,6 +406,7 @@ namespace CrewChiefV3
                                 audioPlayer.closeChannel();
                                 sessionFinished = true;
                                 audioPlayer.disablePearlsOfWisdom = false;
+                                currentGameState.OpponentData.Clear();
                                 if (loadDataFromFile)
                                 {
                                     Thread.Sleep(2000);
@@ -433,7 +434,8 @@ namespace CrewChiefV3
                                 if (enableDriverNames)
                                 {
                                     List<String> rawDriverNames = currentGameState.getRawDriverNames();
-                                    if (currentGameState.SessionData.DriverRawName != null && currentGameState.SessionData.DriverRawName.Length > 0)
+                                    if (currentGameState.SessionData.DriverRawName != null && currentGameState.SessionData.DriverRawName.Length > 0 &&
+                                        !rawDriverNames.Contains(currentGameState.SessionData.DriverRawName))
                                     {
                                         rawDriverNames.Add(currentGameState.SessionData.DriverRawName);
                                     }

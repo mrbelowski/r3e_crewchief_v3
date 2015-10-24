@@ -296,7 +296,7 @@ namespace CrewChiefV3.RaceRoom
             {
                 currentGameState.SessionData.playerLapTimes.Add(shared.LapTimePrevious);
             }
-            if (previousGameState != null)
+            if (previousGameState != null && !currentGameState.SessionData.IsNewSession)
             {
                 currentGameState.OpponentData = previousGameState.OpponentData;
                 currentGameState.SessionData.SectorNumber = previousGameState.SessionData.SectorNumber;
