@@ -31,6 +31,8 @@ namespace CrewChiefV3.Events
 
         public static String folderWeAre = "opponents/we_are";
 
+        private Boolean reportOpponentLapTimesInRace = UserSettings.GetUserSettings().getBoolean("enable_opponent_laptime_reporting_in_race");
+
         private GameStateData currentGameState;
 
         private DateTime nextLeadChangeMessage = DateTime.MinValue;
@@ -81,34 +83,37 @@ namespace CrewChiefV3.Events
             {
                 nextLeadChangeMessage = currentGameState.Now.Add(TimeSpan.FromSeconds(30));
             }
-            foreach (KeyValuePair<Object, OpponentData> entry in currentGameState.OpponentData)
+            if (currentGameState.SessionData.SessionType != SessionType.Race || reportOpponentLapTimesInRace)
             {
-                Object opponentKey = entry.Key;
-                OpponentData opponentData = entry.Value;
-                if (opponentData.IsNewLap && opponentData.LastLapTime > 0 && opponentData.OpponentLapData.Count > 2 &&
-                    opponentData.CurrentBestLapTime != -1 && opponentData.PreviousBestLapTime != -1)
+                foreach (KeyValuePair<Object, OpponentData> entry in currentGameState.OpponentData)
                 {
-                    // this opponent has just completed a lap - do we need to report it? if it's more than
-                    // a tenth quicker then his previous best we do...
-                    if (opponentData.CurrentBestLapTime < opponentData.PreviousBestLapTime - 0.1f)
+                    Object opponentKey = entry.Key;
+                    OpponentData opponentData = entry.Value;
+                    if (opponentData.IsNewLap && opponentData.LastLapTime > 0 && opponentData.OpponentLapData.Count > 2 &&
+                        opponentData.CurrentBestLapTime != -1 && opponentData.PreviousBestLapTime != -1)
                     {
-                        if (currentGameState.SessionData.Position > 1 && opponentData.Position == 1)
+                        // this opponent has just completed a lap - do we need to report it? if it's more than
+                        // a tenth quicker then his previous best we do...
+                        if (opponentData.CurrentBestLapTime < opponentData.PreviousBestLapTime - 0.1f)
                         {
-                            // he's leading, and has recorded 3 or more laps, and this one's his fastest
-                            audioPlayer.queueClip(new QueuedMessage("leader_good_laptime", MessageContents(folderLeaderHasJustDoneA,
-                                    TimeSpan.FromSeconds(opponentData.CurrentBestLapTime)), 0, this));
-                        }
-                        else if (currentGameState.SessionData.Position > 1 && opponentData.Position == currentGameState.SessionData.Position - 1)
-                        {
-                            // he's ahead of us, and has recorded 3 or more laps, and this one's his fastest
-                            audioPlayer.queueClip(new QueuedMessage("car_ahead_good_laptime", MessageContents(folderTheCarAheadHasJustDoneA,
-                                    TimeSpan.FromSeconds(opponentData.CurrentBestLapTime)), 0, this));
-                        }
-                        else if (!currentGameState.isLast() && opponentData.Position == currentGameState.SessionData.Position + 1)
-                        {
-                            // he's behind us, and has recorded 3 or more laps, and this one's his fastest
-                            audioPlayer.queueClip(new QueuedMessage("car_behind_good_laptime", MessageContents(folderTheCarBehindHasJustDoneA,
-                                    TimeSpan.FromSeconds(opponentData.CurrentBestLapTime)), 0, this));
+                            if (currentGameState.SessionData.Position > 1 && opponentData.Position == 1)
+                            {
+                                // he's leading, and has recorded 3 or more laps, and this one's his fastest
+                                audioPlayer.queueClip(new QueuedMessage("leader_good_laptime", MessageContents(folderLeaderHasJustDoneA,
+                                        TimeSpan.FromSeconds(opponentData.CurrentBestLapTime)), 0, this));
+                            }
+                            else if (currentGameState.SessionData.Position > 1 && opponentData.Position == currentGameState.SessionData.Position - 1)
+                            {
+                                // he's ahead of us, and has recorded 3 or more laps, and this one's his fastest
+                                audioPlayer.queueClip(new QueuedMessage("car_ahead_good_laptime", MessageContents(folderTheCarAheadHasJustDoneA,
+                                        TimeSpan.FromSeconds(opponentData.CurrentBestLapTime)), 0, this));
+                            }
+                            else if (!currentGameState.isLast() && opponentData.Position == currentGameState.SessionData.Position + 1)
+                            {
+                                // he's behind us, and has recorded 3 or more laps, and this one's his fastest
+                                audioPlayer.queueClip(new QueuedMessage("car_behind_good_laptime", MessageContents(folderTheCarBehindHasJustDoneA,
+                                        TimeSpan.FromSeconds(opponentData.CurrentBestLapTime)), 0, this));
+                            }
                         }
                     }
                 }

@@ -895,5 +895,17 @@ namespace CrewChiefV3.Properties {
                 this["display_session_lap_times"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool enable_opponent_laptime_reporting_in_race {
+            get {
+                return ((bool)(this["enable_opponent_laptime_reporting_in_race"]));
+            }
+            set {
+                this["enable_opponent_laptime_reporting_in_race"] = value;
+            }
+        }
     }
 }

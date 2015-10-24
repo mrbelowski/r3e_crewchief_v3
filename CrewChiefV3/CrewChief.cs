@@ -406,7 +406,6 @@ namespace CrewChiefV3
                                 audioPlayer.closeChannel();
                                 sessionFinished = true;
                                 audioPlayer.disablePearlsOfWisdom = false;
-                                currentGameState.OpponentData.Clear();
                                 if (loadDataFromFile)
                                 {
                                     Thread.Sleep(2000);

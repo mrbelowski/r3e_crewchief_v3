@@ -2,7 +2,7 @@ CrewChief version 3.
 
 Changelog
 ---------
-Version 3.6.5: Fixed driver name loading in RaceRoom (restarting a race with a different opponent set sometimes left the old driver names in the cache); Added some driver names. No new sound pack for this verison.
+Version 3.6.5: Fixed driver name loading in RaceRoom (restarting a race with a different opponent set sometimes left the old driver names in the cache); Make opponent race laptime announcements optional (enable_opponent_laptime_reporting_in_race property, defaults to true); Added some driver names. No new sound pack for this verison.
 
 Version 3.6.4: Raceroom and PCars spotter overhaul (more reliable, less CPU intensive); Added blue flag warnings to Raceroom; Work around noise in Raceroom opponent race place data; Fixed best lap time playing in Raceroom when it shouldn't; Added lots of car class data and Raceroom now uses this (the app knows which car class each driver is using - still some work to be done to make the best use of this info); Fixed app properties not persisting between app updates; Added session lap times to console window at end of session; Added a load of driver names; First cut of DTM 2015 race end rules code (timed race + 1 extra lap at the end). No new sound pack for this version.
 

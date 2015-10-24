@@ -49,6 +49,8 @@ namespace CrewChiefV3
             propertyHelp.Add("minimum_name_voice_recognition_confidence", "When processing voice commands asking about opponent drivers, the speech recognition engine must be at least this confident it understood before the app responds (0.0 - 1.0, default 0.4)");
             propertyHelp.Add("minimum_voice_recognition_confidence", "When processing voice commands, the speech recognition engine must be at least this confident it understood before the app responds (0.0 - 1.0, default 0.5)");
             propertyHelp.Add("display_session_lap_times", "Write all the lap times from the completed session to the console (separated by ;)");
+            propertyHelp.Add("enable_opponent_laptime_reporting_in_race", "Call out opponent lap times in the race (car front, behind & leader) if the lap time is their best lap.");
+            
         }
 
         public String getHelp(String propertyId)
