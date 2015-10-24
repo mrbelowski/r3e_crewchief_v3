@@ -462,6 +462,21 @@ namespace CrewChiefV3.Events
             return LastLapRating.NO_DATA;
         }
 
+        private void getSectorsPace(GameStateData currentGameState)
+        {
+            float fastestSector1 = -1;
+            float fastestSector2 = -1;
+            float fastestSector3 = -1;
+            foreach (KeyValuePair<Object, OpponentData> entry in currentGameState.OpponentData)
+            {
+                OpponentData opponent = entry.Value;
+                if (opponent.CarClass.carClassEnum == currentGameState.carClass.carClassEnum)
+                {
+
+                }
+            }
+        }
+
         public override void respond(String voiceMessage)
         {
             if ((voiceMessage.Contains(SpeechRecogniser.LAST_LAP_TIME) ||

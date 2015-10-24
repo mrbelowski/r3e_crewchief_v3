@@ -288,6 +288,12 @@ namespace CrewChiefV3.GameState
 
         public float PreviousBestLapTime = -1;
 
+        public float bestSector1Time = -1;
+
+        public float bestSector2Time = -1;
+
+        public float bestSector3Time = -1;
+
         public float LastLapTime = -1;
         
         public List<LapData> OpponentLapData = new List<LapData>();
@@ -433,11 +439,28 @@ namespace CrewChiefV3.GameState
                     cumulativeSectorTime = gameTimeAtSectorEnd - lapData.GameTimeAtLapStart;                    
                 }
                 float thisSectorTime = cumulativeSectorTime;
+                int sectorNumber = 1;
                 foreach (float sectorTime in lapData.SectorTimes)
                 {
+                    sectorNumber++;
                     thisSectorTime = thisSectorTime - sectorTime;
                 }
                 lapData.SectorTimes.Add(thisSectorTime);
+                if (lapIsValid && thisSectorTime > 0)
+                {
+                    if (sectorNumber == 1 && (bestSector1Time == -1 || thisSectorTime < bestSector1Time))
+                    {
+                        bestSector1Time = thisSectorTime;
+                    }
+                    if (sectorNumber == 2 && (bestSector2Time == -1 || thisSectorTime < bestSector2Time))
+                    {
+                        bestSector2Time = thisSectorTime;
+                    }
+                    if (sectorNumber == 3 && (bestSector3Time == -1 || thisSectorTime < bestSector3Time))
+                    {
+                        bestSector3Time = thisSectorTime;
+                    }
+                }
                 lapData.SectorPositions.Add(position);
                 lapData.GameTimeAtSectorEnd.Add(gameTimeAtSectorEnd);
                 if (lapData.IsValid && !lapIsValid)

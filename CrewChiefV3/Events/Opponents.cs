@@ -89,6 +89,9 @@ namespace CrewChiefV3.Events
                 {
                     Object opponentKey = entry.Key;
                     OpponentData opponentData = entry.Value;
+
+                    // TODO: if this opponent's lap is the best overall, announce it ("fastest lap for [bob], [lap time]")
+
                     if (opponentData.IsNewLap && opponentData.LastLapTime > 0 && opponentData.OpponentLapData.Count > 2 &&
                         opponentData.CurrentBestLapTime != -1 && opponentData.PreviousBestLapTime != -1)
                     {
