@@ -175,10 +175,7 @@ namespace CrewChiefV3.GameState
 
         // How many laps the player has completed. If this value is 6, the player is on his 7th lap.
         public int CompletedLaps = 0;
-
-        // Unit: Seconds (-1.0 = none)
-        public Single LapTimeBestPlayer = -1;
-
+        
         // Unit: Seconds (-1.0 = none)
         public Single LapTimePrevious = -1;
 
@@ -191,6 +188,10 @@ namespace CrewChiefV3.GameState
 
         // Current position (1 = first place)
         public int Position = 0;
+
+        public float GameTimeAtLastPositionFrontChange = 0;
+
+        public float GameTimeAtLastPositionBehindChange = 0;
 
         // Number of cars (including the player) in the race
         public int NumCars = 0;
@@ -207,14 +208,9 @@ namespace CrewChiefV3.GameState
 
         public Single OpponentsLapTimeSessionBestPlayerClass = -1;
 
-        // ...
-        public Single LapTimeDeltaSelf = 0;
+        public Single OverallSessionBestLapTime = -1;
 
-        // ...
-        public Single LapTimeDeltaLeader = 0;
-
-        // ...
-        public Single LapTimeDeltaLeaderClass = 0;
+        public Single PlayerClassSessionBestLapTime = -1;
 
         // ...
         public Single TimeDeltaFront = 0;
@@ -226,12 +222,6 @@ namespace CrewChiefV3.GameState
         public int SectorNumber = 0;
 
         public Boolean IsNewSector = false;
-
-        public float Sector1TimeDeltaSelf = 0;
-
-        public float Sector2TimeDeltaSelf = 0;
-
-        public float Sector3TimeDeltaSelf = 0;
 
         // these are used for quick n dirty checks to see if we're racing the same opponent in front / behind,
         // without iterating over the Opponents list. Or for cases (like R3E) where we don't have an opponents list

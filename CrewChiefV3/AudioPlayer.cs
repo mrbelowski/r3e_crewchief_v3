@@ -577,10 +577,6 @@ namespace CrewChiefV3
             List<String> soundsProcessed = new List<String>();
 
             Boolean oneOrMoreEventsEnabled = false;
-            if (queueToPlay.Count > 0)
-            {
-                Console.WriteLine("Processing queue of " + queueToPlay.Count + " event(s)");
-            }
             lock (queueToPlay)
             {
                 foreach (String key in queueToPlay.Keys)
@@ -623,10 +619,6 @@ namespace CrewChiefV3
                     {
                         oneOrMoreEventsEnabled = true;
                     }
-                }
-                if (queueToPlay.Count > 0 && keysToPlay.Count == 0)
-                {
-                    Console.WriteLine("None of the " + queueToPlay.Count + " message(s) in this queue is due or valid");
                 }
             }            
             Boolean wasInterrupted = false;
@@ -702,7 +694,7 @@ namespace CrewChiefV3
 
         private List<String> playSounds(List<String> eventNames, Boolean isImmediateMessages, out Boolean wasInterrupted)
         {
-            Console.WriteLine("Playing sounds, events: " + String.Join(", ", eventNames));
+            //Console.WriteLine("Playing sounds, events: " + String.Join(", ", eventNames));
             List<String> soundsProcessed = new List<String>();
             OrderedDictionary thisQueue = isImmediateMessages ? immediateClips : queuedClips;
             wasInterrupted = false;
@@ -789,7 +781,7 @@ namespace CrewChiefV3
             }
             else
             {
-                Console.WriteLine("Processed " + String.Join(", ", soundsProcessed.ToArray()));
+                Console.WriteLine("*** Processed " + String.Join(", ", soundsProcessed.ToArray()));
             }
             return soundsProcessed;
         }
@@ -874,7 +866,7 @@ namespace CrewChiefV3
         {
             List<SoundPlayer> bleeps = clips["start_bleep"];
             int bleepIndex = random.Next(0, bleeps.Count);
-            Console.WriteLine("*** Opening channel, using bleep start_bleep at position " + bleepIndex);
+            //Console.WriteLine("*** Opening channel, using bleep start_bleep at position " + bleepIndex);
             if (!mute)
             {
                 bleeps[bleepIndex].PlaySync();
@@ -899,7 +891,7 @@ namespace CrewChiefV3
         {
             List<SoundPlayer> bleeps = clips["short_bleep"];
             int bleepIndex = random.Next(0, bleeps.Count);
-            Console.WriteLine("*** Opening channel, using bleep short_bleep at position " + bleepIndex);
+            // Console.WriteLine("*** Opening channel, using bleep short_bleep at position " + bleepIndex);
             if (!mute)
             {
                 bleeps[bleepIndex].Play();
@@ -910,7 +902,7 @@ namespace CrewChiefV3
         {
             List<SoundPlayer> bleeps = clips["end_bleep"];
             int bleepIndex = random.Next(0, bleeps.Count);
-            Console.WriteLine("*** Closing channel, using bleep end_bleep at position " + bleepIndex);
+            // Console.WriteLine("*** Closing channel, using bleep end_bleep at position " + bleepIndex);
             if (!mute)
             {
                 bleeps[bleepIndex].PlaySync();

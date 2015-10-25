@@ -122,8 +122,8 @@ namespace CrewChiefV3.Events
                 // TODO: the above is no longer true - rework this
                 if (currentGameState.SessionData.SessionType == SessionType.Race && currentGameState.SessionData.IsNewLap &&
                     currentGameState.SessionData.SessionRunningTime > 60 && !playedLastLap &&
-                    currentGameState.SessionData.Position == 1 && 
-                    ((!addExtraLapForDTM2015 && timeLeft > 0 && timeLeft < currentGameState.SessionData.LapTimeBestPlayer) ||
+                    currentGameState.SessionData.Position == 1 &&
+                    ((!addExtraLapForDTM2015 && timeLeft > 0 && timeLeft < currentGameState.SessionData.PlayerLapTimeSessionBest) ||
                     (addExtraLapForDTM2015 && timeLeft <= 0)))
                 {
                     playedLastLap = true;

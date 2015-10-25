@@ -8,6 +8,7 @@ namespace CrewChiefV3.Events
 {
     class PushNow : AbstractEvent
     {
+        // TODO: use driver names here?
         private String folderPushToImprove = "push_now/push_to_improve";
         private String folderPushToGetWin = "push_now/push_to_get_win";
         private String folderPushToGetSecond = "push_now/push_to_get_second";
@@ -17,13 +18,11 @@ namespace CrewChiefV3.Events
         private String folderPushExitingPits = "push_now/pits_exit_clear";
         private String folderTrafficBehindExitingPits = "push_now/pits_exit_traffic_behind";
 
-        private List<PushData> pushDataInFront;
-        private List<PushData> pushDataBehind;
         private Boolean playedNearEndTimePush;
-        private int previousDataWindowSizeToCheck = 2;
+        private int lapsToCountBackForOpponentBest = 4;
         private Boolean playedNearEndLapsPush;
 
-        private Boolean isLast;
+        private float minTimeToBeInThisPosition = 60;
 
         public PushNow(AudioPlayer audioPlayer)
         {
@@ -32,77 +31,29 @@ namespace CrewChiefV3.Events
 
         public override void clearState()
         {
-            pushDataInFront = new List<PushData>();
-            pushDataBehind = new List<PushData>();
             playedNearEndTimePush = false;
             playedNearEndLapsPush = false;
-            isLast = false;
-        }
-        
-        private float getOpponentBestLapInWindow(float lapTimeSessionBest, Boolean ahead)
-        {
-            float bestLap = -1;
-            if (ahead)
-            {
-                for (int i = pushDataInFront.Count - 1; i > pushDataInFront.Count - previousDataWindowSizeToCheck; i--)
-                {
-                    float thisLap = pushDataInFront[i].lapTime + (pushDataInFront[i - 1].gap - pushDataInFront[i].gap);
-                    if ((bestLap == -1 || bestLap > thisLap) && bestLap >= lapTimeSessionBest)
-                    {
-                        bestLap = thisLap;
-                    }
-                }
-            }
-            else
-            {
-                for (int i = pushDataBehind.Count - 1; i > pushDataBehind.Count - previousDataWindowSizeToCheck; i--)
-                {
-                    float thisLap = pushDataBehind[i].lapTime - (pushDataBehind[i - 1].gap - pushDataBehind[i].gap);
-                    if ((bestLap == -1 || bestLap > thisLap) && bestLap >= lapTimeSessionBest)
-                    {
-                        bestLap = thisLap;
-                    }
-                }
-            }
-            return bestLap;
         }
 
         override protected void triggerInternal(GameStateData previousGameState, GameStateData currentGameState)
         {
-            if (pushDataInFront == null || pushDataBehind == null)
-            {
-                clearState();
-            }
-            if (!currentGameState.SessionData.IsRacingSameCarInFront ||
-                (currentGameState.SessionData.TimeDeltaFront > 0 && currentGameState.SessionData.TimeDeltaFront < 1))
-            {
-                pushDataInFront.Clear();
-            }
-            if (!currentGameState.SessionData.IsRacingSameCarBehind ||
-                (currentGameState.SessionData.TimeDeltaBehind > 0 && currentGameState.SessionData.TimeDeltaBehind < 1))
-            {
-                pushDataBehind.Clear();
-            }
-            if (currentGameState.SessionData.IsNewLap)
-            {
-                pushDataInFront.Add(new PushData(currentGameState.SessionData.LapTimePrevious, currentGameState.SessionData.TimeDeltaFront));
-                pushDataBehind.Add(new PushData(currentGameState.SessionData.LapTimePrevious, currentGameState.SessionData.TimeDeltaBehind));                    
-            }
-            if (currentGameState.SessionData.SessionNumberOfLaps <= 0 && !playedNearEndTimePush &&
+            Boolean checkPushToGain = currentGameState.SessionData.SessionRunningTime - currentGameState.SessionData.GameTimeAtLastPositionFrontChange < minTimeToBeInThisPosition;
+            Boolean checkPushToHold = currentGameState.SessionData.SessionRunningTime - currentGameState.SessionData.GameTimeAtLastPositionBehindChange < minTimeToBeInThisPosition;
+            if ((checkPushToGain || checkPushToHold) && !playedNearEndTimePush && currentGameState.SessionData.SessionNumberOfLaps <= 0 && 
                     currentGameState.SessionData.SessionTimeRemaining < 4 * 60 && currentGameState.SessionData.SessionTimeRemaining > 2 * 60)
-            {
+            {                
                 // estimate the number of remaining laps - be optimistic...
-                int numLapsLeft = (int)Math.Ceiling((double)currentGameState.SessionData.SessionTimeRemaining / (double)currentGameState.SessionData.LapTimeBestPlayer);
+                int numLapsLeft = (int)Math.Ceiling((double)currentGameState.SessionData.SessionTimeRemaining / (double)currentGameState.SessionData.PlayerLapTimeSessionBest);
                 if (currentGameState.carClass.carClassEnum == CarData.CarClassEnum.DTM_2015)
                 {
                     numLapsLeft = numLapsLeft + 1;
                 }
-                playedNearEndTimePush = checkGaps(currentGameState, numLapsLeft);
+                playedNearEndTimePush = checkGaps(currentGameState, numLapsLeft, checkPushToGain, checkPushToHold);
             }
-            else if (currentGameState.SessionData.SessionNumberOfLaps > 0 && currentGameState.SessionData.SessionNumberOfLaps - currentGameState.SessionData.CompletedLaps <= 4 &&
-                !playedNearEndLapsPush)
+            else if ((checkPushToGain || checkPushToHold) && !playedNearEndLapsPush && currentGameState.SessionData.SessionNumberOfLaps > 0 && 
+                currentGameState.SessionData.SessionNumberOfLaps - currentGameState.SessionData.CompletedLaps <= 4)
             {
-                playedNearEndLapsPush = checkGaps(currentGameState, currentGameState.SessionData.SessionNumberOfLaps - currentGameState.SessionData.CompletedLaps);
+                playedNearEndLapsPush = checkGaps(currentGameState, currentGameState.SessionData.SessionNumberOfLaps - currentGameState.SessionData.CompletedLaps, checkPushToGain, checkPushToHold);
             }
             else if (currentGameState.PitData.IsAtPitExit)
             {
@@ -118,21 +69,18 @@ namespace CrewChiefV3.Events
                     // we've exited the pits but there's traffic behind
                     audioPlayer.queueClip(new QueuedMessage(folderTrafficBehindExitingPits, 0, this));
                 }
-            }            
+            }
         }
 
-        private Boolean checkGaps(GameStateData currentGameState, int numLapsLeft)
+        private Boolean checkGaps(GameStateData currentGameState, int numLapsLeft, Boolean checkPushToGain, Boolean checkPushToHold)
         {
-            Boolean playedMessage = false;
-            if (currentGameState.SessionData.Position > 1 && pushDataInFront.Count >= previousDataWindowSizeToCheck)
+            if (checkPushToGain && currentGameState.SessionData.Position > 1)
             {
-                float opponentInFrontBestLap = getOpponentBestLapInWindow(
-                    Math.Min(currentGameState.SessionData.OpponentsLapTimeSessionBestOverall, currentGameState.SessionData.PlayerLapTimeSessionBest), true);
-                if (opponentInFrontBestLap > 0 && 
-                    (opponentInFrontBestLap - currentGameState.SessionData.LapTimeBestPlayer) * numLapsLeft > currentGameState.SessionData.TimeDeltaFront)
+                float opponentInFrontBestLap = getOpponentBestLap(currentGameState.SessionData.Position - 1, lapsToCountBackForOpponentBest, currentGameState);
+                if (opponentInFrontBestLap > 0 &&
+                    (opponentInFrontBestLap - currentGameState.SessionData.PlayerLapTimeSessionBest) * numLapsLeft > currentGameState.SessionData.TimeDeltaFront)
                 {
                     // going flat out, we're going to catch the guy ahead us before the end
-                    playedMessage = true;
                     if (currentGameState.SessionData.Position == 2)
                     {
                         audioPlayer.queueClip(new QueuedMessage(folderPushToGetWin, 0, this));
@@ -149,35 +97,41 @@ namespace CrewChiefV3.Events
                     {
                         audioPlayer.queueClip(new QueuedMessage(folderPushToImprove, 0, this));
                     }
+                    return true;
                 }
             }
-            else if (!isLast && pushDataBehind.Count >= previousDataWindowSizeToCheck)
+            if (checkPushToHold && !currentGameState.isLast())
             {
-                float opponentBehindBestLap = getOpponentBestLapInWindow(
-                    Math.Min(currentGameState.SessionData.OpponentsLapTimeSessionBestOverall, currentGameState.SessionData.PlayerLapTimeSessionBest), false);
+                float opponentBehindBestLap = getOpponentBestLap(currentGameState.SessionData.Position + 1, lapsToCountBackForOpponentBest, currentGameState);
                 if (opponentBehindBestLap > 0 &&
-                    (currentGameState.SessionData.LapTimeBestPlayer - opponentBehindBestLap) * numLapsLeft > currentGameState.SessionData.TimeDeltaBehind)
+                    (currentGameState.SessionData.PlayerLapTimeSessionBest - opponentBehindBestLap) * numLapsLeft > currentGameState.SessionData.TimeDeltaBehind)
                 {
                     // even with us going flat out, the guy behind is going to catch us before the end
-                    playedMessage = true;
-                    Console.WriteLine("might lose this position. Player best lap = " + currentGameState.SessionData.LapTimeBestPlayer + " laps left = " + numLapsLeft +
+                    Console.WriteLine("might lose this position. Player best lap = " + currentGameState.SessionData.PlayerLapTimeSessionBest + " laps left = " + numLapsLeft +
                         " opponent best lap = " + opponentBehindBestLap + " time delta = " + currentGameState.SessionData.TimeDeltaBehind);
                     audioPlayer.queueClip(new QueuedMessage(folderPushToHoldPosition, 0, this));
+                    return true;
                 }
             }
-            return playedMessage;
+            return false;
         }
 
-        private class PushData
+        private float getOpponentBestLap(int opponentPosition, int lapsToCheck, GameStateData gameState)
         {
-            public float lapTime;
-            public float gap;
-
-            public PushData(float lapTime, float gap)
+            OpponentData opponent = gameState.getOpponentAtPosition(opponentPosition);
+            if (opponent == null || opponent.OpponentLapData.Count < lapsToCheck)
             {
-                this.lapTime = lapTime;
-                this.gap = gap;
+                return -1;
             }
+            float bestLap = -1;
+            for (int i = opponent.OpponentLapData.Count - 1; i >= opponent.OpponentLapData.Count - lapsToCheck; i--)
+            {
+                if (bestLap == -1 || bestLap > opponent.OpponentLapData[i].LapTime)
+                {
+                    bestLap = opponent.OpponentLapData[i].LapTime;
+                }
+            }
+            return bestLap;
         }
     }
 }

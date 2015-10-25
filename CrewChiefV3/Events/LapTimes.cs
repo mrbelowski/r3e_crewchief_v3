@@ -113,8 +113,8 @@ namespace CrewChiefV3.Events
                 deltaPlayerLastToSessionBestInClass = TimeSpan.FromSeconds(
                     currentGameState.SessionData.LapTimePrevious - currentGameState.SessionData.OpponentsLapTimeSessionBestPlayerClass);
                 deltaPlayerLastToSessionBestOverall = TimeSpan.FromSeconds(
-                    currentGameState.SessionData.LapTimeBestPlayer - currentGameState.SessionData.OpponentsLapTimeSessionBestPlayerClass);
-                if (currentGameState.SessionData.LapTimePrevious <= currentGameState.SessionData.LapTimeBestPlayer)
+                    currentGameState.SessionData.PlayerLapTimeSessionBest - currentGameState.SessionData.OpponentsLapTimeSessionBestPlayerClass);
+                if (currentGameState.SessionData.LapTimePrevious <= currentGameState.SessionData.PlayerLapTimeSessionBest)
                 {
                     deltaPlayerBestToSessionBestInClass = deltaPlayerLastToSessionBestInClass;
                     deltaPlayerBestToSessionBestOverall = deltaPlayerLastToSessionBestOverall;
@@ -407,13 +407,13 @@ namespace CrewChiefV3.Events
                 {
                     return LastLapRating.BEST_IN_CLASS;
                 }
-                else if (currentGameState.SessionData.LapTimePrevious <= currentGameState.SessionData.LapTimeBestPlayer)
+                else if (currentGameState.SessionData.LapTimePrevious <= currentGameState.SessionData.PlayerLapTimeSessionBest)
                 {
-                    if (currentGameState.SessionData.OpponentsLapTimeSessionBestOverall > currentGameState.SessionData.LapTimeBestPlayer - closeThreshold)
+                    if (currentGameState.SessionData.OpponentsLapTimeSessionBestOverall > currentGameState.SessionData.PlayerLapTimeSessionBest - closeThreshold)
                     {
                         return LastLapRating.PERSONAL_BEST_CLOSE_TO_OVERALL_LEADER;
                     }
-                    else if (currentGameState.SessionData.OpponentsLapTimeSessionBestPlayerClass > currentGameState.SessionData.LapTimeBestPlayer - closeThreshold)
+                    else if (currentGameState.SessionData.OpponentsLapTimeSessionBestPlayerClass > currentGameState.SessionData.PlayerLapTimeSessionBest - closeThreshold)
                     {
                         return LastLapRating.PERSONAL_BEST_CLOSE_TO_CLASS_LEADER;
                     }
@@ -430,11 +430,11 @@ namespace CrewChiefV3.Events
                 {
                     return LastLapRating.CLOSE_TO_CLASS_LEADER;
                 }
-                else if (currentGameState.SessionData.LapTimeBestPlayer >= currentGameState.SessionData.LapTimePrevious - closeThreshold)
+                else if (currentGameState.SessionData.PlayerLapTimeSessionBest >= currentGameState.SessionData.LapTimePrevious - closeThreshold)
                 {
                     return LastLapRating.CLOSE_TO_PERSONAL_BEST;
                 }
-                else if (currentGameState.SessionData.LapTimeBestPlayer > 0)
+                else if (currentGameState.SessionData.PlayerLapTimeSessionBest > 0)
                 {
                     return LastLapRating.MEH;
                 }
@@ -442,6 +442,7 @@ namespace CrewChiefV3.Events
             return LastLapRating.NO_DATA;
         }
 
+        // TODO: finish this but move it to the session data object (do we need a Timings object in the game state?)
         private void getSectorsPace(GameStateData currentGameState)
         {
             float fastestSector1 = -1;
@@ -573,17 +574,15 @@ namespace CrewChiefV3.Events
                                 audioPlayer.playClipImmediately(new QueuedMessage(folderQuickestOverall, 0, null), false);
                                 audioPlayer.closeChannel();
                             }
-                            if (deltaPlayerBestToSessionBestInClass < TimeSpan.Zero)
+                            TimeSpan gapBehind = deltaPlayerBestToSessionBestInClass.Negate();
+                            if ((gapBehind.Seconds > 0 || gapBehind.Milliseconds > 50) &&
+                                gapBehind.Seconds < 60)
                             {
-                                TimeSpan gapBehind = deltaPlayerBestToSessionBestInClass.Negate();
-                                if ((gapBehind.Seconds > 0 || gapBehind.Milliseconds > 50) &&
-                                    gapBehind.Seconds < 60)
-                                {
-                                    // delay this a bit...
-                                    audioPlayer.queueClip(new QueuedMessage("lapTimeNotRaceGap",
-                                        MessageContents(folderGapIntro, gapBehind, folderQuickerThanSecondPlace), random.Next(0, 20), this));
-                                }
+                                // delay this a bit...
+                                audioPlayer.queueClip(new QueuedMessage("lapTimeNotRaceGap",
+                                    MessageContents(folderGapIntro, gapBehind, folderQuickerThanSecondPlace), random.Next(0, 20), this));
                             }
+                            
                         }
                         else if (deltaPlayerBestToSessionBestInClass.Seconds == 0 && deltaPlayerBestToSessionBestInClass.Milliseconds < 50)
                         {
