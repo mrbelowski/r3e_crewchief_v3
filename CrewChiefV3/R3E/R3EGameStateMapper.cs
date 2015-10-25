@@ -494,11 +494,12 @@ namespace CrewChiefV3.RaceRoom
                                     }
                                 }
                             }
-                            // TODO: fix this properly - hack to work around issue with lagging position updates
-                            if (currentGameState.SessionData.SessionType == SessionType.Race && 
+                            // TODO: fix this properly - hack to work around issue with lagging position updates - 
+                            // only allow a blue flag if the 'settled' position and the latest position agree
+                            if (currentGameState.SessionData.SessionType == SessionType.Race && currentOpponentData.Position == participantStruct.place &&
                                 (!isEnteringPits || isLeavingPits) && currentGameState.PositionAndMotionData.DistanceRoundTrack != 0 &&
                                 currentOpponentData.Position + 1 < shared.Position && 
-                                isBehindWithinDistance(shared.track_info.length, 10, 100, currentGameState.PositionAndMotionData.DistanceRoundTrack, participantStruct.lap_distance)) {
+                                isBehindWithinDistance(shared.track_info.length, 8, 80, currentGameState.PositionAndMotionData.DistanceRoundTrack, participantStruct.lap_distance)) {
                                     currentGameState.SessionData.Flag = FlagEnum.BLUE;
                             }
                         }
