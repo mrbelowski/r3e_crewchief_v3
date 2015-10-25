@@ -201,9 +201,11 @@ namespace CrewChiefV3.GameState
         public Single SessionTimeRemaining = 0;
 
         // ...
-        public Single LapTimeSessionBest = -1;
+        public Single PlayerLapTimeSessionBest = -1;
 
-        public Single LapTimeSessionBestPlayerClass = -1;
+        public Single OpponentsLapTimeSessionBestOverall = -1;
+
+        public Single OpponentsLapTimeSessionBestPlayerClass = -1;
 
         // ...
         public Single LapTimeDeltaSelf = 0;
@@ -903,20 +905,6 @@ namespace CrewChiefV3.GameState
                 }
             }
             return null;
-        }
-
-        public float getBestOpponentLapTime()
-        {
-            float bestLapTime = -1;
-            foreach (KeyValuePair<Object, OpponentData> entry in OpponentData)
-            {
-                if (entry.Value.CurrentBestLapTime > 0 &&
-                    (bestLapTime == -1 || entry.Value.CurrentBestLapTime < bestLapTime))
-                {
-                    bestLapTime = entry.Value.CurrentBestLapTime;
-                }
-            }
-            return bestLapTime;
         }
         
         public void display()

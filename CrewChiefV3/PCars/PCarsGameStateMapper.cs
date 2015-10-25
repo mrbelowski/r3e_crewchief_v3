@@ -422,6 +422,9 @@ namespace CrewChiefV3.PCars
                     currentGameState.SessionData.SessionTimesAtEndOfSectors = previousGameState.SessionData.SessionTimesAtEndOfSectors;
                     currentGameState.PenaltiesData.CutTrackWarnings = previousGameState.PenaltiesData.CutTrackWarnings;
                     currentGameState.SessionData.playerLapTimes = previousGameState.SessionData.playerLapTimes;
+                    currentGameState.SessionData.PlayerLapTimeSessionBest = previousGameState.SessionData.PlayerLapTimeSessionBest;
+                    currentGameState.SessionData.OpponentsLapTimeSessionBestOverall = previousGameState.SessionData.OpponentsLapTimeSessionBestOverall;
+                    currentGameState.SessionData.OpponentsLapTimeSessionBestPlayerClass = previousGameState.SessionData.OpponentsLapTimeSessionBestPlayerClass;
                 }                
             }            
             
@@ -462,6 +465,11 @@ namespace CrewChiefV3.PCars
             {
                 currentGameState.SessionData.PreviousLapWasValid = previousGameState != null && previousGameState.SessionData.CurrentLapIsValid;
                 currentGameState.SessionData.playerLapTimes.Add(shared.mLastLapTime);
+                if (shared.mLastLapTime > 0 && (currentGameState.SessionData.PlayerLapTimeSessionBest == -1 ||
+                    currentGameState.SessionData.PlayerLapTimeSessionBest > shared.mLastLapTime))
+                {
+                    currentGameState.SessionData.PlayerLapTimeSessionBest = shared.mLastLapTime;
+                }
             }
             else if (previousGameState != null)
             {
@@ -488,11 +496,6 @@ namespace CrewChiefV3.PCars
                 currentGameState.SessionData.LapTimeBestPlayer = shared.mLastLapTime;
             }
 
-            if (previousGameState == null || !currentGameState.SessionData.IsNewSector)
-            {
-                currentGameState.SessionData.LapTimeSessionBest = currentGameState.getBestOpponentLapTime();
-                currentGameState.SessionData.LapTimeSessionBestPlayerClass = currentGameState.SessionData.LapTimeSessionBest;
-            }
             currentGameState.SessionData.LapTimeCurrent = shared.mCurrentTime;
             currentGameState.SessionData.LapTimeDeltaSelf = shared.mLastLapTime - currentGameState.SessionData.LapTimeBestPlayer;
             currentGameState.SessionData.TimeDeltaBehind = shared.mSplitTimeBehind;
@@ -609,6 +612,16 @@ namespace CrewChiefV3.PCars
                                         new float[] { participantStruct.mWorldPosition[0], participantStruct.mWorldPosition[2] }, previousOpponentWorldPosition,
                                         previousOpponentSpeed, shared.mWorldFastestLapTime, participantStruct.mCurrentLapDistance, shared.mRainDensity == 1, 
                                         shared.mAmbientTemperature, shared.mTrackTemperature);
+                                if (currentOpponentData.IsNewLap && currentOpponentData.CurrentBestLapTime > 0)
+                                {
+                                    // the car class is always Unknown for PCars - it's not in the opponent data
+                                    if (currentGameState.SessionData.OpponentsLapTimeSessionBestOverall == -1 ||
+                                        currentOpponentData.CurrentBestLapTime < currentGameState.SessionData.OpponentsLapTimeSessionBestOverall)
+                                    {
+                                        currentGameState.SessionData.OpponentsLapTimeSessionBestOverall = currentOpponentData.CurrentBestLapTime;
+                                        currentGameState.SessionData.OpponentsLapTimeSessionBestPlayerClass = currentOpponentData.CurrentBestLapTime;
+                                    }
+                                }
                             }
                         }
                         else
