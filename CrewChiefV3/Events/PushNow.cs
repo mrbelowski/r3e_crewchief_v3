@@ -126,7 +126,8 @@ namespace CrewChiefV3.Events
             Boolean playedMessage = false;
             if (currentGameState.SessionData.Position > 1 && pushDataInFront.Count >= previousDataWindowSizeToCheck)
             {
-                float opponentInFrontBestLap = getOpponentBestLapInWindow(currentGameState.SessionData.LapTimeSessionBest, true);
+                float opponentInFrontBestLap = getOpponentBestLapInWindow(
+                    Math.Min(currentGameState.SessionData.OpponentsLapTimeSessionBestOverall, currentGameState.SessionData.PlayerLapTimeSessionBest), true);
                 if (opponentInFrontBestLap > 0 && 
                     (opponentInFrontBestLap - currentGameState.SessionData.LapTimeBestPlayer) * numLapsLeft > currentGameState.SessionData.TimeDeltaFront)
                 {
@@ -152,7 +153,8 @@ namespace CrewChiefV3.Events
             }
             else if (!isLast && pushDataBehind.Count >= previousDataWindowSizeToCheck)
             {
-                float opponentBehindBestLap = getOpponentBestLapInWindow(currentGameState.SessionData.LapTimeSessionBest, false);
+                float opponentBehindBestLap = getOpponentBestLapInWindow(
+                    Math.Min(currentGameState.SessionData.OpponentsLapTimeSessionBestOverall, currentGameState.SessionData.PlayerLapTimeSessionBest), false);
                 if (opponentBehindBestLap > 0 &&
                     (currentGameState.SessionData.LapTimeBestPlayer - opponentBehindBestLap) * numLapsLeft > currentGameState.SessionData.TimeDeltaBehind)
                 {
