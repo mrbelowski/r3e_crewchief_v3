@@ -180,8 +180,7 @@ namespace CrewChiefV3.Events
                     {
                         if (currentGameState.PitData.PitWindow != PitWindow.StopInProgress && currentGameState.PitData.PitWindow != PitWindow.Completed) 
                         {
-                            if (currentGameState.PitData.MaxPermittedDistanceOnCurrentTyre > 0 &&
-                                currentGameState.SessionData.CompletedLaps == currentGameState.PitData.MaxPermittedDistanceOnCurrentTyre && playPitThisLap)
+                            if (maxDistanceOnCurrentTyre > 0 && currentGameState.SessionData.CompletedLaps == maxDistanceOnCurrentTyre && playPitThisLap)
                             {
                                 playBoxNowMessage = true;
                                 playPitThisLap = false;
@@ -199,8 +198,7 @@ namespace CrewChiefV3.Events
                                     audioPlayer.queueClip(new QueuedMessage(folderMandatoryPitStopsPitThisLap, 0, this));
                                 }
                             }
-                            else if (currentGameState.PitData.MinPermittedDistanceOnCurrentTyre > 0 &&
-                                currentGameState.SessionData.CompletedLaps == currentGameState.PitData.MinPermittedDistanceOnCurrentTyre)
+                            else if (minDistanceOnCurrentTyre > 0 && currentGameState.SessionData.CompletedLaps == minDistanceOnCurrentTyre)
                             {
                                 if (mandatoryTyreChangeTyreType == TyreType.Prime)
                                 {

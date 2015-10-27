@@ -108,6 +108,9 @@ namespace CrewChiefV3
         public static String REPEAT_LAST_MESSAGE = "repeat last message";
         public static String SAY_AGAIN = "say again";
 
+        public static String WHAT_ARE_MY_SECTOR_TIMES = "what are my sector times";
+        public static String WHATS_MY_LAST_SECTOR_TIME = "what's my last sector time";
+
         private CrewChief crewChief;
 
         public Boolean initialised = false;
@@ -236,7 +239,7 @@ namespace CrewChiefV3
                 info4.Add(new string[] { KEEP_QUIET, SHUT_UP, I_KNOW_WHAT_IM_DOING, LEAVE_ME_ALONE, DONT_TELL_ME_THE_GAPS, DONT_GIVE_ME_THE_DELTAS, DONT_TELL_ME_THE_GAPS,
                     NO_MORE_DELTAS, NO_MORE_GAPS, KEEP_ME_INFORMED, KEEP_ME_POSTED, KEEP_ME_UPDATED, TELL_ME_THE_GAPS, GIVE_ME_THE_DELTAS, TELL_ME_THE_DELTAS,
                     HOW_LONGS_LEFT, HOW_MANY_LAPS_LEFT, HOW_MANY_LAPS_TO_GO, SPOT, DONT_SPOT, REPEAT_LAST_MESSAGE, SAY_AGAIN,HAVE_I_SERVED_MY_PENALTY, DO_I_HAVE_A_PENALTY, DO_I_STILL_HAVE_A_PENALTY,
-                    DO_I_HAVE_A_MANDATORY_PIT_STOP, DO_I_NEED_TO_PIT, DO_I_HAVE_A_MANDATORY_STOP, DO_I_HAVE_TO_MAKE_A_PIT_STOP, DO_I_HAVE_TO_PIT});
+                    DO_I_HAVE_A_MANDATORY_PIT_STOP, DO_I_NEED_TO_PIT, DO_I_HAVE_A_MANDATORY_STOP, DO_I_HAVE_TO_MAKE_A_PIT_STOP, DO_I_HAVE_TO_PIT, WHAT_ARE_MY_SECTOR_TIMES, WHATS_MY_LAST_SECTOR_TIME});
                 GrammarBuilder gb4 = new GrammarBuilder();
                 gb4.Culture = cultureInfo;
                 gb4.Append(info4);
@@ -493,7 +496,8 @@ namespace CrewChiefV3
             else if (recognisedSpeech.Contains(LAST_LAP_TIME) ||
                 recognisedSpeech.Contains(LAP_TIME) ||
                 recognisedSpeech.Contains(LAST_LAP) ||
-                recognisedSpeech.Contains(PACE))
+                recognisedSpeech.Contains(PACE) ||
+                recognisedSpeech.Contains(WHAT_ARE_MY_SECTOR_TIMES) || recognisedSpeech.Contains(WHATS_MY_LAST_SECTOR_TIME))
             {
                 return CrewChief.getEvent("LapTimes");
             }

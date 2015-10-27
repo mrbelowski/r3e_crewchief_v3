@@ -223,20 +223,45 @@ namespace CrewChiefV3.RaceRoom
                         }
                         currentGameState.PitData.PitWindowStart = shared.PitWindowStart;
                         currentGameState.PitData.PitWindowEnd = shared.PitWindowEnd;
-                        currentGameState.PitData.HasMandatoryPitStop = currentGameState.PitData.PitWindowStart > 0 && currentGameState.PitData.PitWindowEnd > 0; 
-                        Console.WriteLine("Just gone green, session details...");
+                        currentGameState.PitData.HasMandatoryPitStop = currentGameState.PitData.PitWindowStart > 0 && currentGameState.PitData.PitWindowEnd > 0;                         
                         if (currentGameState.PitData.HasMandatoryPitStop)
                         {
                             if (currentGameState.carClass.carClassEnum == CarData.CarClassEnum.DTM_2014 || currentGameState.carClass.carClassEnum == CarData.CarClassEnum.DTM_2015)
                             {
+                                // iteration 1 of the DTM 2015 doesn't have a mandatory tyre change, but this means the pit window stuff won't be set, so we're (kind of) OK here...
                                 currentGameState.PitData.HasMandatoryTyreChange = true;
                             }
                             else if (currentGameState.carClass.carClassEnum == CarData.CarClassEnum.ADAC_GTM_2014)
                             {
                                 currentGameState.PitData.HasMandatoryDriverChange = true;
                             }
+                            if (currentGameState.PitData.HasMandatoryTyreChange && currentGameState.PitData.MandatoryTyreChangeRequiredTyreType == TyreType.Unknown_Race)
+                            {
+                                if (currentGameState.carClass.carClassEnum == CarData.CarClassEnum.DTM_2014)
+                                {
+                                    double halfRaceDistance = currentGameState.SessionData.SessionNumberOfLaps / 2d;
+                                    if (mapToTyreType(shared.TireType) == TyreType.Option)
+                                    {
+                                        currentGameState.PitData.MandatoryTyreChangeRequiredTyreType = TyreType.Prime;
+                                        // TODO: this might be a lap early...
+                                        currentGameState.PitData.MaxPermittedDistanceOnCurrentTyre = ((int)Math.Floor(halfRaceDistance)) - 1;
+                                    }
+                                    else
+                                    {
+                                        currentGameState.PitData.MandatoryTyreChangeRequiredTyreType = TyreType.Option;
+                                        currentGameState.PitData.MinPermittedDistanceOnCurrentTyre = (int)Math.Ceiling(halfRaceDistance);
+                                    }
+                                }
+                                else if (currentGameState.carClass.carClassEnum == CarData.CarClassEnum.DTM_2015)
+                                {
+                                    currentGameState.PitData.MandatoryTyreChangeRequiredTyreType = TyreType.Prime;
+                                    // the mandatory change must be completed by the end of the pit window
+                                    currentGameState.PitData.MaxPermittedDistanceOnCurrentTyre = currentGameState.PitData.PitWindowEnd;
+                                }
+                            }
                         }
-                        
+                        Console.WriteLine("Just gone green, session details...");
+
                         // reset the engine temp monitor stuff
                         gotBaselineEngineData = false;
                         baselineEngineDataSamples = 0;
@@ -274,6 +299,9 @@ namespace CrewChiefV3.RaceRoom
                     currentGameState.PitData.HasMandatoryDriverChange = previousGameState.PitData.HasMandatoryDriverChange;
                     currentGameState.PitData.HasMandatoryTyreChange = previousGameState.PitData.HasMandatoryTyreChange;
                     currentGameState.PitData.MandatoryTyreChangeRequiredTyreType = previousGameState.PitData.MandatoryTyreChangeRequiredTyreType;
+                    currentGameState.PitData.IsRefuellingAllowed = previousGameState.PitData.IsRefuellingAllowed;
+                    currentGameState.PitData.MaxPermittedDistanceOnCurrentTyre = previousGameState.PitData.MaxPermittedDistanceOnCurrentTyre;
+                    currentGameState.PitData.MinPermittedDistanceOnCurrentTyre = previousGameState.PitData.MinPermittedDistanceOnCurrentTyre;
                     currentGameState.SessionData.TrackDefinition = previousGameState.SessionData.TrackDefinition;
                     currentGameState.SessionData.formattedPlayerLapTimes = previousGameState.SessionData.formattedPlayerLapTimes;
                     currentGameState.SessionData.PlayerLapTimeSessionBest = previousGameState.SessionData.PlayerLapTimeSessionBest;
@@ -755,31 +783,7 @@ namespace CrewChiefV3.RaceRoom
             // no way to have unmatched tyre types in R3E
             currentGameState.TyreData.HasMatchedTyreTypes = true;
             currentGameState.TyreData.TireWearActive = shared.TireWearActive == 1;
-            TyreType tyreType = mapToTyreType(shared.TireType);
-            if (currentGameState.PitData.HasMandatoryTyreChange && currentGameState.PitData.MandatoryTyreChangeRequiredTyreType == TyreType.Unknown_Race)
-            {
-                if (currentGameState.carClass.carClassEnum == CarData.CarClassEnum.DTM_2014)
-                {
-                    double halfRaceDistance = currentGameState.SessionData.SessionNumberOfLaps / 2d;
-                    if (tyreType == TyreType.Option)
-                    {
-                        currentGameState.PitData.MandatoryTyreChangeRequiredTyreType = TyreType.Prime;
-                        currentGameState.PitData.MaxPermittedDistanceOnCurrentTyre = (int) Math.Floor(halfRaceDistance);
-                    } 
-                    else
-                    {
-                        currentGameState.PitData.MandatoryTyreChangeRequiredTyreType = TyreType.Option;
-                        currentGameState.PitData.MinPermittedDistanceOnCurrentTyre = (int)Math.Ceiling(halfRaceDistance);
-                    }
-                }
-                else if (currentGameState.carClass.carClassEnum == CarData.CarClassEnum.DTM_2015)
-                {
-                    currentGameState.PitData.MandatoryTyreChangeRequiredTyreType = TyreType.Prime;
-                    // the mandatory change must be completed by the end of the pit window
-                    currentGameState.PitData.MaxPermittedDistanceOnCurrentTyre = currentGameState.PitData.PitWindowEnd;
-                }
-            }
-
+            TyreType tyreType = mapToTyreType(shared.TireType);            
             currentGameState.TyreData.FrontLeft_CenterTemp = shared.TireTemp.FrontLeft_Center;
             currentGameState.TyreData.FrontLeft_LeftTemp = shared.TireTemp.FrontLeft_Left;
             currentGameState.TyreData.FrontLeft_RightTemp = shared.TireTemp.FrontLeft_Right;
