@@ -339,9 +339,9 @@ namespace CrewChiefV3.RaceRoom
                                 currentGameState.SessionData.LapTimePreviousEstimateForInvalidLap = currentGameState.SessionData.SessionRunningTime - currentGameState.SessionData.SessionTimesAtEndOfSectors[3];
                             }
                             currentGameState.SessionData.SessionTimesAtEndOfSectors[3] = currentGameState.SessionData.SessionRunningTime;
-                            if (participantStruct.sector_time_current_self.Sector3 > 0 && participantStruct.sector_time_current_self.Sector2 > 0)
+                            if (participantStruct.sector_time_previous_self.Sector3 > 0 && participantStruct.sector_time_current_self.Sector2 > 0)
                             {
-                                float sectorTime = participantStruct.sector_time_current_self.Sector3 - participantStruct.sector_time_current_self.Sector2;
+                                float sectorTime = participantStruct.sector_time_previous_self.Sector3 - participantStruct.sector_time_current_self.Sector2;
                                 currentGameState.SessionData.LastSector3Time = sectorTime;
                                 if (currentGameState.SessionData.BestSector3Time == -1 || currentGameState.SessionData.LastSector3Time < currentGameState.SessionData.BestSector3Time)
                                 {

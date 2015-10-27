@@ -760,11 +760,19 @@ namespace CrewChiefV3.Events
                     float delta = playerSector2 - comparisonSector2;
                     if (delta > maxDelta)
                     {
+                        if (maxDeltaSectorNumber != 0)
+                        {
+                            minDelta = maxDelta;
+                        }
                         maxDelta = playerSector2 - comparisonSector2;
                         maxDeltaSectorNumber = 2;
                     }
                     else if (delta < minDelta)
                     {
+                        if (minDeltaSectorNumber != 0)
+                        {
+                            maxDelta = minDelta;
+                        }
                         minDelta = playerSector2 - comparisonSector2;
                         minDeltaSectorNumber = 2;
                     }
@@ -774,11 +782,19 @@ namespace CrewChiefV3.Events
                     float delta = playerSector3 - comparisonSector3;
                     if (delta > maxDelta)
                     {
+                        if (maxDeltaSectorNumber != 0)
+                        {
+                            minDelta = maxDelta;
+                        }
                         maxDelta = playerSector3 - comparisonSector3;
                         maxDeltaSectorNumber = 3;
                     }
                     else if (delta < minDelta)
                     {
+                        if (minDeltaSectorNumber != 0)
+                        {
+                            maxDelta = minDelta;
+                        }
                         minDelta = playerSector3 - comparisonSector3;
                         minDeltaSectorNumber = 3;
                     }
