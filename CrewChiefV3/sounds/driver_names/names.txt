@@ -295,3 +295,6 @@ Tye:tie
 Vaxou (BRT):vaxou
 Zap (FR):zap
 OBigO:Big Oh
+Tulky1:tulky
+GrimDad:grim dad
+Tassydevil:tassy devil
