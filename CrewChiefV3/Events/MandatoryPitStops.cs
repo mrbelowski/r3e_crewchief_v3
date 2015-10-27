@@ -11,10 +11,10 @@ namespace CrewChiefV3.Events
         private String folderMandatoryPitStopsFitPrimesThisLap = "mandatory_pit_stops/box_to_fit_primes_now";
 
         private String folderMandatoryPitStopsFitOptionsThisLap = "mandatory_pit_stops/box_to_fit_options_now";
-        
-        public static String folderMandatoryPitStopsOptionTyres = "mandatory_pit_stops/prime_tyres";
 
-        public static String folderMandatoryPitStopsPrimeTyres = "mandatory_pit_stops/option_tyres";
+        public static String folderMandatoryPitStopsPrimeTyres = "mandatory_pit_stops/prime_tyres";
+
+        public static String folderMandatoryPitStopsOptionTyres = "mandatory_pit_stops/option_tyres";
 
         private String folderMandatoryPitStopsCanNowFitPrimes = "mandatory_pit_stops/can_fit_primes";
 
