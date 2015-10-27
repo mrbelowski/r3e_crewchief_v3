@@ -763,6 +763,7 @@ namespace CrewChiefV3.Events
                         if (maxDeltaSectorNumber != 0)
                         {
                             minDelta = maxDelta;
+                            minDeltaSectorNumber = maxDeltaSectorNumber;
                         }
                         maxDelta = playerSector2 - comparisonSector2;
                         maxDeltaSectorNumber = 2;
@@ -772,6 +773,7 @@ namespace CrewChiefV3.Events
                         if (minDeltaSectorNumber != 0)
                         {
                             maxDelta = minDelta;
+                            maxDeltaSectorNumber = minDeltaSectorNumber;
                         }
                         minDelta = playerSector2 - comparisonSector2;
                         minDeltaSectorNumber = 2;
@@ -785,6 +787,7 @@ namespace CrewChiefV3.Events
                         if (maxDeltaSectorNumber != 0)
                         {
                             minDelta = maxDelta;
+                            minDeltaSectorNumber = maxDeltaSectorNumber;
                         }
                         maxDelta = playerSector3 - comparisonSector3;
                         maxDeltaSectorNumber = 3;
@@ -794,6 +797,7 @@ namespace CrewChiefV3.Events
                         if (minDeltaSectorNumber != 0)
                         {
                             maxDelta = minDelta;
+                            maxDeltaSectorNumber = minDeltaSectorNumber;
                         }
                         minDelta = playerSector3 - comparisonSector3;
                         minDeltaSectorNumber = 3;
