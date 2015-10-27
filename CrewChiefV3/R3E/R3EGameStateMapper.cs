@@ -880,6 +880,15 @@ namespace CrewChiefV3.RaceRoom
 
         private int getRacePosition(int slot_id, int oldPosition, int newPosition, DateTime now)
         {
+            if (oldPosition < 1)
+            {
+                return newPosition;
+            }
+            if (newPosition < 1)
+            {
+                Console.WriteLine("Can't update position to " + newPosition);
+                return oldPosition;
+            }
             if (oldPosition == newPosition)
             {
                 // clear any pending position change

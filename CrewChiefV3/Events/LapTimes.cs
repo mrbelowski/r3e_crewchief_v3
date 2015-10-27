@@ -700,6 +700,8 @@ namespace CrewChiefV3.Events
 
         private List<MessageFragment> getSectorDeltaMessages(float playerSector1, float comparisonSector1, float playerSector2, float comparisonSector2, float playerSector3, float comparisonSector3)
         {
+            // TODO: don't report all three. Report the biggest +ve and biggest -ve deltas
+
             List<MessageFragment> messageFragments = new List<MessageFragment>();
             if (playerSector1 > 0 && comparisonSector1 > 0) 
             {
