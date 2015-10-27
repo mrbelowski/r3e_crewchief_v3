@@ -30,10 +30,10 @@
       <Value Profile="(Default)">en</Value>
     </Setting>
     <Setting Name="r3e_spotter_car_length" Type="System.Single" Scope="User">
-      <Value Profile="(Default)">4.6</Value>
+      <Value Profile="(Default)">5</Value>
     </Setting>
     <Setting Name="spotter_gap_for_clear" Type="System.Single" Scope="User">
-      <Value Profile="(Default)">0.8</Value>
+      <Value Profile="(Default)">0.5</Value>
     </Setting>
     <Setting Name="time_after_race_start_for_spotter" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">30</Value>
@@ -159,7 +159,7 @@
       <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="pcars_spotter_car_length" Type="System.Single" Scope="User">
-      <Value Profile="(Default)">4.3</Value>
+      <Value Profile="(Default)">5</Value>
     </Setting>
     <Setting Name="last_game_definition" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
@@ -222,6 +222,12 @@
       <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="enable_opponent_laptime_reporting_in_race" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="report_sector_deltas" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="report_sector_times" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
   </Settings>

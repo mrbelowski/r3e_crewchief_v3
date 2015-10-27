@@ -130,7 +130,7 @@ namespace CrewChiefV3.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("4.6")]
+        [global::System.Configuration.DefaultSettingValueAttribute("5")]
         public float r3e_spotter_car_length {
             get {
                 return ((float)(this["r3e_spotter_car_length"]));
@@ -142,7 +142,7 @@ namespace CrewChiefV3.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0.8")]
+        [global::System.Configuration.DefaultSettingValueAttribute("0.5")]
         public float spotter_gap_for_clear {
             get {
                 return ((float)(this["spotter_gap_for_clear"]));
@@ -646,7 +646,7 @@ namespace CrewChiefV3.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("4.3")]
+        [global::System.Configuration.DefaultSettingValueAttribute("5")]
         public float pcars_spotter_car_length {
             get {
                 return ((float)(this["pcars_spotter_car_length"]));
@@ -905,6 +905,30 @@ namespace CrewChiefV3.Properties {
             }
             set {
                 this["enable_opponent_laptime_reporting_in_race"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool report_sector_deltas {
+            get {
+                return ((bool)(this["report_sector_deltas"]));
+            }
+            set {
+                this["report_sector_deltas"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool report_sector_times {
+            get {
+                return ((bool)(this["report_sector_times"]));
+            }
+            set {
+                this["report_sector_times"] = value;
             }
         }
     }

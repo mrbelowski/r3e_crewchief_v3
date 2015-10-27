@@ -9,6 +9,8 @@ namespace CrewChiefV3.Events
     class LapTimes : AbstractEvent
     {
         Boolean readLapTimes = UserSettings.GetUserSettings().getBoolean("read_lap_times");
+        Boolean reportSectorDeltas = UserSettings.GetUserSettings().getBoolean("report_sector_deltas");
+        Boolean reportSectorTimes = UserSettings.GetUserSettings().getBoolean("report_sector_times");
 
         // for qualifying:
         // "that was a 1:34.2, you're now 0.4 seconds off the pace"
@@ -45,7 +47,6 @@ namespace CrewChiefV3.Events
         private String folderWorseningTimes = "lap_times/worsening";
 
         private String folderPersonalBest = "lap_times/personal_best";
-
         private String folderSettingCurrentRacePace = "lap_times/setting_current_race_pace";
         private String folderMatchingCurrentRacePace = "lap_times/matching_race_pace";
 
@@ -229,7 +230,7 @@ namespace CrewChiefV3.Events
                                     audioPlayer.queueClip(new QueuedMessage("lapTimeNotRaceGap",
                                         MessageContents(folderGapIntro, deltaPlayerLastToSessionBestOverall, folderGapOutroOffPace), 0, this));
                                 }
-                                List<MessageFragment> sectorMessageFragments = getSectorDeltaMessages(currentGameState.SessionData.LastSector1Time, currentGameState.SessionData.BestSector1Time,
+                                List<MessageFragment> sectorMessageFragments = getSectorDeltaMessages(true, currentGameState.SessionData.LastSector1Time, currentGameState.SessionData.BestSector1Time,
                                     currentGameState.SessionData.LastSector2Time, currentGameState.SessionData.BestSector2Time, currentGameState.SessionData.LastSector3Time, currentGameState.SessionData.BestSector3Time);
                                 if (sectorMessageFragments.Count > 0)
                                 {
@@ -288,7 +289,7 @@ namespace CrewChiefV3.Events
                                     audioPlayer.queueClip(new QueuedMessage("lapTimeNotRaceGap",
                                         MessageContents(folderGapIntro, deltaPlayerLastToSessionBestInClass, folderGapOutroOffPace), random.Next(0, 20), this));
                                 }
-                                List<MessageFragment> sectorMessageFragments = getSectorDeltaMessages(currentGameState.SessionData.LastSector1Time, opponentsBestLapData[1],
+                                List<MessageFragment> sectorMessageFragments = getSectorDeltaMessages(true, currentGameState.SessionData.LastSector1Time, opponentsBestLapData[1],
                                     currentGameState.SessionData.LastSector2Time, opponentsBestLapData[2], currentGameState.SessionData.LastSector3Time, opponentsBestLapData[3]);
                                 if (sectorMessageFragments.Count > 0)
                                 {
@@ -339,7 +340,7 @@ namespace CrewChiefV3.Events
                                 default:
                                     break;
                             }
-                            List<MessageFragment> sectorMessageFragments = getSectorDeltaMessages(currentGameState.SessionData.LastSector1Time, opponentsBestLapData[1],
+                            List<MessageFragment> sectorMessageFragments = getSectorDeltaMessages(false, currentGameState.SessionData.LastSector1Time, opponentsBestLapData[1],
                                     currentGameState.SessionData.LastSector2Time, opponentsBestLapData[2], currentGameState.SessionData.LastSector3Time, opponentsBestLapData[3]);
                             if (sectorMessageFragments.Count > 0)
                             {
@@ -617,7 +618,7 @@ namespace CrewChiefV3.Events
                                 audioPlayer.closeChannel();
                                 break;                     
                         }
-                        List<MessageFragment> sectorDeltaMessages = getSectorDeltaMessages(currentGameState.SessionData.LastSector1Time, bestOpponentLapData[1],
+                        List<MessageFragment> sectorDeltaMessages = getSectorDeltaMessages(false, currentGameState.SessionData.LastSector1Time, bestOpponentLapData[1],
                             currentGameState.SessionData.LastSector2Time, bestOpponentLapData[2], currentGameState.SessionData.LastSector3Time, bestOpponentLapData[3]);
                         if (sectorDeltaMessages.Count > 0)
                         {
@@ -677,7 +678,7 @@ namespace CrewChiefV3.Events
                                 MessageContents(deltaPlayerBestToSessionBestInClass, folderGapOutroOffPace), 0, null), false);
                             audioPlayer.closeChannel();
                         }
-                        List<MessageFragment> sectorDeltaMessages = getSectorDeltaMessages(currentGameState.SessionData.BestSector1Time, bestOpponentLapData[1],
+                        List<MessageFragment> sectorDeltaMessages = getSectorDeltaMessages(true, currentGameState.SessionData.BestSector1Time, bestOpponentLapData[1],
                             currentGameState.SessionData.BestSector2Time, bestOpponentLapData[2], currentGameState.SessionData.BestSector3Time, bestOpponentLapData[3]);
                         if (sectorDeltaMessages.Count > 0)
                         {
@@ -698,35 +699,100 @@ namespace CrewChiefV3.Events
             PERSONAL_BEST_STILL_SLOW, CLOSE_TO_OVERALL_LEADER, CLOSE_TO_CLASS_LEADER, CLOSE_TO_PERSONAL_BEST, MEH, NO_DATA
         }
 
-        private List<MessageFragment> getSectorDeltaMessages(float playerSector1, float comparisonSector1, float playerSector2, float comparisonSector2, float playerSector3, float comparisonSector3)
+        private List<MessageFragment> getSectorDeltaMessages(Boolean reportAllDeltas, float playerSector1, float comparisonSector1, float playerSector2, 
+            float comparisonSector2, float playerSector3, float comparisonSector3)
         {
-            // TODO: don't report all three. Report the biggest +ve and biggest -ve deltas
-
             List<MessageFragment> messageFragments = new List<MessageFragment>();
-            if (playerSector1 > 0 && comparisonSector1 > 0) 
+            if (!reportSectorTimes)
             {
-                MessageFragment fragment = getSectorDeltaMessageFragment(1, playerSector1 - comparisonSector1);
-                if (fragment != null)
+                return messageFragments;
+            }
+            if (reportAllDeltas)
+            {
+                if (playerSector1 > 0 && comparisonSector1 > 0)
                 {
-                    messageFragments.Add(fragment);
+                    MessageFragment fragment = getSectorDeltaMessageFragment(1, playerSector1 - comparisonSector1);
+                    if (fragment != null)
+                    {
+                        messageFragments.Add(fragment);
+                    }
+                }
+                if (playerSector2 > 0 && comparisonSector2 > 0)
+                {
+                    MessageFragment fragment = getSectorDeltaMessageFragment(2, playerSector2 - comparisonSector2);
+                    if (fragment != null)
+                    {
+                        messageFragments.Add(fragment);
+                    }
+                }
+                if (playerSector3 > 0 && comparisonSector3 > 0)
+                {
+                    MessageFragment fragment = getSectorDeltaMessageFragment(3, playerSector3 - comparisonSector3);
+                    if (fragment != null)
+                    {
+                        messageFragments.Add(fragment);
+                    }
                 }
             }
-            if (playerSector2 > 0 && comparisonSector2 > 0)
+            else
             {
-                MessageFragment fragment = getSectorDeltaMessageFragment(2, playerSector2 - comparisonSector2);
-                if (fragment != null)
+                float maxDelta = float.MinValue;
+                int maxDeltaSectorNumber = 0;
+                float minDelta = float.MaxValue;
+                int minDeltaSectorNumber = 0;
+
+                if (playerSector1 > 0 && comparisonSector1 > 0)
                 {
-                    messageFragments.Add(fragment);
+                    float delta = playerSector1 - comparisonSector1;
+                    if (delta > maxDelta)
+                    {
+                        maxDelta = delta;
+                        maxDeltaSectorNumber = 1;
+                    }
+                    else if (delta < minDelta)
+                    {
+                        minDelta = delta;
+                        minDeltaSectorNumber = 1;
+                    }
                 }
-            }
-            if (playerSector3 > 0 && comparisonSector3 > 0)
-            {
-                MessageFragment fragment = getSectorDeltaMessageFragment(3, playerSector3 - comparisonSector3);
-                if (fragment != null)
+                if (playerSector2 > 0 && comparisonSector2 > 0)
                 {
-                    messageFragments.Add(fragment);
+                    float delta = playerSector2 - comparisonSector2;
+                    if (delta > maxDelta)
+                    {
+                        maxDelta = playerSector2 - comparisonSector2;
+                        maxDeltaSectorNumber = 2;
+                    }
+                    else if (delta < minDelta)
+                    {
+                        minDelta = playerSector2 - comparisonSector2;
+                        minDeltaSectorNumber = 2;
+                    }
+                } 
+                if (playerSector3 > 0 && comparisonSector3 > 0)
+                {
+                    float delta = playerSector3 - comparisonSector3;
+                    if (delta > maxDelta)
+                    {
+                        maxDelta = playerSector3 - comparisonSector3;
+                        maxDeltaSectorNumber = 3;
+                    }
+                    else if (delta < minDelta)
+                    {
+                        minDelta = playerSector3 - comparisonSector3;
+                        minDeltaSectorNumber = 3;
+                    }
                 }
-            }
+
+                if (maxDeltaSectorNumber != 0)
+                {
+                    messageFragments.Add(getSectorDeltaMessageFragment(maxDeltaSectorNumber, maxDelta));
+                }
+                if (minDeltaSectorNumber != 0)
+                {
+                    messageFragments.Add(getSectorDeltaMessageFragment(minDeltaSectorNumber, minDelta));
+                }
+            }            
             return messageFragments;
         }
 
