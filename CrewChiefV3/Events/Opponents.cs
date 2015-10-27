@@ -92,7 +92,7 @@ namespace CrewChiefV3.Events
 
                     // TODO: if this opponent's lap is the best overall, announce it ("fastest lap for [bob], [lap time]")
 
-                    if (opponentData.IsNewLap && opponentData.LastLapTime > 0 && opponentData.OpponentLapData.Count > 2 &&
+                    if (opponentData.IsNewLap && opponentData.LastLapTime > 0 && opponentData.OpponentLapData.Count > 3 &&
                         opponentData.CurrentBestLapTime != -1 && opponentData.PreviousBestLapTime != -1)
                     {
                         // this opponent has just completed a lap - do we need to report it? if it's fast overall and more than
@@ -270,6 +270,27 @@ namespace CrewChiefV3.Events
             Boolean gotData = false;
             if (currentGameState != null)
             {
+                if (voiceMessage.StartsWith(SpeechRecogniser.WHAT_TYRE_IS) || voiceMessage.StartsWith(SpeechRecogniser.WHAT_TYRES_IS))
+                {
+                    Object opponentKey = getOpponentKey(voiceMessage, " on");
+                    if (opponentKey != null)
+                    {
+                        OpponentData opponentData = currentGameState.OpponentData[opponentKey];
+                        if (opponentData.CurrentTyres == TyreType.Option)
+                        {
+                            gotData = true;
+                            audioPlayer.playClipImmediately(new QueuedMessage(MandatoryPitStops.folderMandatoryPitStopsOptionTyres, 0, null), false);
+                            audioPlayer.closeChannel();
+                        }
+                        else if (opponentData.CurrentTyres == TyreType.Prime)
+                        {
+                            gotData = true;
+                            audioPlayer.playClipImmediately(new QueuedMessage(MandatoryPitStops.folderMandatoryPitStopsPrimeTyres, 0, null), false);
+                            audioPlayer.closeChannel();
+                        }
+                    }
+                }
+
                 if (voiceMessage.StartsWith(SpeechRecogniser.WHATS) && 
                     (voiceMessage.EndsWith(SpeechRecogniser.LAST_LAP) || voiceMessage.EndsWith(SpeechRecogniser.BEST_LAP)))
                 {

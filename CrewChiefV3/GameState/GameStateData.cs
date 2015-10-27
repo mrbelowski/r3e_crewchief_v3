@@ -23,12 +23,12 @@ namespace CrewChiefV3.GameState
     }
     public enum PitWindow
     {
-        Unavailable,  Disabled, Closed, Open, StopInProgress, Completed
+        Unavailable, Disabled, Closed, Open, StopInProgress, Completed
     }
     public enum TyreType
     {
         // separate enum for compound & weather, and prime / option?
-        Hard, Medium, Soft, Wet, Intermediate, DTM_Prime, DTM_Option, Road, Bias_Ply, Unknown_Race
+        Hard, Medium, Soft, Wet, Intermediate, Prime, Option, Road, Bias_Ply, Unknown_Race
     }
 
     public enum BrakeType
@@ -124,7 +124,7 @@ namespace CrewChiefV3.GameState
 
     public class SessionData    
     {
-        public List<float> playerLapTimes = new List<float>();
+        public List<String> formattedPlayerLapTimes = new List<String>();
 
         public TrackDefinition TrackDefinition = null;
 
@@ -154,15 +154,6 @@ namespace CrewChiefV3.GameState
 
         // zero indexed - you multi iteration sessions like DTM qual
         public int SessionIteration = 0;
-
-        // TODO: will this always be an Integer?
-        public int PitWindowStart = 0;
-
-        // The minute/lap into which you can/should pit
-        // Unit: Minutes in time based sessions, otherwise lap
-        public int PitWindowEnd = 0;
-
-        public Boolean HasMandatoryPitStop = false;
 
         // as soon as the player leaves the racing surface this is set to false
         public Boolean CurrentLapIsValid = true;
@@ -235,6 +226,14 @@ namespace CrewChiefV3.GameState
 
         public String DriverRawName;
 
+        public float LastSector1Time = -1;
+        public float LastSector2Time = -1;
+        public float LastSector3Time = -1;
+
+        public float BestSector1Time = -1;
+        public float BestSector2Time = -1;
+        public float BestSector3Time = -1;
+
         public SessionData()
         {
             SessionTimesAtEndOfSectors.Add(1, -1); 
@@ -263,6 +262,8 @@ namespace CrewChiefV3.GameState
         public String DriverRawName = null;
 
         public int Position = 0;
+
+        public float SessionTimeAtLastPositionChange = -1;
         
         public int CompletedLaps = 0;
 
@@ -297,6 +298,8 @@ namespace CrewChiefV3.GameState
         // for DTM 2015
         public Boolean HasStartedExtraLap = false;
 
+        public TyreType CurrentTyres = TyreType.Unknown_Race;
+
         public LapData getCurrentLapData()
         {
             if (OpponentLapData.Count > 0)
@@ -319,6 +322,32 @@ namespace CrewChiefV3.GameState
             {
                 return null;
             }
+        }
+
+        public float[] getTimeAndSectorsForBestLapInWindow(int lapsToCheck)
+        {
+            float[] bestLapTimeAndSectorsSectors = new float[] {-1, -1, -1, -1};
+            if (OpponentLapData.Count > 0)
+            {
+                if (lapsToCheck == -1)
+                {
+                    lapsToCheck = OpponentLapData.Count;
+                }
+                // count-2 because we're not interested in the current lap
+                for (int i = OpponentLapData.Count - 2; i > OpponentLapData.Count - lapsToCheck && i >= 0; i--)
+                {
+                    LapData thisLapTime = OpponentLapData[i];
+                    if (bestLapTimeAndSectorsSectors[0] == -1 ||
+                        (thisLapTime.IsValid && thisLapTime.LapTime != -1 && thisLapTime.LapTime < bestLapTimeAndSectorsSectors[0]))
+                    {
+                        bestLapTimeAndSectorsSectors[0] = thisLapTime.LapTime;
+                        bestLapTimeAndSectorsSectors[1] = thisLapTime.SectorTimes[0];
+                        bestLapTimeAndSectorsSectors[2] = thisLapTime.SectorTimes[1];
+                        bestLapTimeAndSectorsSectors[3] = thisLapTime.SectorTimes[2];
+                    }
+                }
+            }
+            return bestLapTimeAndSectorsSectors;
         }
 
         public Boolean isEnteringPits()
@@ -627,6 +656,28 @@ namespace CrewChiefV3.GameState
         public OpponentData OpponentForLeaderPitting = null;
         public OpponentData OpponentForCarAheadPitting = null;
         public OpponentData OpponentForCarBehindPitting = null;
+
+
+        // TODO: will this always be an Integer?
+        public int PitWindowStart = 0;
+
+        // The minute/lap into which you can/should pit
+        // Unit: Minutes in time based sessions, otherwise lap
+        public int PitWindowEnd = 0;
+
+        public Boolean HasMandatoryPitStop = false;
+
+        public Boolean HasMandatoryTyreChange = false;
+
+        public Boolean HasMandatoryDriverChange = false;
+
+        public TyreType MandatoryTyreChangeRequiredTyreType = TyreType.Unknown_Race;
+
+        // might be a number of laps or a number of minutes. These are (currently) for DTM 2014. If we start on Options, 
+        // MaxPermittedDistanceOnCurrentTyre will be half race distance (rounded down), if we start on Primes 
+        // MinPermittedDistanceOnCurrentTyre will be half race distance (rounded up)
+        public int MaxPermittedDistanceOnCurrentTyre = -1;
+        public int MinPermittedDistanceOnCurrentTyre = -1;
     }
 
     public class PenatiesData
@@ -914,6 +965,23 @@ namespace CrewChiefV3.GameState
                     " ID " + opponent.Key + " name " + opponent.Value.DriverRawName + " active " + opponent.Value.IsActive + 
                     " approx speed " + opponent.Value.Speed + " position " + opponent.Value.Position);
             }
+        }
+
+        public float[] getTimeAndSectorsForBestOpponentLapInWindow(int lapsToCheck, CarData.CarClassEnum carClassToCheck)
+        {
+            float[] bestLapWithSectors =  new float[] { -1, -1, -1, -1 };
+            foreach (KeyValuePair<Object, OpponentData> entry in OpponentData)
+            {
+                if (entry.Value.CarClass.carClassEnum == carClassToCheck)
+                {
+                    float[] thisOpponentsBest = entry.Value.getTimeAndSectorsForBestLapInWindow(lapsToCheck);
+                    if (bestLapWithSectors[0] == -1 || (thisOpponentsBest[0] > 0 && thisOpponentsBest[0] < bestLapWithSectors[0]))
+                    {
+                        bestLapWithSectors = thisOpponentsBest;
+                    }
+                }
+            }
+            return bestLapWithSectors;
         }
     }
 }

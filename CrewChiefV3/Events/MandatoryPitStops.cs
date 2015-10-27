@@ -8,9 +8,17 @@ namespace CrewChiefV3.Events
 {
     class MandatoryPitStops : AbstractEvent
     {
-        private String folderMandatoryPitStopsOptionsToPrimes = "mandatory_pit_stops/options_to_primes";
+        private String folderMandatoryPitStopsFitPrimesThisLap = "mandatory_pit_stops/box_to_fit_primes_now";
 
-        private String folderMandatoryPitStopsPrimesToOptions = "mandatory_pit_stops/primes_to_options";
+        private String folderMandatoryPitStopsFitOptionsThisLap = "mandatory_pit_stops/box_to_fit_options_now";
+        
+        public static String folderMandatoryPitStopsOptionTyres = "mandatory_pit_stops/prime_tyres";
+
+        public static String folderMandatoryPitStopsPrimeTyres = "mandatory_pit_stops/option_tyres";
+
+        private String folderMandatoryPitStopsCanNowFitPrimes = "mandatory_pit_stops/can_fit_primes";
+
+        private String folderMandatoryPitStopsCanNowFitOptions = "mandatory_pit_stops/can_fit_options";
 
         private String folderMandatoryPitStopsPitWindowOpening = "mandatory_pit_stops/pit_window_opening";
 
@@ -50,13 +58,7 @@ namespace CrewChiefV3.Events
         private int pitWindowClosedTime;
 
         private Boolean pitDataInitialised;
-
-        private Boolean onOptions;
-
-        private Boolean onPrimes;
-
-        private int tyreChangeLap;
-
+        
         private Boolean playBoxNowMessage;
 
         private Boolean playOpenNow;
@@ -73,13 +75,23 @@ namespace CrewChiefV3.Events
 
         private Boolean playPitThisLap;
 
-        private Boolean mandatoryStopRequired;
-
         private Boolean mandatoryStopCompleted;
 
         private Boolean mandatoryStopBoxThisLap;
 
         private Boolean mandatoryStopMissed;
+
+        private TyreType mandatoryTyreChangeTyreType = TyreType.Unknown_Race;
+
+        private Boolean hasMandatoryTyreChange;
+
+        private Boolean hasMandatoryDriverChange;
+
+        private Boolean hasMandatoryPitStop;
+
+        private float minDistanceOnCurrentTyre;
+
+        private float maxDistanceOnCurrentTyre;
         
         public MandatoryPitStops(AudioPlayer audioPlayer)
         {
@@ -93,9 +105,6 @@ namespace CrewChiefV3.Events
             pitWindowOpenTime = 0;
             pitWindowClosedTime = 0;
             pitDataInitialised = false;
-            onOptions = false;
-            onPrimes = false;
-            tyreChangeLap = -1;
             playBoxNowMessage = false;
             play2minOpenWarning = false;
             play2minCloseWarning = false;
@@ -104,46 +113,45 @@ namespace CrewChiefV3.Events
             playClosedNow = false;
             playOpenNow = false;
             playPitThisLap = false;
-            mandatoryStopRequired = false;
             mandatoryStopCompleted = false;
             mandatoryStopBoxThisLap = false;
             mandatoryStopMissed = false;
+            mandatoryTyreChangeTyreType = TyreType.Unknown_Race;
+            hasMandatoryPitStop = false;
+            hasMandatoryTyreChange = false;
+            hasMandatoryDriverChange = false;
+            minDistanceOnCurrentTyre = -1;
+            maxDistanceOnCurrentTyre = -1;
         }
 
         override protected void triggerInternal(GameStateData previousGameState, GameStateData currentGameState)
         {
-            if (currentGameState.SessionData.SessionType == SessionType.Race && currentGameState.SessionData.HasMandatoryPitStop)
+            if (currentGameState.SessionData.SessionType == SessionType.Race && currentGameState.PitData.HasMandatoryPitStop)
             {                
                 if (!pitDataInitialised)
                 {
                     mandatoryStopCompleted = false;
-                    mandatoryStopRequired = true;
                     mandatoryStopBoxThisLap = false;
                     mandatoryStopMissed = false;
-                    Console.WriteLine("pit start = " + currentGameState.SessionData.PitWindowStart + ", pit end = " + currentGameState.SessionData.PitWindowEnd);
+                    Console.WriteLine("pit start = " + currentGameState.PitData.PitWindowStart + ", pit end = " + currentGameState.PitData.PitWindowEnd);
+
+                    hasMandatoryPitStop = currentGameState.PitData.HasMandatoryPitStop;
+                    hasMandatoryTyreChange = currentGameState.PitData.HasMandatoryTyreChange;
+                    hasMandatoryDriverChange = currentGameState.PitData.HasMandatoryDriverChange;
+                    mandatoryTyreChangeTyreType = currentGameState.PitData.MandatoryTyreChangeRequiredTyreType;
+                    maxDistanceOnCurrentTyre = currentGameState.PitData.MaxPermittedDistanceOnCurrentTyre;
+                    minDistanceOnCurrentTyre = currentGameState.PitData.MinPermittedDistanceOnCurrentTyre;
 
                     if (currentGameState.SessionData.SessionNumberOfLaps > 0)
                     {
-                        pitWindowOpenLap = currentGameState.SessionData.PitWindowStart;
-                        pitWindowClosedLap = currentGameState.SessionData.PitWindowEnd;
-                        // DTM 2014 specific stuff...
-                        if (currentGameState.carClass.carClassEnum == CarData.CarClassEnum.DTM_2014 && currentGameState.TyreData.FrontLeftTyreType == TyreType.DTM_Option)
-                        {
-                            onOptions = true;
-                            // when we've completed half distance - 1 laps, we need to come in at the end of the current lap
-                            tyreChangeLap = (int)Math.Floor((double)currentGameState.SessionData.SessionNumberOfLaps / 2d) - 1;
-                        }
-                        else if (currentGameState.carClass.carClassEnum == CarData.CarClassEnum.DTM_2014 && currentGameState.TyreData.FrontLeftTyreType == TyreType.DTM_Prime)
-                        {
-                            onPrimes = true;
-                            tyreChangeLap = (int)Math.Floor((double)currentGameState.SessionData.SessionNumberOfLaps / 2d);
-                        }
+                        pitWindowOpenLap = currentGameState.PitData.PitWindowStart;
+                        pitWindowClosedLap = currentGameState.PitData.PitWindowEnd;
                         playPitThisLap = true;
                     }
                     else if (currentGameState.SessionData.SessionTimeRemaining > 0)
                     {
-                        pitWindowOpenTime = currentGameState.SessionData.PitWindowStart;
-                        pitWindowClosedTime = currentGameState.SessionData.PitWindowEnd;
+                        pitWindowOpenTime = currentGameState.PitData.PitWindowStart;
+                        pitWindowClosedTime = currentGameState.PitData.PitWindowEnd;
                         play2minOpenWarning = true;
                         play1minOpenWarning = true;
                         playOpenNow = true;
@@ -170,24 +178,38 @@ namespace CrewChiefV3.Events
                 {
                     if (currentGameState.SessionData.IsNewLap && currentGameState.SessionData.CompletedLaps > 0 && currentGameState.SessionData.SessionNumberOfLaps > 0)
                     {
-                        if (currentGameState.PitData.PitWindow != PitWindow.StopInProgress &&
-                            currentGameState.PitData.PitWindow != PitWindow.Completed &&
-                            currentGameState.SessionData.CompletedLaps == tyreChangeLap && playPitThisLap)
+                        if (currentGameState.PitData.PitWindow != PitWindow.StopInProgress && currentGameState.PitData.PitWindow != PitWindow.Completed) 
                         {
-                            playBoxNowMessage = true;
-                            playPitThisLap = false;
-                            mandatoryStopBoxThisLap = true;
-                            if (onOptions)
+                            if (currentGameState.PitData.MaxPermittedDistanceOnCurrentTyre > 0 &&
+                                currentGameState.SessionData.CompletedLaps == currentGameState.PitData.MaxPermittedDistanceOnCurrentTyre && playPitThisLap)
                             {
-                                audioPlayer.queueClip(new QueuedMessage(folderMandatoryPitStopsOptionsToPrimes, 0, this));
+                                playBoxNowMessage = true;
+                                playPitThisLap = false;
+                                mandatoryStopBoxThisLap = true;
+                                if (mandatoryTyreChangeTyreType == TyreType.Prime)
+                                {
+                                    audioPlayer.queueClip(new QueuedMessage(folderMandatoryPitStopsFitPrimesThisLap, 0, this));
+                                }
+                                else if (mandatoryTyreChangeTyreType == TyreType.Option)
+                                {
+                                    audioPlayer.queueClip(new QueuedMessage(folderMandatoryPitStopsFitOptionsThisLap, 0, this));
+                                }
+                                else
+                                {
+                                    audioPlayer.queueClip(new QueuedMessage(folderMandatoryPitStopsPitThisLap, 0, this));
+                                }
                             }
-                            else if (onPrimes)
+                            else if (currentGameState.PitData.MinPermittedDistanceOnCurrentTyre > 0 &&
+                                currentGameState.SessionData.CompletedLaps == currentGameState.PitData.MinPermittedDistanceOnCurrentTyre)
                             {
-                                audioPlayer.queueClip(new QueuedMessage(folderMandatoryPitStopsPrimesToOptions, 0, this));
-                            }
-                            else
-                            {
-                                audioPlayer.queueClip(new QueuedMessage(folderMandatoryPitStopsPitThisLap, 0, this));
+                                if (mandatoryTyreChangeTyreType == TyreType.Prime)
+                                {
+                                    audioPlayer.queueClip(new QueuedMessage(folderMandatoryPitStopsCanNowFitPrimes, 0, this));
+                                }
+                                else if (mandatoryTyreChangeTyreType == TyreType.Option)
+                                {
+                                    audioPlayer.queueClip(new QueuedMessage(folderMandatoryPitStopsCanNowFitOptions, 0, this));
+                                }
                             }
                         }
                         else if (currentGameState.SessionData.CompletedLaps == pitWindowOpenLap - 1)
@@ -208,7 +230,18 @@ namespace CrewChiefV3.Events
                                 currentGameState.PitData.PitWindow != PitWindow.StopInProgress)
                             {
                                 playBoxNowMessage = true;
-                                audioPlayer.queueClip(new QueuedMessage(folderMandatoryPitStopsPitThisLap, 0, this));
+                                if (mandatoryTyreChangeTyreType == TyreType.Prime)
+                                {
+                                    audioPlayer.queueClip(new QueuedMessage(folderMandatoryPitStopsFitPrimesThisLap, 0, this));
+                                }
+                                else if (mandatoryTyreChangeTyreType == TyreType.Option)
+                                {
+                                    audioPlayer.queueClip(new QueuedMessage(folderMandatoryPitStopsFitOptionsThisLap, 0, this));
+                                }
+                                else
+                                {
+                                    audioPlayer.queueClip(new QueuedMessage(folderMandatoryPitStopsPitThisLap, 0, this));
+                                }
                             }
                         }
                         else if (currentGameState.SessionData.CompletedLaps == pitWindowClosedLap)
@@ -245,7 +278,18 @@ namespace CrewChiefV3.Events
                                 playBoxNowMessage = true;
                                 playPitThisLap = false;
                                 mandatoryStopBoxThisLap = true;
-                                audioPlayer.queueClip(new QueuedMessage(folderMandatoryPitStopsPitThisLap, 0, this));
+                                if (mandatoryTyreChangeTyreType == TyreType.Prime)
+                                {
+                                    audioPlayer.queueClip(new QueuedMessage(folderMandatoryPitStopsFitPrimesThisLap, 0, this));
+                                }
+                                else if (mandatoryTyreChangeTyreType == TyreType.Option)
+                                {
+                                    audioPlayer.queueClip(new QueuedMessage(folderMandatoryPitStopsFitOptionsThisLap, 0, this));
+                                }
+                                else
+                                {
+                                    audioPlayer.queueClip(new QueuedMessage(folderMandatoryPitStopsPitThisLap, 0, this));
+                                }
                             }
                         }
                     }
@@ -303,7 +347,18 @@ namespace CrewChiefV3.Events
                     if (playBoxNowMessage && currentGameState.SessionData.SectorNumber == 3)
                     {
                         playBoxNowMessage = false;
-                        audioPlayer.queueClip(new QueuedMessage(folderMandatoryPitStopsPitNow, 3, this));
+                        if (mandatoryTyreChangeTyreType == TyreType.Prime)
+                        {
+                            audioPlayer.queueClip(new QueuedMessage("box_now_for_primes", MessageContents(folderMandatoryPitStopsPitNow, folderMandatoryPitStopsPrimeTyres), 3, this));
+                        }
+                        else if (mandatoryTyreChangeTyreType == TyreType.Option)
+                        {
+                            audioPlayer.queueClip(new QueuedMessage("box_now_for_options", MessageContents(folderMandatoryPitStopsPitNow, folderMandatoryPitStopsPrimeTyres), 3, this));
+                        }
+                        else
+                        {
+                            audioPlayer.queueClip(new QueuedMessage(folderMandatoryPitStopsPitNow, 3, this));
+                        }
                     }
                 }
             }
@@ -313,7 +368,7 @@ namespace CrewChiefV3.Events
         {
             if (CrewChief.gameDefinition == GameDefinition.raceRoom)
             {
-                if (!mandatoryStopRequired || mandatoryStopCompleted)
+                if (!hasMandatoryPitStop || mandatoryStopCompleted)
                 {
                     audioPlayer.playClipImmediately(new QueuedMessage(AudioPlayer.folderNo, 0, null), false);
                     audioPlayer.closeChannel();

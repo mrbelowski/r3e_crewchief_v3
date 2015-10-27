@@ -215,7 +215,6 @@ namespace CrewChiefV3.PCars
             currentGameState.SessionData.SectorNumber = (int)viewedParticipant.mCurrentSector;
             currentGameState.SessionData.Position = (int)viewedParticipant.mRacePosition;
             currentGameState.SessionData.IsNewSector = previousGameState == null || viewedParticipant.mCurrentSector != previousGameState.SessionData.SectorNumber;
-                        
             currentGameState.PositionAndMotionData.DistanceRoundTrack = viewedParticipant.mCurrentLapDistance;
           
             
@@ -390,9 +389,9 @@ namespace CrewChiefV3.PCars
                         }
                         Console.WriteLine("EventIndex " + currentGameState.SessionData.EventIndex);
                         Console.WriteLine("SessionIteration " + currentGameState.SessionData.SessionIteration);
-                        Console.WriteLine("HasMandatoryPitStop " + currentGameState.SessionData.HasMandatoryPitStop);
-                        Console.WriteLine("PitWindowStart " + currentGameState.SessionData.PitWindowStart);
-                        Console.WriteLine("PitWindowEnd " + currentGameState.SessionData.PitWindowEnd);
+                        Console.WriteLine("HasMandatoryPitStop " + currentGameState.PitData.HasMandatoryPitStop);
+                        Console.WriteLine("PitWindowStart " + currentGameState.PitData.PitWindowStart);
+                        Console.WriteLine("PitWindowEnd " + currentGameState.PitData.PitWindowEnd);
                         Console.WriteLine("NumCarsAtStartOfSession " + currentGameState.SessionData.NumCarsAtStartOfSession);
                         Console.WriteLine("SessionNumberOfLaps " + currentGameState.SessionData.SessionNumberOfLaps);
                         Console.WriteLine("SessionRunTime " + currentGameState.SessionData.SessionRunTime);
@@ -414,14 +413,14 @@ namespace CrewChiefV3.PCars
                     currentGameState.SessionData.TrackDefinition = previousGameState.SessionData.TrackDefinition;
                     currentGameState.SessionData.EventIndex = previousGameState.SessionData.EventIndex;
                     currentGameState.SessionData.SessionIteration = previousGameState.SessionData.SessionIteration;
-                    currentGameState.SessionData.PitWindowStart = previousGameState.SessionData.PitWindowStart;
-                    currentGameState.SessionData.PitWindowEnd = previousGameState.SessionData.PitWindowEnd;
-                    currentGameState.SessionData.HasMandatoryPitStop = previousGameState.SessionData.HasMandatoryPitStop;
+                    currentGameState.PitData.PitWindowStart = previousGameState.PitData.PitWindowStart;
+                    currentGameState.PitData.PitWindowEnd = previousGameState.PitData.PitWindowEnd;
+                    currentGameState.PitData.HasMandatoryPitStop = previousGameState.PitData.HasMandatoryPitStop;
                     currentGameState.OpponentData = previousGameState.OpponentData;
                     currentGameState.PitData.IsRefuellingAllowed = previousGameState.PitData.IsRefuellingAllowed;
                     currentGameState.SessionData.SessionTimesAtEndOfSectors = previousGameState.SessionData.SessionTimesAtEndOfSectors;
                     currentGameState.PenaltiesData.CutTrackWarnings = previousGameState.PenaltiesData.CutTrackWarnings;
-                    currentGameState.SessionData.playerLapTimes = previousGameState.SessionData.playerLapTimes;
+                    currentGameState.SessionData.formattedPlayerLapTimes = previousGameState.SessionData.formattedPlayerLapTimes;
                     currentGameState.SessionData.PlayerLapTimeSessionBest = previousGameState.SessionData.PlayerLapTimeSessionBest;
                     currentGameState.SessionData.OpponentsLapTimeSessionBestOverall = previousGameState.SessionData.OpponentsLapTimeSessionBestOverall;
                     currentGameState.SessionData.OpponentsLapTimeSessionBestPlayerClass = previousGameState.SessionData.OpponentsLapTimeSessionBestPlayerClass;
@@ -429,6 +428,12 @@ namespace CrewChiefV3.PCars
                     currentGameState.SessionData.PlayerClassSessionBestLapTime = previousGameState.SessionData.PlayerClassSessionBestLapTime;
                     currentGameState.SessionData.GameTimeAtLastPositionFrontChange = previousGameState.SessionData.GameTimeAtLastPositionFrontChange;
                     currentGameState.SessionData.GameTimeAtLastPositionBehindChange = previousGameState.SessionData.GameTimeAtLastPositionBehindChange;
+                    currentGameState.SessionData.LastSector1Time = previousGameState.SessionData.LastSector1Time;
+                    currentGameState.SessionData.LastSector2Time = previousGameState.SessionData.LastSector2Time;
+                    currentGameState.SessionData.LastSector3Time = previousGameState.SessionData.LastSector3Time;
+                    currentGameState.SessionData.BestSector1Time = previousGameState.SessionData.BestSector1Time;
+                    currentGameState.SessionData.BestSector2Time = previousGameState.SessionData.BestSector2Time;
+                    currentGameState.SessionData.BestSector3Time = previousGameState.SessionData.BestSector3Time;
                 }                
             }            
             
@@ -448,14 +453,32 @@ namespace CrewChiefV3.PCars
                 {
                     currentGameState.SessionData.LapTimePreviousEstimateForInvalidLap = currentGameState.SessionData.SessionRunningTime - currentGameState.SessionData.SessionTimesAtEndOfSectors[3];
                     currentGameState.SessionData.SessionTimesAtEndOfSectors[3] = currentGameState.SessionData.SessionRunningTime;
+                    currentGameState.SessionData.LastSector3Time = shared.mCurrentSector3Time;
+                    if (currentGameState.SessionData.LastSector3Time > 0 && 
+                        (currentGameState.SessionData.BestSector3Time == -1 || currentGameState.SessionData.LastSector3Time < currentGameState.SessionData.BestSector3Time))
+                    {
+                        currentGameState.SessionData.BestSector3Time = currentGameState.SessionData.LastSector3Time;
+                    }
                 }
                 else if (currentGameState.SessionData.SectorNumber == 2)
                 {
                     currentGameState.SessionData.SessionTimesAtEndOfSectors[1] = currentGameState.SessionData.SessionRunningTime;
+                    currentGameState.SessionData.LastSector1Time = shared.mCurrentSector1Time;
+                    if (currentGameState.SessionData.LastSector1Time > 0 &&
+                        (currentGameState.SessionData.BestSector1Time == -1 || currentGameState.SessionData.LastSector1Time < currentGameState.SessionData.BestSector1Time))
+                    {
+                        currentGameState.SessionData.BestSector1Time = currentGameState.SessionData.LastSector1Time;
+                    }
                 }
                 if (currentGameState.SessionData.SectorNumber == 3)
                 {
                     currentGameState.SessionData.SessionTimesAtEndOfSectors[2] = currentGameState.SessionData.SessionRunningTime;
+                    currentGameState.SessionData.LastSector2Time = shared.mCurrentSector2Time;
+                    if (currentGameState.SessionData.LastSector2Time > 0 &&
+                        (currentGameState.SessionData.BestSector2Time == -1 || currentGameState.SessionData.LastSector2Time < currentGameState.SessionData.BestSector2Time))
+                    {
+                        currentGameState.SessionData.BestSector2Time = currentGameState.SessionData.LastSector2Time;
+                    }
                 }
             }
 
@@ -631,7 +654,7 @@ namespace CrewChiefV3.PCars
             if (currentGameState.SessionData.IsNewLap)
             {
                 currentGameState.SessionData.PreviousLapWasValid = previousGameState != null && previousGameState.SessionData.CurrentLapIsValid;
-                currentGameState.SessionData.playerLapTimes.Add(shared.mLastLapTime);
+                currentGameState.SessionData.formattedPlayerLapTimes.Add(TimeSpan.FromSeconds(shared.mLastLapTime).ToString(@"mm\:ss\.fff"));
             }
             else if (previousGameState != null)
             {

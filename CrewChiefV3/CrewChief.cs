@@ -398,7 +398,7 @@ namespace CrewChiefV3
                                 if (displaySessionLapTimes)
                                 {
                                     Console.WriteLine("Session lap times:");
-                                    Console.WriteLine(String.Join(";", currentGameState.SessionData.playerLapTimes));
+                                    Console.WriteLine(String.Join(";", currentGameState.SessionData.formattedPlayerLapTimes));
                                 }
                                 sessionEndMessages.trigger(previousGameState.SessionData.SessionRunningTime, previousGameState.SessionData.SessionType, currentGameState.SessionData.SessionPhase,
                                     previousGameState.SessionData.Position, previousGameState.SessionData.NumCarsAtStartOfSession, previousGameState.SessionData.CompletedLaps, 

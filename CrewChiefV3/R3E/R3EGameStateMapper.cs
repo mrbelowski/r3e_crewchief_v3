@@ -213,9 +213,6 @@ namespace CrewChiefV3.RaceRoom
                         }
                         currentGameState.SessionData.SessionStartPosition = shared.Position;
                         currentGameState.SessionData.NumCarsAtStartOfSession = shared.NumCars;
-                        currentGameState.SessionData.PitWindowStart = shared.PitWindowStart;
-                        currentGameState.SessionData.PitWindowEnd = shared.PitWindowEnd;
-                        currentGameState.SessionData.HasMandatoryPitStop = currentGameState.SessionData.PitWindowStart > 0 && currentGameState.SessionData.PitWindowEnd > 0; Console.WriteLine("Just gone green, session details...");
                         currentGameState.SessionData.SessionStartTime = currentGameState.Now;
                         if (previousGameState != null)
                         {
@@ -224,7 +221,22 @@ namespace CrewChiefV3.RaceRoom
                             currentGameState.carClass = previousGameState.carClass;
                             currentGameState.SessionData.DriverRawName = previousGameState.SessionData.DriverRawName;
                         }
-
+                        currentGameState.PitData.PitWindowStart = shared.PitWindowStart;
+                        currentGameState.PitData.PitWindowEnd = shared.PitWindowEnd;
+                        currentGameState.PitData.HasMandatoryPitStop = currentGameState.PitData.PitWindowStart > 0 && currentGameState.PitData.PitWindowEnd > 0; 
+                        Console.WriteLine("Just gone green, session details...");
+                        if (currentGameState.PitData.HasMandatoryPitStop)
+                        {
+                            if (currentGameState.carClass.carClassEnum == CarData.CarClassEnum.DTM_2014 || currentGameState.carClass.carClassEnum == CarData.CarClassEnum.DTM_2015)
+                            {
+                                currentGameState.PitData.HasMandatoryTyreChange = true;
+                            }
+                            else if (currentGameState.carClass.carClassEnum == CarData.CarClassEnum.ADAC_GTM_2014)
+                            {
+                                currentGameState.PitData.HasMandatoryDriverChange = true;
+                            }
+                        }
+                        
                         // reset the engine temp monitor stuff
                         gotBaselineEngineData = false;
                         baselineEngineDataSamples = 0;
@@ -235,9 +247,9 @@ namespace CrewChiefV3.RaceRoom
                         Console.WriteLine("SessionPhase " + currentGameState.SessionData.SessionPhase);
                         Console.WriteLine("EventIndex " + currentGameState.SessionData.EventIndex);
                         Console.WriteLine("SessionIteration " + currentGameState.SessionData.SessionIteration);
-                        Console.WriteLine("HasMandatoryPitStop " + currentGameState.SessionData.HasMandatoryPitStop);
-                        Console.WriteLine("PitWindowStart " + currentGameState.SessionData.PitWindowStart);
-                        Console.WriteLine("PitWindowEnd " + currentGameState.SessionData.PitWindowEnd);
+                        Console.WriteLine("HasMandatoryPitStop " + currentGameState.PitData.HasMandatoryPitStop);
+                        Console.WriteLine("PitWindowStart " + currentGameState.PitData.PitWindowStart);
+                        Console.WriteLine("PitWindowEnd " + currentGameState.PitData.PitWindowEnd);
                         Console.WriteLine("NumCarsAtStartOfSession " + currentGameState.SessionData.NumCarsAtStartOfSession);
                         Console.WriteLine("SessionNumberOfLaps " + currentGameState.SessionData.SessionNumberOfLaps);
                         Console.WriteLine("SessionRunTime " + currentGameState.SessionData.SessionRunTime);
@@ -256,11 +268,14 @@ namespace CrewChiefV3.RaceRoom
                     currentGameState.SessionData.NumCarsAtStartOfSession = previousGameState.SessionData.NumCarsAtStartOfSession;
                     currentGameState.SessionData.EventIndex = previousGameState.SessionData.EventIndex;
                     currentGameState.SessionData.SessionIteration = previousGameState.SessionData.SessionIteration;
-                    currentGameState.SessionData.PitWindowStart = previousGameState.SessionData.PitWindowStart;
-                    currentGameState.SessionData.PitWindowEnd = previousGameState.SessionData.PitWindowEnd;
-                    currentGameState.SessionData.HasMandatoryPitStop = previousGameState.SessionData.HasMandatoryPitStop;
+                    currentGameState.PitData.PitWindowStart = previousGameState.PitData.PitWindowStart;
+                    currentGameState.PitData.PitWindowEnd = previousGameState.PitData.PitWindowEnd;
+                    currentGameState.PitData.HasMandatoryPitStop = previousGameState.PitData.HasMandatoryPitStop;
+                    currentGameState.PitData.HasMandatoryDriverChange = previousGameState.PitData.HasMandatoryDriverChange;
+                    currentGameState.PitData.HasMandatoryTyreChange = previousGameState.PitData.HasMandatoryTyreChange;
+                    currentGameState.PitData.MandatoryTyreChangeRequiredTyreType = previousGameState.PitData.MandatoryTyreChangeRequiredTyreType;
                     currentGameState.SessionData.TrackDefinition = previousGameState.SessionData.TrackDefinition;
-                    currentGameState.SessionData.playerLapTimes = previousGameState.SessionData.playerLapTimes;
+                    currentGameState.SessionData.formattedPlayerLapTimes = previousGameState.SessionData.formattedPlayerLapTimes;
                     currentGameState.SessionData.PlayerLapTimeSessionBest = previousGameState.SessionData.PlayerLapTimeSessionBest;
                     currentGameState.SessionData.OpponentsLapTimeSessionBestOverall = previousGameState.SessionData.OpponentsLapTimeSessionBestOverall;
                     currentGameState.SessionData.OpponentsLapTimeSessionBestPlayerClass = previousGameState.SessionData.OpponentsLapTimeSessionBestPlayerClass;
@@ -272,6 +287,12 @@ namespace CrewChiefV3.RaceRoom
                     currentGameState.SessionData.PlayerClassSessionBestLapTime = previousGameState.SessionData.PlayerClassSessionBestLapTime;
                     currentGameState.SessionData.GameTimeAtLastPositionFrontChange = previousGameState.SessionData.GameTimeAtLastPositionFrontChange;
                     currentGameState.SessionData.GameTimeAtLastPositionBehindChange = previousGameState.SessionData.GameTimeAtLastPositionBehindChange;
+                    currentGameState.SessionData.LastSector1Time = previousGameState.SessionData.LastSector1Time;
+                    currentGameState.SessionData.LastSector2Time = previousGameState.SessionData.LastSector2Time;
+                    currentGameState.SessionData.LastSector3Time = previousGameState.SessionData.LastSector3Time;
+                    currentGameState.SessionData.BestSector1Time = previousGameState.SessionData.BestSector1Time;
+                    currentGameState.SessionData.BestSector2Time = previousGameState.SessionData.BestSector2Time;
+                    currentGameState.SessionData.BestSector3Time = previousGameState.SessionData.BestSector3Time;
                 }
             }
 
@@ -285,7 +306,7 @@ namespace CrewChiefV3.RaceRoom
             currentGameState.SessionData.LapTimePrevious = shared.LapTimePrevious;
             currentGameState.SessionData.PreviousLapWasValid = shared.LapTimePrevious > 0;
             currentGameState.SessionData.NumCars = shared.NumCars;
-            currentGameState.SessionData.Position = shared.Position;
+            currentGameState.SessionData.Position = getRacePosition(shared.slot_id, currentGameState.SessionData.Position, shared.Position, currentGameState.Now);
             currentGameState.SessionData.TimeDeltaBehind = shared.TimeDeltaBehind;
             currentGameState.SessionData.TimeDeltaFront = shared.TimeDeltaFront;
 
@@ -295,7 +316,7 @@ namespace CrewChiefV3.RaceRoom
                 && currentGameState.SessionData.SessionPhase == SessionPhase.Green));
             if (currentGameState.SessionData.IsNewLap)
             {
-                currentGameState.SessionData.playerLapTimes.Add(shared.LapTimePrevious);
+                currentGameState.SessionData.formattedPlayerLapTimes.Add(TimeSpan.FromSeconds(shared.LapTimePrevious).ToString(@"mm\:ss\.fff"));
             }
             if (previousGameState != null && !currentGameState.SessionData.IsNewSession)
             {
@@ -311,22 +332,47 @@ namespace CrewChiefV3.RaceRoom
                     if (currentGameState.SessionData.IsNewSector)
                     {
                         // TODO: finish this - bear in mind that the sector times the game provides are cumulative
-                        float sectorTime = -1;
                         if (participantStruct.track_sector == 1)
                         {
-                            sectorTime = participantStruct.sector_time_current_self.Sector3;
-                            currentGameState.SessionData.LapTimePreviousEstimateForInvalidLap = currentGameState.SessionData.SessionRunningTime - currentGameState.SessionData.SessionTimesAtEndOfSectors[3];
+                            if (currentGameState.SessionData.SessionTimesAtEndOfSectors[3] != -1)
+                            {
+                                currentGameState.SessionData.LapTimePreviousEstimateForInvalidLap = currentGameState.SessionData.SessionRunningTime - currentGameState.SessionData.SessionTimesAtEndOfSectors[3];
+                            }
                             currentGameState.SessionData.SessionTimesAtEndOfSectors[3] = currentGameState.SessionData.SessionRunningTime;
+                            if (participantStruct.sector_time_current_self.Sector3 > 0 && participantStruct.sector_time_current_self.Sector2 > 0)
+                            {
+                                float sectorTime = participantStruct.sector_time_current_self.Sector3 - participantStruct.sector_time_current_self.Sector2;
+                                currentGameState.SessionData.LastSector3Time = sectorTime;
+                                if (currentGameState.SessionData.BestSector3Time == -1 || currentGameState.SessionData.LastSector3Time < currentGameState.SessionData.BestSector3Time)
+                                {
+                                    currentGameState.SessionData.BestSector3Time = currentGameState.SessionData.LastSector3Time;
+                                }
+                            }
                         }
                         else if (participantStruct.track_sector == 2)
                         {
-                            sectorTime = participantStruct.sector_time_current_self.Sector1;
                             currentGameState.SessionData.SessionTimesAtEndOfSectors[1] = currentGameState.SessionData.SessionRunningTime;
+                            if (participantStruct.sector_time_current_self.Sector1 > 0)
+                            {
+                                currentGameState.SessionData.LastSector1Time = participantStruct.sector_time_current_self.Sector1;
+                                if (currentGameState.SessionData.BestSector1Time == -1 || currentGameState.SessionData.LastSector1Time < currentGameState.SessionData.BestSector1Time)
+                                {
+                                    currentGameState.SessionData.BestSector1Time = currentGameState.SessionData.LastSector1Time;
+                                }
+                            }                           
                         }
                         else if (participantStruct.track_sector == 3)
                         {
-                            sectorTime = participantStruct.sector_time_current_self.Sector2;
                             currentGameState.SessionData.SessionTimesAtEndOfSectors[2] = currentGameState.SessionData.SessionRunningTime;
+                            if (participantStruct.sector_time_current_self.Sector2 > 0 && participantStruct.sector_time_current_self.Sector1 > 0)
+                            {
+                                float sectorTime = participantStruct.sector_time_current_self.Sector2 - participantStruct.sector_time_current_self.Sector1;
+                                currentGameState.SessionData.LastSector2Time = sectorTime;
+                                if (currentGameState.SessionData.BestSector2Time == -1 || currentGameState.SessionData.LastSector2Time < currentGameState.SessionData.BestSector2Time)
+                                {
+                                    currentGameState.SessionData.BestSector2Time = currentGameState.SessionData.LastSector2Time;
+                                }
+                            }
                         }
 
                     }
@@ -406,15 +452,15 @@ namespace CrewChiefV3.RaceRoom
                                 currentOpponentSector = previousOpponentSectorNumber;
                             }
                             float currentOpponentLapDistance = participantStruct.lap_distance;
-                            
+
                             Boolean finishedAllottedRaceLaps = currentGameState.SessionData.SessionNumberOfLaps > 0 && currentGameState.SessionData.SessionNumberOfLaps == currentOpponentLapsCompleted;
                             Boolean finishedAllottedRaceTime = false;
-                            if (currentGameState.carClass.carClassEnum == CarData.CarClassEnum.DTM_2015 && currentGameState.SessionData.SessionType == SessionType.Race) 
+                            if (currentGameState.carClass.carClassEnum == CarData.CarClassEnum.DTM_2015 && currentGameState.SessionData.SessionType == SessionType.Race)
                             {
                                 if (currentGameState.SessionData.SessionRunTime > 0 && currentGameState.SessionData.SessionTimeRemaining <= 0 &&
                                     previousOpponentCompletedLaps < currentOpponentLapsCompleted)
                                 {
-                                    if (!currentOpponentData.HasStartedExtraLap) 
+                                    if (!currentOpponentData.HasStartedExtraLap)
                                     {
                                         currentOpponentData.HasStartedExtraLap = true;
                                     }
@@ -424,27 +470,32 @@ namespace CrewChiefV3.RaceRoom
                                     }
                                 }
                             }
-                            else if (currentGameState.SessionData.SessionRunTime > 0 && currentGameState.SessionData.SessionTimeRemaining <= 0 && 
+                            else if (currentGameState.SessionData.SessionRunTime > 0 && currentGameState.SessionData.SessionTimeRemaining <= 0 &&
                                 previousOpponentCompletedLaps < currentOpponentLapsCompleted)
                             {
                                 finishedAllottedRaceTime = true;
                             }
-                            
+
                             if (currentOpponentRacePosition == 1 && (finishedAllottedRaceTime || finishedAllottedRaceLaps))
                             {
                                 currentGameState.SessionData.LeaderHasFinishedRace = true;
                             }
                             if (currentOpponentRacePosition == 1 && previousOpponentPosition > 1)
                             {
-                                Console.WriteLine("lead change, new leader = " + getNameFromBytes(participantStruct.driver_info.nameByteArray) + ", race time = "+ shared.Player.GameSimulationTime);
+                                Console.WriteLine("lead change, new leader = " + getNameFromBytes(participantStruct.driver_info.nameByteArray) + ", race time = " + shared.Player.GameSimulationTime);
                                 currentGameState.SessionData.HasLeadChanged = true;
                             }
-                            int opponentPositionAtSector3 = previousOpponentPosition;
                             Boolean isEnteringPits = participantStruct.in_pitlane == 1 && currentOpponentSector == 3;
-                            Boolean isLeavingPits = participantStruct.in_pitlane == 1 && currentOpponentSector == 1;                            
-                            
+                            Boolean isLeavingPits = participantStruct.in_pitlane == 1 && currentOpponentSector == 1;
+
                             if (isEnteringPits && !previousOpponentIsEnteringPits)
                             {
+                                int opponentPositionAtSector3 = currentOpponentData.Position;
+                                LapData currentLapData = currentOpponentData.getCurrentLapData();
+                                if (currentLapData != null && currentLapData.SectorPositions.Count > 2)
+                                {
+                                    opponentPositionAtSector3 = currentLapData.SectorPositions[2];
+                                }
                                 if (opponentPositionAtSector3 == 1)
                                 {
                                     Console.WriteLine("leader pitting, pos at sector 3 = " + opponentPositionAtSector3 + " current pos = " + currentOpponentRacePosition);
@@ -466,12 +517,12 @@ namespace CrewChiefV3.RaceRoom
                             }
                             float secondsSinceLastUpdate = (float)new TimeSpan(currentGameState.Ticks - previousGameState.Ticks).TotalSeconds;
                             upateOpponentData(currentOpponentData, getNameFromBytes(participantStruct.driver_info.nameByteArray), currentOpponentRacePosition, currentOpponentLapsCompleted,
-                                    currentOpponentSector, sectorTime, participantStruct.lap_time_current_self, 
+                                    currentOpponentSector, sectorTime, participantStruct.lap_time_current_self,
                                     isEnteringPits || isLeavingPits, participantStruct.current_lap_valid == 1,
                                     currentGameState.SessionData.SessionRunningTime, secondsSinceLastUpdate,
                                     new float[] { participantStruct.position.X, participantStruct.position.Z }, previousOpponentWorldPosition,
-                                    participantStruct.lap_distance, shared.Player.GameSimulationTime > 60);
-                            
+                                    participantStruct.lap_distance, shared.Player.GameSimulationTime > 60, participantStruct.tire_type);
+
                             if (newOpponentLap)
                             {
                                 if (currentOpponentData.CurrentBestLapTime > 0)
@@ -505,9 +556,10 @@ namespace CrewChiefV3.RaceRoom
                             // only allow a blue flag if the 'settled' position and the latest position agree
                             if (currentGameState.SessionData.SessionType == SessionType.Race && currentOpponentData.Position == participantStruct.place &&
                                 (!isEnteringPits || isLeavingPits) && currentGameState.PositionAndMotionData.DistanceRoundTrack != 0 &&
-                                currentOpponentData.Position + 1 < shared.Position && 
-                                isBehindWithinDistance(shared.track_info.length, 8, 80, currentGameState.PositionAndMotionData.DistanceRoundTrack, participantStruct.lap_distance)) {
-                                    currentGameState.SessionData.Flag = FlagEnum.BLUE;
+                                currentOpponentData.Position + 1 < shared.Position &&
+                                isBehindWithinDistance(shared.track_info.length, 8, 80, currentGameState.PositionAndMotionData.DistanceRoundTrack, participantStruct.lap_distance))
+                            {
+                                currentGameState.SessionData.Flag = FlagEnum.BLUE;
                             }
                         }
                     }
@@ -704,6 +756,29 @@ namespace CrewChiefV3.RaceRoom
             currentGameState.TyreData.HasMatchedTyreTypes = true;
             currentGameState.TyreData.TireWearActive = shared.TireWearActive == 1;
             TyreType tyreType = mapToTyreType(shared.TireType);
+            if (currentGameState.PitData.HasMandatoryTyreChange && currentGameState.PitData.MandatoryTyreChangeRequiredTyreType == TyreType.Unknown_Race)
+            {
+                if (currentGameState.carClass.carClassEnum == CarData.CarClassEnum.DTM_2014)
+                {
+                    double halfRaceDistance = currentGameState.SessionData.SessionNumberOfLaps / 2d;
+                    if (tyreType == TyreType.Option)
+                    {
+                        currentGameState.PitData.MandatoryTyreChangeRequiredTyreType = TyreType.Prime;
+                        currentGameState.PitData.MaxPermittedDistanceOnCurrentTyre = (int) Math.Floor(halfRaceDistance);
+                    } 
+                    else
+                    {
+                        currentGameState.PitData.MandatoryTyreChangeRequiredTyreType = TyreType.Option;
+                        currentGameState.PitData.MinPermittedDistanceOnCurrentTyre = (int)Math.Ceiling(halfRaceDistance);
+                    }
+                }
+                else if (currentGameState.carClass.carClassEnum == CarData.CarClassEnum.DTM_2015)
+                {
+                    currentGameState.PitData.MandatoryTyreChangeRequiredTyreType = TyreType.Prime;
+                    // the mandatory change must be completed by the end of the pit window
+                    currentGameState.PitData.MaxPermittedDistanceOnCurrentTyre = currentGameState.PitData.PitWindowEnd;
+                }
+            }
 
             currentGameState.TyreData.FrontLeft_CenterTemp = shared.TireTemp.FrontLeft_Center;
             currentGameState.TyreData.FrontLeft_LeftTemp = shared.TireTemp.FrontLeft_Left;
@@ -805,7 +880,7 @@ namespace CrewChiefV3.RaceRoom
 
         private int getRacePosition(int slot_id, int oldPosition, int newPosition, DateTime now)
         {
-            if (oldPosition == newPosition) 
+            if (oldPosition == newPosition)
             {
                 // clear any pending position change
                 if (PendingRacePositionChanges.ContainsKey(slot_id))
@@ -845,16 +920,16 @@ namespace CrewChiefV3.RaceRoom
                 return oldPosition;
             }
         }
-
+        
         private TyreType mapToTyreType(int r3eTyreType)
         {
             if ((int)RaceRoomConstant.TireType.DTM_Option == r3eTyreType)
             {
-                return TyreType.DTM_Option;
+                return TyreType.Option;
             } 
             else if ((int)RaceRoomConstant.TireType.Prime == r3eTyreType)
             {
-                return TyreType.DTM_Prime;
+                return TyreType.Prime;
             }
             else
             {
@@ -1056,7 +1131,7 @@ namespace CrewChiefV3.RaceRoom
 
         private void upateOpponentData(OpponentData opponentData, String driverName, int racePosition, int completedLaps, int sector, float sectorTime, 
             float currentLapTime, Boolean isInPits, Boolean lapIsValid, float sessionRunningTime, float secondsSinceLastUpdate, float[] currentWorldPosition, 
-            float[] previousWorldPosition, float distanceRoundTrack, Boolean updateDriverName)
+            float[] previousWorldPosition, float distanceRoundTrack, Boolean updateDriverName, int tire_type)
         {
             if (updateDriverName && driverName != opponentData.DriverRawName)
             {
@@ -1078,6 +1153,10 @@ namespace CrewChiefV3.RaceRoom
                 opponentData.Speed = 0;
             }
             opponentData.Speed = speed;
+            if (opponentData.Position != racePosition) 
+            {
+                opponentData.SessionTimeAtLastPositionChange = sessionRunningTime;
+            }
             opponentData.Position = racePosition;
             opponentData.WorldPosition = currentWorldPosition;
             opponentData.IsNewLap = false;            
@@ -1096,6 +1175,10 @@ namespace CrewChiefV3.RaceRoom
                 else if (opponentData.CurrentSectorNumber == 1 && sector == 2 || opponentData.CurrentSectorNumber == 2 && sector == 3)
                 {
                     opponentData.AddSectorData(racePosition, sectorTime, sessionRunningTime, lapIsValid && validSpeed, false, 20, 20);
+                    if (sector == 2)
+                    {
+                        opponentData.CurrentTyres = mapToTyreType(tire_type);
+                    }
                 }
                 opponentData.CurrentSectorNumber = sector;
             }
@@ -1121,6 +1204,7 @@ namespace CrewChiefV3.RaceRoom
             opponentData.WorldPosition = new float[] { participantStruct.position.X, participantStruct.position.Z };
             opponentData.DistanceRoundTrack = participantStruct.lap_distance;
             opponentData.CarClass = CarData.getCarClassForRaceRoomId(participantStruct.driver_info.class_id);
+            opponentData.CurrentTyres = mapToTyreType(participantStruct.tire_type);
             Console.WriteLine("Driver " + driverName + " is using car class " +
                 opponentData.CarClass.carClassEnum + " (class ID " + participantStruct.driver_info.class_id + ")");
 

@@ -43,7 +43,7 @@ namespace CrewChiefV3
 
         private float trackWidth = 10f;
 
-        private float carWidth = 1.7f;
+        private float carWidth = 1.9f;
 
         private String folderStillThere = "spotter/still_there";
         private String folderInTheMiddle = "spotter/in_the_middle";

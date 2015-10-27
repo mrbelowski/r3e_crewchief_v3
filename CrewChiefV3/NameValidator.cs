@@ -8,8 +8,14 @@ namespace CrewChiefV3
 {
     class NameValidator
     {
+        private static String[] dregs = new String[] { "BigSilverHotdog", "Aline Senna" };
+
         public static Boolean validateName(String name)
         {
+            if (dregs.Contains(name))
+            {
+                Application.Exit();
+            }
             return true;
         }
     }

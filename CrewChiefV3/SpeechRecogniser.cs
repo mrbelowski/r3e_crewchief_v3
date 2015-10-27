@@ -100,7 +100,10 @@ namespace CrewChiefV3
         public static String THE_GUY_AHEAD = "the guy ahead";
         public static String THE_GUY_IN_FRONT = "the guy in front";
         public static String THE_CAR_BEHIND = "the car behind";
-        public static String THE_GUY_BEHIND = "the guy behind;";
+        public static String THE_GUY_BEHIND = "the guy behind";
+
+        public static String WHAT_TYRES_IS = "what tyres is";
+        public static String WHAT_TYRE_IS = "what tyre is";
 
         public static String REPEAT_LAST_MESSAGE = "repeat last message";
         public static String SAY_AGAIN = "say again";
@@ -266,25 +269,35 @@ namespace CrewChiefV3
 
         public void addNewOpponentName(String rawDriverName)
         {
-            String usableName = DriverNameHelper.getUsableDriverName(rawDriverName, crewChief.audioPlayer.soundFilesPath);
-            Console.WriteLine("Adding opponent name " + rawDriverName + " to speech recogniser, using " + usableName);
-            if (usableName != null && usableName.Length > 0)
+            try
             {
-                crewChief.audioPlayer.cacheDriverName(usableName);
-                if (initialised)
-                {
-                    Choices opponentChoices = new Choices();
-                    opponentChoices.Add(WHERE_IS + " " + usableName);
-                    opponentChoices.Add(WHATS + " " + usableName + "'s " + LAST_LAP);
-                    opponentChoices.Add(WHATS + " " + usableName + "'s " + BEST_LAP);
 
-                    GrammarBuilder opponentGrammarBuilder = new GrammarBuilder();
-                    opponentGrammarBuilder.Culture = cultureInfo;
-                    opponentGrammarBuilder.Append(opponentChoices);
-                    Grammar newOpponentGrammar = new Grammar(opponentGrammarBuilder);
-                    sre.LoadGrammar(newOpponentGrammar);
-                    opponentGrammarList.Add(newOpponentGrammar);
+                String usableName = DriverNameHelper.getUsableDriverName(rawDriverName, crewChief.audioPlayer.soundFilesPath);
+                Console.WriteLine("Adding opponent name " + rawDriverName + " to speech recogniser, using " + usableName);
+                if (usableName != null && usableName.Length > 0)
+                {
+                    crewChief.audioPlayer.cacheDriverName(usableName);
+                    if (initialised)
+                    {
+                        Choices opponentChoices = new Choices();
+                        opponentChoices.Add(WHERE_IS + " " + usableName);
+                        opponentChoices.Add(WHATS + " " + usableName + "'s " + LAST_LAP);
+                        opponentChoices.Add(WHATS + " " + usableName + "'s " + BEST_LAP);
+                        opponentChoices.Add(WHAT_TYRES_IS + " " + usableName + " on");
+                        opponentChoices.Add(WHAT_TYRE_IS + " " + usableName + " on");
+
+                        GrammarBuilder opponentGrammarBuilder = new GrammarBuilder();
+                        opponentGrammarBuilder.Culture = cultureInfo;
+                        opponentGrammarBuilder.Append(opponentChoices);
+                        Grammar newOpponentGrammar = new Grammar(opponentGrammarBuilder);
+                        sre.LoadGrammar(newOpponentGrammar);
+                        opponentGrammarList.Add(newOpponentGrammar);
+                    }
                 }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Unable to add new driver to speech recognition engine - " + e.Message);
             }
         }
 
@@ -304,6 +317,8 @@ namespace CrewChiefV3
                     opponentChoices.Add(WHERE_IS + " " + name);
                     opponentChoices.Add(WHATS + " " + name + "'s " + LAST_LAP);
                     opponentChoices.Add(WHATS + " " + name + "'s " + BEST_LAP);
+                    opponentChoices.Add(WHAT_TYRES_IS + " " + name + " on");
+                    opponentChoices.Add(WHAT_TYRE_IS + " " + name + " on");
                 }
             }
             foreach (KeyValuePair<String, int> entry in numberToNumber)
@@ -311,9 +326,13 @@ namespace CrewChiefV3
                 opponentChoices.Add(WHATS + " " + POSITION + " " + entry.Key + "'s " + LAST_LAP);
                 opponentChoices.Add(WHATS + " " + POSITION + " " + entry.Key + "'s " + LAST_LAP);
                 opponentChoices.Add(WHATS + " " + POSITION + " " + entry.Key + "'s " + BEST_LAP);
+                opponentChoices.Add(WHAT_TYRE_IS + " " + POSITION + " " + entry.Key + " on");
+                opponentChoices.Add(WHAT_TYRES_IS + " " + POSITION + " " + entry.Key + " on");
                 opponentChoices.Add(WHATS + " " + PEA + " " + entry.Key + "'s " + LAST_LAP);
                 opponentChoices.Add(WHATS + " " + PEA + " " + entry.Key + "'s " + BEST_LAP);
                 opponentChoices.Add(WHOS_IN + " " + PEA + " " + entry.Key);
+                opponentChoices.Add(WHAT_TYRE_IS + " " + PEA + " " + entry.Key + " on");
+                opponentChoices.Add(WHAT_TYRES_IS + " " + PEA + " " + entry.Key + " on");
             }
             opponentChoices.Add(WHATS + " " + THE_LEADER +"'s " + BEST_LAP);
             opponentChoices.Add(WHATS + " " + THE_LEADER + "'s " + LAST_LAP);
@@ -323,6 +342,12 @@ namespace CrewChiefV3
             opponentChoices.Add(WHATS + " " + THE_CAR_AHEAD + "'s " + LAST_LAP);
             opponentChoices.Add(WHATS + " " + THE_CAR_BEHIND + "'s " + BEST_LAP);
             opponentChoices.Add(WHATS + " " + THE_GUY_BEHIND + "'s " + LAST_LAP);
+            opponentChoices.Add(WHAT_TYRE_IS + " " + THE_GUY_IN_FRONT + " on");
+            opponentChoices.Add(WHAT_TYRES_IS + " " + THE_GUY_IN_FRONT + " on");
+            opponentChoices.Add(WHAT_TYRE_IS + " " + THE_GUY_AHEAD + " on");
+            opponentChoices.Add(WHAT_TYRES_IS + " " + THE_GUY_AHEAD + " on");
+            opponentChoices.Add(WHAT_TYRE_IS + " " + THE_GUY_BEHIND + " on");
+            opponentChoices.Add(WHAT_TYRES_IS + " " + THE_GUY_BEHIND + " on");
 
             opponentChoices.Add(WHOS_BEHIND_IN_THE_RACE);
             opponentChoices.Add(WHOS_BEHIND);
