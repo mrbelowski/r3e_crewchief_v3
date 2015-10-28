@@ -109,8 +109,12 @@ namespace CrewChiefV3.Events
             audioPlayer.queueClip(new QueuedMessage("sectors2", MessageContents(LapTimes.folderSector2Is, LapTimes.folderSectorASecondOffPace,
                             LapTimes.folderSectors1and3Are, LapTimes.folderSectorATenthOffPace), 0, this));
             audioPlayer.queueClip(new QueuedMessage("sectors3", MessageContents(LapTimes.folderSectorsAllThreeAre, LapTimes.folderSectorMoreThanASecondOffPace), 0, this));
-            */
-
+            audioPlayer.queueClip(new QueuedMessage("sectors4", MessageContents(LapTimes.folderSectors1and2Are, LapTimes.folderSectorFast,
+                LapTimes.folderSector3Is, LapTimes.folderSectorAFewTenthsOffPace), 0, this));
+            audioPlayer.queueClip(new QueuedMessage("sectors5", MessageContents(LapTimes.folderSector2Is, LapTimes.folderSectorASecondOffPace,
+                            LapTimes.folderSectors1and3Are, LapTimes.folderSectorATenthOffPace), 0, this));
+            audioPlayer.queueClip(new QueuedMessage("sectors6", MessageContents(LapTimes.folderSectorsAllThreeAre, LapTimes.folderSectorMoreThanASecondOffPace), 0, this));*/
+            
         }
     }
 }

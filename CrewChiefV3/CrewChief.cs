@@ -17,7 +17,7 @@ namespace CrewChiefV3
 {
     public class CrewChief : IDisposable
     {
-        public static String Version = "3.6.5";
+        public static String Version = "3.7.0";
 
         public static Boolean loadDataFromFile = false;
 
@@ -84,6 +84,7 @@ namespace CrewChiefV3
             eventsList.Add("Penalties", new Penalties(audioPlayer));
             eventsList.Add("MandatoryPitStops", new MandatoryPitStops(audioPlayer));
             eventsList.Add("Fuel", new Fuel(audioPlayer));
+            eventsList.Add("Opponents", new Opponents(audioPlayer));
             eventsList.Add("Position", new Position(audioPlayer));
             eventsList.Add("RaceTime", new RaceTime(audioPlayer));
             eventsList.Add("TyreMonitor", new TyreMonitor(audioPlayer));
@@ -91,7 +92,6 @@ namespace CrewChiefV3
             eventsList.Add("Timings", new Timings(audioPlayer));
             eventsList.Add("DamageReporting", new DamageReporting(audioPlayer));
             eventsList.Add("PushNow", new PushNow(audioPlayer));
-            eventsList.Add("Opponents", new Opponents(audioPlayer));
             eventsList.Add("FlagsMonitor", new FlagsMonitor(audioPlayer));
             sessionEndMessages = new SessionEndMessages(audioPlayer);
         }

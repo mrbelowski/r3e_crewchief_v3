@@ -210,7 +210,8 @@ namespace CrewChiefV3.Events
                                 }
                             }
                         }
-                        else if (currentGameState.SessionData.CompletedLaps == pitWindowOpenLap - 1)
+                        
+                        if (currentGameState.SessionData.CompletedLaps == pitWindowOpenLap - 1)
                         {
                             // note this is a 'pit window opens at the end of this lap' message, 
                             // so we play it 1 lap before the window opens
