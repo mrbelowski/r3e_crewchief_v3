@@ -78,11 +78,13 @@ namespace CrewChiefV3.Events
         private String folderSector2MoreThanASecondOffThePace = "lap_times/sector2_more_than_a_second_off_pace";
         private String folderSector3MoreThanASecondOffThePace = "lap_times/sector3_more_than_a_second_off_pace";
 
-        // if the lap is within 0.2% of the best lap time play a message
-        private Single goodLapPercent = 0.2f;
+        // if the lap is within 0.3% of the best lap time play a message
+        private Single goodLapPercent = 0.3f;
 
-        // if the lap is within 1% of the previous lap it's considered consistent
-        private Single consistencyLimit = 1f;
+        private Single matchingRacePacePercent = 0.1f;
+
+        // if the lap is within 0.5% of the previous lap it's considered consistent
+        private Single consistencyLimit = 0.5f;
 
         private List<float> lapTimesWindow;
 
@@ -230,7 +232,7 @@ namespace CrewChiefV3.Events
                                     audioPlayer.queueClip(new QueuedMessage("lapTimeNotRaceGap",
                                         MessageContents(folderGapIntro, deltaPlayerLastToSessionBestOverall, folderGapOutroOffPace), 0, this));
                                 }
-                                List<MessageFragment> sectorMessageFragments = getSectorDeltaMessages(true, currentGameState.SessionData.LastSector1Time, currentGameState.SessionData.BestSector1Time,
+                                List<MessageFragment> sectorMessageFragments = getSectorDeltaMessages(SectorReportOption.ALL_SECTORS, currentGameState.SessionData.LastSector1Time, currentGameState.SessionData.BestSector1Time,
                                     currentGameState.SessionData.LastSector2Time, currentGameState.SessionData.BestSector2Time, currentGameState.SessionData.LastSector3Time, currentGameState.SessionData.BestSector3Time);
                                 if (sectorMessageFragments.Count > 0)
                                 {
@@ -289,7 +291,7 @@ namespace CrewChiefV3.Events
                                     audioPlayer.queueClip(new QueuedMessage("lapTimeNotRaceGap",
                                         MessageContents(folderGapIntro, deltaPlayerLastToSessionBestInClass, folderGapOutroOffPace), random.Next(0, 20), this));
                                 }
-                                List<MessageFragment> sectorMessageFragments = getSectorDeltaMessages(true, currentGameState.SessionData.LastSector1Time, opponentsBestLapData[1],
+                                List<MessageFragment> sectorMessageFragments = getSectorDeltaMessages(SectorReportOption.ALL_SECTORS, currentGameState.SessionData.LastSector1Time, opponentsBestLapData[1],
                                     currentGameState.SessionData.LastSector2Time, opponentsBestLapData[2], currentGameState.SessionData.LastSector3Time, opponentsBestLapData[3]);
                                 if (sectorMessageFragments.Count > 0)
                                 {
@@ -340,7 +342,7 @@ namespace CrewChiefV3.Events
                                 default:
                                     break;
                             }
-                            List<MessageFragment> sectorMessageFragments = getSectorDeltaMessages(false, currentGameState.SessionData.LastSector1Time, opponentsBestLapData[1],
+                            List<MessageFragment> sectorMessageFragments = getSectorDeltaMessages(SectorReportOption.BEST_AND_WORST, currentGameState.SessionData.LastSector1Time, opponentsBestLapData[1],
                                     currentGameState.SessionData.LastSector2Time, opponentsBestLapData[2], currentGameState.SessionData.LastSector3Time, opponentsBestLapData[3]);
                             if (sectorMessageFragments.Count > 0)
                             {
@@ -363,10 +365,19 @@ namespace CrewChiefV3.Events
                                     lastConsistencyUpdate = currentGameState.SessionData.CompletedLaps;
                                     audioPlayer.queueClip(new QueuedMessage(folderImprovingTimes, 0, this));
                                 }
-                                if (consistency == ConsistencyResult.WORSENING)
+                                else if (consistency == ConsistencyResult.WORSENING)
                                 {
-                                    lastConsistencyUpdate = currentGameState.SessionData.CompletedLaps;
-                                    audioPlayer.queueClip(new QueuedMessage(folderWorseningTimes, 0, this));
+                                    // don't play the worsening message if the lap rating is good
+                                    if (lastLapRating == LastLapRating.BEST_IN_CLASS || lastLapRating == LastLapRating.BEST_OVERALL ||
+                                        lastLapRating == LastLapRating.SETTING_CURRENT_PACE || lastLapRating == LastLapRating.CLOSE_TO_CURRENT_PACE)
+                                    {
+                                        Console.WriteLine("Skipping 'worsening' laptimes message - inconsistent with lap rating");
+                                    }
+                                    else
+                                    {
+                                        lastConsistencyUpdate = currentGameState.SessionData.CompletedLaps;
+                                        audioPlayer.queueClip(new QueuedMessage(folderWorseningTimes, 0, this));
+                                    }                                   
                                 }
                             }
                         }
@@ -470,6 +481,7 @@ namespace CrewChiefV3.Events
             if (currentGameState.SessionData.PreviousLapWasValid && currentGameState.SessionData.LapTimePrevious > 0)
             {
                 float closeThreshold = currentGameState.SessionData.LapTimePrevious * goodLapPercent / 100;
+                float matchingRacePaceThreshold = currentGameState.SessionData.LapTimePrevious * matchingRacePacePercent / 100;
                 if (currentGameState.SessionData.OpponentsLapTimeSessionBestOverall >= currentGameState.SessionData.LapTimePrevious)
                 {
                     return LastLapRating.BEST_OVERALL;
@@ -651,7 +663,7 @@ namespace CrewChiefV3.Events
                                 audioPlayer.playClipImmediately(new QueuedMessage(AudioPlayer.folderNoData, 0, null), false);
                                 break;                     
                         }
-                        List<MessageFragment> sectorDeltaMessages = getSectorDeltaMessages(false, currentGameState.SessionData.LastSector1Time, bestOpponentLapData[1],
+                        List<MessageFragment> sectorDeltaMessages = getSectorDeltaMessages(SectorReportOption.BEST_AND_WORST, currentGameState.SessionData.LastSector1Time, bestOpponentLapData[1],
                             currentGameState.SessionData.LastSector2Time, bestOpponentLapData[2], currentGameState.SessionData.LastSector3Time, bestOpponentLapData[3]);
                         if (sectorDeltaMessages.Count > 0)
                         {
@@ -711,7 +723,7 @@ namespace CrewChiefV3.Events
                             audioPlayer.playClipImmediately(new QueuedMessage("lapTimeNotRaceGap",
                                 MessageContents(deltaPlayerBestToSessionBestInClass, folderGapOutroOffPace), 0, null), false);
                         }
-                        List<MessageFragment> sectorDeltaMessages = getSectorDeltaMessages(true, currentGameState.SessionData.BestSector1Time, bestOpponentLapData[1],
+                        List<MessageFragment> sectorDeltaMessages = getSectorDeltaMessages(SectorReportOption.ALL_SECTORS, currentGameState.SessionData.BestSector1Time, bestOpponentLapData[1],
                             currentGameState.SessionData.BestSector2Time, bestOpponentLapData[2], currentGameState.SessionData.BestSector3Time, bestOpponentLapData[3]);
                         if (sectorDeltaMessages.Count > 0)
                         {
@@ -733,7 +745,7 @@ namespace CrewChiefV3.Events
             PERSONAL_BEST_STILL_SLOW, CLOSE_TO_OVERALL_LEADER, CLOSE_TO_CLASS_LEADER, CLOSE_TO_PERSONAL_BEST, MEH, NO_DATA
         }
 
-        private List<MessageFragment> getSectorDeltaMessages(Boolean reportAllDeltas, float playerSector1, float comparisonSector1, float playerSector2, 
+        private List<MessageFragment> getSectorDeltaMessages(SectorReportOption reportOption, float playerSector1, float comparisonSector1, float playerSector2, 
             float comparisonSector2, float playerSector3, float comparisonSector3)
         {
             List<MessageFragment> messageFragments = new List<MessageFragment>();
@@ -741,7 +753,7 @@ namespace CrewChiefV3.Events
             {
                 return messageFragments;
             }
-            if (reportAllDeltas)
+            if (reportOption == SectorReportOption.ALL_SECTORS)
             {
                 if (playerSector1 > 0 && comparisonSector1 > 0)
                 {
@@ -837,7 +849,7 @@ namespace CrewChiefV3.Events
                         minDeltaSectorNumber = 3;
                     }
                 }
-                if (minDeltaSectorNumber != 0)
+                if (minDeltaSectorNumber != 0 && reportOption != SectorReportOption.WORST_ONLY)
                 {
                     messageFragments.Add(getSectorDeltaMessageFragment(minDeltaSectorNumber, minDelta));
                 }
@@ -935,6 +947,11 @@ namespace CrewChiefV3.Events
                 }
             }
             return null;
+        }
+
+        private enum SectorReportOption
+        {
+            ALL_SECTORS, BEST_AND_WORST, WORST_ONLY
         }
     }
 }
