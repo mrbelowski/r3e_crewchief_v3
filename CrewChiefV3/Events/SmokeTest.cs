@@ -37,7 +37,7 @@ namespace CrewChiefV3.Events
         override protected void triggerInternal(GameStateData previousGameState, GameStateData currentGameState)
         {
             audioPlayer.queueClip(new QueuedMessage(folderTest, 0, this));
-            
+
             /*List<String> rawDriverNames = new List<string>();
             OpponentData opponent1 = makeTempDriver("haLLunKen henki", rawDriverNames);
             OpponentData opponent2 = makeTempDriver("haLLunKen hipe", rawDriverNames);
@@ -104,6 +104,13 @@ namespace CrewChiefV3.Events
                 QueuedMessage.folderNameNumbersStub + 10, MandatoryPitStops.folderMandatoryPitStopsMinutes), 0, null));
             audioPlayer.queueClip(new QueuedMessage("laps_on_current_tyres", MessageContents(TyreMonitor.folderLapsOnCurrentTyresIntro,
                 QueuedMessage.folderNameNumbersStub + 5, TyreMonitor.folderLapsOnCurrentTyresOutro), 0, this));*/
+            /*audioPlayer.queueClip(new QueuedMessage("sectors1", MessageContents(LapTimes.folderSector1Is, LapTimes.folderSectorFastest,
+                LapTimes.folderSectors2and3Are, LapTimes.folderSectorAFewTenthsOffPace), 0, this));
+            audioPlayer.queueClip(new QueuedMessage("sectors2", MessageContents(LapTimes.folderSector2Is, LapTimes.folderSectorASecondOffPace,
+                            LapTimes.folderSectors1and3Are, LapTimes.folderSectorATenthOffPace), 0, this));
+            audioPlayer.queueClip(new QueuedMessage("sectors3", MessageContents(LapTimes.folderSectorsAllThreeAre, LapTimes.folderSectorMoreThanASecondOffPace), 0, this));
+            */
+
         }
     }
 }
