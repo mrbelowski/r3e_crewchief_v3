@@ -976,7 +976,8 @@ namespace CrewChiefV3.GameState
             float[] bestLapWithSectors =  new float[] { -1, -1, -1, -1 };
             foreach (KeyValuePair<Object, OpponentData> entry in OpponentData)
             {
-                if (entry.Value.CarClass.carClassEnum == carClassToCheck)
+                // don't check car class for PCars - there's no car class data for opponents
+                if (entry.Value.CarClass.carClassEnum == carClassToCheck || CrewChief.gameDefinition.gameEnum != GameEnum.RACE_ROOM)
                 {
                     float[] thisOpponentsBest = entry.Value.getTimeAndSectorsForBestLapInWindow(lapsToCheck);
                     if (bestLapWithSectors[0] == -1 || (thisOpponentsBest[0] > 0 && thisOpponentsBest[0] < bestLapWithSectors[0]))

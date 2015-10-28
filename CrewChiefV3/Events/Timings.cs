@@ -209,7 +209,7 @@ namespace CrewChiefV3.Events
                                 sectorsSinceLastCloseCarBehindReport = 0;
                                 sectorsUntilNextCloseCarBehindReport = rand.Next(5, 7);
                                 audioPlayer.queueClip(new QueuedMessage(folderBeingPressured, 0, this));
-                                gapBehindAtLastReport = gapsInFront[0];
+                                gapBehindAtLastReport = gapsBehind[0];
                             }
                         }
                         else if (gapBehindStatus != GapStatus.NONE && sectorsSinceLastGapBehindReport >= sectorsUntilNextGapBehindReport)
@@ -233,7 +233,7 @@ namespace CrewChiefV3.Events
                                         MessageContents(folderGapBehindDecreasing, gapBehind), 0, this));
                                 }
                             }
-                            gapInFrontAtLastReport = gapsInFront[0];
+                            gapBehindAtLastReport = gapsBehind[0];
                         }
                     }
                 }

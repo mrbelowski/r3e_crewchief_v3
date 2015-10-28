@@ -106,8 +106,8 @@ namespace CrewChiefV3.Events
                 QueuedMessage.folderNameNumbersStub + 5, TyreMonitor.folderLapsOnCurrentTyresOutro), 0, this));*/
             /*audioPlayer.queueClip(new QueuedMessage("sectors1", MessageContents(LapTimes.folderSector1Is, LapTimes.folderSectorFastest,
                 LapTimes.folderSectors2and3Are, LapTimes.folderSectorAFewTenthsOffPace), 0, this));
-            audioPlayer.queueClip(new QueuedMessage("sectors2", MessageContents(LapTimes.folderSector2Is, LapTimes.folderSectorASecondOffPace,
-                            LapTimes.folderSectors1and3Are, LapTimes.folderSectorATenthOffPace), 0, this));
+            audioPlayer.queueClip(new QueuedMessage("sectors2", MessageContents(LapTimes.folderSector2Is, LapTimes.folderSectorFast,
+                            LapTimes.folderSectors1and3Are, LapTimes.folderSectorFastest), 0, this));
             audioPlayer.queueClip(new QueuedMessage("sectors3", MessageContents(LapTimes.folderSectorsAllThreeAre, LapTimes.folderSectorMoreThanASecondOffPace), 0, this));
             audioPlayer.queueClip(new QueuedMessage("sectors4", MessageContents(LapTimes.folderSectors1and2Are, LapTimes.folderSectorFast,
                 LapTimes.folderSector3Is, LapTimes.folderSectorAFewTenthsOffPace), 0, this));
