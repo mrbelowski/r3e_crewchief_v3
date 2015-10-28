@@ -234,6 +234,10 @@ namespace CrewChiefV3.GameState
         public float BestSector2Time = -1;
         public float BestSector3Time = -1;
 
+        public float BestLapSector1Time = -1;
+        public float BestLapSector2Time = -1;
+        public float BestLapSector3Time = -1;
+
         public SessionData()
         {
             SessionTimesAtEndOfSectors.Add(1, -1); 

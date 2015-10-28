@@ -321,6 +321,9 @@ namespace CrewChiefV3.RaceRoom
                     currentGameState.SessionData.BestSector1Time = previousGameState.SessionData.BestSector1Time;
                     currentGameState.SessionData.BestSector2Time = previousGameState.SessionData.BestSector2Time;
                     currentGameState.SessionData.BestSector3Time = previousGameState.SessionData.BestSector3Time;
+                    currentGameState.SessionData.BestLapSector1Time = previousGameState.SessionData.BestLapSector1Time;
+                    currentGameState.SessionData.BestLapSector2Time = previousGameState.SessionData.BestLapSector2Time;
+                    currentGameState.SessionData.BestLapSector3Time = previousGameState.SessionData.BestLapSector3Time;
                 }
             }
 
@@ -359,7 +362,6 @@ namespace CrewChiefV3.RaceRoom
                     currentGameState.SessionData.IsNewSector = participantStruct.track_sector != 0 && currentGameState.SessionData.SectorNumber != participantStruct.track_sector;
                     if (currentGameState.SessionData.IsNewSector)
                     {
-                        // TODO: finish this - bear in mind that the sector times the game provides are cumulative
                         if (participantStruct.track_sector == 1)
                         {
                             if (currentGameState.SessionData.SessionTimesAtEndOfSectors[3] != -1)
@@ -374,6 +376,13 @@ namespace CrewChiefV3.RaceRoom
                                 if (currentGameState.SessionData.BestSector3Time == -1 || currentGameState.SessionData.LastSector3Time < currentGameState.SessionData.BestSector3Time)
                                 {
                                     currentGameState.SessionData.BestSector3Time = currentGameState.SessionData.LastSector3Time;
+                                }
+                                if (currentGameState.SessionData.LapTimePrevious > 0 &&
+                                    (currentGameState.SessionData.PlayerLapTimeSessionBest == -1 || currentGameState.SessionData.LapTimePrevious <= currentGameState.SessionData.PlayerLapTimeSessionBest))
+                                {
+                                    currentGameState.SessionData.BestLapSector1Time = currentGameState.SessionData.LastSector1Time;
+                                    currentGameState.SessionData.BestLapSector2Time = currentGameState.SessionData.LastSector2Time;
+                                    currentGameState.SessionData.BestLapSector3Time = currentGameState.SessionData.LastSector3Time;
                                 }
                             }
                         }

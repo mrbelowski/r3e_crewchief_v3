@@ -440,6 +440,9 @@ namespace CrewChiefV3.PCars
                     currentGameState.SessionData.BestSector1Time = previousGameState.SessionData.BestSector1Time;
                     currentGameState.SessionData.BestSector2Time = previousGameState.SessionData.BestSector2Time;
                     currentGameState.SessionData.BestSector3Time = previousGameState.SessionData.BestSector3Time;
+                    currentGameState.SessionData.BestLapSector1Time = previousGameState.SessionData.BestLapSector1Time;
+                    currentGameState.SessionData.BestLapSector2Time = previousGameState.SessionData.BestLapSector2Time;
+                    currentGameState.SessionData.BestLapSector3Time = previousGameState.SessionData.BestLapSector3Time;
                 }                
             }            
             
@@ -464,6 +467,13 @@ namespace CrewChiefV3.PCars
                         (currentGameState.SessionData.BestSector3Time == -1 || currentGameState.SessionData.LastSector3Time < currentGameState.SessionData.BestSector3Time))
                     {
                         currentGameState.SessionData.BestSector3Time = currentGameState.SessionData.LastSector3Time;
+                    }
+                    if (shared.mLastLapTime > 0 &&
+                        (currentGameState.SessionData.PlayerLapTimeSessionBest == -1 || shared.mLastLapTime <= currentGameState.SessionData.PlayerLapTimeSessionBest))
+                    {
+                        currentGameState.SessionData.BestLapSector1Time = currentGameState.SessionData.LastSector1Time;
+                        currentGameState.SessionData.BestLapSector2Time = currentGameState.SessionData.LastSector2Time;
+                        currentGameState.SessionData.BestLapSector3Time = currentGameState.SessionData.LastSector3Time;
                     }
                 }
                 else if (currentGameState.SessionData.SectorNumber == 2)
