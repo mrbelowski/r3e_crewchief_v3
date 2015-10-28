@@ -919,17 +919,5 @@ namespace CrewChiefV3.Properties {
                 this["report_sector_deltas"] = value;
             }
         }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool report_sector_times {
-            get {
-                return ((bool)(this["report_sector_times"]));
-            }
-            set {
-                this["report_sector_times"] = value;
-            }
-        }
     }
 }

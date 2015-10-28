@@ -10,7 +10,6 @@ namespace CrewChiefV3.Events
     {
         Boolean readLapTimes = UserSettings.GetUserSettings().getBoolean("read_lap_times");
         Boolean reportSectorDeltas = UserSettings.GetUserSettings().getBoolean("report_sector_deltas");
-        Boolean reportSectorTimes = UserSettings.GetUserSettings().getBoolean("report_sector_times");
 
         // for qualifying:
         // "that was a 1:34.2, you're now 0.4 seconds off the pace"
@@ -946,10 +945,6 @@ namespace CrewChiefV3.Events
             float comparisonSector2, float playerSector3, float comparisonSector3)
         {
             List<MessageFragment> messageFragments = new List<MessageFragment>();
-            if (!reportSectorTimes)
-            {
-                return messageFragments;
-            }
             float sector1delta = float.MaxValue;
             float sector2delta = float.MaxValue;
             float sector3delta = float.MaxValue;
@@ -990,7 +985,7 @@ namespace CrewChiefV3.Events
             float comparisonSector2, float playerSector3, float comparisonSector3)
         {
             List<MessageFragment> messageFragments = new List<MessageFragment>();
-            if (!reportSectorTimes)
+            if (!reportSectorDeltas)
             {
                 return messageFragments;
             }

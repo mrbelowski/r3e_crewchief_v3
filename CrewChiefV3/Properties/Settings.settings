@@ -227,8 +227,5 @@
     <Setting Name="report_sector_deltas" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
-    <Setting Name="report_sector_times" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">True</Value>
-    </Setting>
   </Settings>
 </SettingsFile>

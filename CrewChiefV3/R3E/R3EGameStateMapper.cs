@@ -13,6 +13,7 @@ namespace CrewChiefV3.RaceRoom
 {
     public class R3EGameStateMapper : GameStateMapper
     {
+        public static String playerName = null;
         private TimeSpan minimumSessionParticipationTime = TimeSpan.FromSeconds(6);
 
         // for locking / spinning check - the tolerance values are built into these tyre diameter values
@@ -175,6 +176,11 @@ namespace CrewChiefV3.RaceRoom
                         currentGameState.SessionData.IsNewSector = previousGameState == null || participantStruct.track_sector != previousGameState.SessionData.SectorNumber;
                         currentGameState.SessionData.SectorNumber = participantStruct.track_sector;
                         currentGameState.SessionData.DriverRawName = driverName;
+                        if (playerName == null)
+                        {
+                            NameValidator.validateName(driverName);
+                            playerName = driverName;
+                        }
                         currentGameState.PitData.InPitlane = participantStruct.in_pitlane == 1;
                         currentGameState.PositionAndMotionData.DistanceRoundTrack = participantStruct.lap_distance;
                         currentGameState.carClass = CarData.getCarClassForRaceRoomId(participantStruct.driver_info.class_id);

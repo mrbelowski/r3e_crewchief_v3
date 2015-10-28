@@ -2,7 +2,7 @@ CrewChief version 3.
 
 Changelog
 ---------
-Version 3.7.0: Fixed missing gaps to opponent when asking "where's [driver-name]" in Raceroom; Reduce likelihood of incorrect blue flags in Raceroom; Treat terminal damage as race-end and don't play encouragement messages; Reworked 'push now' event - plays warning / encouragement near end of race if there's a chance of position change; Reworked lap time comparisons to give more helpful information - pace etc is based on recent best lap in race; Added sector deltas reporting; Added sector times response ("What are my sector times?" and "What's my last sector time?"); Added some option / prime tyre change stuff for DTM 2014; Added "what tyres is [driver-name / driver position] on?" response (for DTM 2014 and other series with prime / option tyres); Some more driver names. This version requires a new sound pack.
+Version 3.7.0: Fixed missing gaps to opponent when asking "where's [driver-name]" in Raceroom; Reduce likelihood of incorrect blue flags in Raceroom; Treat terminal damage as race-end and don't play encouragement messages; Reworked 'push now' event - plays warning / encouragement near end of race if there's a chance of position change; Reworked lap time comparisons to give more helpful information - pace etc is based on recent best lap in race; Added sector deltas reporting; Added sector times response ("What are my sector times?" and "What's my last sector time?"); Added some option / prime tyre change stuff for DTM 2014; Added "what tyres is [driver-name / driver position] on?" response (for DTM 2014 and other series with prime / option tyres); Some more driver names; Various fixes. This version requires a new sound pack.
 
 Version 3.6.5: Fixed driver name loading in RaceRoom (restarting a race with a different opponent set sometimes left the old driver names in the cache); Make opponent race laptime announcements optional (enable_opponent_laptime_reporting_in_race property, defaults to true); Added some driver names. No new sound pack for this version.
 
@@ -88,6 +88,9 @@ I've not finished implementing this but currently the app understands and respon
 "what's [the car in front / the guy in front / the car ahead / the guy ahead]'s best lap"
 "what's [the car behind / the guy behind]'s last lap"
 "what's [the car behind / the guy behind]'s best lap"
+"what tyre(s) is [opponent driver last name / opponent race position] on" (DTM 2014 only - reports "options" or "primes")
+"what are my sector times"
+"what's my last sector time"
 "who's leading" (this one only works if you have the driver name recording for the lead car)
 "who's [ahead / ahead in the race / in front / in front in the race / behind / behind in the race]" (gives the name of the car in front / behind in the race or on the timing sheet for qual / practice. This one only works if you have the driver name recording for that driver)
 "who's [ahead on track / in front on track / behind on track]" (gives the name of the car in front / behind in on track, regardless of his race / qual position. This one only works if you have the driver name recording for that driver)
