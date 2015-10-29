@@ -112,18 +112,20 @@ namespace CrewChiefV3
         private Boolean backgroundPlayerInitialised = false;
 
         public Boolean initialised = false;
-        
+
         public AudioPlayer(CrewChief crewChief)
         {
             this.crewChief = crewChief;
         }
-        
+
         public void initialise()
         {
             if (soundFolderName.Length > 3 && (soundFolderName.Substring(1, 2) == @":\" || soundFolderName.Substring(1, 2) == @":/"))
             {
                 soundFilesPath = soundFolderName;
-            } else {
+            }
+            else
+            {
                 if (System.Diagnostics.Debugger.IsAttached)
                 {
                     soundFilesPath = Path.Combine(Path.GetDirectoryName(
@@ -135,9 +137,9 @@ namespace CrewChiefV3
                                             System.Reflection.Assembly.GetEntryAssembly().Location), soundFolderName);
                 }
             }
-            
+
             voiceFolderPath = Path.Combine(soundFilesPath, "voice");
-            fxFolderPath = Path.Combine(soundFilesPath , "fx");
+            fxFolderPath = Path.Combine(soundFilesPath, "fx");
             driverNamesFolderPath = Path.Combine(soundFilesPath, "driver_names");
             backgroundFilesPath = Path.Combine(soundFilesPath, "background_sounds");
             Console.WriteLine("Voice dir full path = " + voiceFolderPath);
@@ -157,7 +159,7 @@ namespace CrewChiefV3
             }
             else if (soundPackVersion < minimumSoundPackVersion)
             {
-                Console.WriteLine("The sound pack version in use is " + soundPackVersion + " but this version of the app requires version " 
+                Console.WriteLine("The sound pack version in use is " + soundPackVersion + " but this version of the app requires version "
                     + minimumSoundPackVersion + " or greater.");
                 Console.WriteLine("You must update your sound pack to run this application");
                 return;
@@ -292,9 +294,9 @@ namespace CrewChiefV3
                         }
                     }
                 }
-            }            
+            }
         }
-        
+
         public void cacheDriverNames(List<String> driverNames)
         {
             List<String> namesWithNoSoundFile = new List<string>();
@@ -399,14 +401,15 @@ namespace CrewChiefV3
         public float getSoundPackVersion(DirectoryInfo soundDirectory)
         {
             FileInfo[] filesInSoundDirectory = soundDirectory.GetFiles();
-            
+
             float soundfilesVersion = -1f;
             foreach (FileInfo fileInSoundDirectory in filesInSoundDirectory)
             {
                 if (fileInSoundDirectory.Name == "version_info")
                 {
                     String[] lines = File.ReadAllLines(Path.Combine(soundFilesPath, fileInSoundDirectory.Name));
-                    foreach (String line in lines) {
+                    foreach (String line in lines)
+                    {
                         if (float.TryParse(line, out soundfilesVersion))
                         {
                             return soundfilesVersion;
@@ -451,7 +454,7 @@ namespace CrewChiefV3
             initialiseBackgroundPlayer();
             DateTime nextQueueCheck = DateTime.Now;
             while (monitorRunning)
-            {                
+            {
                 if (requestChannelOpen)
                 {
                     openRadioChannelInternal();
@@ -485,7 +488,7 @@ namespace CrewChiefV3
                         {
                             requestChannelClose = false;
                             holdChannelOpen = false;
-                            closeRadioInternalChannel();                            
+                            closeRadioInternalChannel();
                         }
                     }
                     else
@@ -493,7 +496,7 @@ namespace CrewChiefV3
                         requestChannelClose = false;
                         holdChannelOpen = false;
                     }
-                }                
+                }
                 if (DateTime.Now > nextQueueCheck)
                 {
                     nextQueueCheck = nextQueueCheck.Add(queueMonitorInterval);
@@ -510,12 +513,12 @@ namespace CrewChiefV3
                             queuedClips.Clear();
                         }
                     }
-                } 
+                }
                 else
                 {
                     Thread.Sleep(immediateMessagesMonitorInterval);
                     continue;
-                }                
+                }
             }
             //writeMessagePlayedStats();
             playedMessagesCount.Clear();
@@ -579,22 +582,46 @@ namespace CrewChiefV3
             Boolean oneOrMoreEventsEnabled = false;
             lock (queueToPlay)
             {
+                int willBePlayedCount = queueToPlay.Count;
                 foreach (String key in queueToPlay.Keys)
                 {
                     QueuedMessage queuedMessage = (QueuedMessage)queueToPlay[key];
                     if (isImmediateMessages || queuedMessage.dueTime <= milliseconds)
                     {
+                        Boolean messageHasExpired = queuedMessage.expiryTime != 0 && queuedMessage.expiryTime < milliseconds;
+                        Boolean messageIsStillValid = queuedMessage.isMessageStillValid(key, crewChief.currentGameState);
+                        Boolean queueTooLongForMessage = queuedMessage.maxPermittedQueueLengthForMessage != 0 && willBePlayedCount > queuedMessage.maxPermittedQueueLengthForMessage;
                         if ((isImmediateMessages || !keepQuiet || queuedMessage.playEvenWhenSilenced) && queuedMessage.canBePlayed &&
-                            queuedMessage.isMessageStillValid(key, crewChief.currentGameState) &&
-                            !keysToPlay.Contains(key) && (!queuedMessage.gapFiller || playGapFillerMessage(queueToPlay)) &&
-                            (queuedMessage.expiryTime == 0 || queuedMessage.expiryTime > milliseconds))
+                            messageIsStillValid && !keysToPlay.Contains(key) && !queueTooLongForMessage && !messageHasExpired)
                         {
                             keysToPlay.Add(key);
                         }
                         else
                         {
-                            Console.WriteLine("Clip " + key + " is not valid");
+                            if (!messageIsStillValid)
+                            {
+                                Console.WriteLine("Clip " + key + " is not valid");
+                            }
+                            else if (messageHasExpired)
+                            {
+                                Console.WriteLine("Clip " + key + " has expired");
+                            }
+                            else if (queueTooLongForMessage)
+                            {
+                                List<String> keysToDisplay = new List<string>();
+                                foreach (String keyToDisplay in queueToPlay.Keys)
+                                {
+                                    keysToDisplay.Add(keyToDisplay);
+                                }
+                                Console.WriteLine("Queue is too long to play clip " + key + " max permitted items for this message = "
+                                    + queuedMessage.maxPermittedQueueLengthForMessage + " queue: " + String.Join(", ", keysToDisplay));
+                            }
+                            else if (!queuedMessage.canBePlayed)
+                            {
+                                Console.WriteLine("Clip " + key + " has some missing sound files");
+                            }
                             soundsProcessed.Add(key);
+                            willBePlayedCount--;
                         }
                     }
                 }
@@ -620,7 +647,7 @@ namespace CrewChiefV3
                         oneOrMoreEventsEnabled = true;
                     }
                 }
-            }            
+            }
             Boolean wasInterrupted = false;
             if (oneOrMoreEventsEnabled)
             {
@@ -638,7 +665,7 @@ namespace CrewChiefV3
                     // for queued messages, allow other messages to be inserted into the queue while these are being read
                     openRadioChannelInternal();
                     soundsProcessed.AddRange(playSounds(keysToPlay, isImmediateMessages, out wasInterrupted));
-                }                
+                }
             }
             else
             {
@@ -656,7 +683,7 @@ namespace CrewChiefV3
                         }
                     }
                 }
-            }            
+            }
             if (queueHasDueMessages(queueToPlay, isImmediateMessages) && !wasInterrupted && !isImmediateMessages)
             {
                 Console.WriteLine("There are " + queueToPlay.Count + " more events in the queue, playing them...");
@@ -674,7 +701,7 @@ namespace CrewChiefV3
             else if (queueToCheck.Count == 0)
             {
                 return false;
-            }            
+            }
             else
             {
                 long milliseconds = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
@@ -689,7 +716,7 @@ namespace CrewChiefV3
                     }
                 }
                 return false;
-            }            
+            }
         }
 
         private List<String> playSounds(List<String> eventNames, Boolean isImmediateMessages, out Boolean wasInterrupted)
@@ -762,10 +789,10 @@ namespace CrewChiefV3
                             {
                                 playedMessagesCount.Add(eventName, 1);
                             }
+                            soundsProcessed.Add(eventName);
                         }
-                        soundsProcessed.Add(eventName);
                         playedEventCount++;
-                    }                    
+                    }
                 }
                 else
                 {
@@ -790,7 +817,7 @@ namespace CrewChiefV3
         {
             if (!channelOpen)
             {
-                channelOpen = true;                
+                channelOpen = true;
                 if (getBackgroundVolume() > 0 && loadNewBackground && backgroundToLoad != null && !mute)
                 {
                     Console.WriteLine("Setting background sounds file to  " + backgroundToLoad);
@@ -856,7 +883,7 @@ namespace CrewChiefV3
                         initialiseBackgroundPlayer();
                     }
                     backgroundPlayer.Stop();
-                }                                
+                }
                 channelOpen = false;
             }
             useShortBeepWhenOpeningChannel = false;
@@ -909,15 +936,6 @@ namespace CrewChiefV3
             }
         }
 
-        /**
-         * If this queue only contains a single gap filler message, always play it. If it contains 2
-         * messages we play it 50% of the time. Otherwise it's not played.
-         */
-        private Boolean playGapFillerMessage(OrderedDictionary queueToPlay)
-        {
-            return queueToPlay.Count == 1 || (queueToPlay.Count == 2 && random.NextDouble() >= 0.5);
-        }
-
         public void purgeQueues()
         {
             foreach (KeyValuePair<string, List<SoundPlayer>> entry in clips)
@@ -930,7 +948,8 @@ namespace CrewChiefV3
             lock (queuedClips)
             {
                 ArrayList keysToPurge = new ArrayList(queuedClips.Keys);
-                foreach (String keyStr in keysToPurge) {
+                foreach (String keyStr in keysToPurge)
+                {
                     if (!keyStr.Contains(SessionEndMessages.sessionEndMessageIdentifier))
                     {
                         queuedClips.Remove(keyStr);
@@ -946,7 +965,7 @@ namespace CrewChiefV3
                 immediateClips.Clear();
             }
         }
-        
+
         private void openChannel()
         {
             openChannel(false);
@@ -1055,7 +1074,7 @@ namespace CrewChiefV3
                         }
                     }
                 }
-            }            
+            }
         }
 
         public Boolean removeQueuedClip(String eventName)
@@ -1101,7 +1120,7 @@ namespace CrewChiefV3
                 }
             }
             clips[eventName].Add(clip);
-           // Console.WriteLine("cached clip " + file + " into set " + eventName);
+            // Console.WriteLine("cached clip " + file + " into set " + eventName);
         }
 
         private void backgroundPlayer_MediaEnded(object sender, EventArgs e)

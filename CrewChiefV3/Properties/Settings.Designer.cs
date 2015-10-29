@@ -274,18 +274,6 @@ namespace CrewChiefV3.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool read_lap_times {
-            get {
-                return ((bool)(this["read_lap_times"]));
-            }
-            set {
-                this["read_lap_times"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("-1")]
         public int CHANNEL_OPEN_FUNCTION_button_index {
             get {
@@ -911,12 +899,36 @@ namespace CrewChiefV3.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool report_sector_deltas {
+        public bool report_sector_deltas_race {
             get {
-                return ((bool)(this["report_sector_deltas"]));
+                return ((bool)(this["report_sector_deltas_race"]));
             }
             set {
-                this["report_sector_deltas"] = value;
+                this["report_sector_deltas_race"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool report_sector_deltas_practice_and_qual {
+            get {
+                return ((bool)(this["report_sector_deltas_practice_and_qual"]));
+            }
+            set {
+                this["report_sector_deltas_practice_and_qual"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0.5")]
+        public float report_sector_deltas_race_likelihood {
+            get {
+                return ((float)(this["report_sector_deltas_race_likelihood"]));
+            }
+            set {
+                this["report_sector_deltas_race_likelihood"] = value;
             }
         }
     }

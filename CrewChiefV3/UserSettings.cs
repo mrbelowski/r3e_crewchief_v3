@@ -28,7 +28,6 @@ namespace CrewChiefV3
             propertyHelp.Add("spotter_only_when_being_passed", "Only 'spot' for cars overtaking you");
             propertyHelp.Add("spotter_clear_delay", "You need to be clear for this many milliseconds before the spotter calls 'clear'");
             propertyHelp.Add("spotter_overlap_delay", "You need to be overlapping for this many milliseconds before the spotter calls 'hold your line'");
-            propertyHelp.Add("read_lap_times", "Occasionally read out the player's laptimes when crossing the line");
             propertyHelp.Add("custom_device_guid", "Manually set a controller GUID if the app doesn't display your controller in the devices list");
             propertyHelp.Add("disable_immediate_messages", "Disables all spotter messages and all voice recognition responses. " +
                 "Might allow the app to run in non-interactive mode on slow systems");
@@ -50,6 +49,9 @@ namespace CrewChiefV3
             propertyHelp.Add("minimum_voice_recognition_confidence", "When processing voice commands, the speech recognition engine must be at least this confident it understood before the app responds (0.0 - 1.0, default 0.5)");
             propertyHelp.Add("display_session_lap_times", "Write all the lap times from the completed session to the console (separated by ;)");
             propertyHelp.Add("enable_opponent_laptime_reporting_in_race", "Call out opponent lap times in the race (car front, behind & leader) if the lap time is their best lap.");
+            propertyHelp.Add("report_sector_deltas_race", "Give sector delta information during a race.");
+            propertyHelp.Add("report_sector_deltas_race_likelihood", "Probability of giving a sectors report after each race lap (0 = disabled, 1 = every lap, default 0.3 - 30% chance of sector information on each lap)");
+            propertyHelp.Add("report_sector_deltas_practice_and_qual", "Give sector delta information during practice and qualifying.");
             
         }
 

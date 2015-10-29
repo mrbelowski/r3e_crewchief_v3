@@ -59,10 +59,8 @@ namespace CrewChiefV3
         public static String folderZeroZero = "numbers/zerozero";
         public static String folderSeconds = "numbers/seconds";
         public static String folderSecond = "numbers/second";
-
-
-        // if a queued message is a gap filler, it's only played if the queue only contains 1 other message
-        public Boolean gapFiller = false;
+        
+        public int maxPermittedQueueLengthForMessage = 0;         // 0 => don't check queue length
         public long dueTime;
         public AbstractEvent abstractEvent;
         public String messageName;
