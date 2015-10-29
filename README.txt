@@ -2,6 +2,8 @@ CrewChief version 3.
 
 Changelog
 ---------
+Version 3.7.1: Fixed incorrect comparison lap for 'best lap' messages (wasn't taking player's laps into account); Some fixes in the sector delta and lap times reporting rules. No new sound pack for this version.
+
 Version 3.7.0: Fixed missing gaps to opponent when asking "where's [driver-name]" in Raceroom; Reduce likelihood of incorrect blue flags in Raceroom; Treat terminal damage as race-end and don't play encouragement messages; Reworked 'push now' event - plays warning / encouragement near end of race if there's a chance of position change; Reworked lap time comparisons to give more helpful information - pace etc is based on recent best lap in race; Added sector deltas reporting (still some rough edges to iron out here - the sound files need some work); Added sector times response ("What are my sector times?" and "What's my last sector time?"); Added some option / prime tyre change stuff for DTM 2014; Added "what tyres is [driver-name / driver position] on?" response (for DTM 2014 and other series with prime / option tyres); Some more driver names; Various fixes. This version requires a new sound pack.
 
 Version 3.6.5: Fixed driver name loading in RaceRoom (restarting a race with a different opponent set sometimes left the old driver names in the cache); Make opponent race laptime announcements optional (enable_opponent_laptime_reporting_in_race property, defaults to true); Added some driver names. No new sound pack for this version.

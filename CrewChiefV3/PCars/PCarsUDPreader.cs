@@ -108,7 +108,7 @@ namespace CrewChiefV3.PCars
             int frameLength = 0;
             if (frameType == 0)
             {
-                frameLength = 1347;
+                frameLength = 941;
                 handle = GCHandle.Alloc(rawData.Skip(offset).Take(frameLength).ToArray(), GCHandleType.Pinned);
                 sTelemetryData telem = (sTelemetryData)Marshal.PtrToStructure(handle.AddrOfPinnedObject(), typeof(sTelemetryData));
                 //Console.WriteLine(_pcarsapistruct.mSpeed);
@@ -116,7 +116,7 @@ namespace CrewChiefV3.PCars
             }
             else if (frameType == 1)
             {
-                frameLength = 1028;
+                frameLength = 1347;
                 handle = GCHandle.Alloc(rawData.Skip(offset).Take(frameLength).ToArray(), GCHandleType.Pinned);
                 sParticipantInfoStrings strings = (sParticipantInfoStrings)Marshal.PtrToStructure(handle.AddrOfPinnedObject(), typeof(sParticipantInfoStrings));
                 //Console.WriteLine(_pcarsapistruct.mSpeed);
@@ -124,7 +124,7 @@ namespace CrewChiefV3.PCars
             }
             else if (frameType == 2)
             {
-                frameLength = 941;
+                frameLength = 1028;
                 handle = GCHandle.Alloc(rawData.Skip(offset).Take(frameLength).ToArray(), GCHandleType.Pinned);
                 sParticipantInfoStringsAdditional additional = (sParticipantInfoStringsAdditional)Marshal.PtrToStructure(handle.AddrOfPinnedObject(), typeof(sParticipantInfoStringsAdditional));
                 //Console.WriteLine(_pcarsapistruct.mSpeed);

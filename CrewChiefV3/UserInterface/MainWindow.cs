@@ -96,6 +96,12 @@ namespace CrewChiefV3
                         setFromCommandLine = true;
                         break;
                     }
+                    else if (arg.Equals(GameDefinition.pCarsNetwork.gameEnum.ToString()))
+                    {
+                        this.gameDefinitionList.Text = GameDefinition.pCarsNetwork.friendlyName;
+                        setFromCommandLine = true;
+                        break;
+                    }
                 }
             }
             if (!setFromCommandLine)

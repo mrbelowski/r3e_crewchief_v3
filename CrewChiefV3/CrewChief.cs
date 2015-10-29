@@ -17,7 +17,7 @@ namespace CrewChiefV3
 {
     public class CrewChief : IDisposable
     {
-        public static String Version = "3.7.0";
+        public static String Version = "3.7.1";
 
         public static Boolean loadDataFromFile = false;
 
@@ -340,7 +340,7 @@ namespace CrewChiefV3
                     nextRunTime = DateTime.Now.Add(_timeInterval);
                     if (!loadDataFromFile)
                     {
-                        if (Utilities.IsGameRunning(gameDefinition.processName))
+                        if (gameDefinition.processName == null || Utilities.IsGameRunning(gameDefinition.processName))
                         {
                             if (!mapped)
                             {

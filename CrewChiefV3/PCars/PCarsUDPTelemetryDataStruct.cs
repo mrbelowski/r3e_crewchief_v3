@@ -6,6 +6,12 @@ using System.Text;
 
 namespace CrewChiefV3.PCars
 {
+    // simple type to hold a name, so we can map to an array of these
+    public struct nameString
+    {
+        [MarshalAsAttribute(UnmanagedType.ByValTStr, SizeConst = 64)]
+        string name;
+    }
 
     public struct sParticipantInfoStrings
     {
@@ -19,18 +25,18 @@ namespace CrewChiefV3.PCars
         string	sTrackLocation;	// 195        
         [MarshalAsAttribute(UnmanagedType.ByValTStr, SizeConst = 64)]
         string	sTrackVariation;	// 259
-        [MarshalAsAttribute(UnmanagedType.ByValTStr, SizeConst = 64 * 16)]
-        string	sName;	// 323
+        [MarshalAsAttribute(UnmanagedType.ByValArray, SizeConst = 16)]
+        nameString[]	sName;	// 323
     // 1347
     };
 
-    struct sParticipantInfoStringsAdditional
+    public struct sParticipantInfoStringsAdditional
     {
         ushort	sBuildVersionNumber;	// 0
         byte	sPacketType;	// 2
         byte	sOffset;	// 3
-        [MarshalAsAttribute(UnmanagedType.ByValTStr, SizeConst = 64 * 16)]
-        string	sName;	// 4
+        [MarshalAsAttribute(UnmanagedType.ByValArray, SizeConst = 16)]
+        nameString[] sName;	// 4
         // 1028
     };
     public struct sTelemetryData

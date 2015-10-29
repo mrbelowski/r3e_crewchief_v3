@@ -8,7 +8,7 @@ namespace CrewChiefV3
 {
     public enum GameEnum
     {
-        RACE_ROOM, PCARS_64BIT, PCARS_32BIT
+        RACE_ROOM, PCARS_64BIT, PCARS_32BIT, PCARS_NETWORK
     }
     public class GameDefinition
     {
@@ -21,11 +21,14 @@ namespace CrewChiefV3
         public static GameDefinition raceRoom = new GameDefinition(GameEnum.RACE_ROOM, "Race Room", "RRRE",
             "CrewChiefV3.RaceRoom.R3ESharedMemoryReader", "CrewChiefV3.RaceRoom.R3EGameStateMapper", "CrewChiefV3.RaceRoom.R3ESpotterv2",
             "r3e_launch_exe", "r3e_launch_params", "launch_raceroom");
+        public static GameDefinition pCarsNetwork = new GameDefinition(GameEnum.PCARS_NETWORK, "Project Cars (network data)", null,
+            "CrewChiefV3.PCars.PCarsUDPreader", "CrewChiefV3.PCars.PCarsGameStateMapper", "CrewChiefV3.PCars.PCarsSpotterv2",
+            null, null, null);
 
         public static List<GameDefinition> getAllGameDefinitions()
         {
             List<GameDefinition> definitions = new List<GameDefinition>();
-            definitions.Add(pCars64Bit); definitions.Add(pCars32Bit); definitions.Add(raceRoom);
+            definitions.Add(pCars64Bit); definitions.Add(pCars32Bit); definitions.Add(raceRoom); definitions.Add(pCarsNetwork);
             return definitions;
         }
 
