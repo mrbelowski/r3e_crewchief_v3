@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.MemoryMappedFiles;
 using System.Linq;
+using System.Net;
+using System.Net.Sockets;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
@@ -18,6 +20,12 @@ namespace CrewChiefV3.PCars
         private List<PCarsStructWrapper> dataToDump;
         private PCarsStructWrapper[] dataReadFromFile = null;
         private int dataReadFromFileIndex = 0;
+        private int udpPort = 5606; // TODO: get from properties
+
+        private byte[] receivedDataBuffer;
+
+        private IPEndPoint broadcastAddress;
+        private UdpClient udpClient;
 
         private String dumpFile = "c:/projects/udp.bin";
 
@@ -60,8 +68,40 @@ namespace CrewChiefV3.PCars
             {
                 dataToDump = new List<PCarsStructWrapper>();
             }
+            this.broadcastAddress = new IPEndPoint(IPAddress.Any, udpPort);
+            this.udpClient = new UdpClient();
+            this.udpClient.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
+            this.udpClient.ExclusiveAddressUse = false; // only if you want to send/receive on same machine.
+            this.udpClient.Client.Bind(this.broadcastAddress);
+            this.receivedDataBuffer = new byte[this.udpClient.Client.ReceiveBufferSize];
+            this.udpClient.Client.BeginReceive(this.receivedDataBuffer, 0, this.receivedDataBuffer.Length, SocketFlags.None, ReceiveCallback, this.udpClient.Client);
             initialised = true;
             return true;
+        }
+
+        private void ReceiveCallback(IAsyncResult result)
+        {
+            //Socket was the passed in as the state
+            Socket socket = (Socket)result.AsyncState;
+            try
+            {
+                int received = socket.EndReceive(result);
+                if (received > 0)
+                {
+                    // do something with the data
+                    incorporateNewDataIntoExistingGameView(this.receivedDataBuffer);
+                    //Restablish the callback
+                    socket.BeginReceive(this.receivedDataBuffer, 0, this.receivedDataBuffer.Length, SocketFlags.None, new AsyncCallback(ReceiveCallback), socket);
+                }
+                else
+                {
+                    //Handle error
+                }
+            }
+            catch (Exception e)
+            {
+                //Handle error
+            }
         }
 
         public override Object ReadGameData(Boolean allowRecording)
@@ -99,6 +139,11 @@ namespace CrewChiefV3.PCars
                     throw new GameDataReadException(ex.Message, ex);
                 }
             }            
+        }
+
+        private void incorporateNewDataIntoExistingGameView(byte[] rawData)
+        {
+
         }
 
         private int readFromOffset(int offset, byte[] rawData)
