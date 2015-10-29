@@ -143,7 +143,6 @@ namespace CrewChiefV3.PCars
 
         private void incorporateNewDataIntoExistingGameView(byte[] rawData)
         {
-
         }
 
         private int readFromOffset(int offset, byte[] rawData)

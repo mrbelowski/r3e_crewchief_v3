@@ -170,10 +170,16 @@ namespace CrewChiefV3.Events
                 {
                     if (currentGameState.OpponentData.Count > 0)
                     {
-                        deltaPlayerLastToSessionBestInClass = TimeSpan.FromSeconds(
-                            currentGameState.SessionData.LapTimePrevious - currentGameState.SessionData.OpponentsLapTimeSessionBestPlayerClass);
-                        deltaPlayerLastToSessionBestOverall = TimeSpan.FromSeconds(
-                            currentGameState.SessionData.PlayerLapTimeSessionBest - currentGameState.SessionData.OpponentsLapTimeSessionBestPlayerClass);
+                        if (currentGameState.SessionData.OpponentsLapTimeSessionBestPlayerClass > 0)
+                        {
+                            deltaPlayerLastToSessionBestInClass = TimeSpan.FromSeconds(
+                               currentGameState.SessionData.LapTimePrevious - currentGameState.SessionData.OpponentsLapTimeSessionBestPlayerClass);
+                        }
+                        if (currentGameState.SessionData.OpponentsLapTimeSessionBestOverall > 0)
+                        {
+                            deltaPlayerLastToSessionBestOverall = TimeSpan.FromSeconds(
+                            currentGameState.SessionData.PlayerLapTimeSessionBest - currentGameState.SessionData.OpponentsLapTimeSessionBestOverall);
+                        }
                     }
                     else
                     {
@@ -366,8 +372,12 @@ namespace CrewChiefV3.Events
                                     audioPlayer.queueClip(new QueuedMessage(folderSettingCurrentRacePace, 0, this), PearlsOfWisdom.PearlType.GOOD, pearlLikelihood);
                                     break;
                                 case LastLapRating.CLOSE_TO_CURRENT_PACE:  
-                                    playedLapMessage = true;
-                                    audioPlayer.queueClip(new QueuedMessage(folderMatchingCurrentRacePace, 0, this), PearlsOfWisdom.PearlType.GOOD, pearlLikelihood);
+                                    // don't keep playing this one
+                                    if (random.NextDouble() < 0.5)
+                                    {
+                                        playedLapMessage = true;
+                                        audioPlayer.queueClip(new QueuedMessage(folderMatchingCurrentRacePace, 0, this), PearlsOfWisdom.PearlType.GOOD, pearlLikelihood);                                    
+                                    }
                                     break;
                                 case LastLapRating.PERSONAL_BEST_CLOSE_TO_OVERALL_LEADER:
                                 case LastLapRating.PERSONAL_BEST_CLOSE_TO_CLASS_LEADER:
@@ -381,7 +391,7 @@ namespace CrewChiefV3.Events
                                 case LastLapRating.CLOSE_TO_OVERALL_LEADER:
                                 case LastLapRating.CLOSE_TO_CLASS_LEADER:
                                     // this is an OK lap but not a PB. We only want to say "decent lap" occasionally here
-                                    if (random.NextDouble() > 0.8)
+                                    if (random.NextDouble() < 0.2)
                                     {
                                         playedLapMessage = true;
                                         audioPlayer.queueClip(new QueuedMessage(folderGoodLap, 0, this), PearlsOfWisdom.PearlType.NEUTRAL, pearlLikelihood);

@@ -117,6 +117,8 @@ namespace CrewChiefV3
 
         public MainWindow.VoiceOptionEnum voiceOptionEnum;
 
+        private List<String> driverNamesInUse = new List<string>();
+
         private List<Grammar> opponentGrammarList = new List<Grammar>();
         
         private System.Globalization.CultureInfo cultureInfo;
@@ -273,15 +275,18 @@ namespace CrewChiefV3
         public void addNewOpponentName(String rawDriverName)
         {
             try
-            {
-
+            {                
                 String usableName = DriverNameHelper.getUsableDriverName(rawDriverName, crewChief.audioPlayer.soundFilesPath);
-                Console.WriteLine("Adding opponent name " + rawDriverName + " to speech recogniser, using " + usableName);
                 if (usableName != null && usableName.Length > 0)
                 {
+                    if (driverNamesInUse.Contains(rawDriverName))
+                    {
+                        return;
+                    }
+                    Console.WriteLine("Adding opponent name " + rawDriverName + " to speech recogniser, using " + usableName);
                     crewChief.audioPlayer.cacheDriverName(usableName);
                     if (initialised)
-                    {
+                    {                        
                         Choices opponentChoices = new Choices();
                         opponentChoices.Add(WHERE_IS + " " + usableName);
                         opponentChoices.Add(WHATS + " " + usableName + "'s " + LAST_LAP);
@@ -296,6 +301,7 @@ namespace CrewChiefV3
                         sre.LoadGrammar(newOpponentGrammar);
                         opponentGrammarList.Add(newOpponentGrammar);
                     }
+                    driverNamesInUse.Add(rawDriverName);
                 }
             }
             catch (Exception e)
@@ -306,6 +312,7 @@ namespace CrewChiefV3
 
         public void addOpponentSpeechRecognition(List<String> names, Boolean useNames)
         {
+            driverNamesInUse.Clear();
             Console.WriteLine("adding opponent names to speech recogniser");
             foreach (Grammar opponentGrammar in opponentGrammarList)
             {
@@ -368,6 +375,7 @@ namespace CrewChiefV3
             Grammar newOpponentGrammar = new Grammar(opponentGrammarBuilder);
             sre.LoadGrammar(newOpponentGrammar);
             opponentGrammarList.Add(newOpponentGrammar);
+            driverNamesInUse.AddRange(names);
         }
         
         void sre_SpeechRecognized(object sender, SpeechRecognizedEventArgs e)

@@ -273,7 +273,8 @@ namespace CrewChiefV3
             this.gameDefinitionList.Items.AddRange(new object[] {
             "Project Cars (64 bit)",
             "Project Cars (32 bit)",
-            "Race Room"});
+            "Race Room",
+            "Project Cars (network data)"});
             this.gameDefinitionList.Location = new System.Drawing.Point(782, 26);
             this.gameDefinitionList.Name = "gameDefinitionList";
             this.gameDefinitionList.Size = new System.Drawing.Size(203, 43);

@@ -1163,7 +1163,6 @@ namespace CrewChiefV3.RaceRoom
         {
             if (updateDriverName && driverName != opponentData.DriverRawName)
             {
-                Console.WriteLine("driver swap - " + opponentData.DriverRawName + " has now been replaced with " + driverName);
                 if (CrewChief.enableDriverNames) 
                 {
                     speechRecogniser.addNewOpponentName(driverName);
