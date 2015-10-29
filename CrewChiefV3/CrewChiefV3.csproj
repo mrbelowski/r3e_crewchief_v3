@@ -88,8 +88,10 @@
     <Compile Include="GameDefinition.cs" />
     <Compile Include="NameValidator.cs" />
     <Compile Include="NoisyCartesianCoordinateSpotter.cs" />
+    <Compile Include="PCars\PCarsUDPreader.cs" />
     <Compile Include="PCars\PCarsSpotterv2.cs" />
     <Compile Include="PCars\PCarsSpotter.cs" />
+    <Compile Include="PCars\PCarsUDPTelemetryDataStruct.cs" />
     <Compile Include="R3E\R3ESharedMemoryReader.cs" />
     <Compile Include="GameDataReader.cs" />
     <Compile Include="PCars\PCarsStruct.cs" />
