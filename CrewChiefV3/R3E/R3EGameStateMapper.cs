@@ -597,9 +597,12 @@ namespace CrewChiefV3.RaceRoom
                             }
                             // TODO: fix this properly - hack to work around issue with lagging position updates - 
                             // only allow a blue flag if the 'settled' position and the latest position agree
+
+                            Boolean isInSector1OnOutlap = currentOpponentData.CurrentSectorNumber == 1 &&
+                                (currentOpponentData.getCurrentLapData() != null && currentOpponentData.getCurrentLapData().OutLap);
                             if (currentGameState.SessionData.SessionType == SessionType.Race && currentOpponentData.Position == participantStruct.place &&
-                                (!isEnteringPits || isLeavingPits) && currentGameState.PositionAndMotionData.DistanceRoundTrack != 0 &&
-                                currentOpponentData.Position + 1 < shared.Position &&
+                                !isEnteringPits && !isLeavingPits && currentGameState.PositionAndMotionData.DistanceRoundTrack != 0 &&
+                                currentOpponentData.Position + 1 < shared.Position && !isInSector1OnOutlap && 
                                 isBehindWithinDistance(shared.track_info.length, 8, 80, currentGameState.PositionAndMotionData.DistanceRoundTrack, participantStruct.lap_distance))
                             {
                                 currentGameState.SessionData.Flag = FlagEnum.BLUE;
