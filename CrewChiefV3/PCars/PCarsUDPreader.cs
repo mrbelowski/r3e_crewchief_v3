@@ -7,6 +7,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace CrewChiefV3.PCars
@@ -17,29 +18,29 @@ namespace CrewChiefV3.PCars
         private GCHandle handle;
         private int sharedmemorysize;
         private Boolean initialised = false;
-        private List<PCarsStructWrapper> dataToDump;
-        private PCarsStructWrapper[] dataReadFromFile = null;
+        private List<CrewChiefV3.PCars.PCarsSharedMemoryReader.PCarsStructWrapper> dataToDump;
+        private CrewChiefV3.PCars.PCarsSharedMemoryReader.PCarsStructWrapper[] dataReadFromFile = null;
         private int dataReadFromFileIndex = 0;
         private int udpPort = 5606; // TODO: get from properties
+
+        private pCarsAPIStruct workingGameState = new pCarsAPIStruct();
+        private pCarsAPIStruct currentGameState = new pCarsAPIStruct();
+        private pCarsAPIStruct previousGameState = new pCarsAPIStruct();
 
         private byte[] receivedDataBuffer;
 
         private IPEndPoint broadcastAddress;
         private UdpClient udpClient;
 
-        private String dumpFile = "c:/projects/udp.bin";
+        private byte[] timsDumpFileData = File.ReadAllBytes("c:/projects/udp.bin");
 
-        public class PCarsStructWrapper
-        {
-            public long ticksWhenRead;
-            public pCarsAPIStruct data;
-        }
+        Boolean readFromTimsDumpFile = true;
 
         public override void DumpRawGameData()
         {
             if (dumpToFile && dataToDump != null && dataToDump.Count > 0 && filenameToDump != null)
             {
-                SerializeObject(dataToDump.ToArray<PCarsStructWrapper>(), filenameToDump);
+                SerializeObject(dataToDump.ToArray<CrewChiefV3.PCars.PCarsSharedMemoryReader.PCarsStructWrapper>(), filenameToDump);
             }
         }
 
@@ -48,11 +49,11 @@ namespace CrewChiefV3.PCars
             if (dataReadFromFile == null)
             {
                 dataReadFromFileIndex = 0;
-                dataReadFromFile = DeSerializeObject<PCarsStructWrapper[]>(dataFilesPath + filename);
+                dataReadFromFile = DeSerializeObject<CrewChiefV3.PCars.PCarsSharedMemoryReader.PCarsStructWrapper[]>(dataFilesPath + filename);
             }
             if (dataReadFromFile.Length > dataReadFromFileIndex)
             {
-                PCarsStructWrapper structWrapperData = dataReadFromFile[dataReadFromFileIndex];
+                CrewChiefV3.PCars.PCarsSharedMemoryReader.PCarsStructWrapper structWrapperData = dataReadFromFile[dataReadFromFileIndex];
                 dataReadFromFileIndex++;
                 return structWrapperData;
             }
@@ -64,9 +65,12 @@ namespace CrewChiefV3.PCars
 
         protected override Boolean InitialiseInternal()
         {
+            workingGameState.mVersion = 5;
+            currentGameState.mVersion = 5;
+            previousGameState.mVersion = 5;
             if (dumpToFile)
             {
-                dataToDump = new List<PCarsStructWrapper>();
+                dataToDump = new List<CrewChiefV3.PCars.PCarsSharedMemoryReader.PCarsStructWrapper>();
             }
             this.broadcastAddress = new IPEndPoint(IPAddress.Any, udpPort);
             this.udpClient = new UdpClient();
@@ -75,8 +79,29 @@ namespace CrewChiefV3.PCars
             this.udpClient.Client.Bind(this.broadcastAddress);
             this.receivedDataBuffer = new byte[this.udpClient.Client.ReceiveBufferSize];
             this.udpClient.Client.BeginReceive(this.receivedDataBuffer, 0, this.receivedDataBuffer.Length, SocketFlags.None, ReceiveCallback, this.udpClient.Client);
+
+            if (readFromTimsDumpFile) 
+            {
+                ThreadStart readFileWork = readTimsFile;
+                Thread readFileThread = new Thread(readFileWork);
+                readFileThread.Start();
+            }
             initialised = true;
+
             return true;
+        }
+
+        private void readTimsFile()
+        {
+            int offset = 0;
+            while (offset < timsDumpFileData.Count())
+            {
+                lock (this)
+                {
+                    offset = readFromOffset(offset, timsDumpFileData);
+                    Thread.Sleep(20);
+                }
+            }
         }
 
         private void ReceiveCallback(IAsyncResult result)
@@ -89,14 +114,14 @@ namespace CrewChiefV3.PCars
                 if (received > 0)
                 {
                     // do something with the data
-                    incorporateNewDataIntoExistingGameView(this.receivedDataBuffer);
-                    //Restablish the callback
-                    socket.BeginReceive(this.receivedDataBuffer, 0, this.receivedDataBuffer.Length, SocketFlags.None, new AsyncCallback(ReceiveCallback), socket);
+                    lock (this)
+                    {
+                        // TODO: what's in the header? Is offset 0 correct?
+                        readFromOffset(0, this.receivedDataBuffer);
+                    }                    
                 }
-                else
-                {
-                    //Handle error
-                }
+                //Restablish the callback
+                socket.BeginReceive(this.receivedDataBuffer, 0, this.receivedDataBuffer.Length, SocketFlags.None, new AsyncCallback(ReceiveCallback), socket);
             }
             catch (Exception e)
             {
@@ -106,9 +131,10 @@ namespace CrewChiefV3.PCars
 
         public override Object ReadGameData(Boolean allowRecording)
         {
+            CrewChiefV3.PCars.PCarsSharedMemoryReader.PCarsStructWrapper structWrapper = new CrewChiefV3.PCars.PCarsSharedMemoryReader.PCarsStructWrapper();
+            structWrapper.ticksWhenRead = DateTime.Now.Ticks;
             lock (this)
             {
-                pCarsAPIStruct _pcarsapistruct = new pCarsAPIStruct();
                 if (!initialised)
                 {
                     if (!InitialiseInternal())
@@ -116,33 +142,16 @@ namespace CrewChiefV3.PCars
                         throw new GameDataReadException("Failed to initialise shared memory");
                     }
                 }
-                try
-                {
-                    byte[] data = File.ReadAllBytes(dumpFile);
-                    int offset = 0;
-                    while (offset < data.Count())
-                    {
-                        offset = readFromOffset(offset, data);
-                    }
-                    PCarsStructWrapper structWrapper = new PCarsStructWrapper();
-                    structWrapper.ticksWhenRead = DateTime.Now.Ticks;
-                    structWrapper.data = _pcarsapistruct;
-                    if (allowRecording && dumpToFile && dataToDump != null && _pcarsapistruct.mTrackLocation != null &&
-                        _pcarsapistruct.mTrackLocation.Length > 0)
-                    {
-                        dataToDump.Add(structWrapper);
-                    }
-                    return structWrapper;
-                }
-                catch (Exception ex)
-                {
-                    throw new GameDataReadException(ex.Message, ex);
-                }
-            }            
-        }
-
-        private void incorporateNewDataIntoExistingGameView(byte[] rawData)
-        {
+                previousGameState = currentGameState;
+                currentGameState = StructHelper.ClonePCarsAPIStruct(workingGameState);
+            }
+            structWrapper.data = currentGameState;
+            if (allowRecording && dumpToFile && dataToDump != null && currentGameState.mTrackLocation != null &&
+                currentGameState.mTrackLocation.Length > 0)
+            {
+                dataToDump.Add(structWrapper);
+            }
+            return structWrapper;                       
         }
 
         private int readFromOffset(int offset, byte[] rawData)
@@ -155,7 +164,7 @@ namespace CrewChiefV3.PCars
                 frameLength = 941;
                 handle = GCHandle.Alloc(rawData.Skip(offset).Take(frameLength).ToArray(), GCHandleType.Pinned);
                 sTelemetryData telem = (sTelemetryData)Marshal.PtrToStructure(handle.AddrOfPinnedObject(), typeof(sTelemetryData));
-                //Console.WriteLine(_pcarsapistruct.mSpeed);
+                workingGameState = StructHelper.MergeWithExistingState(workingGameState, telem);
                 handle.Free();
             }
             else if (frameType == 1)
@@ -163,7 +172,7 @@ namespace CrewChiefV3.PCars
                 frameLength = 1347;
                 handle = GCHandle.Alloc(rawData.Skip(offset).Take(frameLength).ToArray(), GCHandleType.Pinned);
                 sParticipantInfoStrings strings = (sParticipantInfoStrings)Marshal.PtrToStructure(handle.AddrOfPinnedObject(), typeof(sParticipantInfoStrings));
-                //Console.WriteLine(_pcarsapistruct.mSpeed);
+                workingGameState = StructHelper.MergeWithExistingState(workingGameState, strings);
                 handle.Free();
             }
             else if (frameType == 2)
@@ -171,7 +180,7 @@ namespace CrewChiefV3.PCars
                 frameLength = 1028;
                 handle = GCHandle.Alloc(rawData.Skip(offset).Take(frameLength).ToArray(), GCHandleType.Pinned);
                 sParticipantInfoStringsAdditional additional = (sParticipantInfoStringsAdditional)Marshal.PtrToStructure(handle.AddrOfPinnedObject(), typeof(sParticipantInfoStringsAdditional));
-                //Console.WriteLine(_pcarsapistruct.mSpeed);
+                workingGameState = StructHelper.MergeWithExistingState(workingGameState, additional);
                 handle.Free();
             }
             return frameLength + offset;

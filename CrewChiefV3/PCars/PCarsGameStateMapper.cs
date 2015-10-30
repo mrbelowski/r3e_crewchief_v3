@@ -526,7 +526,7 @@ namespace CrewChiefV3.PCars
                 if (i != playerDataIndex)
                 {
                     pCarsAPIParticipantStruct participantStruct = shared.mParticipantData[i];
-                    if (currentGameState.OpponentData.ContainsKey(participantStruct.mName))
+                    if (participantStruct.mName != null && currentGameState.OpponentData.ContainsKey(participantStruct.mName))
                     {
                         OpponentData currentOpponentData = currentGameState.OpponentData[participantStruct.mName];
                         if (currentOpponentData.IsActive && participantStruct.mIsActive)

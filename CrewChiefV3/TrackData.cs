@@ -72,22 +72,57 @@ namespace CrewChiefV3
 
         public static TrackDefinition getTrackDefinition(String trackName, float trackLength, GameEnum game)
         {
-            if (game == GameEnum.PCARS_32BIT || game == GameEnum.PCARS_64BIT)
+            if (game == GameEnum.PCARS_32BIT || game == GameEnum.PCARS_64BIT || game == GameEnum.PCARS_NETWORK)
             {
                 foreach (TrackDefinition def in pCarsTracks)
                 {
-                    if (def.name == trackName || def.trackLength == trackLength)
+                    if (def.name == trackName)
                     {
                         return def;
                     }
+                } 
+                return getDefinitionForLength(trackLength);
+            }
+            else
+            {
+                // don't get raceroom tracks by track length - pcars and raceroom disagree wildly on track lengths
+                // TODO: use the raceroom ID to map this
+                return new TrackDefinition("unknown track", trackLength); 
+            }
+        }
+
+        private static TrackDefinition getDefinitionForLength(float trackLength)
+        {
+            TrackDefinition closestLengthDef = null;
+            float closestLengthDifference = float.MaxValue;
+            foreach (TrackDefinition def in pCarsTracks)
+            {
+                if (def.trackLength == trackLength)
+                {
+                    return def;
+                }
+                else
+                {
+                    float thisDiff = Math.Abs(trackLength - def.trackLength) ;
+                    if (closestLengthDef == null || thisDiff < closestLengthDifference)
+                    {
+                        closestLengthDef = def;
+                        closestLengthDifference = thisDiff;
+                    }
                 }
             }
-            else if (game == GameEnum.RACE_ROOM)
+            if (closestLengthDef == null)
             {
-                // TODO: all the track and layout ID mappings for RaceRoom
                 return new TrackDefinition("unknown track", trackLength);
             }
-            return null;
+            else
+            {
+                if (closestLengthDef != null)
+                {
+                    Console.WriteLine("best track guess is " + closestLengthDef.name + ", length error = " + closestLengthDifference);
+                }
+                return closestLengthDef;
+            }
         }
     }
 

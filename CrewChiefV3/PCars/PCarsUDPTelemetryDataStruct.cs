@@ -10,196 +10,196 @@ namespace CrewChiefV3.PCars
     public struct nameString
     {
         [MarshalAsAttribute(UnmanagedType.ByValTStr, SizeConst = 64)]
-        string name;
+        public string name;
     }
 
     public struct sParticipantInfoStrings
     {
-        ushort	sBuildVersionNumber;	// 0
-        byte	sPacketType;	// 2
+        public ushort sBuildVersionNumber;	// 0
+        public byte sPacketType;	// 2
         [MarshalAsAttribute(UnmanagedType.ByValTStr, SizeConst = 64)]
-        string	sCarName;	// 3
+        public string sCarName;	// 3
         [MarshalAsAttribute(UnmanagedType.ByValTStr, SizeConst = 64)]
-        string	sCarClassName;	// 131
+        public string sCarClassName;	// 131
         [MarshalAsAttribute(UnmanagedType.ByValTStr, SizeConst = 64)]
-        string	sTrackLocation;	// 195        
+        public string sTrackLocation;	// 195        
         [MarshalAsAttribute(UnmanagedType.ByValTStr, SizeConst = 64)]
-        string	sTrackVariation;	// 259
+        public string	sTrackVariation;	// 259
         [MarshalAsAttribute(UnmanagedType.ByValArray, SizeConst = 16)]
-        nameString[]	sName;	// 323
+        public nameString[]	sName;	// 323
     // 1347
     };
 
     public struct sParticipantInfoStringsAdditional
     {
-        ushort	sBuildVersionNumber;	// 0
-        byte	sPacketType;	// 2
-        byte	sOffset;	// 3
+        public ushort sBuildVersionNumber;	// 0
+        public byte sPacketType;	// 2
+        public byte sOffset;	// 3
         [MarshalAsAttribute(UnmanagedType.ByValArray, SizeConst = 16)]
-        nameString[] sName;	// 4
+        public nameString[] sName;	// 4
         // 1028
     };
     public struct sTelemetryData
     {
-        ushort	sBuildVersionNumber;	// 0
-        byte	sPacketType;	// 2
+        public ushort sBuildVersionNumber;	// 0
+        public byte sPacketType;	// 2
 
         // Game states
-        byte	sGameSessionState;	// 3
+        public byte sGameSessionState;	// 3
 
         // Participant info
-        sbyte	sViewedParticipantIndex;	// 4
-        sbyte	sNumParticipants;	// 5
+        public sbyte sViewedParticipantIndex;	// 4
+        public sbyte sNumParticipants;	// 5
 
         // Unfiltered input
-        byte	sUnfilteredThrottle;	// 6
-        byte	sUnfilteredBrake;	// 7
-        sbyte	sUnfilteredSteering;	// 8
-        byte	sUnfilteredClutch;	// 9
-        byte	sRaceStateFlags;	// 10
+        public byte sUnfilteredThrottle;	// 6
+        public byte sUnfilteredBrake;	// 7
+        public sbyte sUnfilteredSteering;	// 8
+        public byte sUnfilteredClutch;	// 9
+        public byte sRaceStateFlags;	// 10
 
         // Event information
-        byte	sLapsInEvent;	// 11
+        public byte sLapsInEvent;	// 11
 
         // Timings
-        Single	sBestLapTime;	// 12
-        Single	sLastLapTime;	// 16
-        Single	sCurrentTime;	// 20
-        Single	sSplitTimeAhead;	// 24
-        Single	sSplitTimeBehind;	// 28
-        Single	sSplitTime;	// 32
-        Single	sEventTimeRemaining;	// 36
-        Single	sPersonalFastestLapTime;	// 40
-        Single	sWorldFastestLapTime;	// 44
-        Single	sCurrentSector1Time;	// 48
-        Single	sCurrentSector2Time;	// 52
-        Single	sCurrentSector3Time;	// 56
-        Single	sFastestSector1Time;	// 60
-        Single	sFastestSector2Time;	// 64
-        Single	sFastestSector3Time;	// 68
-        Single	sPersonalFastestSector1Time;	// 72
-        Single	sPersonalFastestSector2Time;	// 76
-        Single	sPersonalFastestSector3Time;	// 80
-        Single	sWorldFastestSector1Time;	// 84
-        Single	sWorldFastestSector2Time;	// 88
-        Single	sWorldFastestSector3Time;	// 92
+        public Single sBestLapTime;	// 12
+        public Single sLastLapTime;	// 16
+        public Single sCurrentTime;	// 20
+        public Single sSplitTimeAhead;	// 24
+        public Single sSplitTimeBehind;	// 28
+        public Single sSplitTime;	// 32
+        public Single sEventTimeRemaining;	// 36
+        public Single sPersonalFastestLapTime;	// 40
+        public Single sWorldFastestLapTime;	// 44
+        public Single sCurrentSector1Time;	// 48
+        public Single sCurrentSector2Time;	// 52
+        public Single sCurrentSector3Time;	// 56
+        public Single sFastestSector1Time;	// 60
+        public Single sFastestSector2Time;	// 64
+        public Single sFastestSector3Time;	// 68
+        public Single sPersonalFastestSector1Time;	// 72
+        public Single sPersonalFastestSector2Time;	// 76
+        public Single sPersonalFastestSector3Time;	// 80
+        public Single sWorldFastestSector1Time;	// 84
+        public Single sWorldFastestSector2Time;	// 88
+        public Single sWorldFastestSector3Time;	// 92
 
-        ushort	sTrackLength;	// 96
+        public ushort sTrackLength;	// 96
 
         // Flags
-        byte	sHighestFlag;	// 98
+        public byte sHighestFlag;	// 98
 
         // Pit info
-        byte	sPitModeSchedule;	// 99
+        public byte sPitModeSchedule;	// 99
 
         // Car state
-        short	sOilTempCelsius;	// 100
-        ushort	sOilPressureKPa;	// 102
-        short	sWaterTempCelsius;	// 104
-        ushort	sWaterPressureKpa;	// 106
-        ushort	sFuelPressureKpa;	// 108
-        byte	sCarFlags;	// 110
-        byte	sFuelCapacity;	// 111
-        byte	sBrake;	// 112
-        byte	sThrottle;	// 113
-        byte	sClutch;	// 114
-        sbyte	sSteering;	// 115
-        Single	sFuelLevel;	// 116
-        Single	sSpeed;	// 120
-        ushort	sRpm;	// 124
-        ushort	sMaxRpm;	// 126
-        byte	sGearNumGears;	// 128
-        sbyte	sLastOpponentCollisionIndex;	// 129
+        public short sOilTempCelsius;	// 100
+        public ushort sOilPressureKPa;	// 102
+        public short sWaterTempCelsius;	// 104
+        public ushort sWaterPressureKpa;	// 106
+        public ushort sFuelPressureKpa;	// 108
+        public byte sCarFlags;	// 110
+        public byte sFuelCapacity;	// 111
+        public byte sBrake;	// 112
+        public byte sThrottle;	// 113
+        public byte sClutch;	// 114
+        public sbyte sSteering;	// 115
+        public Single sFuelLevel;	// 116
+        public Single sSpeed;	// 120
+        public ushort sRpm;	// 124
+        public ushort sMaxRpm;	// 126
+        public byte sGearNumGears;	// 128
+        public sbyte sLastOpponentCollisionIndex;	// 129
 
-        byte	sLastOpponentCollisionMagnitude;	// 130
-        byte	sBoostAmount;	// 131
+        public byte sLastOpponentCollisionMagnitude;	// 130
+        public byte sBoostAmount;	// 131
 
-        Single	sOdometerKM;	// 132
+        public Single sOdometerKM;	// 132
         [MarshalAsAttribute(UnmanagedType.ByValArray, SizeConst = 3)]
-        Single[]	sOrientation;	// 136
+        public Single[] sOrientation;	// 136
         [MarshalAsAttribute(UnmanagedType.ByValArray, SizeConst = 3)]
-        Single[]	sLocalVelocity;	// 148
+        public Single[] sLocalVelocity;	// 148
         [MarshalAsAttribute(UnmanagedType.ByValArray, SizeConst = 3)]
-        Single[] sWorldVelocity;	// 160
+        public Single[] sWorldVelocity;	// 160
         [MarshalAsAttribute(UnmanagedType.ByValArray, SizeConst = 3)]
-        Single[] sAngularVelocity;	// 172
+        public Single[] sAngularVelocity;	// 172
         [MarshalAsAttribute(UnmanagedType.ByValArray, SizeConst = 3)]
-        Single[] sLocalAcceleration;	// 184
+        public Single[] sLocalAcceleration;	// 184
         [MarshalAsAttribute(UnmanagedType.ByValArray, SizeConst = 3)]
-        Single[] sWorldAcceleration;	// 196
+        public Single[] sWorldAcceleration;	// 196
         [MarshalAsAttribute(UnmanagedType.ByValArray, SizeConst = 3)]
-        Single[] sExtentsCentre;	// 208
+        public Single[] sExtentsCentre;	// 208
 
         // Wheels / Tyres
         [MarshalAsAttribute(UnmanagedType.ByValArray, SizeConst = 4)]
-        byte[] sTyreFlags;	// 220
+        public byte[] sTyreFlags;	// 220
         [MarshalAsAttribute(UnmanagedType.ByValArray, SizeConst = 4)]
-        byte[] sTerrain;	// 224
+        public byte[] sTerrain;	// 224
         [MarshalAsAttribute(UnmanagedType.ByValArray, SizeConst = 4)]
-        Single[] sTyreY;	// 228
+        public Single[] sTyreY;	// 228
         [MarshalAsAttribute(UnmanagedType.ByValArray, SizeConst = 4)]
-        Single[] sTyreRPS;	// 244
+        public Single[] sTyreRPS;	// 244
         [MarshalAsAttribute(UnmanagedType.ByValArray, SizeConst = 4)]
-        Single[] sTyreSlipSpeed;	// 260
+        public Single[] sTyreSlipSpeed;	// 260
         [MarshalAsAttribute(UnmanagedType.ByValArray, SizeConst = 4)]
-        byte[] sTyreTemp;	// 276
+        public byte[] sTyreTemp;	// 276
         [MarshalAsAttribute(UnmanagedType.ByValArray, SizeConst = 4)]
-        byte[] sTyreGrip;	// 280
+        public byte[] sTyreGrip;	// 280
         [MarshalAsAttribute(UnmanagedType.ByValArray, SizeConst = 4)]
-        Single[] sTyreHeightAboveGround;	// 284
+        public Single[] sTyreHeightAboveGround;	// 284
         [MarshalAsAttribute(UnmanagedType.ByValArray, SizeConst = 4)]
-        Single[] sTyreLateralStiffness;	// 300
+        public Single[] sTyreLateralStiffness;	// 300
         [MarshalAsAttribute(UnmanagedType.ByValArray, SizeConst = 4)]
-        byte[] sTyreWear;	// 316
+        public byte[] sTyreWear;	// 316
         [MarshalAsAttribute(UnmanagedType.ByValArray, SizeConst = 4)]
-        byte[] sBrakeDamage;	// 320
+        public byte[] sBrakeDamage;	// 320
         [MarshalAsAttribute(UnmanagedType.ByValArray, SizeConst = 4)]
-        byte[] sSuspensionDamage;	// 324
+        public byte[] sSuspensionDamage;	// 324
         [MarshalAsAttribute(UnmanagedType.ByValArray, SizeConst = 4)]
-        short[] sBrakeTempCelsius;	// 328
+        public short[] sBrakeTempCelsius;	// 328
         [MarshalAsAttribute(UnmanagedType.ByValArray, SizeConst = 4)]
-        ushort[] sTyreTreadTemp;	// 336
+        public ushort[] sTyreTreadTemp;	// 336
         [MarshalAsAttribute(UnmanagedType.ByValArray, SizeConst = 4)]
-        ushort[] sTyreLayerTemp;	// 344
+        public ushort[] sTyreLayerTemp;	// 344
         [MarshalAsAttribute(UnmanagedType.ByValArray, SizeConst = 4)]
-        ushort[] sTyreCarcassTemp;	// 352
+        public ushort[] sTyreCarcassTemp;	// 352
         [MarshalAsAttribute(UnmanagedType.ByValArray, SizeConst = 4)]
-        ushort[] sTyreRimTemp;	// 360
+        public ushort[] sTyreRimTemp;	// 360
         [MarshalAsAttribute(UnmanagedType.ByValArray, SizeConst = 4)]
-        ushort[] sTyreInternalAirTemp;	// 368
+        public ushort[] sTyreInternalAirTemp;	// 368
 
 
         // Car damage
-        byte	sCrashState;	// 376
-        byte	sAeroDamage;	// 377
-        byte	sEngineDamage;	// 378
+        public byte sCrashState;	// 376
+        public byte sAeroDamage;	// 377
+        public byte sEngineDamage;	// 378
 
         // Weather
-        sbyte	sAmbientTemperature;	// 379
-        sbyte	sTrackTemperature;	// 380
-        byte	sRainDensity;	// 381
-        sbyte	sWindSpeed;	// 382
-        sbyte	sWindDirectionX;	// 383
-        sbyte	sWindDirectionY;	// 384
-        byte	sCloudBrightness;	// 385
+        public sbyte sAmbientTemperature;	// 379
+        public sbyte sTrackTemperature;	// 380
+        public byte sRainDensity;	// 381
+        public sbyte sWindSpeed;	// 382
+        public sbyte sWindDirectionX;	// 383
+        public sbyte sWindDirectionY;	// 384
+        public byte sCloudBrightness;	// 385
 
         // Buttons
 
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 46)]
-        sParticipantInfo[] sParticipantInfo;	// 386
+        public sParticipantInfo[] sParticipantInfo;	// 386
         // 46*12=552
-        ushort	sJoyPad;	// 938
-        byte	sDPad;	// 940
+        public ushort sJoyPad;	// 938
+        public byte sDPad;	// 940
     }
-    struct sParticipantInfo
+    public struct sParticipantInfo
     {
         [MarshalAsAttribute(UnmanagedType.ByValArray, SizeConst = 3)]
-        short[]	sWorldPosition;	// 0
-        ushort	sCurrentLapDistance;	// 6
-        byte	sRacePosition;	// 8
-        byte	sLapsCompleted;	// 9
-        byte	sCurrentLap;	// 10
-        byte	sSector;	// 11
+        public short[] sWorldPosition;	// 0
+        public ushort sCurrentLapDistance;	// 6
+        public byte sRacePosition;	// 8
+        public byte sLapsCompleted;	// 9
+        public byte sCurrentLap;	// 10
+        public byte sSector;	// 11
         // 12
         };
 

@@ -23,17 +23,225 @@ namespace CrewChiefV3.PCars
             }
         }
 
-        public static void MergeWithExistingState(pCarsAPIStruct existingState, sTelemetryData udpTelemetryData)
+        public static pCarsAPIStruct MergeWithExistingState(pCarsAPIStruct existingState, sTelemetryData udpTelemetryData)
         {
+            existingState.mGameState = (uint) udpTelemetryData.sGameSessionState & 7;
+            existingState.mSessionState = (uint) udpTelemetryData.sGameSessionState >> 3 & 7;
+            existingState.mRaceState = (uint) udpTelemetryData.sRaceStateFlags & 7;
+
+            // Participant Info
+            existingState.mViewedParticipantIndex = udpTelemetryData.sViewedParticipantIndex;
+            existingState.mNumParticipants = udpTelemetryData.sNumParticipants;            
+
+            // Unfiltered Input
+            existingState.mUnfilteredThrottle = udpTelemetryData.sUnfilteredThrottle / 255;
+            existingState.mUnfilteredBrake = udpTelemetryData.sUnfilteredBrake / 255;
+            existingState.mUnfilteredSteering = udpTelemetryData.sUnfilteredSteering / 255;
+            existingState.mUnfilteredClutch = udpTelemetryData.sUnfilteredClutch / 255;
+
+            existingState.mLapsInEvent = udpTelemetryData.sLapsInEvent;
+            existingState.mTrackLength = udpTelemetryData.sTrackLength; 
+
+            // Timing & Scoring
+            existingState.mLapInvalidated = (udpTelemetryData.sRaceStateFlags >> 3 & 1) == 1;
+            //existingState.mSessionFastestLapTime = udpTelemetryData. *************** UNDEFINED ***************; 
+            existingState.mLastLapTime = udpTelemetryData.sLastLapTime;
+            existingState.mCurrentTime = udpTelemetryData.sCurrentTime;
+            existingState.mSplitTimeAhead = udpTelemetryData.sSplitTimeAhead;
+            existingState.mSplitTimeBehind = udpTelemetryData.sSplitTimeBehind;
+            existingState.mSplitTime = udpTelemetryData.sSplitTime;
+            existingState.mEventTimeRemaining = udpTelemetryData.sEventTimeRemaining; 
+            existingState.mPersonalFastestLapTime = udpTelemetryData.sPersonalFastestLapTime;
+            existingState.mWorldFastestLapTime = udpTelemetryData.sWorldFastestLapTime;
+            existingState.mCurrentSector1Time = udpTelemetryData.sCurrentSector1Time;
+            existingState.mCurrentSector2Time = udpTelemetryData.sCurrentSector2Time; 
+            existingState.mCurrentSector3Time = udpTelemetryData.sCurrentSector3Time; 
+            existingState.mSessionFastestSector1Time = udpTelemetryData.sFastestSector1Time; 
+            existingState.mSessionFastestSector2Time = udpTelemetryData.sFastestSector2Time; 
+            existingState.mSessionFastestSector3Time = udpTelemetryData.sFastestSector3Time; 
+            existingState.mPersonalFastestSector1Time = udpTelemetryData.sPersonalFastestSector1Time; 
+            existingState.mPersonalFastestSector2Time = udpTelemetryData.sPersonalFastestSector2Time; 
+            existingState.mPersonalFastestSector3Time = udpTelemetryData.sPersonalFastestSector3Time;
+            existingState.mWorldFastestSector1Time = udpTelemetryData.sWorldFastestSector1Time; 
+            existingState.mWorldFastestSector2Time = udpTelemetryData.sWorldFastestSector2Time;
+            existingState.mWorldFastestSector3Time = udpTelemetryData.sWorldFastestSector3Time;
+
+            // Flags
+            existingState.mHighestFlagColour = (uint) udpTelemetryData.sHighestFlag & 7; 
+            existingState.mHighestFlagReason = (uint) udpTelemetryData.sHighestFlag >> 3 & 4;
+
+            // Pit Info
+            existingState.mPitMode = (uint) udpTelemetryData.sPitModeSchedule & 7;
+            existingState.mPitSchedule = (uint) udpTelemetryData.sPitModeSchedule >> 3 & 4;
+
+            // Car State
+            existingState.mCarFlags = udpTelemetryData.sCarFlags;
+            existingState.mOilTempCelsius = udpTelemetryData.sOilTempCelsius; 
+            existingState.mOilPressureKPa = udpTelemetryData.sOilPressureKPa; 
+            existingState.mWaterTempCelsius = udpTelemetryData.sWaterTempCelsius; 
+            existingState.mWaterPressureKPa = udpTelemetryData.sWaterPressureKpa;
+            existingState.mFuelPressureKPa = udpTelemetryData.sFuelPressureKpa;
+            existingState.mFuelLevel = udpTelemetryData.sFuelLevel;
+            existingState.mFuelCapacity = udpTelemetryData.sFuelCapacity; 
+            existingState.mSpeed = udpTelemetryData.sSpeed; 
+            existingState.mRPM = udpTelemetryData.sRpm;
+            existingState.mMaxRPM = udpTelemetryData.sMaxRpm;
+            existingState.mBrake = udpTelemetryData.sBrake / 255;
+            existingState.mThrottle = udpTelemetryData.sThrottle / 255;
+            existingState.mClutch = udpTelemetryData.sClutch / 255;
+            existingState.mSteering = udpTelemetryData.sSteering / 127; 
+            // existingState.mGear = udpTelemetryData. **************** TODO **************************; 
+            // existingState.mNumGears = udpTelemetryData.**************** TODO **************************;
+            existingState.mOdometerKM = udpTelemetryData.sOdometerKM;                               
+            existingState.mAntiLockActive = (udpTelemetryData.sRaceStateFlags >> 4 & 1) == 1;
+            existingState.mLastOpponentCollisionIndex = udpTelemetryData.sLastOpponentCollisionIndex; 
+            existingState.mLastOpponentCollisionMagnitude = udpTelemetryData.sLastOpponentCollisionMagnitude; 
+            existingState.mBoostActive = (udpTelemetryData.sRaceStateFlags >> 5 & 1) == 1;
+            existingState.mBoostAmount = udpTelemetryData.sBoostAmount;
+
+            // Motion & Device Related
+            existingState.mOrientation = udpTelemetryData.sOrientation; 
+            existingState.mLocalVelocity = udpTelemetryData.sLocalVelocity;
+            existingState.mWorldVelocity = udpTelemetryData.sWorldVelocity;
+            existingState.mAngularVelocity = udpTelemetryData.sAngularVelocity;
+            existingState.mLocalAcceleration = udpTelemetryData.sLocalAcceleration;
+            existingState.mWorldAcceleration = udpTelemetryData.sWorldAcceleration;
+            existingState.mExtentsCentre = udpTelemetryData.sExtentsCentre; 
+            existingState.mTyreFlags = toUIntArray(udpTelemetryData.sTyreFlags); 
+            existingState.mTerrain = toUIntArray(udpTelemetryData.sTerrain);
+            existingState.mTyreY = udpTelemetryData.sTyreY;
+            existingState.mTyreRPS = udpTelemetryData.sTyreRPS;
+            existingState.mTyreSlipSpeed = udpTelemetryData.sTyreSlipSpeed;
+            existingState.mTyreTemp = toFloatArray(udpTelemetryData.sTyreTemp, 255); 
+            existingState.mTyreGrip = toFloatArray(udpTelemetryData.sTyreGrip, 255);
+            existingState.mTyreHeightAboveGround = udpTelemetryData.sTyreHeightAboveGround;
+            existingState.mTyreLateralStiffness = udpTelemetryData.sTyreLateralStiffness;
+            existingState.mTyreWear = toFloatArray(udpTelemetryData.sTyreWear, 255); 
+            existingState.mBrakeDamage = toFloatArray(udpTelemetryData.sBrakeDamage, 255);
+            existingState.mSuspensionDamage = toFloatArray(udpTelemetryData.sSuspensionDamage, 255);    
+            existingState.mBrakeTempCelsius = toFloatArray(udpTelemetryData.sBrakeTempCelsius, 1);
+            existingState.mTyreTreadTemp = toFloatArray(udpTelemetryData.sTyreTreadTemp, 1);            
+            existingState.mTyreLayerTemp = toFloatArray(udpTelemetryData.sTyreLayerTemp, 1); 
+            existingState.mTyreCarcassTemp = toFloatArray(udpTelemetryData.sTyreCarcassTemp, 1); 
+            existingState.mTyreRimTemp = toFloatArray(udpTelemetryData.sTyreRimTemp, 1);    
+            existingState.mTyreInternalAirTemp = toFloatArray(udpTelemetryData.sTyreInternalAirTemp, 1);   
+            // Car Damage
+            existingState.mCrashState = udpTelemetryData.sCrashState; 
+            existingState.mAeroDamage = udpTelemetryData.sAeroDamage / 255;  
+            existingState.mEngineDamage = udpTelemetryData.sEngineDamage / 255; 
+
+            // Weather
+            existingState.mAmbientTemperature = udpTelemetryData.sAmbientTemperature / 127;
+            existingState.mTrackTemperature = udpTelemetryData.sTrackTemperature / 127;
+            existingState.mRainDensity = udpTelemetryData.sRainDensity / 255;         
+            existingState.mWindSpeed = udpTelemetryData.sWindSpeed / 255;
+            existingState.mWindDirectionX = udpTelemetryData.sWindDirectionX / 127;
+            existingState.mWindDirectionY = udpTelemetryData.sWindDirectionY / 127;
+            existingState.mCloudBrightness = udpTelemetryData.sCloudBrightness / 255;
+
+            if (existingState.mParticipantData == null)
+            {
+                existingState.mParticipantData = new pCarsAPIParticipantStruct[udpTelemetryData.sParticipantInfo.Count()];
+            }
+            for (int i = 0; i < udpTelemetryData.sParticipantInfo.Count(); i++) 
+            {
+                sParticipantInfo newPartInfo = udpTelemetryData.sParticipantInfo[i];
+                pCarsAPIParticipantStruct existingPartInfo = existingState.mParticipantData[i];
+                if (existingPartInfo.mIsActive) 
+                {
+                    existingPartInfo.mCurrentLap = newPartInfo.sCurrentLap;
+                    existingPartInfo.mCurrentLapDistance = newPartInfo.sCurrentLapDistance;
+                    existingPartInfo.mLapsCompleted = newPartInfo.sLapsCompleted;
+                    existingPartInfo.mRacePosition = newPartInfo.sRacePosition;
+                    existingPartInfo.mWorldPosition = toFloatArray(newPartInfo.sWorldPosition, 1);
+                }
+                else
+                {
+                    existingPartInfo.mWorldPosition = new float[] { 0, 0, 0 };
+                }
+                existingState.mParticipantData[i] = existingPartInfo;
+            }
+            return existingState;
         }
-        public static void MergeWithExistingState(pCarsAPIStruct existingState, sParticipantInfoStringsAdditional udpTelemetryData)
+
+        public static pCarsAPIStruct MergeWithExistingState(pCarsAPIStruct existingState, sParticipantInfoStringsAdditional udpAdditionalStrings)
         {
+            for (int i = 0; i < udpAdditionalStrings.sName.Count(); i++)
+            {
+                String name = udpAdditionalStrings.sName[i].name;
+                existingState.mParticipantData[i].mIsActive = name != null && name.Length > 0;
+                existingState.mParticipantData[i].mName = udpAdditionalStrings.sName[i].name;
+            }
+            return existingState;
         }
-        public static void MergeWithExistingState(pCarsAPIStruct existingState, sParticipantInfoStrings udpTelemetryData)
+
+        public static pCarsAPIStruct MergeWithExistingState(pCarsAPIStruct existingState, sParticipantInfoStrings udpParticipantStrings)
         {
+            existingState.mCarClassName = udpParticipantStrings.sCarClassName;
+            existingState.mCarName = udpParticipantStrings.sCarName;
+            existingState.mTrackLocation = udpParticipantStrings.sTrackLocation;
+            existingState.mTrackVariation = udpParticipantStrings.sTrackVariation;
+            for (int i = 0; i < udpParticipantStrings.sName.Count(); i++)
+            {
+                String name = udpParticipantStrings.sName[i].name;
+                existingState.mParticipantData[i].mIsActive = name != null && name.Length > 0;
+                existingState.mParticipantData[i].mName = udpParticipantStrings.sName[i].name;
+            }
+            return existingState;
+        }
+
+        private static float[] toFloatArray(int[] intArray, int factor)
+        {
+            List<float> l = new List<float>();
+            foreach (int i in intArray)
+            {
+                l.Add(((float)i) / factor);
+            }
+            return l.ToArray();
+        }
+
+        private static float[] toFloatArray(byte[] byteArray, int factor)
+        {
+            List<float> l = new List<float>();
+            foreach (byte i in byteArray)
+            {
+                l.Add(((float)i) / factor);
+            }
+            return l.ToArray();
+        }
+
+        private static float[] toFloatArray(short[] shortArray, int factor)
+        {
+            List<float> l = new List<float>();
+            foreach (short i in shortArray)
+            {
+                l.Add(((float)i) / factor);
+            }
+            return l.ToArray();
+        }
+
+        private static float[] toFloatArray(ushort[] ushortArray, int factor)
+        {
+            List<float> l = new List<float>();
+            foreach (ushort i in ushortArray)
+            {
+                l.Add(((float)i) / factor);
+            }
+            return l.ToArray();
+        }
+
+        private static uint[] toUIntArray(byte[] byteArray)
+        {
+            List<uint> l = new List<uint>();
+            foreach (byte i in byteArray)
+            {
+                l.Add((byte)i);
+            }
+            return l.ToArray();
         }
     }
 
+    [Serializable]
     public struct pCarsAPIParticipantStruct
     {
         [MarshalAs(UnmanagedType.I1)]
@@ -52,6 +260,7 @@ namespace CrewChiefV3.PCars
         public uint mCurrentSector;                             // [ enum (Type#4) Current Sector ]
     }
 
+    [Serializable]
     public struct pCarsAPIStruct
     {
         //SMS supplied data structure
