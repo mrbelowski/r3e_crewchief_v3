@@ -14,9 +14,7 @@ namespace CrewChiefV3.PCars
 {
     public class PCarsUDPreader : GameDataReader
     {
-        private MemoryMappedFile memoryMappedFile;
         private GCHandle handle;
-        private int sharedmemorysize;
         private Boolean initialised = false;
         private List<CrewChiefV3.PCars.PCarsSharedMemoryReader.PCarsStructWrapper> dataToDump;
         private CrewChiefV3.PCars.PCarsSharedMemoryReader.PCarsStructWrapper[] dataReadFromFile = null;
@@ -188,10 +186,7 @@ namespace CrewChiefV3.PCars
 
         public override void Dispose()
         {
-            if (memoryMappedFile != null)
-            {
-                memoryMappedFile.Dispose();
-            }
+            udpClient.Close();
         }
     }
 }
