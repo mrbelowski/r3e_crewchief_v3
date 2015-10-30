@@ -541,19 +541,16 @@ namespace CrewChiefV3.RaceRoom
                                 }
                                 if (opponentPositionAtSector3 == 1)
                                 {
-                                    Console.WriteLine("leader pitting, pos at sector 3 = " + opponentPositionAtSector3 + " current pos = " + currentOpponentRacePosition);
                                     currentGameState.PitData.LeaderIsPitting = true;
                                     currentGameState.PitData.OpponentForLeaderPitting = currentOpponentData;
                                 }
                                 if (currentGameState.SessionData.Position > 2 && opponentPositionAtSector3 == currentGameState.SessionData.Position - 1)
                                 {
-                                    Console.WriteLine("car in front pitting, pos at sector 3 = " + opponentPositionAtSector3 + " current pos = " + currentOpponentRacePosition);
                                     currentGameState.PitData.CarInFrontIsPitting = true;
                                     currentGameState.PitData.OpponentForCarAheadPitting = currentOpponentData;
                                 }
                                 if (!currentGameState.isLast() && opponentPositionAtSector3 == currentGameState.SessionData.Position + 1)
                                 {
-                                    Console.WriteLine("car behind pitting, pos at sector 3 = " + opponentPositionAtSector3 + " current pos = " + currentOpponentRacePosition);
                                     currentGameState.PitData.CarBehindIsPitting = true;
                                     currentGameState.PitData.OpponentForCarBehindPitting = currentOpponentData;
                                 }

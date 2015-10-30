@@ -71,6 +71,8 @@ namespace CrewChiefV3.Events
 
         private DateTime lastCutTrackWarningTime;
 
+        private Boolean playedNotServedPenalty;
+
         public Penalties(AudioPlayer audioPlayer)
         {
             this.audioPlayer = audioPlayer;
@@ -96,6 +98,7 @@ namespace CrewChiefV3.Events
             audioPlayer.removeQueuedClip(folderThreeLapsToServe);
             playedPitNow = false;
             playedTimePenaltyMessage = false;
+            playedNotServedPenalty = false;
         }
 
         public override bool isMessageStillValid(String eventSubType, GameStateData currentGameState, Dictionary<String, Object> validationData)
@@ -156,10 +159,12 @@ namespace CrewChiefV3.Events
                     hasOutstandingPenalty = true;
                     hasHadAPenalty = true;
                 }
-                else if (currentGameState.PitData.InPitlane && currentGameState.PitData.OnOutLap && (currentGameState.PenaltiesData.HasStopAndGo || currentGameState.PenaltiesData.HasDriveThrough))
+                else if (currentGameState.PitData.InPitlane && currentGameState.PitData.OnOutLap && !playedNotServedPenalty &&
+                    (currentGameState.PenaltiesData.HasStopAndGo || currentGameState.PenaltiesData.HasDriveThrough))
                 {
                     // we've exited the pits but there's still an outstanding penalty
                     audioPlayer.queueClip(new QueuedMessage(folderPenaltyNotServed, 3, this));
+                    playedNotServedPenalty = true;
                 } 
                 else if (currentGameState.SessionData.IsNewLap && (currentGameState.PenaltiesData.HasStopAndGo || currentGameState.PenaltiesData.HasDriveThrough))
                 {

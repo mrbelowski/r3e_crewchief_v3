@@ -101,7 +101,7 @@ namespace CrewChiefV3.RaceRoom
 
                 foreach (DriverData driverData in currentState.all_drivers_data)
                 {
-                    if (driverData.driver_info.slot_id == currentState.slot_id || driverData.driver_info.slot_id == -1)
+                    if (driverData.driver_info.slot_id == currentState.slot_id || driverData.driver_info.slot_id == -1 || driverData.in_pitlane == 1)
                     {
                         continue;
                     }

@@ -140,6 +140,8 @@ namespace CrewChiefV3.PCars
                         throw new GameDataReadException("Failed to initialise shared memory");
                     }
                 }
+                // TODO: figure out the reference / copy semantics of nested structs. Do we actually need to clone this here?
+                // does the struct get copied anyway when we pass it around?
                 previousGameState = currentGameState;
                 currentGameState = StructHelper.ClonePCarsAPIStruct(workingGameState);
             }
