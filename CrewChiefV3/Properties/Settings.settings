@@ -59,8 +59,8 @@
     <Setting Name="enable_pearls_of_wisdom" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
-    <Setting Name="pearls_of_wisdom_likelihood" Type="System.Single" Scope="User">
-      <Value Profile="(Default)">0.7</Value>
+    <Setting Name="frequency_of_pearls_of_wisdom" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">7</Value>
     </Setting>
     <Setting Name="play_cut_track_warnings" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
@@ -123,9 +123,6 @@
       <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="enable_gap_messages" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">True</Value>
-    </Setting>
-    <Setting Name="enable_laptime_messages" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="enable_position_messages" Type="System.Boolean" Scope="User">
@@ -218,17 +215,17 @@
     <Setting Name="display_session_lap_times" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
-    <Setting Name="enable_opponent_laptime_reporting_in_race" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">True</Value>
+    <Setting Name="frequency_of_race_sector_delta_reports" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">9</Value>
     </Setting>
-    <Setting Name="report_sector_deltas_race" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">True</Value>
+    <Setting Name="frequency_of_opponent_lap_times" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">9</Value>
     </Setting>
-    <Setting Name="report_sector_deltas_practice_and_qual" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">True</Value>
+    <Setting Name="frequency_of_player_race_lap_time_reports" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">9</Value>
     </Setting>
-    <Setting Name="report_sector_deltas_race_likelihood" Type="System.Single" Scope="User">
-      <Value Profile="(Default)">0.5</Value>
+    <Setting Name="frequency_of_prac_and_qual_sector_delta_reports" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">9</Value>
     </Setting>
   </Settings>
 </SettingsFile>

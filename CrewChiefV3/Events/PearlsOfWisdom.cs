@@ -7,8 +7,7 @@ namespace CrewChiefV3
 {
     public class PearlsOfWisdom
     {
-        public static Boolean enablePearlsOfWisdom = UserSettings.GetUserSettings().getBoolean("enable_pearls_of_wisdom");
-        public static float pearlsLikelihood = UserSettings.GetUserSettings().getFloat("pearls_of_wisdom_likelihood");
+        public static int pearlsFrequency = UserSettings.GetUserSettings().getInt("frequency_of_pearls_of_wisdom");
         public static String folderMustDoBetter = "pearls_of_wisdom/must_do_better";
         public static String folderKeepItUp = "pearls_of_wisdom/keep_it_up";
         public static String folderNeutral = "pearls_of_wisdom/neutral";
@@ -27,7 +26,7 @@ namespace CrewChiefV3
 
         public PearlMessagePosition getMessagePosition(double messageProbability)
         {
-            if (enablePearlsOfWisdom && messageProbability * pearlsLikelihood > random.NextDouble())
+            if (messageProbability * pearlsFrequency > random.NextDouble() * 10)
             {
                 if (random.NextDouble() < 0.33)
                 {

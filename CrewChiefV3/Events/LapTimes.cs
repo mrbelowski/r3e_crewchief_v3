@@ -7,10 +7,12 @@ using System.Text;
 namespace CrewChiefV3.Events
 {
     class LapTimes : AbstractEvent
-    {
-        Boolean reportSectorDeltasRace = UserSettings.GetUserSettings().getBoolean("report_sector_deltas_race");
-        float raceSectorReportsLikelihood = UserSettings.GetUserSettings().getFloat("report_sector_deltas_race_likelihood");
-        Boolean reportSectorDeltasPracticeAndQual = UserSettings.GetUserSettings().getBoolean("report_sector_deltas_practice_and_qual");
+    {        
+        int frequencyOfRaceSectorDeltaReports = UserSettings.GetUserSettings().getInt("frequency_of_race_sector_delta_reports");
+        int frequencyOfPracticeAndQualSectorDeltaReports = UserSettings.GetUserSettings().getInt("frequency_of_prac_and_qual_sector_delta_reports");
+        int frequencyOfPlayerRaceLapTimeReports = UserSettings.GetUserSettings().getInt("frequency_of_player_race_lap_time_reports");
+        int maxQueueLengthForRaceSectorDeltaReports = 0;
+        int maxQueueLengthForRaceLapTimeReports = 0;
 
         // for qualifying:
         // "that was a 1:34.2, you're now 0.4 seconds off the pace"
@@ -27,7 +29,6 @@ namespace CrewChiefV3.Events
         private String folderQuickestOverall = "lap_times/quickest_overall";
 
         private String folderPaceOK = "lap_times/pace_ok";
-        private String folderPaceGood = "lap_times/pace_good";
         private String folderPaceBad = "lap_times/pace_bad";
         private String folderNeedToFindOneMoreTenth = "lap_times/need_to_find_one_more_tenth";
         private String folderNeedToFindASecond = "lap_times/need_to_find_a_second";
@@ -131,8 +132,6 @@ namespace CrewChiefV3.Events
 
         private Random random = new Random();
 
-        private Boolean enableLapTimeMessages = UserSettings.GetUserSettings().getBoolean("enable_laptime_messages");
-
         private SessionType sessionType;
 
         private GameStateData currentGameState;
@@ -142,6 +141,30 @@ namespace CrewChiefV3.Events
         public LapTimes(AudioPlayer audioPlayer)
         {
             this.audioPlayer = audioPlayer;
+            if (frequencyOfRaceSectorDeltaReports > 7)
+            {
+                maxQueueLengthForRaceSectorDeltaReports = 7;
+            } 
+            else if (frequencyOfRaceSectorDeltaReports > 5)
+            {
+                maxQueueLengthForRaceSectorDeltaReports = 5;
+            }
+            else
+            {
+                maxQueueLengthForRaceSectorDeltaReports = 4;
+            }
+            if (frequencyOfPlayerRaceLapTimeReports > 7)
+            {
+                maxQueueLengthForRaceLapTimeReports = 7;
+            }
+            else if (frequencyOfPlayerRaceLapTimeReports > 5)
+            {
+                maxQueueLengthForRaceLapTimeReports = 5;
+            }
+            else
+            {
+                maxQueueLengthForRaceLapTimeReports = 4;
+            }
         }
 
         public override void clearState()
@@ -239,24 +262,24 @@ namespace CrewChiefV3.Events
                         Boolean isHotLapping = currentGameState.SessionData.SessionType == SessionType.HotLap ||
                             (currentGameState.OpponentData.Count == 0 || (
                                 currentGameState.OpponentData.Count == 1 && currentGameState.OpponentData.First().Value.DriverRawName == currentGameState.SessionData.DriverRawName));
-                        if (enableLapTimeMessages) 
+                        if (isHotLapping) {
+                            // always play the laptime in hotlap mode
+                            audioPlayer.queueClip(new QueuedMessage("laptime",
+                                    MessageContents(folderLapTimeIntro, TimeSpan.FromSeconds(currentGameState.SessionData.LapTimePrevious)), 0, this));
+                            playedLapTime = true;
+                        }
+                        else if (currentGameState.SessionData.SessionType == SessionType.Qualify || currentGameState.SessionData.SessionType == SessionType.Practice
+                            || (currentGameState.SessionData.SessionType == SessionType.Race && frequencyOfPlayerRaceLapTimeReports > random.NextDouble() * 10))
                         {
-                            if (isHotLapping) {
-                                // always play the laptime in hotlap mode
-                                audioPlayer.queueClip(new QueuedMessage("laptime",
-                                        MessageContents(folderLapTimeIntro, TimeSpan.FromSeconds(currentGameState.SessionData.LapTimePrevious)), 0, this));
-                                playedLapTime = true;
-                            }
-                            else if (currentGameState.SessionData.SessionType == SessionType.Qualify || currentGameState.SessionData.SessionType == SessionType.Practice
-                                || (currentGameState.SessionData.SessionType == SessionType.Race && random.NextDouble() < 0.33))
+                            // usually play it in practice / qual mode, occasionally play it in race mode
+                            QueuedMessage gapFillerLapTime = new QueuedMessage("laptime",
+                                MessageContents(folderLapTimeIntro, TimeSpan.FromSeconds(currentGameState.SessionData.LapTimePrevious)), 0, this);
+                            if (currentGameState.SessionData.SessionType == SessionType.Race)
                             {
-                                // usually play it in practice / qual mode, occasionally play it in race mode
-                                QueuedMessage gapFillerLapTime = new QueuedMessage("laptime",
-                                    MessageContents(folderLapTimeIntro, TimeSpan.FromSeconds(currentGameState.SessionData.LapTimePrevious)), 0, this);
-                                gapFillerLapTime.maxPermittedQueueLengthForMessage = 4;
-                                audioPlayer.queueClip(gapFillerLapTime);
-                                playedLapTime = true;
+                                gapFillerLapTime.maxPermittedQueueLengthForMessage = maxQueueLengthForRaceLapTimeReports;
                             }
+                            audioPlayer.queueClip(gapFillerLapTime);
+                            playedLapTime = true;
                         }
 
                         if (currentGameState.SessionData.SessionType == SessionType.Qualify || currentGameState.SessionData.SessionType == SessionType.Practice ||
@@ -277,7 +300,7 @@ namespace CrewChiefV3.Events
                                     audioPlayer.queueClip(new QueuedMessage("lapTimeNotRaceGap",
                                         MessageContents(folderGapIntro, deltaPlayerLastToSessionBestOverall, folderGapOutroOffPace), 0, this));
                                 }
-                                if (reportSectorDeltasPracticeAndQual)
+                                if (frequencyOfPracticeAndQualSectorDeltaReports > random.NextDouble() * 10)
                                 {
                                     // mix up the sector reporting approach a bit...
                                     SectorReportOption reportOption = random.NextDouble() > 0.5 ? SectorReportOption.ALL_SECTORS : SectorReportOption.COMBINED;
@@ -341,7 +364,7 @@ namespace CrewChiefV3.Events
                                     audioPlayer.queueClip(new QueuedMessage("lapTimeNotRaceGap",
                                         MessageContents(folderGapIntro, deltaPlayerLastToSessionBestInClass, folderGapOutroOffPace), random.Next(0, 20), this));
                                 }
-                                if (reportSectorDeltasPracticeAndQual)
+                                if (frequencyOfPracticeAndQualSectorDeltaReports > random.NextDouble() * 10)
                                 {
                                     SectorReportOption reportOption = random.NextDouble() > 0.5 ? SectorReportOption.ALL_SECTORS : SectorReportOption.COMBINED;
                                     List<MessageFragment> sectorMessageFragments = getSectorDeltaMessages(reportOption, currentGameState.SessionData.LastSector1Time, opponentsBestLapData[1],
@@ -353,79 +376,78 @@ namespace CrewChiefV3.Events
                                 }                                
                             }
                         }
-                        else if (enableLapTimeMessages && currentGameState.SessionData.SessionType == SessionType.Race)
+                        else if (currentGameState.SessionData.SessionType == SessionType.Race) 
                         {
                             Boolean playedLapMessage = false;
-                            float pearlLikelihood = 0.8f;
-                            switch (lastLapRating)
+                            if (frequencyOfPlayerRaceLapTimeReports > random.NextDouble() * 10)
                             {
-                                case LastLapRating.BEST_OVERALL:
-                                    playedLapMessage = true;
-                                    audioPlayer.queueClip(new QueuedMessage(folderBestLapInRace, 0, this), PearlsOfWisdom.PearlType.GOOD, pearlLikelihood);
-                                    break;
-                                case LastLapRating.BEST_IN_CLASS:
-                                    playedLapMessage = true;
-                                    audioPlayer.queueClip(new QueuedMessage(folderBestLapInRaceForClass, 0, this), PearlsOfWisdom.PearlType.GOOD, pearlLikelihood);
-                                    break;
-                                case LastLapRating.SETTING_CURRENT_PACE:
-                                    playedLapMessage = true;
-                                    audioPlayer.queueClip(new QueuedMessage(folderSettingCurrentRacePace, 0, this), PearlsOfWisdom.PearlType.GOOD, pearlLikelihood);
-                                    break;
-                                case LastLapRating.CLOSE_TO_CURRENT_PACE:  
-                                    // don't keep playing this one
-                                    if (random.NextDouble() < 0.5)
-                                    {
-                                        playedLapMessage = true;
-                                        audioPlayer.queueClip(new QueuedMessage(folderMatchingCurrentRacePace, 0, this), PearlsOfWisdom.PearlType.GOOD, pearlLikelihood);                                    
-                                    }
-                                    break;
-                                case LastLapRating.PERSONAL_BEST_CLOSE_TO_OVERALL_LEADER:
-                                case LastLapRating.PERSONAL_BEST_CLOSE_TO_CLASS_LEADER:
-                                    playedLapMessage = true;
-                                    audioPlayer.queueClip(new QueuedMessage(folderGoodLap, 0, this), PearlsOfWisdom.PearlType.GOOD, pearlLikelihood);
-                                    break;
-                                case LastLapRating.PERSONAL_BEST_STILL_SLOW:
-                                    playedLapMessage = true;
-                                    audioPlayer.queueClip(new QueuedMessage(folderPersonalBest, 0, this), PearlsOfWisdom.PearlType.NEUTRAL, pearlLikelihood);
-                                    break;
-                                case LastLapRating.CLOSE_TO_OVERALL_LEADER:
-                                case LastLapRating.CLOSE_TO_CLASS_LEADER:
-                                    // this is an OK lap but not a PB. We only want to say "decent lap" occasionally here
-                                    if (random.NextDouble() < 0.2)
-                                    {
-                                        playedLapMessage = true;
-                                        audioPlayer.queueClip(new QueuedMessage(folderGoodLap, 0, this), PearlsOfWisdom.PearlType.NEUTRAL, pearlLikelihood);
-                                    }
-                                    break;
-                                default:
-                                    break;
-                            }
-                            
-                            if (reportSectorDeltasRace && !playedLapTime)
-                            {
-                                // only report sectors occasionally
-                                double r = random.NextDouble();
-                                if (r < raceSectorReportsLikelihood)
+                                float pearlLikelihood = 0.8f;
+                                switch (lastLapRating)
                                 {
-                                    r = random.NextDouble();
-                                    SectorReportOption reportOption = SectorReportOption.COMBINED;
-                                    if (r > 0.66)
-                                    {
-                                        reportOption = SectorReportOption.BEST_AND_WORST;
-                                    }
-                                    else if (r > 0.33)
-                                    {
-                                        reportOption = SectorReportOption.WORST_ONLY;
-                                    }
-                                    List<MessageFragment> sectorMessageFragments = getSectorDeltaMessages(reportOption, currentGameState.SessionData.LastSector1Time, opponentsBestLapData[1],
-                                            currentGameState.SessionData.LastSector2Time, opponentsBestLapData[2], currentGameState.SessionData.LastSector3Time, opponentsBestLapData[3]);
-                                    if (sectorMessageFragments.Count > 0)
-                                    {
-                                        QueuedMessage message = new QueuedMessage("sectorsRace", sectorMessageFragments, 0, this);
-                                        message.maxPermittedQueueLengthForMessage = 4;
-                                        audioPlayer.queueClip(message);
-                                    }
+                                    case LastLapRating.BEST_OVERALL:
+                                        playedLapMessage = true;
+                                        audioPlayer.queueClip(new QueuedMessage(folderBestLapInRace, 0, this), PearlsOfWisdom.PearlType.GOOD, pearlLikelihood);
+                                        break;
+                                    case LastLapRating.BEST_IN_CLASS:
+                                        playedLapMessage = true;
+                                        audioPlayer.queueClip(new QueuedMessage(folderBestLapInRaceForClass, 0, this), PearlsOfWisdom.PearlType.GOOD, pearlLikelihood);
+                                        break;
+                                    case LastLapRating.SETTING_CURRENT_PACE:
+                                        playedLapMessage = true;
+                                        audioPlayer.queueClip(new QueuedMessage(folderSettingCurrentRacePace, 0, this), PearlsOfWisdom.PearlType.GOOD, pearlLikelihood);
+                                        break;
+                                    case LastLapRating.CLOSE_TO_CURRENT_PACE:
+                                        // don't keep playing this one
+                                        if (random.NextDouble() < 0.5)
+                                        {
+                                            playedLapMessage = true;
+                                            audioPlayer.queueClip(new QueuedMessage(folderMatchingCurrentRacePace, 0, this), PearlsOfWisdom.PearlType.GOOD, pearlLikelihood);
+                                        }
+                                        break;
+                                    case LastLapRating.PERSONAL_BEST_CLOSE_TO_OVERALL_LEADER:
+                                    case LastLapRating.PERSONAL_BEST_CLOSE_TO_CLASS_LEADER:
+                                        playedLapMessage = true;
+                                        audioPlayer.queueClip(new QueuedMessage(folderGoodLap, 0, this), PearlsOfWisdom.PearlType.GOOD, pearlLikelihood);
+                                        break;
+                                    case LastLapRating.PERSONAL_BEST_STILL_SLOW:
+                                        playedLapMessage = true;
+                                        audioPlayer.queueClip(new QueuedMessage(folderPersonalBest, 0, this), PearlsOfWisdom.PearlType.NEUTRAL, pearlLikelihood);
+                                        break;
+                                    case LastLapRating.CLOSE_TO_OVERALL_LEADER:
+                                    case LastLapRating.CLOSE_TO_CLASS_LEADER:
+                                        // this is an OK lap but not a PB. We only want to say "decent lap" occasionally here
+                                        if (random.NextDouble() < 0.2)
+                                        {
+                                            playedLapMessage = true;
+                                            audioPlayer.queueClip(new QueuedMessage(folderGoodLap, 0, this), PearlsOfWisdom.PearlType.NEUTRAL, pearlLikelihood);
+                                        }
+                                        break;
+                                    default:
+                                        break;
                                 }
+                            }
+
+                            // only report sectors if we've not reported the laptime
+                            if (frequencyOfRaceSectorDeltaReports > random.NextDouble() * 10 && !playedLapTime)
+                            {      
+                                double r = random.NextDouble();
+                                SectorReportOption reportOption = SectorReportOption.COMBINED;
+                                if (r > 0.66)
+                                {
+                                    reportOption = SectorReportOption.BEST_AND_WORST;
+                                }
+                                else if (r > 0.33)
+                                {
+                                    reportOption = SectorReportOption.WORST_ONLY;
+                                }
+                                List<MessageFragment> sectorMessageFragments = getSectorDeltaMessages(reportOption, currentGameState.SessionData.LastSector1Time, opponentsBestLapData[1],
+                                        currentGameState.SessionData.LastSector2Time, opponentsBestLapData[2], currentGameState.SessionData.LastSector3Time, opponentsBestLapData[3]);
+                                if (sectorMessageFragments.Count > 0)
+                                {
+                                    QueuedMessage message = new QueuedMessage("sectorsRace", sectorMessageFragments, 0, this);
+                                    message.maxPermittedQueueLengthForMessage = maxQueueLengthForRaceSectorDeltaReports;
+                                    audioPlayer.queueClip(message);
+                                }                                
                             }
                             
                             // play the consistency message if we've not played the good lap message, or sometimes

@@ -31,7 +31,9 @@ namespace CrewChiefV3.Events
 
         public static String folderWeAre = "opponents/we_are";
 
-        private Boolean reportOpponentLapTimesInRace = UserSettings.GetUserSettings().getBoolean("enable_opponent_laptime_reporting_in_race");
+        private int frequencyOfOpponentLapTimes = UserSettings.GetUserSettings().getInt("frequency_of_opponent_lap_times");
+        private float minImprovementBeforeReadingOpponentTime = 0f;
+        private float maxOffPaceBeforeReadingOpponentTime = 0.1f;
 
         private GameStateData currentGameState;
 
@@ -44,6 +46,26 @@ namespace CrewChiefV3.Events
         public Opponents(AudioPlayer audioPlayer)
         {
             this.audioPlayer = audioPlayer;
+            if (frequencyOfOpponentLapTimes > 2) 
+            {
+                maxOffPaceBeforeReadingOpponentTime = 0.25f;
+                minImprovementBeforeReadingOpponentTime = 0.2f;
+            }
+            else if (frequencyOfOpponentLapTimes > 4)
+            {
+                maxOffPaceBeforeReadingOpponentTime = 0.5f;
+                minImprovementBeforeReadingOpponentTime = 0.1f;
+            }
+            else if (frequencyOfOpponentLapTimes > 6)
+            {
+                maxOffPaceBeforeReadingOpponentTime = 0.75f;
+                minImprovementBeforeReadingOpponentTime = 0.05f;
+            } 
+            else if (frequencyOfOpponentLapTimes > 8)
+            {
+                maxOffPaceBeforeReadingOpponentTime = 1f;
+                minImprovementBeforeReadingOpponentTime = 0.0f;
+            }            
         }
 
         public override void clearState()
@@ -83,7 +105,7 @@ namespace CrewChiefV3.Events
             {
                 nextLeadChangeMessage = currentGameState.Now.Add(TimeSpan.FromSeconds(30));
             }
-            if (currentGameState.SessionData.SessionType != SessionType.Race || reportOpponentLapTimesInRace)
+            if (currentGameState.SessionData.SessionType != SessionType.Race || frequencyOfOpponentLapTimes > 0)
             {
                 foreach (KeyValuePair<Object, OpponentData> entry in currentGameState.OpponentData)
                 {
@@ -97,8 +119,8 @@ namespace CrewChiefV3.Events
                     {
                         // this opponent has just completed a lap - do we need to report it? if it's fast overall and more than
                         // a tenth quicker then his previous best we do...
-                        if (opponentData.CurrentBestLapTime < opponentData.PreviousBestLapTime - 0.1f &&
-                            opponentData.CurrentBestLapTime < Math.Min(currentGameState.SessionData.PlayerLapTimeSessionBest, currentGameState.SessionData.OpponentsLapTimeSessionBestOverall)  + 0.5f)
+                        if (opponentData.CurrentBestLapTime < opponentData.PreviousBestLapTime - minImprovementBeforeReadingOpponentTime &&
+                            opponentData.CurrentBestLapTime < Math.Min(currentGameState.SessionData.PlayerLapTimeSessionBest, currentGameState.SessionData.OpponentsLapTimeSessionBestOverall)  + maxOffPaceBeforeReadingOpponentTime)
                         {
                             if (currentGameState.SessionData.Position > 1 && opponentData.Position == 1)
                             {

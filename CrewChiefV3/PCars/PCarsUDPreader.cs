@@ -127,6 +127,18 @@ namespace CrewChiefV3.PCars
             }
         }
 
+        private void copyParticipantsArray(pCarsAPIStruct source, pCarsAPIStruct destination)
+        {
+            if (source.mParticipantData != null)
+            {
+                destination.mParticipantData = new pCarsAPIParticipantStruct[source.mParticipantData.Count()];
+                for (int i = 0; i < source.mParticipantData.Count(); i++)
+                {
+                    destination.mParticipantData[i] = source.mParticipantData[i];
+                }
+            }            
+        }
+
         public override Object ReadGameData(Boolean allowRecording)
         {
             CrewChiefV3.PCars.PCarsSharedMemoryReader.PCarsStructWrapper structWrapper = new CrewChiefV3.PCars.PCarsSharedMemoryReader.PCarsStructWrapper();
@@ -143,7 +155,9 @@ namespace CrewChiefV3.PCars
                 // TODO: figure out the reference / copy semantics of nested structs. Do we actually need to clone this here?
                 // does the struct get copied anyway when we pass it around?
                 previousGameState = currentGameState;
-                currentGameState = StructHelper.ClonePCarsAPIStruct(workingGameState);
+                copyParticipantsArray(currentGameState, previousGameState);
+                currentGameState = workingGameState;
+                copyParticipantsArray(workingGameState, currentGameState);
             }
             structWrapper.data = currentGameState;
             if (allowRecording && dumpToFile && dataToDump != null && currentGameState.mTrackLocation != null &&

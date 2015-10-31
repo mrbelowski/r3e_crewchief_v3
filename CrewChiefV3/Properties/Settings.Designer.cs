@@ -250,13 +250,13 @@ namespace CrewChiefV3.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0.7")]
-        public float pearls_of_wisdom_likelihood {
+        [global::System.Configuration.DefaultSettingValueAttribute("7")]
+        public int frequency_of_pearls_of_wisdom {
             get {
-                return ((float)(this["pearls_of_wisdom_likelihood"]));
+                return ((int)(this["frequency_of_pearls_of_wisdom"]));
             }
             set {
-                this["pearls_of_wisdom_likelihood"] = value;
+                this["frequency_of_pearls_of_wisdom"] = value;
             }
         }
         
@@ -509,18 +509,6 @@ namespace CrewChiefV3.Properties {
             }
             set {
                 this["enable_gap_messages"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool enable_laptime_messages {
-            get {
-                return ((bool)(this["enable_laptime_messages"]));
-            }
-            set {
-                this["enable_laptime_messages"] = value;
             }
         }
         
@@ -886,49 +874,49 @@ namespace CrewChiefV3.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool enable_opponent_laptime_reporting_in_race {
+        [global::System.Configuration.DefaultSettingValueAttribute("9")]
+        public int frequency_of_race_sector_delta_reports {
             get {
-                return ((bool)(this["enable_opponent_laptime_reporting_in_race"]));
+                return ((int)(this["frequency_of_race_sector_delta_reports"]));
             }
             set {
-                this["enable_opponent_laptime_reporting_in_race"] = value;
+                this["frequency_of_race_sector_delta_reports"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool report_sector_deltas_race {
+        [global::System.Configuration.DefaultSettingValueAttribute("9")]
+        public int frequency_of_opponent_lap_times {
             get {
-                return ((bool)(this["report_sector_deltas_race"]));
+                return ((int)(this["frequency_of_opponent_lap_times"]));
             }
             set {
-                this["report_sector_deltas_race"] = value;
+                this["frequency_of_opponent_lap_times"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool report_sector_deltas_practice_and_qual {
+        [global::System.Configuration.DefaultSettingValueAttribute("9")]
+        public int frequency_of_player_race_lap_time_reports {
             get {
-                return ((bool)(this["report_sector_deltas_practice_and_qual"]));
+                return ((int)(this["frequency_of_player_race_lap_time_reports"]));
             }
             set {
-                this["report_sector_deltas_practice_and_qual"] = value;
+                this["frequency_of_player_race_lap_time_reports"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0.5")]
-        public float report_sector_deltas_race_likelihood {
+        [global::System.Configuration.DefaultSettingValueAttribute("9")]
+        public int frequency_of_prac_and_qual_sector_delta_reports {
             get {
-                return ((float)(this["report_sector_deltas_race_likelihood"]));
+                return ((int)(this["frequency_of_prac_and_qual_sector_delta_reports"]));
             }
             set {
-                this["report_sector_deltas_race_likelihood"] = value;
+                this["frequency_of_prac_and_qual_sector_delta_reports"] = value;
             }
         }
     }

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
-using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -10,19 +9,6 @@ namespace CrewChiefV3.PCars
 {
     public class StructHelper
     {
-        public static pCarsAPIStruct ClonePCarsAPIStruct(pCarsAPIStruct original)
-        {
-            // TODO: manually copy this object to avoid this overhead
-            BinaryFormatter s = new BinaryFormatter();
-            using (System.IO.MemoryStream ms = new System.IO.MemoryStream())
-            {
-                s.Serialize(ms, original);
-                ms.Position = 0;
-                pCarsAPIStruct t = (pCarsAPIStruct)s.Deserialize(ms);
-                return t;
-            }
-        }
-
         public static pCarsAPIStruct MergeWithExistingState(pCarsAPIStruct existingState, sTelemetryData udpTelemetryData)
         {
             existingState.mGameState = (uint) udpTelemetryData.sGameSessionState & 7;
