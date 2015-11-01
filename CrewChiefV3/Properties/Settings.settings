@@ -227,5 +227,17 @@
     <Setting Name="frequency_of_prac_and_qual_sector_delta_reports" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">9</Value>
     </Setting>
+    <Setting Name="race_sector_reports_at_each_sector" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="practice_and_qual_sector_reports_at_each_sector" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="race_sector_reports_at_lap_end" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="practice_and_qual_sector_reports_at_lap_end" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

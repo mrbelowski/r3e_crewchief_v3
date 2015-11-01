@@ -919,5 +919,53 @@ namespace CrewChiefV3.Properties {
                 this["frequency_of_prac_and_qual_sector_delta_reports"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool race_sector_reports_at_each_sector {
+            get {
+                return ((bool)(this["race_sector_reports_at_each_sector"]));
+            }
+            set {
+                this["race_sector_reports_at_each_sector"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool practice_and_qual_sector_reports_at_each_sector {
+            get {
+                return ((bool)(this["practice_and_qual_sector_reports_at_each_sector"]));
+            }
+            set {
+                this["practice_and_qual_sector_reports_at_each_sector"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool race_sector_reports_at_lap_end {
+            get {
+                return ((bool)(this["race_sector_reports_at_lap_end"]));
+            }
+            set {
+                this["race_sector_reports_at_lap_end"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool practice_and_qual_sector_reports_at_lap_end {
+            get {
+                return ((bool)(this["practice_and_qual_sector_reports_at_lap_end"]));
+            }
+            set {
+                this["practice_and_qual_sector_reports_at_lap_end"] = value;
+            }
+        }
     }
 }
