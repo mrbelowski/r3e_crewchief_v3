@@ -201,15 +201,15 @@ namespace CrewChiefV3.Events
                         if (currentGameState.SessionData.OpponentsLapTimeSessionBestPlayerClass > 0)
                         {
                             deltaPlayerLastToSessionBestInClass = TimeSpan.FromSeconds(
-                               currentGameState.SessionData.LapTimePrevious - currentGameState.SessionData.OpponentsLapTimeSessionBestPlayerClass);
+                                currentGameState.SessionData.LapTimePrevious - currentGameState.SessionData.OpponentsLapTimeSessionBestPlayerClass);
                         }
                         if (currentGameState.SessionData.OpponentsLapTimeSessionBestOverall > 0)
                         {
                             deltaPlayerLastToSessionBestOverall = TimeSpan.FromSeconds(
-                            currentGameState.SessionData.PlayerLapTimeSessionBest - currentGameState.SessionData.OpponentsLapTimeSessionBestOverall);
+                                currentGameState.SessionData.LapTimePrevious - currentGameState.SessionData.OpponentsLapTimeSessionBestOverall);
                         }
                     }
-                    else
+                    else if (currentGameState.SessionData.PlayerLapTimeSessionBest > 0)
                     {
                         deltaPlayerLastToSessionBestOverall = TimeSpan.FromSeconds(currentGameState.SessionData.LapTimePrevious - currentGameState.SessionData.PlayerLapTimeSessionBest);
                         deltaPlayerLastToSessionBestInClass = deltaPlayerLastToSessionBestOverall;

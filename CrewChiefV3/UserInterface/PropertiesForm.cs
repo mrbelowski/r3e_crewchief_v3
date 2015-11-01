@@ -44,6 +44,17 @@ namespace CrewChiefV3
             }
             pad(widgetCount);
             widgetCount = 0;
+            foreach (SettingsProperty intProp in UserSettings.GetUserSettings().getProperties(typeof(int), "frequency", null))
+            {
+                int defaultValue;
+                int.TryParse((String)intProp.DefaultValue, out defaultValue);
+                this.flowLayoutPanel1.Controls.Add(new IntPropertyControl(intProp.Name, intProp.Name + " (whole number)",
+                    UserSettings.GetUserSettings().getInt(intProp.Name), defaultValue,
+                    UserSettings.GetUserSettings().getHelp(intProp.Name)));
+                widgetCount++;
+            }
+            pad(widgetCount);
+            widgetCount = 0;
             foreach (SettingsProperty boolProp in UserSettings.GetUserSettings().getProperties(typeof(Boolean), null, "enable"))
             {
                 Boolean defaultValue;
@@ -51,6 +62,17 @@ namespace CrewChiefV3
                 this.flowLayoutPanel1.Controls.Add(new BooleanPropertyControl(boolProp.Name, boolProp.Name + " (boolean)",
                     UserSettings.GetUserSettings().getBoolean(boolProp.Name), defaultValue,
                     UserSettings.GetUserSettings().getHelp(boolProp.Name))); 
+                widgetCount++;
+            }
+            pad(widgetCount);
+            widgetCount = 0;
+            foreach (SettingsProperty intProp in UserSettings.GetUserSettings().getProperties(typeof(int), null, "frequency"))
+            {
+                int defaultValue;
+                int.TryParse((String)intProp.DefaultValue, out defaultValue);
+                this.flowLayoutPanel1.Controls.Add(new IntPropertyControl(intProp.Name, intProp.Name + " (whole number)",
+                    UserSettings.GetUserSettings().getInt(intProp.Name), defaultValue,
+                    UserSettings.GetUserSettings().getHelp(intProp.Name)));
                 widgetCount++;
             }
             pad(widgetCount);
@@ -65,18 +87,7 @@ namespace CrewChiefV3
                 widgetCount++;
             }
             pad(widgetCount);
-            widgetCount = 0;
-            foreach (SettingsProperty intProp in UserSettings.GetUserSettings().getProperties(typeof(int), null, null))
-            {
-                int defaultValue;
-                int.TryParse((String) intProp.DefaultValue, out defaultValue);
-                this.flowLayoutPanel1.Controls.Add(new IntPropertyControl(intProp.Name, intProp.Name + " (whole number)",
-                    UserSettings.GetUserSettings().getInt(intProp.Name), defaultValue,
-                    UserSettings.GetUserSettings().getHelp(intProp.Name))); 
-                widgetCount++;
-            }
-            pad(widgetCount);
-            widgetCount = 0;
+            widgetCount = 0;            
         }
         public void save()
         {
