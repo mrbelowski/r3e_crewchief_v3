@@ -194,12 +194,11 @@ namespace CrewChiefV3.PCars
             }
             
             GameStateData currentGameState = new GameStateData(ticks);
-            if (shared.mNumParticipants < 1 ||
-                ((shared.mEventTimeRemaining == -1 || shared.mEventTimeRemaining == 0) && shared.mLapsInEvent == 0 && 
-                    (shared.mSessionState != (int) eSessionState.SESSION_TIME_ATTACK && shared.mSessionState != (int) eSessionState.SESSION_PRACTICE)) ||
-                shared.mTrackLocation == null || shared.mTrackLocation.Length == 0)
+            if (shared.mNumParticipants < 1 || shared.mTrackLocation == null || shared.mTrackLocation.Length == 0 ||
+                shared.mCarName == null || shared.mCarName == "" || shared.mTrackLength <= 0)
             {
                 // Unusable data in the block
+                // TODO: is this check sufficient?
                 return null;
             }            
             Tuple<int, pCarsAPIParticipantStruct> playerData = getPlayerDataStruct(shared.mParticipantData, shared.mViewedParticipantIndex);

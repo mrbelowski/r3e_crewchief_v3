@@ -31,7 +31,7 @@ namespace CrewChiefV3.Events
 
         public static String folderWeAre = "opponents/we_are";
 
-        private int frequencyOfOpponentLapTimes = UserSettings.GetUserSettings().getInt("frequency_of_opponent_lap_times");
+        private int frequencyOfOpponentRaceLapTimes = UserSettings.GetUserSettings().getInt("frequency_of_opponent_race_lap_times");
         private float minImprovementBeforeReadingOpponentTime = 0f;
         private float maxOffPaceBeforeReadingOpponentTime = 0.1f;
 
@@ -46,22 +46,22 @@ namespace CrewChiefV3.Events
         public Opponents(AudioPlayer audioPlayer)
         {
             this.audioPlayer = audioPlayer;
-            if (frequencyOfOpponentLapTimes > 2) 
+            if (frequencyOfOpponentRaceLapTimes > 2) 
             {
                 maxOffPaceBeforeReadingOpponentTime = 0.25f;
                 minImprovementBeforeReadingOpponentTime = 0.2f;
             }
-            else if (frequencyOfOpponentLapTimes > 4)
+            else if (frequencyOfOpponentRaceLapTimes > 4)
             {
                 maxOffPaceBeforeReadingOpponentTime = 0.5f;
                 minImprovementBeforeReadingOpponentTime = 0.1f;
             }
-            else if (frequencyOfOpponentLapTimes > 6)
+            else if (frequencyOfOpponentRaceLapTimes > 6)
             {
                 maxOffPaceBeforeReadingOpponentTime = 0.75f;
                 minImprovementBeforeReadingOpponentTime = 0.05f;
-            } 
-            else if (frequencyOfOpponentLapTimes > 8)
+            }
+            else if (frequencyOfOpponentRaceLapTimes > 8)
             {
                 maxOffPaceBeforeReadingOpponentTime = 1f;
                 minImprovementBeforeReadingOpponentTime = 0.0f;
@@ -105,7 +105,7 @@ namespace CrewChiefV3.Events
             {
                 nextLeadChangeMessage = currentGameState.Now.Add(TimeSpan.FromSeconds(30));
             }
-            if (currentGameState.SessionData.SessionType != SessionType.Race || frequencyOfOpponentLapTimes > 0)
+            if (currentGameState.SessionData.SessionType != SessionType.Race || frequencyOfOpponentRaceLapTimes > 0)
             {
                 foreach (KeyValuePair<Object, OpponentData> entry in currentGameState.OpponentData)
                 {

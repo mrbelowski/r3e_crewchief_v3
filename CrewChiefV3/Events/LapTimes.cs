@@ -240,8 +240,7 @@ namespace CrewChiefV3.Events
                 lastLapTime = currentGameState.SessionData.LapTimePrevious;
             }
 
-            if (!currentGameState.PitData.OnInLap && !currentGameState.PitData.OnOutLap &&
-                ((currentGameState.SessionData.SessionType == SessionType.HotLap && currentGameState.SessionData.CompletedLaps > 0) || currentGameState.SessionData.CompletedLaps > 1))
+            if (!currentGameState.PitData.OnInLap && !currentGameState.PitData.OnOutLap)
             {
                 // report sector delta at the completion of a sector?
                 if (currentGameState.SessionData.IsNewSector && (practiceAndQualSectorReportsAtEachSector || raceSectorReportsAtEachSector))
@@ -272,13 +271,14 @@ namespace CrewChiefV3.Events
                         if (playerSector != -1 && comparisonSector != -1) {
                             List<MessageFragment> messageFragments = new List<MessageFragment>();
                             messageFragments.Add(getSectorDeltaMessageFragment(currentGameState.SessionData.SectorNumber, playerSector - comparisonSector));
-                            audioPlayer.queueClip(new QueuedMessage("sector" + currentGameState.SessionData.SectorNumber + "SectorDelta", 
+                            audioPlayer.queueClip(new QueuedMessage("sector" + previousGameState.SessionData.SectorNumber + "SectorDelta", 
                                 messageFragments, 0, this));
                         }
                     }
                 }
 
-                if (currentGameState.SessionData.IsNewLap)
+                if (currentGameState.SessionData.IsNewLap && 
+                    ((currentGameState.SessionData.SessionType == SessionType.HotLap && currentGameState.SessionData.CompletedLaps > 0) || currentGameState.SessionData.CompletedLaps > 1))
                 {
                     if (lapTimesWindow == null)
                     {

@@ -218,7 +218,7 @@
     <Setting Name="frequency_of_race_sector_delta_reports" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">9</Value>
     </Setting>
-    <Setting Name="frequency_of_opponent_lap_times" Type="System.Int32" Scope="User">
+    <Setting Name="frequency_of_opponent_race_lap_times" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">9</Value>
     </Setting>
     <Setting Name="frequency_of_player_race_lap_time_reports" Type="System.Int32" Scope="User">
@@ -238,6 +238,18 @@
     </Setting>
     <Setting Name="practice_and_qual_sector_reports_at_lap_end" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="frequency_of_gap_ahead_reports" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">6</Value>
+    </Setting>
+    <Setting Name="frequency_of_gap_behind_reports" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">4</Value>
+    </Setting>
+    <Setting Name="frequency_of_car_close_ahead_reports" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">5</Value>
+    </Setting>
+    <Setting Name="frequency_of_car_close_behind_reports" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">5</Value>
     </Setting>
   </Settings>
 </SettingsFile>

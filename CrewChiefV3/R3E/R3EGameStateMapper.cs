@@ -81,7 +81,7 @@ namespace CrewChiefV3.RaceRoom
         private SpeechRecogniser speechRecogniser;
 
         private Dictionary<int, PendingRacePositionChange> PendingRacePositionChanges = new Dictionary<int, PendingRacePositionChange>();
-        private TimeSpan PositionChangeLag = TimeSpan.FromMilliseconds(500);
+        private TimeSpan PositionChangeLag = TimeSpan.FromMilliseconds(1000);
         class PendingRacePositionChange
         {
             public int newPosition;
@@ -443,7 +443,7 @@ namespace CrewChiefV3.RaceRoom
 
             foreach (DriverData participantStruct in shared.all_drivers_data)
             {
-                if (participantStruct.driver_info.slot_id != -1)
+                if (participantStruct.driver_info.slot_id != -1 && participantStruct.driver_info.slot_id != shared.slot_id)
                 {
                     if (currentGameState.OpponentData.ContainsKey(participantStruct.driver_info.slot_id))
                     {
@@ -611,7 +611,7 @@ namespace CrewChiefV3.RaceRoom
                         String driverName = getNameFromBytes(participantStruct.driver_info.nameByteArray);
                         if (driverName != null && driverName.Length > 0)
                         {
-                            Console.WriteLine("Creating opponent for name " + driverName);
+                            Console.WriteLine("Mid session, creating opponent for name " + driverName + " slot_id = " + participantStruct.driver_info.slot_id);
                             currentGameState.OpponentData.Add(participantStruct.driver_info.slot_id, createOpponentData(participantStruct, driverName, 
                                 shared.Player.GameSimulationTime > 60));
                         }

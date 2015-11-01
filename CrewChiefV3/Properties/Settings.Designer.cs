@@ -887,12 +887,12 @@ namespace CrewChiefV3.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("9")]
-        public int frequency_of_opponent_lap_times {
+        public int frequency_of_opponent_race_lap_times {
             get {
-                return ((int)(this["frequency_of_opponent_lap_times"]));
+                return ((int)(this["frequency_of_opponent_race_lap_times"]));
             }
             set {
-                this["frequency_of_opponent_lap_times"] = value;
+                this["frequency_of_opponent_race_lap_times"] = value;
             }
         }
         
@@ -965,6 +965,54 @@ namespace CrewChiefV3.Properties {
             }
             set {
                 this["practice_and_qual_sector_reports_at_lap_end"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("6")]
+        public int frequency_of_gap_ahead_reports {
+            get {
+                return ((int)(this["frequency_of_gap_ahead_reports"]));
+            }
+            set {
+                this["frequency_of_gap_ahead_reports"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("4")]
+        public int frequency_of_gap_behind_reports {
+            get {
+                return ((int)(this["frequency_of_gap_behind_reports"]));
+            }
+            set {
+                this["frequency_of_gap_behind_reports"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("5")]
+        public int frequency_of_car_close_ahead_reports {
+            get {
+                return ((int)(this["frequency_of_car_close_ahead_reports"]));
+            }
+            set {
+                this["frequency_of_car_close_ahead_reports"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("5")]
+        public int frequency_of_car_close_behind_reports {
+            get {
+                return ((int)(this["frequency_of_car_close_behind_reports"]));
+            }
+            set {
+                this["frequency_of_car_close_behind_reports"] = value;
             }
         }
     }

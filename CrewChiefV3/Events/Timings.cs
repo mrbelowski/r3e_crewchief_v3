@@ -33,6 +33,11 @@ namespace CrewChiefV3.Events
         private String folderBeingHeldUp = "timings/being_held_up";
         private String folderBeingPressured = "timings/being_pressured";
 
+        private int gapAheadReportFrequency = UserSettings.GetUserSettings().getInt("frequency_of_gap_ahead_reports");
+        private int gapBehindReportFrequency = UserSettings.GetUserSettings().getInt("frequency_of_gap_behind_reports");
+        private int carCloseAheadReportFrequency = UserSettings.GetUserSettings().getInt("frequency_of_car_close_ahead_reports");
+        private int carCloseBehindReportFrequency = UserSettings.GetUserSettings().getInt("frequency_of_car_close_behind_reports");
+
         private List<float> gapsInFront;
 
         private List<float> gapsBehind;
@@ -80,9 +85,27 @@ namespace CrewChiefV3.Events
         
         private Boolean playedGapBehindForThisLap;
 
+        private int closeAheadMinSectorWait;
+        private int closeAheadMaxSectorWait;
+        private int gapAheadMinSectorWait;
+        private int gapAheadMaxSectorWait;
+        private int closeBehindMinSectorWait;
+        private int closeBehindMaxSectorWait;
+        private int gapBehindMinSectorWait;
+        private int gapBehindMaxSectorWait;
+
         public Timings(AudioPlayer audioPlayer)
         {
             this.audioPlayer = audioPlayer;
+            closeAheadMinSectorWait = 10 - gapAheadReportFrequency;
+            closeAheadMaxSectorWait = closeAheadMinSectorWait + 2;
+            gapAheadMinSectorWait = 10 - gapAheadReportFrequency;
+            gapAheadMaxSectorWait = gapAheadMinSectorWait + 2;
+
+            closeBehindMinSectorWait = 10 - gapBehindReportFrequency;
+            closeBehindMaxSectorWait = closeBehindMinSectorWait + 2;
+            gapBehindMinSectorWait = 10 - gapBehindReportFrequency;
+            gapBehindMaxSectorWait = gapBehindMinSectorWait + 2;
         }
 
         public override void clearState()
@@ -95,10 +118,38 @@ namespace CrewChiefV3.Events
             sectorsSinceLastGapBehindReport = 0;
             sectorsSinceLastCloseCarAheadReport = 0;
             sectorsSinceLastCloseCarBehindReport = 0;
-            sectorsUntilNextGapAheadReport = 0;
-            sectorsUntilNextGapBehindReport = 0;
-            sectorsUntilNextCloseCarAheadReport = 0;
-            sectorsUntilNextCloseCarAheadReport = 0;
+            if (gapAheadReportFrequency == 0)
+            {
+                sectorsUntilNextGapAheadReport = int.MaxValue;
+            }
+            else
+            {
+                sectorsUntilNextGapAheadReport = 0;
+            }
+            if (gapBehindReportFrequency == 0)
+            {
+                sectorsUntilNextGapBehindReport = int.MaxValue;
+            }
+            else
+            {
+                sectorsUntilNextGapBehindReport = 0;
+            }
+            if (carCloseBehindReportFrequency == 0)
+            {
+                sectorsUntilNextGapBehindReport = int.MaxValue;
+            }
+            else
+            {
+                sectorsUntilNextGapBehindReport = 0;
+            }
+            if (carCloseAheadReportFrequency == 0)
+            {
+                sectorsUntilNextCloseCarAheadReport = int.MaxValue;
+            }
+            else
+            {
+                sectorsUntilNextCloseCarAheadReport = 0;
+            }
             currentGapBehind = -1;
             currentGapInFront = -1;
             isLast = false;
@@ -171,7 +222,7 @@ namespace CrewChiefV3.Events
                             if (sectorsSinceLastCloseCarAheadReport >= sectorsUntilNextCloseCarAheadReport)
                             {
                                 sectorsSinceLastCloseCarAheadReport = 0;
-                                sectorsUntilNextCloseCarAheadReport = rand.Next(5, 7);
+                                sectorsUntilNextCloseCarAheadReport = rand.Next(closeAheadMinSectorWait, closeAheadMaxSectorWait);
                                 audioPlayer.queueClip(new QueuedMessage(folderBeingHeldUp, 0, this));
                                 gapInFrontAtLastReport = gapsInFront[0];
                             }
@@ -179,7 +230,7 @@ namespace CrewChiefV3.Events
                         else if (gapInFrontStatus != GapStatus.NONE && sectorsSinceLastGapAheadReport >= sectorsUntilNextGapAheadReport)
                         {
                             sectorsSinceLastGapAheadReport = 0;
-                            sectorsUntilNextGapAheadReport = rand.Next(2, 4);
+                            sectorsUntilNextGapAheadReport = rand.Next(gapAheadMinSectorWait, gapAheadMaxSectorWait);
                             TimeSpanWrapper gapInFront = TimeSpanWrapper.FromMilliseconds(gapsInFront[0] * 1000, true);
                             Boolean readGap = gapInFront.timeSpan.Seconds > 0 || gapInFront.timeSpan.Milliseconds > 50;
                             if (readGap)
@@ -207,7 +258,7 @@ namespace CrewChiefV3.Events
                             if (sectorsSinceLastCloseCarBehindReport >= sectorsUntilNextCloseCarBehindReport)
                             {
                                 sectorsSinceLastCloseCarBehindReport = 0;
-                                sectorsUntilNextCloseCarBehindReport = rand.Next(5, 7);
+                                sectorsUntilNextCloseCarBehindReport = rand.Next(closeBehindMinSectorWait, closeBehindMaxSectorWait);
                                 audioPlayer.queueClip(new QueuedMessage(folderBeingPressured, 0, this));
                                 gapBehindAtLastReport = gapsBehind[0];
                             }
@@ -215,7 +266,7 @@ namespace CrewChiefV3.Events
                         else if (gapBehindStatus != GapStatus.NONE && sectorsSinceLastGapBehindReport >= sectorsUntilNextGapBehindReport)
                         {
                             sectorsSinceLastGapBehindReport = 0;
-                            sectorsUntilNextGapBehindReport = rand.Next(2, 4);
+                            sectorsUntilNextGapBehindReport = rand.Next(gapBehindMinSectorWait, gapBehindMaxSectorWait);
                             TimeSpanWrapper gapBehind = TimeSpanWrapper.FromMilliseconds(gapsBehind[0] * 1000, true);
                             Boolean readGap = gapBehind.timeSpan.Seconds > 0 || gapBehind.timeSpan.Milliseconds > 50;
                             if (readGap)
