@@ -43,6 +43,7 @@ namespace CrewChiefV3
 
         private float trackWidth = 10f;
 
+        // TODO: consider the impact of using width when getting data from the UDP stream - 0.25 metre resolution
         private float carWidth = 1.8f;
 
         private String folderStillThere = "spotter/still_there";

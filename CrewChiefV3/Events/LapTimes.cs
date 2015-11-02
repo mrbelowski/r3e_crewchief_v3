@@ -535,25 +535,28 @@ namespace CrewChiefV3.Events
                     {
                         float playerSector = -1;
                         float comparisonSector = -1;
+                        SectorSet sectorEnum = SectorSet.NONE;
                         switch (currentGameState.SessionData.SectorNumber)
                         {
                             case 1:
                                 playerSector = currentGameState.SessionData.LastSector3Time;
                                 comparisonSector = lapAndSectorsComparisonData[3];
+                                sectorEnum = SectorSet.THREE;
                                 break;
                             case 2:
                                 playerSector = currentGameState.SessionData.LastSector1Time;
                                 comparisonSector = lapAndSectorsComparisonData[1];
+                                sectorEnum = SectorSet.ONE;
                                 break;
                             case 3:
                                 playerSector = currentGameState.SessionData.LastSector2Time;
                                 comparisonSector = lapAndSectorsComparisonData[2];
+                                sectorEnum = SectorSet.TWO;
                                 break;
                         }
                         if (playerSector != -1 && comparisonSector != -1)
                         {
-                            String folder = getSingleSectorDeltaMessageFolder(previousGameState.SessionData.SectorNumber, playerSector - comparisonSector,
-                                currentGameState.SessionData.SessionType != SessionType.Race);
+                            String folder = getFolderForSectorCombination(getEnumForSectorDelta(playerSector - comparisonSector, currentGameState.SessionData.SessionType != SessionType.Race), sectorEnum);
                             if (folder != null)
                             {
                                 audioPlayer.queueClip(new QueuedMessage(folder, 0, this));
@@ -941,20 +944,20 @@ namespace CrewChiefV3.Events
 
         private enum SectorSet
         {
-            ONE, TWO, THREE, ONE_AND_TWO, ONE_AND_THREE, TWO_AND_THREE, ALL
+            ONE, TWO, THREE, ONE_AND_TWO, ONE_AND_THREE, TWO_AND_THREE, ALL, NONE
         }
 
-        private SectorDeltaEnum getEnumForSectorDelta(float delta)
+        private SectorDeltaEnum getEnumForSectorDelta(float delta, Boolean comparisonIncludesAllLaps)
         {
             if (delta == float.MaxValue)
             {
                 return SectorDeltaEnum.UNKNOWN;
             }
-            if (delta <= 0.0)
+            if (delta <= 0.0 && comparisonIncludesAllLaps)
             {
                 return SectorDeltaEnum.FASTEST;
             }
-            else if (delta > 0.0 && delta < 0.05)
+            else if ((delta <= 0.0 && !comparisonIncludesAllLaps) || delta > 0.0 && delta < 0.05)
             {
                 return SectorDeltaEnum.FAST;
             }
@@ -1122,12 +1125,12 @@ namespace CrewChiefV3.Events
             return null;
         }
 
-        private List<String> getFoldersForSectorsAndDeltas(float sector1delta, float sector2delta, float sector3delta)
+        private List<String> getFoldersForSectorsAndDeltas(float sector1delta, float sector2delta, float sector3delta, Boolean comparisonIncludesAllLaps)
         {
             List<String> folders = new List<string>();
-            SectorDeltaEnum s1 = getEnumForSectorDelta(sector1delta);
-            SectorDeltaEnum s2 = getEnumForSectorDelta(sector2delta);
-            SectorDeltaEnum s3 = getEnumForSectorDelta(sector3delta);
+            SectorDeltaEnum s1 = getEnumForSectorDelta(sector1delta, comparisonIncludesAllLaps);
+            SectorDeltaEnum s2 = getEnumForSectorDelta(sector2delta, comparisonIncludesAllLaps);
+            SectorDeltaEnum s3 = getEnumForSectorDelta(sector3delta, comparisonIncludesAllLaps);
 
             if (s1 != SectorDeltaEnum.UNKNOWN)
             {
@@ -1173,8 +1176,8 @@ namespace CrewChiefV3.Events
             return folders;
         }
         
-        private List<MessageFragment> getSectorDeltaMessagesCombined(float playerSector1, float comparisonSector1, float playerSector2, 
-            float comparisonSector2, float playerSector3, float comparisonSector3)
+        private List<MessageFragment> getSectorDeltaMessagesCombined(float playerSector1, float comparisonSector1, float playerSector2,
+            float comparisonSector2, float playerSector3, float comparisonSector3, Boolean comparisonIncludesAllLaps)
         {
             float sector1delta = float.MaxValue;
             float sector2delta = float.MaxValue;
@@ -1192,7 +1195,7 @@ namespace CrewChiefV3.Events
                 sector3delta = playerSector3 - comparisonSector3;
             }
 
-            List<String> folders = getFoldersForSectorsAndDeltas(sector1delta, sector2delta, sector3delta);
+            List<String> folders = getFoldersForSectorsAndDeltas(sector1delta, sector2delta, sector3delta, comparisonIncludesAllLaps);
             List<MessageFragment> messageFragments = new List<MessageFragment>();
             foreach (String folder in folders)
             {
@@ -1213,7 +1216,7 @@ namespace CrewChiefV3.Events
             {
                 if (playerSector1 > 0 && comparisonSector1 > 0)
                 {
-                    String folder = getSingleSectorDeltaMessageFolder(1, playerSector1 - comparisonSector1, comparisonIncludesAllLaps);
+                    String folder = getFolderForSectorCombination(getEnumForSectorDelta(playerSector1 - comparisonSector1, comparisonIncludesAllLaps), SectorSet.ONE);
                     if (folder != null)
                     {
                         messageFragments.Add(MessageFragment.Text(folder));
@@ -1221,7 +1224,7 @@ namespace CrewChiefV3.Events
                 }
                 if (playerSector2 > 0 && comparisonSector2 > 0)
                 {
-                    String folder = getSingleSectorDeltaMessageFolder(2, playerSector2 - comparisonSector2, comparisonIncludesAllLaps);
+                    String folder = getFolderForSectorCombination(getEnumForSectorDelta(playerSector2 - comparisonSector2, comparisonIncludesAllLaps), SectorSet.TWO);
                     if (folder != null)
                     {
                         messageFragments.Add(MessageFragment.Text(folder));
@@ -1229,7 +1232,7 @@ namespace CrewChiefV3.Events
                 }
                 if (playerSector3 > 0 && comparisonSector3 > 0)
                 {
-                    String folder = getSingleSectorDeltaMessageFolder(3, playerSector3 - comparisonSector3, comparisonIncludesAllLaps);
+                    String folder = getFolderForSectorCombination(getEnumForSectorDelta(playerSector3 - comparisonSector3, comparisonIncludesAllLaps), SectorSet.THREE);
                     if (folder != null)
                     {
                         messageFragments.Add(MessageFragment.Text(folder));
@@ -1238,14 +1241,14 @@ namespace CrewChiefV3.Events
             }
             else if (reportOption == SectorReportOption.COMBINED)
             {
-                return getSectorDeltaMessagesCombined(playerSector1, comparisonSector1, playerSector2, comparisonSector2, playerSector3, comparisonSector3);
+                return getSectorDeltaMessagesCombined(playerSector1, comparisonSector1, playerSector2, comparisonSector2, playerSector3, comparisonSector3, comparisonIncludesAllLaps);
             }
             else
             {
                 float maxDelta = float.MinValue;
-                int maxDeltaSectorNumber = 0;
+                SectorSet maxDeltaSector = SectorSet.NONE;
                 float minDelta = float.MaxValue;
-                int minDeltaSectorNumber = 0;
+                SectorSet minDeltaSector = SectorSet.NONE;
 
                 if (playerSector1 > 0 && comparisonSector1 > 0)
                 {
@@ -1253,12 +1256,12 @@ namespace CrewChiefV3.Events
                     if (delta > maxDelta)
                     {
                         maxDelta = delta;
-                        maxDeltaSectorNumber = 1;
+                        maxDeltaSector = SectorSet.ONE;
                     }
                     else if (delta < minDelta)
                     {
                         minDelta = delta;
-                        minDeltaSectorNumber = 1;
+                        minDeltaSector = SectorSet.ONE;
                     }
                 }
                 if (playerSector2 > 0 && comparisonSector2 > 0)
@@ -1266,23 +1269,23 @@ namespace CrewChiefV3.Events
                     float delta = playerSector2 - comparisonSector2;
                     if (delta > maxDelta)
                     {
-                        if (maxDeltaSectorNumber != 0)
+                        if (maxDeltaSector != SectorSet.NONE)
                         {
                             minDelta = maxDelta;
-                            minDeltaSectorNumber = maxDeltaSectorNumber;
+                            minDeltaSector = maxDeltaSector;
                         }
                         maxDelta = playerSector2 - comparisonSector2;
-                        maxDeltaSectorNumber = 2;
+                        maxDeltaSector = SectorSet.TWO;
                     }
                     else if (delta < minDelta)
                     {
-                        if (minDeltaSectorNumber != 0)
+                        if (minDeltaSector != SectorSet.NONE)
                         {
                             maxDelta = minDelta;
-                            maxDeltaSectorNumber = minDeltaSectorNumber;
+                            maxDeltaSector = minDeltaSector;
                         }
                         minDelta = playerSector2 - comparisonSector2;
-                        minDeltaSectorNumber = 2;
+                        minDeltaSector = SectorSet.TWO;
                     }
                 }
                 if (playerSector3 > 0 && comparisonSector3 > 0)
@@ -1290,124 +1293,43 @@ namespace CrewChiefV3.Events
                     float delta = playerSector3 - comparisonSector3;
                     if (delta > maxDelta)
                     {
-                        if (maxDeltaSectorNumber != 0 && minDeltaSectorNumber == 0)
+                        if (maxDeltaSector != SectorSet.NONE && minDeltaSector == SectorSet.NONE)
                         {
                             minDelta = maxDelta;
-                            minDeltaSectorNumber = maxDeltaSectorNumber;
+                            minDeltaSector = maxDeltaSector;
                         }
                         maxDelta = playerSector3 - comparisonSector3;
-                        maxDeltaSectorNumber = 3;
+                        maxDeltaSector = SectorSet.THREE;
                     }
                     else if (delta < minDelta)
                     {
-                        if (minDeltaSectorNumber != 0 && maxDeltaSectorNumber == 0)
+                        if (minDeltaSector != SectorSet.NONE && maxDeltaSector == SectorSet.NONE)
                         {
                             maxDelta = minDelta;
-                            maxDeltaSectorNumber = minDeltaSectorNumber;
+                            maxDeltaSector = minDeltaSector;
                         }
                         minDelta = playerSector3 - comparisonSector3;
-                        minDeltaSectorNumber = 3;
+                        minDeltaSector = SectorSet.THREE;
                     }
                 }
-                if (minDeltaSectorNumber != 0 && reportOption != SectorReportOption.WORST_ONLY)
+                if (minDeltaSector != SectorSet.NONE && reportOption != SectorReportOption.WORST_ONLY)
                 {
-                    messageFragments.Add(MessageFragment.Text(getSingleSectorDeltaMessageFolder(minDeltaSectorNumber, minDelta, comparisonIncludesAllLaps)));
+                    String folder = getFolderForSectorCombination(getEnumForSectorDelta(minDelta, comparisonIncludesAllLaps), minDeltaSector);
+                    if (folder != null)
+                    {
+                        messageFragments.Add(MessageFragment.Text(folder));
+                    }
                 }
-                if (maxDeltaSectorNumber != 0)
+                if (maxDeltaSector != SectorSet.NONE)
                 {
-                    messageFragments.Add(MessageFragment.Text(getSingleSectorDeltaMessageFolder(maxDeltaSectorNumber, maxDelta, comparisonIncludesAllLaps)));
+                    String folder = getFolderForSectorCombination(getEnumForSectorDelta(maxDelta, comparisonIncludesAllLaps), maxDeltaSector);
+                    if (folder != null)
+                    {
+                        messageFragments.Add(MessageFragment.Text(folder));
+                    }
                 }
             }
             return messageFragments;
-        }
-
-        private String getSingleSectorDeltaMessageFolder(int sector, float delta, Boolean comparisonIncludesAllLaps)
-        {
-            if (delta <= 0.0 && comparisonIncludesAllLaps)
-            {
-                switch (sector)
-                {
-                    case 1:
-                        return folderSector1Fastest;
-                    case 2:
-                        return folderSector2Fastest;
-                    case 3:
-                        return folderSector3Fastest;
-                }
-            }
-            else if ((delta <= 0.0 && !comparisonIncludesAllLaps) || (delta > 0.0 && delta < 0.05))
-            {
-                switch (sector)
-                {
-                    case 1:
-                        return folderSector1Fast;
-                    case 2:
-                        return folderSector2Fast;
-                    case 3:
-                        return folderSector3Fast;
-                }
-            }
-            else if (delta >= 0.05 && delta < 0.15)
-            {
-                switch (sector)
-                {
-                    case 1:
-                        return folderSector1ATenthOffThePace;
-                    case 2:
-                        return folderSector2ATenthOffThePace;
-                    case 3:
-                        return folderSector3ATenthOffThePace;
-                }
-            }
-            else if (delta >= 0.15 && delta < 0.3)
-            {
-                switch (sector)
-                {
-                    case 1:
-                        return folderSector1TwoTenthsOffThePace;
-                    case 2:
-                        return folderSector2TwoTenthsOffThePace;
-                    case 3:
-                        return folderSector3TwoTenthsOffThePace;
-                }
-            }
-            else if (delta >= 0.3 && delta < 0.7)
-            {
-                switch (sector)
-                {
-                    case 1:
-                        return folderSector1AFewTenthsOffThePace;
-                    case 2:
-                        return folderSector2AFewTenthsOffThePace;
-                    case 3:
-                        return folderSector3AFewTenthsOffThePace;
-                }
-            }
-            else if (delta >= 0.7 && delta < 1.2)
-            {
-                switch (sector)
-                {
-                    case 1:
-                        return folderSector1ASecondOffThePace;
-                    case 2:
-                        return folderSector2ASecondOffThePace;
-                    case 3:
-                        return folderSector3ASecondOffThePace;
-                }
-            }
-            else if (delta >= 1.2)
-            {
-                switch (sector)
-                {
-                    case 1:
-                        return folderSector1MoreThanASecondOffThePace;
-                    case 2:
-                        return folderSector2MoreThanASecondOffThePace;
-                    case 3:
-                        return folderSector3MoreThanASecondOffThePace;
-                }
-            }
-            return null;
         }
 
         private enum SectorReportOption

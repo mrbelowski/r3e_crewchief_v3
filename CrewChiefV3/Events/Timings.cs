@@ -75,13 +75,6 @@ namespace CrewChiefV3.Events
         private Boolean isLast;
 
         private Boolean isRace;
-
-        // TODO: the data to feed these arrays isn't mapped yet
-        private float[] lastSectorTimes = new float[]{-1,-1,-1};
-        private float[] lastSectorDeltaCarFront = new float[] { -1, -1, -1 }; 
-        private float[] lastSectorDeltaCarBehind = new float[] { -1, -1, -1 };
-        private float[] lastSectorDeltaLeader = new float[] { -1, -1, -1 };
-        private float[] lastSectorDeltaSelf = new float[] { -1, -1, -1 };
         
         private Boolean playedGapBehindForThisLap;
 
@@ -155,11 +148,6 @@ namespace CrewChiefV3.Events
             isLast = false;
             isLeading = false;
             isRace = false;
-            lastSectorTimes = new float[] { -1, -1, -1 };
-            lastSectorDeltaCarFront = new float[] { -1, -1, -1 };
-            lastSectorDeltaCarBehind = new float[] { -1, -1, -1 };
-            lastSectorDeltaLeader = new float[] { -1, -1, -1 };
-            lastSectorDeltaSelf = new float[] { -1, -1, -1 };
             playedGapBehindForThisLap = false;
         }
 

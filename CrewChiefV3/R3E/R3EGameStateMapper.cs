@@ -639,7 +639,7 @@ namespace CrewChiefV3.RaceRoom
                 }
             }
 
-            // TODO: lap time previous for invalid laps, sector time stuff.
+            // TODO: lap time previous for invalid laps (is this still needed?)
 
             if (shared.SessionType == (int)RaceRoomConstant.Session.Race && shared.SessionPhase == (int)RaceRoomConstant.SessionPhase.Checkered &&
                 previousGameState != null && previousGameState.SessionData.SessionPhase == SessionPhase.Green)
