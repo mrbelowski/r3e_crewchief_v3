@@ -22,6 +22,18 @@ namespace CrewChiefV3.Events
         public static String folderTheGapTo = "timings/the_gap_to";   // "the gap to..."
         public static String folderAheadIsIncreasing = "timings/ahead_is_increasing"; // [bob] "ahead is increasing, it's now..."
         public static String folderBehindIsIncreasing = "timings/behind_is_increasing"; // [bob] "behind is increasing, it's now..."
+
+
+
+        // TODO:
+        public static String folderAheadIsConstant = "timings/ahead_is_constant"; // [bob] "ahead is constant / stable / still at..."
+        public static String folderBehindIsConstant = "timings/behind_is_constant"; // [bob] "behind is constant / stable / still at..."
+        public static String folderGapInFrontConstant = "timings/gap_in_front_is_constant";
+        public static String folderGapBehindConstant = "timings/gap_behind_is_constant";
+
+
+
+
         public static String folderAheadIsNow = "timings/ahead_is_now"; // [bob] "ahead is increasing, it's now..."
         public static String folderBehindIsNow = "timings/behind_is_now"; // [bob] "behind is increasing, it's now..."
 
@@ -235,6 +247,12 @@ namespace CrewChiefV3.Events
                                         MessageContents(folderYoureReeling, currentGameState.getOpponentAtPosition(currentGameState.SessionData.Position - 1),
                                         folderInTheGapIsNow, gapInFront), MessageContents(folderGapInFrontDecreasing, gapInFront), 0, this));
                                 }
+                                else if (gapInFrontStatus == GapStatus.CONSTANT)
+                                {
+                                    audioPlayer.queueClip(new QueuedMessage("Timings/gap_in_front",
+                                        MessageContents(folderTheGapTo, currentGameState.getOpponentAtPosition(currentGameState.SessionData.Position - 1),
+                                        folderAheadIsConstant, gapInFront), MessageContents(folderGapInFrontConstant, gapInFront), 0, this));
+                                }
                             }
                             gapInFrontAtLastReport = gapsInFront[0];
                         }
@@ -270,6 +288,12 @@ namespace CrewChiefV3.Events
                                     audioPlayer.queueClip(new QueuedMessage("Timings/gap_behind",
                                         MessageContents(currentGameState.getOpponentAtPosition(currentGameState.SessionData.Position + 1), folderIsReelingYouIn, gapBehind),
                                         MessageContents(folderGapBehindDecreasing, gapBehind), 0, this));
+                                }
+                                else if (gapBehindStatus == GapStatus.CONSTANT)
+                                {
+                                    audioPlayer.queueClip(new QueuedMessage("Timings/gap_behind",
+                                        MessageContents(folderTheGapTo, currentGameState.getOpponentAtPosition(currentGameState.SessionData.Position + 1), 
+                                        folderBehindIsIncreasing, gapBehind), MessageContents(folderGapBehindConstant, gapBehind), 0, this));
                                 }
                             }
                             gapBehindAtLastReport = gapsBehind[0];
@@ -324,7 +348,12 @@ namespace CrewChiefV3.Events
                 // this car has been close for 2 sectors
                 return GapStatus.CLOSE;
             }
-            if ((lastReportedGap == -1 || Math.Round(gaps[0], 1) > Math.Round(lastReportedGap)) &&
+            else if (Math.Abs(gaps[0] = gaps[1]) < 0.1 && Math.Abs(gaps[0] = gaps[1]) < 0.1 && Math.Abs(gaps[0] = gaps[2]) < 0.1)
+            {
+                // TODO: is this check adequate?
+                return GapStatus.CONSTANT;
+            }
+            else if ((lastReportedGap == -1 || Math.Round(gaps[0], 1) > Math.Round(lastReportedGap)) &&
                 Math.Round(gaps[0], 1) > Math.Round(gaps[1], 1) && Math.Round(gaps[1], 1) > Math.Round(gaps[2], 1))
             {
                 return GapStatus.INCREASING;
@@ -395,7 +424,7 @@ namespace CrewChiefV3.Events
 
         private enum GapStatus
         {
-            CLOSE, INCREASING, DECREASING, NONE
+            CLOSE, INCREASING, DECREASING, CONSTANT, NONE
         }
 
         private float getOpponentBestLap(List<float> opponentLapTimes, int lapsToCheck)

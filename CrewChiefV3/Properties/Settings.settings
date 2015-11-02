@@ -60,7 +60,7 @@
       <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="frequency_of_pearls_of_wisdom" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">5</Value>
+      <Value Profile="(Default)">7</Value>
     </Setting>
     <Setting Name="play_cut_track_warnings" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
@@ -250,6 +250,9 @@
     </Setting>
     <Setting Name="frequency_of_car_close_behind_reports" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">4</Value>
+    </Setting>
+    <Setting Name="frequency_of_opponent_practice_and_qual_lap_times" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">7</Value>
     </Setting>
   </Settings>
 </SettingsFile>

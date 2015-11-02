@@ -250,7 +250,7 @@ namespace CrewChiefV3.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("5")]
+        [global::System.Configuration.DefaultSettingValueAttribute("7")]
         public int frequency_of_pearls_of_wisdom {
             get {
                 return ((int)(this["frequency_of_pearls_of_wisdom"]));
@@ -1013,6 +1013,18 @@ namespace CrewChiefV3.Properties {
             }
             set {
                 this["frequency_of_car_close_behind_reports"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("7")]
+        public int frequency_of_opponent_practice_and_qual_lap_times {
+            get {
+                return ((int)(this["frequency_of_opponent_practice_and_qual_lap_times"]));
+            }
+            set {
+                this["frequency_of_opponent_practice_and_qual_lap_times"] = value;
             }
         }
     }

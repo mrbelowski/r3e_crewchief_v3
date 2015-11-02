@@ -32,8 +32,9 @@ namespace CrewChiefV3.Events
         public static String folderWeAre = "opponents/we_are";
 
         private int frequencyOfOpponentRaceLapTimes = UserSettings.GetUserSettings().getInt("frequency_of_opponent_race_lap_times");
-        private float minImprovementBeforeReadingOpponentTime = 0f;
-        private float maxOffPaceBeforeReadingOpponentTime = 0.1f;
+        private int frequencyOfOpponentPracticeAndQualLapTimes = UserSettings.GetUserSettings().getInt("frequency_of_opponent_practice_and_qual_lap_times");
+        private float minImprovementBeforeReadingOpponentTime;
+        private float maxOffPaceBeforeReadingOpponentTime;
 
         private GameStateData currentGameState;
 
@@ -43,29 +44,13 @@ namespace CrewChiefV3.Events
 
         private Object positionIsPlayerKey = new Object();
 
+        private Random random = new Random();
+
         public Opponents(AudioPlayer audioPlayer)
         {
             this.audioPlayer = audioPlayer;
-            if (frequencyOfOpponentRaceLapTimes > 2) 
-            {
-                maxOffPaceBeforeReadingOpponentTime = 0.25f;
-                minImprovementBeforeReadingOpponentTime = 0.2f;
-            }
-            else if (frequencyOfOpponentRaceLapTimes > 4)
-            {
-                maxOffPaceBeforeReadingOpponentTime = 0.5f;
-                minImprovementBeforeReadingOpponentTime = 0.1f;
-            }
-            else if (frequencyOfOpponentRaceLapTimes > 6)
-            {
-                maxOffPaceBeforeReadingOpponentTime = 0.75f;
-                minImprovementBeforeReadingOpponentTime = 0.05f;
-            }
-            else if (frequencyOfOpponentRaceLapTimes > 8)
-            {
-                maxOffPaceBeforeReadingOpponentTime = 1f;
-                minImprovementBeforeReadingOpponentTime = 0.0f;
-            }            
+            maxOffPaceBeforeReadingOpponentTime = (float)frequencyOfOpponentRaceLapTimes / 10f;
+            minImprovementBeforeReadingOpponentTime = (1f - maxOffPaceBeforeReadingOpponentTime) / 10f;
         }
 
         public override void clearState()
@@ -114,13 +99,17 @@ namespace CrewChiefV3.Events
 
                     // TODO: if this opponent's lap is the best overall, announce it ("fastest lap for [bob], [lap time]")
 
-                    if (opponentData.IsNewLap && opponentData.LastLapTime > 0 && opponentData.OpponentLapData.Count > 3 &&
+                    if (opponentData.IsNewLap && opponentData.LastLapTime > 0 && opponentData.OpponentLapData.Count > 2 &&
                         opponentData.CurrentBestLapTime != -1 && opponentData.PreviousBestLapTime != -1)
                     {
                         // this opponent has just completed a lap - do we need to report it? if it's fast overall and more than
                         // a tenth quicker then his previous best we do...
-                        if (opponentData.CurrentBestLapTime < opponentData.PreviousBestLapTime - minImprovementBeforeReadingOpponentTime &&
-                            opponentData.CurrentBestLapTime < Math.Min(currentGameState.SessionData.PlayerLapTimeSessionBest, currentGameState.SessionData.OpponentsLapTimeSessionBestOverall)  + maxOffPaceBeforeReadingOpponentTime)
+                        if ((currentGameState.SessionData.SessionType == SessionType.Race &&
+                                (opponentData.CurrentBestLapTime < opponentData.PreviousBestLapTime - minImprovementBeforeReadingOpponentTime &&
+                                 opponentData.CurrentBestLapTime < Math.Min(currentGameState.SessionData.PlayerLapTimeSessionBest, 
+                                    currentGameState.SessionData.OpponentsLapTimeSessionBestOverall) + maxOffPaceBeforeReadingOpponentTime)) ||
+                           ((currentGameState.SessionData.SessionType == SessionType.Practice || currentGameState.SessionData.SessionType == SessionType.Qualify) && 
+                                 opponentData.CurrentBestLapTime < opponentData.PreviousBestLapTime))
                         {
                             if (currentGameState.SessionData.Position > 1 && opponentData.Position == 1)
                             {
@@ -128,13 +117,15 @@ namespace CrewChiefV3.Events
                                 audioPlayer.queueClip(new QueuedMessage("leader_good_laptime", MessageContents(folderLeaderHasJustDoneA,
                                         TimeSpan.FromSeconds(opponentData.CurrentBestLapTime)), 0, this));
                             }
-                            else if (currentGameState.SessionData.Position > 1 && opponentData.Position == currentGameState.SessionData.Position - 1)
+                            else if (currentGameState.SessionData.Position > 1 && opponentData.Position == currentGameState.SessionData.Position - 1 &&
+                                (currentGameState.SessionData.SessionType == SessionType.Race || random.Next(10) < frequencyOfOpponentPracticeAndQualLapTimes))
                             {
                                 // he's ahead of us, and has recorded 3 or more laps, and this one's his fastest
                                 audioPlayer.queueClip(new QueuedMessage("car_ahead_good_laptime", MessageContents(folderTheCarAheadHasJustDoneA,
                                         TimeSpan.FromSeconds(opponentData.CurrentBestLapTime)), 0, this));
                             }
-                            else if (!currentGameState.isLast() && opponentData.Position == currentGameState.SessionData.Position + 1)
+                            else if (!currentGameState.isLast() && opponentData.Position == currentGameState.SessionData.Position + 1 &&
+                                (currentGameState.SessionData.SessionType == SessionType.Race || random.Next(10) < frequencyOfOpponentPracticeAndQualLapTimes))
                             {
                                 // he's behind us, and has recorded 3 or more laps, and this one's his fastest
                                 audioPlayer.queueClip(new QueuedMessage("car_behind_good_laptime", MessageContents(folderTheCarBehindHasJustDoneA,
