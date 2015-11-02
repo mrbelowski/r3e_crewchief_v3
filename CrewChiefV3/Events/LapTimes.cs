@@ -845,11 +845,8 @@ namespace CrewChiefV3.Events
                         }
                         SectorReportOption reportOption = SectorReportOption.COMBINED;
                         double r = random.NextDouble();
-                        if (r > 0.66)
-                        {
-                            reportOption = SectorReportOption.BEST_AND_WORST;
-                        }
-                        else if (r > 0.33)
+                        // usually report the combined sectors
+                        if (r > 0.33)
                         {
                             reportOption = SectorReportOption.WORST_ONLY;
                         }
@@ -913,7 +910,14 @@ namespace CrewChiefV3.Events
                             audioPlayer.playClipImmediately(new QueuedMessage("lapTimeNotRaceGap",
                                 MessageContents(deltaPlayerBestToSessionBestInClass, folderGapOutroOffPace), 0, null), false);
                         }
-                        List<MessageFragment> sectorDeltaMessages = getSectorDeltaMessages(SectorReportOption.ALL_SECTORS, currentGameState.SessionData.BestLapSector1Time, bestOpponentLapData[1],
+                        SectorReportOption reportOption = SectorReportOption.COMBINED;
+                        double r = random.NextDouble();
+                        // usually report the combined sectors, occasionally report all
+                        if (r > 0.33)
+                        {
+                            reportOption = SectorReportOption.ALL_SECTORS;
+                        }
+                        List<MessageFragment> sectorDeltaMessages = getSectorDeltaMessages(reportOption, currentGameState.SessionData.BestLapSector1Time, bestOpponentLapData[1],
                             currentGameState.SessionData.BestLapSector2Time, bestOpponentLapData[2], currentGameState.SessionData.BestLapSector3Time, bestOpponentLapData[3], true);
                         if (sectorDeltaMessages.Count > 0)
                         {

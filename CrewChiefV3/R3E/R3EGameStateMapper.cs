@@ -32,21 +32,21 @@ namespace CrewChiefV3.RaceRoom
         private float majorTyreWearPercent = 40f;
         private float wornOutTyreWearPercent = 80f;        
 
-        private float trivialAeroDamageThreshold = 0.9999f;
+        private float trivialAeroDamageThreshold = 0.99995f;
         private float trivialEngineDamageThreshold = 0.99f;
         private float trivialTransmissionDamageThreshold = 0.99f;
 
         private float minorTransmissionDamageThreshold = 0.97f;
         private float minorEngineDamageThreshold = 0.98f;
-        private float minorAeroDamageThreshold = 0.99f;
+        private float minorAeroDamageThreshold = 0.995f;
 
         private float severeTransmissionDamageThreshold = 0.4f;
         private float severeEngineDamageThreshold = 0.4f;
-        private float severeAeroDamageThreshold = 0.9f;
+        private float severeAeroDamageThreshold = 0.95f;
 
         private float destroyedTransmissionThreshold = 0.1f;
         private float destroyedEngineThreshold = 0.1f;
-        private float destroyedAeroThreshold = 0.0f;
+        private float destroyedAeroThreshold = 0.8f;
 
         private List<CornerData.EnumWithThresholds> brakeTempThresholdsForPlayersCar = null;
 
