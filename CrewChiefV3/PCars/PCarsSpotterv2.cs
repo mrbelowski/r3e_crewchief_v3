@@ -29,16 +29,13 @@ namespace CrewChiefV3.PCars
 
         private DateTime timeToStartSpotting = DateTime.Now;
 
-        private float intervalSeconds = 50 / 1000;
-
         private Dictionary<String, List<float>> previousOpponentSpeeds = new Dictionary<String, List<float>>();
         
-        public PCarsSpotterv2(AudioPlayer audioPlayer, Boolean initialEnabledState, float intervalSeconds)
+        public PCarsSpotterv2(AudioPlayer audioPlayer, Boolean initialEnabledState)
         {
             this.audioPlayer = audioPlayer;
             this.enabled = initialEnabledState;
             this.initialEnabledState = initialEnabledState;
-            this.intervalSeconds = intervalSeconds;
             this.internalSpotter = new NoisyCartesianCoordinateSpotter(audioPlayer, initialEnabledState, carLength);
         }
 
@@ -65,7 +62,8 @@ namespace CrewChiefV3.PCars
                 audioPlayer.closeChannel();
                 return;
             }
-            pCarsAPIStruct currentState = ((CrewChiefV3.PCars.PCarsSharedMemoryReader.PCarsStructWrapper)currentStateObj).data;
+            CrewChiefV3.PCars.PCarsSharedMemoryReader.PCarsStructWrapper currentWrapper = (CrewChiefV3.PCars.PCarsSharedMemoryReader.PCarsStructWrapper)currentStateObj;
+            pCarsAPIStruct currentState = currentWrapper.data;
 
             // game state is 3 for paused, 5 for replay. No idea what 4 is...
             if (currentState.mGameState == (uint)eGameState.GAME_FRONT_END ||
@@ -76,9 +74,11 @@ namespace CrewChiefV3.PCars
                 audioPlayer.closeChannel();
                 return;
             }
-            pCarsAPIStruct lastState = ((CrewChiefV3.PCars.PCarsSharedMemoryReader.PCarsStructWrapper)lastStateObj).data;
-            DateTime now = DateTime.Now;
+            CrewChiefV3.PCars.PCarsSharedMemoryReader.PCarsStructWrapper previousWrapper = (CrewChiefV3.PCars.PCarsSharedMemoryReader.PCarsStructWrapper)lastStateObj;
+            pCarsAPIStruct lastState = previousWrapper.data;
 
+            DateTime now = new DateTime(currentWrapper.ticksWhenRead);
+            float interval = (float)(((double)currentWrapper.ticksWhenRead - (double)previousWrapper.ticksWhenRead) / (double)TimeSpan.TicksPerSecond);
             if (currentState.mRaceState == (int)eRaceState.RACESTATE_RACING &&
                 lastState.mRaceState != (int)eRaceState.RACESTATE_RACING)
             {
@@ -120,7 +120,7 @@ namespace CrewChiefV3.PCars
                             {
                                 pCarsAPIParticipantStruct previousOpponentData = PCarsGameStateMapper.getParticipantDataForName(lastState.mParticipantData, opponentData.mName, i);
                                 float[] previousPositions = new float[] { previousOpponentData.mWorldPosition[0], previousOpponentData.mWorldPosition[2] };
-                                float opponentSpeed = getSpeed(currentPositions, previousPositions, this.intervalSeconds);
+                                float opponentSpeed = getSpeed(currentPositions, previousPositions, interval);
                                 if (previousOpponentSpeeds.ContainsKey(opponentData.mName))
                                 {
                                     List<float> speeds = previousOpponentSpeeds[opponentData.mName];
@@ -151,7 +151,7 @@ namespace CrewChiefV3.PCars
                         playerRotation = (float)(2 * Math.PI) + playerRotation;
                     }
                     playerRotation = (float)(2 * Math.PI) - playerRotation;
-                    internalSpotter.triggerInternal(playerRotation, currentPlayerPosition, playerSpeed, opponentSpeeds, currentOpponentPositions, this.intervalSeconds);
+                    internalSpotter.triggerInternal(playerRotation, currentPlayerPosition, playerSpeed, opponentSpeeds, currentOpponentPositions);
                 }
             }
         }

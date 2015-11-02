@@ -27,14 +27,12 @@ namespace CrewChiefV3.RaceRoom
 
         private AudioPlayer audioPlayer;
 
-        private float intervalSeconds;
 
-        public R3ESpotterv2(AudioPlayer audioPlayer, Boolean initialEnabledState, float intervalSeconds)
+        public R3ESpotterv2(AudioPlayer audioPlayer, Boolean initialEnabledState)
         {
             this.audioPlayer = audioPlayer;
             this.enabled = initialEnabledState;
             this.initialEnabledState = initialEnabledState;
-            this.intervalSeconds = intervalSeconds;
             this.internalSpotter = new NoisyCartesianCoordinateSpotter(audioPlayer, initialEnabledState, carLength);
         }
 
@@ -114,7 +112,7 @@ namespace CrewChiefV3.RaceRoom
                     playerRotation = (float)(2 * Math.PI) + playerRotation;
                 }
                 playerRotation = (float)(2 * Math.PI) - playerRotation;
-                internalSpotter.triggerInternal(playerRotation, currentPlayerPosition, playerSpeed, opponentsSpeeds, currentOpponentPositions, this.intervalSeconds);
+                internalSpotter.triggerInternal(playerRotation, currentPlayerPosition, playerSpeed, opponentsSpeeds, currentOpponentPositions);
             }
         }
 

@@ -95,20 +95,17 @@ namespace CrewChiefV3.PCars
 
         private int maxSavedStateReuse = 10;
 
-        private float intervalSeconds = 50 / 1000;
-
         private enum NextMessageType
         {
             none, clearLeft, clearRight, clearAllRound, carLeft, carRight, threeWide, stillThere
         }
 
-        public PCarsSpotter(AudioPlayer audioPlayer, Boolean initialEnabledState, float intervalSeconds)
+        public PCarsSpotter(AudioPlayer audioPlayer, Boolean initialEnabledState)
         {
             this.audioPlayer = audioPlayer;
             this.enabled = initialEnabledState;
             this.initialEnabledState = initialEnabledState;
             this.longCarLength = carLength + gapNeededForClear;
-            this.intervalSeconds = intervalSeconds;
         }
 
         public void clearState()
@@ -143,7 +140,8 @@ namespace CrewChiefV3.PCars
                 audioPlayer.closeChannel();
                 return;
             }
-            pCarsAPIStruct currentState = ((CrewChiefV3.PCars.PCarsSharedMemoryReader.PCarsStructWrapper)currentStateObj).data;
+            CrewChiefV3.PCars.PCarsSharedMemoryReader.PCarsStructWrapper currentWrapper = (CrewChiefV3.PCars.PCarsSharedMemoryReader.PCarsStructWrapper)currentStateObj;
+            pCarsAPIStruct currentState = currentWrapper.data;
 
             // game state is 3 for paused, 5 for replay. No idea what 4 is...
             if (currentState.mGameState == (uint)eGameState.GAME_FRONT_END ||
@@ -154,8 +152,11 @@ namespace CrewChiefV3.PCars
                 audioPlayer.closeChannel();
                 return;
             }
-            pCarsAPIStruct lastState = ((CrewChiefV3.PCars.PCarsSharedMemoryReader.PCarsStructWrapper)lastStateObj).data;
-            DateTime now = DateTime.Now;
+            CrewChiefV3.PCars.PCarsSharedMemoryReader.PCarsStructWrapper previousWrapper = (CrewChiefV3.PCars.PCarsSharedMemoryReader.PCarsStructWrapper)lastStateObj;
+            pCarsAPIStruct lastState = previousWrapper.data;
+
+            DateTime now = new DateTime(currentWrapper.ticksWhenRead);
+            float interval = (float)(((double)currentWrapper.ticksWhenRead - (double)previousWrapper.ticksWhenRead) / (double)TimeSpan.TicksPerSecond);
 
             if (currentState.mRaceState == (int)eRaceState.RACESTATE_RACING &&
                 lastState.mRaceState != (int)eRaceState.RACESTATE_RACING)
@@ -226,7 +227,7 @@ namespace CrewChiefV3.PCars
                                     currentOpponentX != -1 && currentOpponentY != -1 &&
                                 previousOpponentX != 0 && previousOpponentY != 0 &&
                                     previousOpponentX != -1 && previousOpponentY != -1 &&
-                                opponentIsRacing(currentOpponentX, currentOpponentY, previousOpponentX, previousOpponentY, playerData, previousPlayerData))
+                                opponentIsRacing(currentOpponentX, currentOpponentY, previousOpponentX, previousOpponentY, playerData, previousPlayerData, interval))
                             {
                                 Side side = getSide(currentState.mOrientation[1], playerX, playerY, currentOpponentX, currentOpponentY);
                                 if (side == Side.left)
@@ -327,7 +328,7 @@ namespace CrewChiefV3.PCars
         }
 
         private Boolean opponentIsRacing(float currentOpponentX, float currentOpponentY, float previousOpponentX, float previousOpponentY,
-            pCarsAPIParticipantStruct playerData, pCarsAPIParticipantStruct previousPlayerData)
+            pCarsAPIParticipantStruct playerData, pCarsAPIParticipantStruct previousPlayerData, float interval)
         {
             float deltaX = Math.Abs(currentOpponentX - playerData.mWorldPosition[0]);
             float deltaY = Math.Abs(currentOpponentY - playerData.mWorldPosition[2]);
@@ -335,16 +336,16 @@ namespace CrewChiefV3.PCars
             {
                 return false;
             }
-            float opponentVelocityX = Math.Abs(currentOpponentX - previousOpponentX) / intervalSeconds;
-            float opponentVelocityY = Math.Abs(currentOpponentY - previousOpponentY) / intervalSeconds;
+            float opponentVelocityX = Math.Abs(currentOpponentX - previousOpponentX) / interval;
+            float opponentVelocityY = Math.Abs(currentOpponentY - previousOpponentY) / interval;
             // hard code this - if the opponent car is going < 4m/s on both axis we're not interested
             if (opponentVelocityX < 4 && opponentVelocityY < 4)
             {
                 return false;
             }
 
-            float playerVelocityX = Math.Abs(playerData.mWorldPosition[0] - previousPlayerData.mWorldPosition[0]) / intervalSeconds;
-            float playerVelocityY = Math.Abs(playerData.mWorldPosition[2] - previousPlayerData.mWorldPosition[2]) / intervalSeconds;
+            float playerVelocityX = Math.Abs(playerData.mWorldPosition[0] - previousPlayerData.mWorldPosition[0]) / interval;
+            float playerVelocityY = Math.Abs(playerData.mWorldPosition[2] - previousPlayerData.mWorldPosition[2]) / interval;
 
             if (Math.Abs(playerVelocityX - opponentVelocityX) > maxClosingSpeed || Math.Abs(playerVelocityY - opponentVelocityY) > maxClosingSpeed)
             {

@@ -43,7 +43,7 @@ namespace CrewChiefV3
 
         private float trackWidth = 10f;
 
-        private float carWidth = 1.9f;
+        private float carWidth = 1.8f;
 
         private String folderStillThere = "spotter/still_there";
         private String folderInTheMiddle = "spotter/in_the_middle";
@@ -112,7 +112,7 @@ namespace CrewChiefV3
         }
         
         public void triggerInternal(float playerRotationInRadians, float[] currentPlayerPosition,
-            float playerSpeed, List<float> opponentSpeeds, List<float[]> currentOpponentPositions, float timeInterval)
+            float playerSpeed, List<float> opponentSpeeds, List<float[]> currentOpponentPositions)
         {
             DateTime now = DateTime.Now;
 
@@ -246,7 +246,9 @@ namespace CrewChiefV3
 
             // when checking for an overlap, use the 'short' (actual) car length if we're not already overlapping on that side.
             // If we're already overlapping, use the 'long' car length - this means we don't call 'clear' till there's a small gap
-            if (Math.Abs(alignedXCoordinate) < trackWidth && Math.Abs(alignedXCoordinate) > carWidth)
+
+            // we only want to check for width separation if we haven't already got an overlap
+            if (Math.Abs(alignedXCoordinate) < trackWidth && (hasCarRight || hasCarLeft || Math.Abs(alignedXCoordinate) > carWidth))
             {
                 // we're not directly behind / ahead, but are within a track width of this car
                 if (alignedXCoordinate < 0)
@@ -291,6 +293,7 @@ namespace CrewChiefV3
             }
             if (Math.Abs(opponentSpeed - playerSpeed) > maxClosingSpeed)
             {
+                Console.WriteLine("opponent not racing, speed = " + opponentSpeed + " player speed = " + playerSpeed);
                 return false;
             }
             return true;
@@ -324,7 +327,7 @@ namespace CrewChiefV3
                 Console.WriteLine("3 wide, carsOnLeftCount " + carsOnLeftCount + " carsOnRightCount " + carsOnRightCount + " hasCarLeft " + hasCarLeft + " hasCarRight " + hasCarRight);
                 // if there's a 'pending clear' at this point (that is, we would have said "clear" but the delay time isn't up yet), then we're 
                 // still in overlap-mode so don't want to say this immediately
-                if (reportedOverlapLeft && reportedOverlapLeft)
+                if (reportedOverlapLeft && reportedOverlapRight)
                 {
                     nextMessageDue = now.Add(repeatHoldFrequency);
                 }

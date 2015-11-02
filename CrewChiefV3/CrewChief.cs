@@ -311,7 +311,7 @@ namespace CrewChiefV3
             if (gameDefinition.spotterName != null)
             {
                 spotter = (Spotter)Activator.CreateInstance(Type.GetType(gameDefinition.spotterName), 
-                    audioPlayer, spotterEnabled, (float) spotterInterval.TotalSeconds);
+                    audioPlayer, spotterEnabled);
             }
             else
             {
