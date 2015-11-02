@@ -281,7 +281,7 @@ namespace CrewChiefV3.Events
                         }
                         if (playerSector != -1 && comparisonSector != -1) {
                             List<MessageFragment> messageFragments = new List<MessageFragment>();
-                            messageFragments.Add(getSingleSectorDeltaMessageFragment(currentGameState.SessionData.SectorNumber, playerSector - comparisonSector));
+                            messageFragments.Add(getSingleSectorDeltaMessageFragment(previousGameState.SessionData.SectorNumber, playerSector - comparisonSector));
                             audioPlayer.queueClip(new QueuedMessage("sector" + previousGameState.SessionData.SectorNumber + "SectorDelta", 
                                 messageFragments, 0, this));
                         }
@@ -357,9 +357,7 @@ namespace CrewChiefV3.Events
                                     }
                                     if (practiceAndQualSectorReportsLapEnd && frequencyOfPracticeAndQualSectorDeltaReports > random.NextDouble() * 10)
                                     {
-                                        // mix up the sector reporting approach a bit...
-                                        SectorReportOption reportOption = random.NextDouble() > 0.5 ? SectorReportOption.ALL_SECTORS : SectorReportOption.COMBINED;
-                                        List<MessageFragment> sectorMessageFragments = getSectorDeltaMessages(reportOption, currentGameState.SessionData.LastSector1Time, currentGameState.SessionData.BestLapSector1Time,
+                                        List<MessageFragment> sectorMessageFragments = getSectorDeltaMessages(SectorReportOption.COMBINED, currentGameState.SessionData.LastSector1Time, currentGameState.SessionData.BestLapSector1Time,
                                             currentGameState.SessionData.LastSector2Time, currentGameState.SessionData.BestLapSector2Time, currentGameState.SessionData.LastSector3Time, currentGameState.SessionData.BestLapSector3Time);
                                         if (sectorMessageFragments.Count > 0)
                                         {
@@ -421,8 +419,7 @@ namespace CrewChiefV3.Events
                                     }
                                     if (practiceAndQualSectorReportsLapEnd && frequencyOfPracticeAndQualSectorDeltaReports > random.NextDouble() * 10)
                                     {
-                                        SectorReportOption reportOption = random.NextDouble() > 0.5 ? SectorReportOption.ALL_SECTORS : SectorReportOption.COMBINED;
-                                        List<MessageFragment> sectorMessageFragments = getSectorDeltaMessages(reportOption, currentGameState.SessionData.LastSector1Time, opponentsBestLapData[1],
+                                        List<MessageFragment> sectorMessageFragments = getSectorDeltaMessages(SectorReportOption.COMBINED, currentGameState.SessionData.LastSector1Time, opponentsBestLapData[1],
                                             currentGameState.SessionData.LastSector2Time, opponentsBestLapData[2], currentGameState.SessionData.LastSector3Time, opponentsBestLapData[3]);
                                         if (sectorMessageFragments.Count > 0)
                                         {
