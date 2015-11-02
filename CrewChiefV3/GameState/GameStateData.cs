@@ -338,7 +338,7 @@ namespace CrewChiefV3.GameState
                     lapsToCheck = OpponentLapData.Count;
                 }
                 // count-2 because we're not interested in the current lap
-                for (int i = OpponentLapData.Count - 2; i > OpponentLapData.Count - lapsToCheck && i >= 0; i--)
+                for (int i = OpponentLapData.Count - 2; i >= OpponentLapData.Count - lapsToCheck && i >= 0; i--)
                 {
                     LapData thisLapTime = OpponentLapData[i];
                     if (bestLapTimeAndSectorsSectors[0] == -1 ||
@@ -973,11 +973,12 @@ namespace CrewChiefV3.GameState
 
         public float[] getTimeAndSectorsForBestOpponentLapInWindow(int lapsToCheck, CarData.CarClassEnum carClassToCheck)
         {
+            CarData.CarClassEnum defaultCarClass = CarData.getDefaultCarClass().carClassEnum;
             float[] bestLapWithSectors =  new float[] { -1, -1, -1, -1 };
             foreach (KeyValuePair<Object, OpponentData> entry in OpponentData)
             {
-                // don't check car class for PCars - there's no car class data for opponents
-                if (entry.Value.CarClass.carClassEnum == carClassToCheck || CrewChief.gameDefinition.gameEnum != GameEnum.RACE_ROOM)
+                // if we don't know the opponent's car class, include him
+                if (entry.Value.CarClass.carClassEnum == defaultCarClass || entry.Value.CarClass.carClassEnum == carClassToCheck)
                 {
                     float[] thisOpponentsBest = entry.Value.getTimeAndSectorsForBestLapInWindow(lapsToCheck);
                     if (bestLapWithSectors[0] == -1 || (thisOpponentsBest[0] > 0 && thisOpponentsBest[0] < bestLapWithSectors[0]))
