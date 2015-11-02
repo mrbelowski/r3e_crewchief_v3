@@ -248,9 +248,9 @@ namespace CrewChiefV3
             // If we're already overlapping, use the 'long' car length - this means we don't call 'clear' till there's a small gap
 
             // we only want to check for width separation if we haven't already got an overlap
-            if (Math.Abs(alignedXCoordinate) < trackWidth && (hasCarRight || hasCarLeft || Math.Abs(alignedXCoordinate) > carWidth))
+            if (Math.Abs(alignedXCoordinate) < trackWidth)
             {
-                // we're not directly behind / ahead, but are within a track width of this car
+                // we're within a track width of this car
                 if (alignedXCoordinate < 0)
                 {
                     if (hasCarRight)
@@ -260,8 +260,9 @@ namespace CrewChiefV3
                             return Side.right;
                         }
                     }
-                    else if (Math.Abs(alignedYCoordinate) < carLength)
+                    else if (Math.Abs(alignedYCoordinate) < carLength && alignedXCoordinate * -1 > carWidth)
                     {
+                        // we have a new overlap on this side, it's only valid if we're not inside the other car
                         return Side.right;
                     }
                 }
@@ -274,7 +275,7 @@ namespace CrewChiefV3
                             return Side.left;
                         }
                     }
-                    else if (Math.Abs(alignedYCoordinate) < carLength)
+                    else if (Math.Abs(alignedYCoordinate) < carLength && alignedXCoordinate > carWidth)
                     {
                         return Side.left;
                     }
