@@ -59,47 +59,58 @@ namespace CrewChiefV3.Events
         private String folderSector1Fastest = "lap_times/sector1_fastest";
         private String folderSector2Fastest = "lap_times/sector2_fastest";
         private String folderSector3Fastest = "lap_times/sector3_fastest";
+        private String folderSector1and2Fastest = "lap_times/sector1_and_2_fastest";
+        private String folderSector2and3Fastest = "lap_times/sector2_and_3_fastest";
+        private String folderSector1and3Fastest = "lap_times/sector1_and_3_fastest";
+        private String folderAllSectorsFastest = "lap_times/sector_all_fastest";
 
         private String folderSector1Fast = "lap_times/sector1_fast";
         private String folderSector2Fast = "lap_times/sector2_fast";
         private String folderSector3Fast = "lap_times/sector3_fast";
+        private String folderSector1and2Fast = "lap_times/sector1_and_2_fast";
+        private String folderSector2and3Fast = "lap_times/sector2_and_3_fast";
+        private String folderSector1and3Fast = "lap_times/sector1_and_3_fast";
+        private String folderAllSectorsFast = "lap_times/sector_all_fast";
 
         private String folderSector1ATenthOffThePace = "lap_times/sector1_a_tenth_off_pace";
         private String folderSector2ATenthOffThePace = "lap_times/sector2_a_tenth_off_pace";
         private String folderSector3ATenthOffThePace = "lap_times/sector3_a_tenth_off_pace";
+        private String folderSector1and2ATenthOffThePace = "lap_times/sector1_and_2_a_tenth_off_pace";
+        private String folderSector2and3ATenthOffThePace = "lap_times/sector2_and_3_a_tenth_off_pace";
+        private String folderSector1and3ATenthOffThePace = "lap_times/sector1_and_3_a_tenth_off_pace";
+        private String folderAllSectorsATenthOffThePace = "lap_times/sector_all_a_tenth_off_pace";
 
         private String folderSector1TwoTenthsOffThePace = "lap_times/sector1_two_tenths_off_pace";
         private String folderSector2TwoTenthsOffThePace = "lap_times/sector2_two_tenths_off_pace";
         private String folderSector3TwoTenthsOffThePace = "lap_times/sector3_two_tenths_off_pace";
+        private String folderSector1and2TwoTenthsOffThePace = "lap_times/sector1_and_2_two_tenths_off_pace";
+        private String folderSector2and3TwoTenthsOffThePace = "lap_times/sector2_and_3_two_tenths_off_pace";
+        private String folderSector1and3TwoTenthsOffThePace = "lap_times/sector1_and_3_two_tenths_off_pace";
+        private String folderAllSectorsTwoTenthsOffThePace = "lap_times/sector_all_two_tenths_off_pace";
 
         private String folderSector1AFewTenthsOffThePace = "lap_times/sector1_a_few_tenths_off_pace";
         private String folderSector2AFewTenthsOffThePace = "lap_times/sector2_a_few_tenths_off_pace";
         private String folderSector3AFewTenthsOffThePace = "lap_times/sector3_a_few_tenths_off_pace";
+        private String folderSector1and2AFewTenthsOffThePace = "lap_times/sector1_and_2_a_few_tenths_off_pace";
+        private String folderSector2and3AFewTenthsOffThePace = "lap_times/sector2_and_3_a_few_tenths_off_pace";
+        private String folderSector1and3AFewTenthsOffThePace = "lap_times/sector1_and_3_a_few_tenths_off_pace";
+        private String folderAllSectorsAFewTenthsOffThePace = "lap_times/sector_all_a_few_tenths_off_pace";
 
         private String folderSector1ASecondOffThePace = "lap_times/sector1_a_second_off_pace";
         private String folderSector2ASecondOffThePace = "lap_times/sector2_a_second_off_pace";
         private String folderSector3ASecondOffThePace = "lap_times/sector3_a_second_off_pace";
+        private String folderSector1and2ASecondOffThePace = "lap_times/sector1_and_2_a_second_off_pace";
+        private String folderSector2and3ASecondOffThePace = "lap_times/sector2_and_3_a_second_off_pace";
+        private String folderSector1and3ASecondOffThePace = "lap_times/sector1_and_3_a_second_off_pace";
+        private String folderAllSectorsASecondOffThePace = "lap_times/sector_all_a_second_off_pace";
 
         private String folderSector1MoreThanASecondOffThePace = "lap_times/sector1_more_than_a_second_off_pace";
         private String folderSector2MoreThanASecondOffThePace = "lap_times/sector2_more_than_a_second_off_pace";
         private String folderSector3MoreThanASecondOffThePace = "lap_times/sector3_more_than_a_second_off_pace";
-
-
-        public static String folderSectorFastest = "lap_times/sector_fastest";
-        public static String folderSectorFast = "lap_times/sector_fast";
-        public static String folderSectorATenthOffPace = "lap_times/sector_a_tenth_off_pace";
-        public static String folderSectorTwoTenthsOffPace = "lap_times/sector_two_tenths_off_pace";
-        public static String folderSectorAFewTenthsOffPace = "lap_times/sector_a_few_tenths_off_pace";
-        public static String folderSectorASecondOffPace = "lap_times/sector_a_second_off_pace";
-        public static String folderSectorMoreThanASecondOffPace = "lap_times/sector_more_than_a_second_off_pace";
-
-        public static String folderSector1Is = "lap_times/sector1_is";
-        public static String folderSector2Is = "lap_times/sector2_is";
-        public static String folderSector3Is = "lap_times/sector3_is";
-        public static String folderSectors1and2Are = "lap_times/sectors_1_and_2_are";
-        public static String folderSectors1and3Are = "lap_times/sectors_1_and_3_are";
-        public static String folderSectors2and3Are = "lap_times/sectors_2_and_3_are";
-        public static String folderSectorsAllThreeAre = "lap_times/all_three_sectors_are";
+        private String folderSector1and2MoreThanASecondOffThePace = "lap_times/sector1_and_2_more_than_a_second_off_pace";
+        private String folderSector2and3MoreThanASecondOffThePace = "lap_times/sector2_and_3_more_than_a_second_off_pace";
+        private String folderSector1and3MoreThanASecondOffThePace = "lap_times/sector1_and_3_more_than_a_second_off_pace";
+        private String folderAllSectorsMoreThanASecondOffThePace = "lap_times/sector_all_more_than_a_second_off_pace";
 
 
         // if the lap is within 0.3% of the best lap time play a message
@@ -270,7 +281,7 @@ namespace CrewChiefV3.Events
                         }
                         if (playerSector != -1 && comparisonSector != -1) {
                             List<MessageFragment> messageFragments = new List<MessageFragment>();
-                            messageFragments.Add(getSectorDeltaMessageFragment(currentGameState.SessionData.SectorNumber, playerSector - comparisonSector));
+                            messageFragments.Add(getSingleSectorDeltaMessageFragment(currentGameState.SessionData.SectorNumber, playerSector - comparisonSector));
                             audioPlayer.queueClip(new QueuedMessage("sector" + previousGameState.SessionData.SectorNumber + "SectorDelta", 
                                 messageFragments, 0, this));
                         }
@@ -903,12 +914,15 @@ namespace CrewChiefV3.Events
         }
 
 
-        // TODO: refactor all this mess
-
         // ----------------- 'mode 1' - will attempt to piece together sector pace reports from fragments ---------------
         private enum SectorDeltaEnum
         {
             FASTEST, FAST, TENTH_OFF_PACE, TWO_TENTHS_OFF_PACE, A_FEW_TENTHS_OFF_PACE, A_SECOND_OFF_PACE, MORE_THAN_A_SECOND_OFF_PACE, UNKNOWN
+        }
+
+        private enum SectorSet
+        {
+            ONE, TWO, THREE, ONE_AND_TWO, ONE_AND_THREE, TWO_AND_THREE, ALL
         }
 
         private SectorDeltaEnum getEnumForSectorDelta(float delta)
@@ -948,109 +962,201 @@ namespace CrewChiefV3.Events
             return SectorDeltaEnum.UNKNOWN;
         }
 
-        private Dictionary<SectorDeltaEnum, List<int>> getSectorsAndDeltas(float sector1delta, float sector2delta, float sector3delta)
+        private String getFolderForSectorCombination(SectorDeltaEnum delta, SectorSet sectorSet)
         {
-            Dictionary<SectorDeltaEnum, List<int>> sectorsAndDeltas = new Dictionary<SectorDeltaEnum, List<int>>();
-            SectorDeltaEnum s1 = getEnumForSectorDelta(sector1delta);
-            SectorDeltaEnum s2 = getEnumForSectorDelta(sector2delta);
-            SectorDeltaEnum s3 = getEnumForSectorDelta(sector3delta);
-            if (s1 != SectorDeltaEnum.UNKNOWN)
-            {
-                sectorsAndDeltas.Add(s1, new List<int>());
-                sectorsAndDeltas[s1].Add(1);
-            }
-            if (s2 != SectorDeltaEnum.UNKNOWN)
-            {
-                if (!sectorsAndDeltas.ContainsKey(s2))
-                {
-                    sectorsAndDeltas.Add(s2, new List<int>());
-                }
-                sectorsAndDeltas[s2].Add(2);
-            }
-            if (s3 != SectorDeltaEnum.UNKNOWN)
-            {
-                if (!sectorsAndDeltas.ContainsKey(s3))
-                {
-                    sectorsAndDeltas.Add(s3, new List<int>());
-                }
-                sectorsAndDeltas[s3].Add(3);
-            }
-            return sectorsAndDeltas;
-        }
-
-        private List<MessageFragment> getSectorDeltasMessageFragments(SectorDeltaEnum sectorDeltaEnum, List<int> applicableSectors)
-        {
-            List<MessageFragment> messageFragments = new List<MessageFragment>();
-            String deltaFolder = getFolderForSectorDeltaEnum(sectorDeltaEnum);
-            String sectorsFolder = getFolderForApplicableSectors(applicableSectors);
-            if (deltaFolder != null && sectorsFolder != null)
-            {
-                messageFragments.Add(MessageFragment.Text(sectorsFolder));
-                messageFragments.Add(MessageFragment.Text(deltaFolder));
-            }
-            return messageFragments;
-        }
-
-        private String getFolderForSectorDeltaEnum(SectorDeltaEnum sectorDeltaEnum)
-        {
-            switch (sectorDeltaEnum)
+            switch (delta)
             {
                 case SectorDeltaEnum.FASTEST:
-                    return folderSectorFastest;
+                    switch (sectorSet)
+                    {
+                        case SectorSet.ALL:
+                            return folderAllSectorsFastest;
+                        case SectorSet.ONE:
+                            return folderSector1Fastest;
+                        case SectorSet.TWO:
+                            return folderSector2Fastest;
+                        case SectorSet.THREE:
+                            return folderSector3Fastest;
+                        case SectorSet.ONE_AND_TWO:
+                            return folderSector1and2Fastest;
+                        case SectorSet.ONE_AND_THREE:
+                            return folderSector1and3Fastest;
+                        case SectorSet.TWO_AND_THREE:
+                            return folderSector2and3Fastest;
+                    }
+                    break;
                 case SectorDeltaEnum.FAST:
-                    return folderSectorFast;
+                    switch (sectorSet)
+                    {
+                        case SectorSet.ALL:
+                            return folderAllSectorsFast;
+                        case SectorSet.ONE:
+                            return folderSector1Fast;
+                        case SectorSet.TWO:
+                            return folderSector2Fast;
+                        case SectorSet.THREE:
+                            return folderSector3Fast;
+                        case SectorSet.ONE_AND_TWO:
+                            return folderSector1and2Fast;
+                        case SectorSet.ONE_AND_THREE:
+                            return folderSector1and3Fast;
+                        case SectorSet.TWO_AND_THREE:
+                            return folderSector2and3Fast;
+                    }
+                    break;
                 case SectorDeltaEnum.TENTH_OFF_PACE:
-                    return folderSectorATenthOffPace;
+                    switch (sectorSet)
+                    {
+                        case SectorSet.ALL:
+                            return folderAllSectorsATenthOffThePace;
+                        case SectorSet.ONE:
+                            return folderSector1ATenthOffThePace;
+                        case SectorSet.TWO:
+                            return folderSector2ATenthOffThePace;
+                        case SectorSet.THREE:
+                            return folderSector3ATenthOffThePace;
+                        case SectorSet.ONE_AND_TWO:
+                            return folderSector1and2ATenthOffThePace;
+                        case SectorSet.ONE_AND_THREE:
+                            return folderSector1and3ATenthOffThePace;
+                        case SectorSet.TWO_AND_THREE:
+                            return folderSector2and3ATenthOffThePace;
+                    }
+                    break;
                 case SectorDeltaEnum.TWO_TENTHS_OFF_PACE:
-                    return folderSectorTwoTenthsOffPace;
+                    switch (sectorSet)
+                    {
+                        case SectorSet.ALL:
+                            return folderAllSectorsTwoTenthsOffThePace;
+                        case SectorSet.ONE:
+                            return folderSector1TwoTenthsOffThePace;
+                        case SectorSet.TWO:
+                            return folderSector2TwoTenthsOffThePace;
+                        case SectorSet.THREE:
+                            return folderSector3TwoTenthsOffThePace;
+                        case SectorSet.ONE_AND_TWO:
+                            return folderSector1and2TwoTenthsOffThePace;
+                        case SectorSet.ONE_AND_THREE:
+                            return folderSector1and3TwoTenthsOffThePace;
+                        case SectorSet.TWO_AND_THREE:
+                            return folderSector2and3TwoTenthsOffThePace;
+                    }
+                    break;
                 case SectorDeltaEnum.A_FEW_TENTHS_OFF_PACE:
-                    return folderSectorAFewTenthsOffPace;
+                    switch (sectorSet)
+                    {
+                        case SectorSet.ALL:
+                            return folderAllSectorsAFewTenthsOffThePace;
+                        case SectorSet.ONE:
+                            return folderSector1AFewTenthsOffThePace;
+                        case SectorSet.TWO:
+                            return folderSector2AFewTenthsOffThePace;
+                        case SectorSet.THREE:
+                            return folderSector3AFewTenthsOffThePace;
+                        case SectorSet.ONE_AND_TWO:
+                            return folderSector1and2AFewTenthsOffThePace;
+                        case SectorSet.ONE_AND_THREE:
+                            return folderSector1and3AFewTenthsOffThePace;
+                        case SectorSet.TWO_AND_THREE:
+                            return folderSector2and3AFewTenthsOffThePace;
+                    }
+                    break;
                 case SectorDeltaEnum.A_SECOND_OFF_PACE:
-                    return folderSectorASecondOffPace;
+                    switch (sectorSet)
+                    {
+                        case SectorSet.ALL:
+                            return folderAllSectorsASecondOffThePace;
+                        case SectorSet.ONE:
+                            return folderSector1ASecondOffThePace;
+                        case SectorSet.TWO:
+                            return folderSector2ASecondOffThePace;
+                        case SectorSet.THREE:
+                            return folderSector3ASecondOffThePace;
+                        case SectorSet.ONE_AND_TWO:
+                            return folderSector1and2ASecondOffThePace;
+                        case SectorSet.ONE_AND_THREE:
+                            return folderSector1and3ASecondOffThePace;
+                        case SectorSet.TWO_AND_THREE:
+                            return folderSector2and3ASecondOffThePace;
+                    }
+                    break;
                 case SectorDeltaEnum.MORE_THAN_A_SECOND_OFF_PACE:
-                    return folderSectorMoreThanASecondOffPace;
-                default:
-                    return null;
-            }
-        }
-
-        private String getFolderForApplicableSectors(List<int> applicableSectors)
-        {
-            if (applicableSectors.Contains(1) && applicableSectors.Contains(2) && applicableSectors.Contains(3))
-            {
-                return folderSectorsAllThreeAre;
-            }
-            if (applicableSectors.Contains(1) && applicableSectors.Contains(2))
-            {
-                return folderSectors1and2Are;
-            }
-            if (applicableSectors.Contains(1) && applicableSectors.Contains(3))
-            {
-                return folderSectors1and3Are;
-            }
-            if (applicableSectors.Contains(2) && applicableSectors.Contains(3))
-            {
-                return folderSectors2and3Are;
-            }
-            if (applicableSectors.Contains(1))
-            {
-                return folderSector1Is;
-            }
-            if (applicableSectors.Contains(2))
-            {
-                return folderSector2Is;
-            }
-            if (applicableSectors.Contains(3))
-            {
-                return folderSector3Is;
+                    switch (sectorSet)
+                    {
+                        case SectorSet.ALL:
+                            return folderAllSectorsMoreThanASecondOffThePace;
+                        case SectorSet.ONE:
+                            return folderSector1MoreThanASecondOffThePace;
+                        case SectorSet.TWO:
+                            return folderSector2MoreThanASecondOffThePace;
+                        case SectorSet.THREE:
+                            return folderSector3MoreThanASecondOffThePace;
+                        case SectorSet.ONE_AND_TWO:
+                            return folderSector1and2MoreThanASecondOffThePace;
+                        case SectorSet.ONE_AND_THREE:
+                            return folderSector1and3MoreThanASecondOffThePace;
+                        case SectorSet.TWO_AND_THREE:
+                            return folderSector2and3MoreThanASecondOffThePace;
+                    }
+                    break;
             }
             return null;
         }
 
+        private List<String> getFoldersForSectorsAndDeltas(float sector1delta, float sector2delta, float sector3delta)
+        {
+            List<String> folders = new List<string>();
+            SectorDeltaEnum s1 = getEnumForSectorDelta(sector1delta);
+            SectorDeltaEnum s2 = getEnumForSectorDelta(sector2delta);
+            SectorDeltaEnum s3 = getEnumForSectorDelta(sector3delta);
+
+            if (s1 != SectorDeltaEnum.UNKNOWN)
+            {
+                if (s2 == s1 && s3 == s1)
+                {
+                    // all three sectors
+                    folders.Add(getFolderForSectorCombination(s1, SectorSet.ALL));
+                    return folders;
+                }
+                else if (s2 == s1)
+                {
+                    folders.Add(getFolderForSectorCombination(s1, SectorSet.ONE_AND_TWO));
+                    folders.Add(getFolderForSectorCombination(s3, SectorSet.THREE));
+                    return folders;
+                }
+                else if (s3 == s1)
+                {
+                    folders.Add(getFolderForSectorCombination(s1, SectorSet.ONE_AND_THREE));
+                    folders.Add(getFolderForSectorCombination(s2, SectorSet.TWO));
+                    return folders;
+                }
+                else
+                {
+                    folders.Add(getFolderForSectorCombination(s1, SectorSet.ONE));
+                }
+            }
+            if (s2 != SectorDeltaEnum.UNKNOWN)
+            {
+                if (s2 == s3)
+                {
+                    folders.Add(getFolderForSectorCombination(s2, SectorSet.TWO_AND_THREE));
+                    return folders;
+                }
+                else
+                {
+                    folders.Add(getFolderForSectorCombination(s2, SectorSet.TWO));
+                }
+            }
+            if (s3 != SectorDeltaEnum.UNKNOWN)
+            {
+                folders.Add(getFolderForSectorCombination(s3, SectorSet.THREE));
+            }
+            return folders;
+        }
+        
         private List<MessageFragment> getSectorDeltaMessagesCombined(float playerSector1, float comparisonSector1, float playerSector2, 
             float comparisonSector2, float playerSector3, float comparisonSector3)
         {
-            List<MessageFragment> messageFragments = new List<MessageFragment>();
             float sector1delta = float.MaxValue;
             float sector2delta = float.MaxValue;
             float sector3delta = float.MaxValue;
@@ -1066,21 +1172,16 @@ namespace CrewChiefV3.Events
             {
                 sector3delta = playerSector3 - comparisonSector3;
             }
-            Dictionary<SectorDeltaEnum, List<int>> sectorsAndDeltas = getSectorsAndDeltas(sector1delta, sector2delta, sector3delta);
 
-            List <MessageFragment> messageFragmentsToPlayLast = new List<MessageFragment>();
-            foreach (KeyValuePair<SectorDeltaEnum, List<int>> sectorAndDeltas in sectorsAndDeltas)
+            List<String> folders = getFoldersForSectorsAndDeltas(sector1delta, sector2delta, sector3delta);
+            List<MessageFragment> messageFragments = new List<MessageFragment>();
+            foreach (String folder in folders)
             {
-                if (sectorAndDeltas.Value.Count == 2)
+                if (folder != null)
                 {
-                    messageFragmentsToPlayLast.AddRange(getSectorDeltasMessageFragments(sectorAndDeltas.Key, sectorAndDeltas.Value));
-                }
-                else
-                {
-                    messageFragments.AddRange(getSectorDeltasMessageFragments(sectorAndDeltas.Key, sectorAndDeltas.Value));
+                    messageFragments.Add(MessageFragment.Text(folder));
                 }
             }
-            messageFragments.AddRange(messageFragmentsToPlayLast); 
             return messageFragments;
         }
 
@@ -1095,7 +1196,7 @@ namespace CrewChiefV3.Events
             {
                 if (playerSector1 > 0 && comparisonSector1 > 0)
                 {
-                    MessageFragment fragment = getSectorDeltaMessageFragment(1, playerSector1 - comparisonSector1);
+                    MessageFragment fragment = getSingleSectorDeltaMessageFragment(1, playerSector1 - comparisonSector1);
                     if (fragment != null)
                     {
                         messageFragments.Add(fragment);
@@ -1103,7 +1204,7 @@ namespace CrewChiefV3.Events
                 }
                 if (playerSector2 > 0 && comparisonSector2 > 0)
                 {
-                    MessageFragment fragment = getSectorDeltaMessageFragment(2, playerSector2 - comparisonSector2);
+                    MessageFragment fragment = getSingleSectorDeltaMessageFragment(2, playerSector2 - comparisonSector2);
                     if (fragment != null)
                     {
                         messageFragments.Add(fragment);
@@ -1111,7 +1212,7 @@ namespace CrewChiefV3.Events
                 }
                 if (playerSector3 > 0 && comparisonSector3 > 0)
                 {
-                    MessageFragment fragment = getSectorDeltaMessageFragment(3, playerSector3 - comparisonSector3);
+                    MessageFragment fragment = getSingleSectorDeltaMessageFragment(3, playerSector3 - comparisonSector3);
                     if (fragment != null)
                     {
                         messageFragments.Add(fragment);
@@ -1193,17 +1294,17 @@ namespace CrewChiefV3.Events
                 }
                 if (minDeltaSectorNumber != 0 && reportOption != SectorReportOption.WORST_ONLY)
                 {
-                    messageFragments.Add(getSectorDeltaMessageFragment(minDeltaSectorNumber, minDelta));
+                    messageFragments.Add(getSingleSectorDeltaMessageFragment(minDeltaSectorNumber, minDelta));
                 }
                 if (maxDeltaSectorNumber != 0)
                 {
-                    messageFragments.Add(getSectorDeltaMessageFragment(maxDeltaSectorNumber, maxDelta));
+                    messageFragments.Add(getSingleSectorDeltaMessageFragment(maxDeltaSectorNumber, maxDelta));
                 }
             }
             return messageFragments;
         }
 
-        private MessageFragment getSectorDeltaMessageFragment(int sector, float delta)
+        private MessageFragment getSingleSectorDeltaMessageFragment(int sector, float delta)
         {
             if (delta <= 0.0)
             {
