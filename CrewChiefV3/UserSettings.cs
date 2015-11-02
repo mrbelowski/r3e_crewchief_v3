@@ -52,7 +52,18 @@ namespace CrewChiefV3
             propertyHelp.Add("report_sector_deltas_race", "Give sector delta information during a race.");
             propertyHelp.Add("report_sector_deltas_race_likelihood", "Probability of giving a sectors report after each race lap (0 = disabled, 1 = every lap, default 0.3 - 30% chance of sector information on each lap)");
             propertyHelp.Add("report_sector_deltas_practice_and_qual", "Give sector delta information during practice and qualifying.");
-            
+            propertyHelp.Add("frequency_of_car_close_ahead_reports", "How often to report a car close behind (being pressured). 0 (never) to 10 (as often as possible)");
+            propertyHelp.Add("frequency_of_car_close_behind_reports", "How often to report a car close in front (pressuring an opponent). 0 (never) to 10 (as often as possible)");
+            propertyHelp.Add("frequency_of_gap_ahead_reports", "How often to report a the gap to the car in front. 0 (never) to 10 (as often as possible)");
+            propertyHelp.Add("frequency_of_gap_behind_reports", "How often to report a the gap to the car behind. 0 (never) to 10 (as often as possible)");
+            propertyHelp.Add("frequency_of_opponent_race_lap_times", "How often to report fast laps times for race leader and car in front and behind. 0 (never) to 10 (as often as possible). If this is 1, times are only report if they're the session best. This criteria becomes less strict up to 10 where the time just needs to be a few tenths off session best.");
+            propertyHelp.Add("frequency_of_pearls_of_wisdom", "How often to play general encouragement messages. 0 (never) to 10 (as often as possible)");
+            propertyHelp.Add("frequency_of_player_race_lap_time_reports", "How often to report player lap times in the race. 0 (never) to 10 (as often as possible)");
+            propertyHelp.Add("frequency_of_prac_and_qual_sector_delta_reports", "How often to report player sector deltas in practice and qualifying. 0 (never) to 10 (as often as possible)");
+            propertyHelp.Add("frequency_of_race_sector_delta_reports", "How often to report a player sector deltas in race. 0 (never) to 10 (as often as possible)");
+            propertyHelp.Add("race_sector_reports_at_each_sector", "Play sector delta reports as you complete each sector");
+            propertyHelp.Add("race_sector_reports_at_lap_end", "Play sector delta reports for whole lap when you complete the lap");
+
         }
 
         public String getHelp(String propertyId)

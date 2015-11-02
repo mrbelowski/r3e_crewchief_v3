@@ -2,7 +2,9 @@ CrewChief version 3.
 
 Changelog
 ---------
-Verions 3.7.2: Fixed broken 'pace' calculation in qualifying and practice - was always using -1 seconds as best opponent laptime; Added additional checks to Raceroom blue flags; Some lap time / pace / deltas reporting tweaks to make it less intrusive; Initial work for PCars console data. No new sound pack for this version.
+Version 3.8.0: Overhauled sector time reporting to make the sound files neater and the logic for sector reports much more sensible; Fixed session end for PCars timed races; Added 'frequency_of...' options, some new and some replace existing enable / disable options. These give finer control over the behaviour of the app. For these, 0 means 'never play this message' and 10 means 'play this message whenever possible / practical'; Added some driver names. This version requires a new sound pack.
+
+Version 3.7.2: Fixed broken 'pace' calculation in qualifying and practice - was always using -1 seconds as best opponent laptime; Added additional checks to Raceroom blue flags; Some lap time / pace / deltas reporting tweaks to make it less intrusive; Initial work for PCars console data. No new sound pack for this version.
 
 Version 3.7.1: Fixed incorrect comparison lap for 'best lap' messages (wasn't taking player's laps into account); Some fixes in the sector delta and lap times reporting rules. No new sound pack for this version.
 

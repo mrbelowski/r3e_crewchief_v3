@@ -60,7 +60,7 @@
       <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="frequency_of_pearls_of_wisdom" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">7</Value>
+      <Value Profile="(Default)">5</Value>
     </Setting>
     <Setting Name="play_cut_track_warnings" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
@@ -216,16 +216,16 @@
       <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="frequency_of_race_sector_delta_reports" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">9</Value>
+      <Value Profile="(Default)">5</Value>
     </Setting>
     <Setting Name="frequency_of_opponent_race_lap_times" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">9</Value>
+      <Value Profile="(Default)">5</Value>
     </Setting>
     <Setting Name="frequency_of_player_race_lap_time_reports" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">9</Value>
+      <Value Profile="(Default)">5</Value>
     </Setting>
     <Setting Name="frequency_of_prac_and_qual_sector_delta_reports" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">9</Value>
+      <Value Profile="(Default)">8</Value>
     </Setting>
     <Setting Name="race_sector_reports_at_each_sector" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
@@ -240,16 +240,16 @@
       <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="frequency_of_gap_ahead_reports" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">6</Value>
+      <Value Profile="(Default)">7</Value>
     </Setting>
     <Setting Name="frequency_of_gap_behind_reports" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">4</Value>
     </Setting>
     <Setting Name="frequency_of_car_close_ahead_reports" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">5</Value>
+      <Value Profile="(Default)">6</Value>
     </Setting>
     <Setting Name="frequency_of_car_close_behind_reports" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">5</Value>
+      <Value Profile="(Default)">4</Value>
     </Setting>
   </Settings>
 </SettingsFile>

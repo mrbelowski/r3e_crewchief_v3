@@ -250,7 +250,7 @@ namespace CrewChiefV3.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("7")]
+        [global::System.Configuration.DefaultSettingValueAttribute("5")]
         public int frequency_of_pearls_of_wisdom {
             get {
                 return ((int)(this["frequency_of_pearls_of_wisdom"]));
@@ -874,7 +874,7 @@ namespace CrewChiefV3.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("9")]
+        [global::System.Configuration.DefaultSettingValueAttribute("5")]
         public int frequency_of_race_sector_delta_reports {
             get {
                 return ((int)(this["frequency_of_race_sector_delta_reports"]));
@@ -886,7 +886,7 @@ namespace CrewChiefV3.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("9")]
+        [global::System.Configuration.DefaultSettingValueAttribute("5")]
         public int frequency_of_opponent_race_lap_times {
             get {
                 return ((int)(this["frequency_of_opponent_race_lap_times"]));
@@ -898,7 +898,7 @@ namespace CrewChiefV3.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("9")]
+        [global::System.Configuration.DefaultSettingValueAttribute("5")]
         public int frequency_of_player_race_lap_time_reports {
             get {
                 return ((int)(this["frequency_of_player_race_lap_time_reports"]));
@@ -910,7 +910,7 @@ namespace CrewChiefV3.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("9")]
+        [global::System.Configuration.DefaultSettingValueAttribute("8")]
         public int frequency_of_prac_and_qual_sector_delta_reports {
             get {
                 return ((int)(this["frequency_of_prac_and_qual_sector_delta_reports"]));
@@ -970,7 +970,7 @@ namespace CrewChiefV3.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("6")]
+        [global::System.Configuration.DefaultSettingValueAttribute("7")]
         public int frequency_of_gap_ahead_reports {
             get {
                 return ((int)(this["frequency_of_gap_ahead_reports"]));
@@ -994,7 +994,7 @@ namespace CrewChiefV3.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("5")]
+        [global::System.Configuration.DefaultSettingValueAttribute("6")]
         public int frequency_of_car_close_ahead_reports {
             get {
                 return ((int)(this["frequency_of_car_close_ahead_reports"]));
@@ -1006,7 +1006,7 @@ namespace CrewChiefV3.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("5")]
+        [global::System.Configuration.DefaultSettingValueAttribute("4")]
         public int frequency_of_car_close_behind_reports {
             get {
                 return ((int)(this["frequency_of_car_close_behind_reports"]));
