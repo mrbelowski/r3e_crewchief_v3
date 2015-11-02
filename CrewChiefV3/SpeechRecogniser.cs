@@ -110,7 +110,7 @@ namespace CrewChiefV3
 
         public static String WHAT_ARE_MY_SECTOR_TIMES = "what are my sector times";
         public static String WHATS_MY_LAST_SECTOR_TIME = "what's my last sector time";
-
+        
         private CrewChief crewChief;
 
         public Boolean initialised = false;
@@ -130,7 +130,9 @@ namespace CrewChiefV3
             {"twenty-two", 22}, {"twenty-three", 23}, {"twenty-four", 24}, {"twenty-five", 25}, {"twenty-six", 26}, 
             {"twenty-seven", 27}, {"twenty-eight", 28}, {"twenty-nine", 29}, {"thirty", 30}, {"thirty-one", 31}, 
             {"thirty-two", 32}, {"thirty-three", 33}, {"thirty-four", 34}, {"thirty-five", 35}, {"thirty-six", 36}, 
-            {"thirty-seven", 37}, {"thirty-eight", 38}, {"thirty-nine", 39}, {"fourty", 40}
+            {"thirty-seven", 37}, {"thirty-eight", 38}, {"thirty-nine", 39}, {"fourty", 40}, {"fourty-one", 41}, 
+            {"fourty-two", 42}, {"fourty-three", 43}, {"fourty-four", 44}, {"fourty-five", 45}, {"fourty-six", 46}, 
+            {"fourty-seven", 47}, {"fourty-eight", 48}, {"fourty-nine", 49}, {"fifty", 50}
         };
 
         public void Dispose()
@@ -210,6 +212,8 @@ namespace CrewChiefV3
             }
             try
             {
+
+
                 Choices info0 = new Choices();
                 info0.Add(new string[] { "how's my", "how is my" });
                 Choices info1 = new Choices();
