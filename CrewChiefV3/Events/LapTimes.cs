@@ -279,43 +279,8 @@ namespace CrewChiefV3.Events
             }
 
             if (!currentGameState.PitData.OnInLap && !currentGameState.PitData.OnOutLap)
-            {                
-                // report sector delta at the completion of a sector?
-                if (currentGameState.SessionData.IsNewSector && (practiceAndQualSectorReportsAtEachSector || raceSectorReportsAtEachSector))
-                {                   
-                    double r = random.NextDouble() * 10;
-                    Boolean canPlayForRace = frequencyOfRaceSectorDeltaReports > r;
-                    Boolean canPlayForPracAndQual = frequencyOfPracticeAndQualSectorDeltaReports > r;
-                    if ((currentGameState.SessionData.SessionType == SessionType.Race && canPlayForRace) ||
-                        ((currentGameState.SessionData.SessionType == SessionType.Practice || currentGameState.SessionData.SessionType == SessionType.Qualify ||
-                        currentGameState.SessionData.SessionType == SessionType.HotLap) && canPlayForPracAndQual))
-                    {                        
-                        float playerSector = -1;
-                        float comparisonSector = -1;
-                        switch (currentGameState.SessionData.SectorNumber) {
-                            case 1:
-                                playerSector = currentGameState.SessionData.LastSector3Time;
-                                comparisonSector = lapAndSectorsComparisonData[3];
-                                break;
-                            case 2:
-                                playerSector = currentGameState.SessionData.LastSector1Time;
-                                comparisonSector = lapAndSectorsComparisonData[1];
-                                break;
-                            case 3:
-                                playerSector = currentGameState.SessionData.LastSector2Time;
-                                comparisonSector = lapAndSectorsComparisonData[2];
-                                break;
-                        }
-                        if (playerSector != -1 && comparisonSector != -1) {
-                            String folder = getSingleSectorDeltaMessageFolder(previousGameState.SessionData.SectorNumber, playerSector - comparisonSector,
-                                currentGameState.SessionData.SessionType != SessionType.Race);
-                            if (folder != null) {
-                                audioPlayer.queueClip(new QueuedMessage(folder, 0, this));
-                            }                            
-                        }
-                    }
-                }
-
+            {
+                Boolean sectorsReportedForLap = false;                
                 if (currentGameState.SessionData.IsNewLap && 
                     ((currentGameState.SessionData.SessionType == SessionType.HotLap && currentGameState.SessionData.CompletedLaps > 0) || currentGameState.SessionData.CompletedLaps > 1))
                 {
@@ -377,6 +342,7 @@ namespace CrewChiefV3.Events
                                         if (sectorMessageFragments.Count > 0)
                                         {
                                             audioPlayer.queueClip(new QueuedMessage("sectorsHotLap", sectorMessageFragments, 0, this));
+                                            sectorsReportedForLap = true;
                                         }
                                     }
                                 }
@@ -439,6 +405,7 @@ namespace CrewChiefV3.Events
                                         if (sectorMessageFragments.Count > 0)
                                         {
                                             audioPlayer.queueClip(new QueuedMessage("sectorsQual", sectorMessageFragments, 0, this));
+                                            sectorsReportedForLap = true;
                                         }
                                     }
                                 }
@@ -494,19 +461,23 @@ namespace CrewChiefV3.Events
                                     }
                                 }
 
-                                // only report sectors if we've not reported the laptime
-                                if (raceSectorReportsAtLapEnd && frequencyOfRaceSectorDeltaReports > random.NextDouble() * 10 && !playedLapTime)
+                                if (raceSectorReportsAtLapEnd && frequencyOfRaceSectorDeltaReports > random.NextDouble() * 10)
                                 {
-                                    double r = random.NextDouble();
                                     SectorReportOption reportOption = SectorReportOption.COMBINED;
-                                    if (r > 0.66)
+                                    if (playedLapTime || playedLapMessage)
                                     {
-                                        reportOption = SectorReportOption.BEST_AND_WORST;
-                                    }
-                                    else if (r > 0.33)
-                                    {
+                                        // if we've already played a laptime or a lap rating, use the short sector message
                                         reportOption = SectorReportOption.WORST_ONLY;
                                     }
+                                    else
+                                    {
+                                        double r = random.NextDouble();
+                                        if (r > 0.5)
+                                        {
+                                            reportOption = SectorReportOption.BEST_AND_WORST;
+                                        }
+                                    }
+                                    
                                     List<MessageFragment> sectorMessageFragments = getSectorDeltaMessages(reportOption, currentGameState.SessionData.LastSector1Time, lapAndSectorsComparisonData[1],
                                             currentGameState.SessionData.LastSector2Time, lapAndSectorsComparisonData[2], currentGameState.SessionData.LastSector3Time, lapAndSectorsComparisonData[3], false);
                                     if (sectorMessageFragments.Count > 0)
@@ -514,6 +485,7 @@ namespace CrewChiefV3.Events
                                         QueuedMessage message = new QueuedMessage("sectorsRace", sectorMessageFragments, 0, this);
                                         message.maxPermittedQueueLengthForMessage = maxQueueLengthForRaceSectorDeltaReports;
                                         audioPlayer.queueClip(message);
+                                        sectorsReportedForLap = true;
                                     }
                                 }
 
@@ -553,6 +525,44 @@ namespace CrewChiefV3.Events
                         }
                     }
                     lapIsValid = true;
+                }
+                // report sector delta at the completion of a sector?
+                if (!sectorsReportedForLap && currentGameState.SessionData.IsNewSector && (practiceAndQualSectorReportsAtEachSector || raceSectorReportsAtEachSector))
+                {
+                    double r = random.NextDouble() * 10;
+                    Boolean canPlayForRace = frequencyOfRaceSectorDeltaReports > r;
+                    Boolean canPlayForPracAndQual = frequencyOfPracticeAndQualSectorDeltaReports > r;
+                    if ((currentGameState.SessionData.SessionType == SessionType.Race && canPlayForRace) ||
+                        ((currentGameState.SessionData.SessionType == SessionType.Practice || currentGameState.SessionData.SessionType == SessionType.Qualify ||
+                        currentGameState.SessionData.SessionType == SessionType.HotLap) && canPlayForPracAndQual))
+                    {
+                        float playerSector = -1;
+                        float comparisonSector = -1;
+                        switch (currentGameState.SessionData.SectorNumber)
+                        {
+                            case 1:
+                                playerSector = currentGameState.SessionData.LastSector3Time;
+                                comparisonSector = lapAndSectorsComparisonData[3];
+                                break;
+                            case 2:
+                                playerSector = currentGameState.SessionData.LastSector1Time;
+                                comparisonSector = lapAndSectorsComparisonData[1];
+                                break;
+                            case 3:
+                                playerSector = currentGameState.SessionData.LastSector2Time;
+                                comparisonSector = lapAndSectorsComparisonData[2];
+                                break;
+                        }
+                        if (playerSector != -1 && comparisonSector != -1)
+                        {
+                            String folder = getSingleSectorDeltaMessageFolder(previousGameState.SessionData.SectorNumber, playerSector - comparisonSector,
+                                currentGameState.SessionData.SessionType != SessionType.Race);
+                            if (folder != null)
+                            {
+                                audioPlayer.queueClip(new QueuedMessage(folder, 0, this));
+                            }
+                        }
+                    }
                 }
             }
         }
