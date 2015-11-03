@@ -107,7 +107,7 @@ namespace CrewChiefV3.Events
 
                         // this opponent has just completed a lap - do we need to report it? if it's fast overall and more than
                         // a tenth quicker then his previous best we do...
-                        if (currentGameState.SessionData.SessionType == SessionType.Race && opponentData.CurrentBestLapTime <= currentFastestLap &&
+                        if (currentGameState.SessionData.SessionType == SessionType.Race && opponentData.CompletedLaps > 2 && opponentData.LastLapTime <= currentFastestLap &&
                             AudioPlayer.availableDriverNames.Contains(DriverNameHelper.getUsableNameForRawName(opponentData.DriverRawName)))
                         {
                             audioPlayer.queueClip(new QueuedMessage("new_fastest_lap", MessageContents(folderNewFastestLapFor, opponentData,
