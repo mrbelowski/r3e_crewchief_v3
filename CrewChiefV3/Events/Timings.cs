@@ -38,6 +38,9 @@ namespace CrewChiefV3.Events
         private int carCloseAheadReportFrequency = UserSettings.GetUserSettings().getInt("frequency_of_car_close_ahead_reports");
         private int carCloseBehindReportFrequency = UserSettings.GetUserSettings().getInt("frequency_of_car_close_behind_reports");
 
+        // if true, don't give as many gap reports at the start/finish - stops the lap start getting too crowded with messages
+        private Boolean preferGapReportsMidLap = true;
+
         private List<float> gapsInFront;
 
         private List<float> gapsBehind;
@@ -151,6 +154,20 @@ namespace CrewChiefV3.Events
             playedGapBehindForThisLap = false;
         }
 
+        // adds 0, 1, or 2 to the sectors to wait. This means there's a 2 in 3 chance that a gap report
+        // scheduled for the lap end will be moved to a sector
+        private int adjustForMidLapPreference(int currentSector, int sectorsTillNextReport)
+        {
+            if (preferGapReportsMidLap && (currentSector + sectorsTillNextReport - 1) % 3 == 0)
+            {
+                // note the 0 here - we allow *some* gap reports to remain at the lap end
+                int adjustment = rand.Next(0, 3);
+                Console.WriteLine("Adjusting gap report wait from " + sectorsTillNextReport + " to " + (sectorsTillNextReport + adjustment));
+                return sectorsTillNextReport + adjustment;
+            }
+            return sectorsTillNextReport;
+        }
+
         protected override void triggerInternal(GameStateData previousGameState, GameStateData currentGameState)
         {
             isLeading = currentGameState.SessionData.Position == 1;
@@ -210,7 +227,8 @@ namespace CrewChiefV3.Events
                             if (sectorsSinceLastCloseCarAheadReport >= sectorsUntilNextCloseCarAheadReport)
                             {
                                 sectorsSinceLastCloseCarAheadReport = 0;
-                                sectorsUntilNextCloseCarAheadReport = rand.Next(closeAheadMinSectorWait, closeAheadMaxSectorWait);
+                                sectorsUntilNextCloseCarAheadReport = adjustForMidLapPreference(currentGameState.SessionData.SectorNumber,
+                                    rand.Next(closeAheadMinSectorWait, closeAheadMaxSectorWait));
                                 audioPlayer.queueClip(new QueuedMessage(folderBeingHeldUp, 0, this));
                                 gapInFrontAtLastReport = gapsInFront[0];
                             }
@@ -218,7 +236,8 @@ namespace CrewChiefV3.Events
                         else if (gapInFrontStatus != GapStatus.NONE && sectorsSinceLastGapAheadReport >= sectorsUntilNextGapAheadReport)
                         {
                             sectorsSinceLastGapAheadReport = 0;
-                            sectorsUntilNextGapAheadReport = rand.Next(gapAheadMinSectorWait, gapAheadMaxSectorWait);
+                            sectorsUntilNextGapAheadReport = adjustForMidLapPreference(currentGameState.SessionData.SectorNumber,
+                                rand.Next(gapAheadMinSectorWait, gapAheadMaxSectorWait));
                             TimeSpanWrapper gapInFront = TimeSpanWrapper.FromMilliseconds(gapsInFront[0] * 1000, true);
                             Boolean readGap = gapInFront.timeSpan.Seconds > 0 || gapInFront.timeSpan.Milliseconds > 50;
                             if (readGap)
@@ -252,7 +271,8 @@ namespace CrewChiefV3.Events
                             if (sectorsSinceLastCloseCarBehindReport >= sectorsUntilNextCloseCarBehindReport)
                             {
                                 sectorsSinceLastCloseCarBehindReport = 0;
-                                sectorsUntilNextCloseCarBehindReport = rand.Next(closeBehindMinSectorWait, closeBehindMaxSectorWait);
+                                sectorsUntilNextCloseCarBehindReport = adjustForMidLapPreference(currentGameState.SessionData.SectorNumber,
+                                    rand.Next(closeBehindMinSectorWait, closeBehindMaxSectorWait));
                                 audioPlayer.queueClip(new QueuedMessage(folderBeingPressured, 0, this));
                                 gapBehindAtLastReport = gapsBehind[0];
                             }
@@ -260,7 +280,8 @@ namespace CrewChiefV3.Events
                         else if (gapBehindStatus != GapStatus.NONE && sectorsSinceLastGapBehindReport >= sectorsUntilNextGapBehindReport)
                         {
                             sectorsSinceLastGapBehindReport = 0;
-                            sectorsUntilNextGapBehindReport = rand.Next(gapBehindMinSectorWait, gapBehindMaxSectorWait);
+                            sectorsUntilNextGapBehindReport = adjustForMidLapPreference(currentGameState.SessionData.SectorNumber,
+                                rand.Next(gapBehindMinSectorWait, gapBehindMaxSectorWait));
                             TimeSpanWrapper gapBehind = TimeSpanWrapper.FromMilliseconds(gapsBehind[0] * 1000, true);
                             Boolean readGap = gapBehind.timeSpan.Seconds > 0 || gapBehind.timeSpan.Milliseconds > 50;
                             if (readGap)
