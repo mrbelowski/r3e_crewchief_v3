@@ -180,6 +180,8 @@ namespace CrewChiefV3.GameState
         // Current position (1 = first place)
         public int Position = 0;
 
+        public int UnFilteredPosition = 0;
+
         public float GameTimeAtLastPositionFrontChange = 0;
 
         public float GameTimeAtLastPositionBehindChange = 0;
@@ -266,6 +268,8 @@ namespace CrewChiefV3.GameState
         public String DriverRawName = null;
 
         public int Position = 0;
+
+        public int UnFilteredPosition = 0;
 
         public float SessionTimeAtLastPositionChange = -1;
         
@@ -423,7 +427,7 @@ namespace CrewChiefV3.GameState
                     {
                         lapData.LapTime = estimatedLapTime;
                         LastLapTime = estimatedLapTime;
-                        if (lapData.IsValid && (PreviousBestLapTime == -1 || PreviousBestLapTime > lapData.LapTime))
+                        if (lapData.IsValid && (CurrentBestLapTime == -1 || CurrentBestLapTime > lapData.LapTime))
                         {
                             PreviousBestLapTime = CurrentBestLapTime;
                             CurrentBestLapTime = lapData.LapTime;
@@ -446,7 +450,7 @@ namespace CrewChiefV3.GameState
                 AddSectorData(position, providedLapTime, gameTimeAtLapEnd, lapIsValid, isRaining, trackTemp, airTemp);
                 lapData.LapTime = providedLapTime;
                 LastLapTime = providedLapTime;
-                if (lapData.IsValid && (PreviousBestLapTime == -1 || PreviousBestLapTime > lapData.LapTime))
+                if (lapData.IsValid && (CurrentBestLapTime == -1 || CurrentBestLapTime > lapData.LapTime))
                 {
                     PreviousBestLapTime = CurrentBestLapTime;
                     CurrentBestLapTime = lapData.LapTime;
@@ -815,7 +819,7 @@ namespace CrewChiefV3.GameState
         // some convenience methods
         public Boolean isLast()
         {
-            return SessionData.Position == SessionData.NumCars;
+            return SessionData.UnFilteredPosition == SessionData.NumCars;
         }
 
         public List<String> getRawDriverNames()

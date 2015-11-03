@@ -213,6 +213,7 @@ namespace CrewChiefV3.PCars
             currentGameState.SessionData.CompletedLaps = (int)viewedParticipant.mLapsCompleted;
             currentGameState.SessionData.SectorNumber = (int)viewedParticipant.mCurrentSector;
             currentGameState.SessionData.Position = (int)viewedParticipant.mRacePosition;
+            currentGameState.SessionData.UnFilteredPosition = (int)viewedParticipant.mRacePosition;
             currentGameState.SessionData.IsNewSector = previousGameState == null || viewedParticipant.mCurrentSector != previousGameState.SessionData.SectorNumber;
             currentGameState.PositionAndMotionData.DistanceRoundTrack = viewedParticipant.mCurrentLapDistance;
           
@@ -979,6 +980,7 @@ namespace CrewChiefV3.PCars
             }
             opponentData.Speed = speed;
             opponentData.Position = racePosition;
+            opponentData.UnFilteredPosition = racePosition;
             opponentData.WorldPosition = currentWorldPosition;
             opponentData.IsNewLap = false;
             if (opponentData.CurrentSectorNumber != sector)
@@ -1012,6 +1014,7 @@ namespace CrewChiefV3.PCars
             OpponentData opponentData = new OpponentData();
             opponentData.DriverRawName = participantStruct.mName.Trim();
             opponentData.Position = (int)participantStruct.mRacePosition;
+            opponentData.UnFilteredPosition = opponentData.Position;
             opponentData.CompletedLaps = (int)participantStruct.mLapsCompleted;
             opponentData.CurrentSectorNumber = (int)participantStruct.mCurrentSector;
             opponentData.WorldPosition = new float[] { participantStruct.mWorldPosition[0], participantStruct.mWorldPosition[2] };

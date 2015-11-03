@@ -251,11 +251,21 @@ namespace CrewChiefV3
                 {
                     if (tenths == 0)
                     {
-                        if (timeSpan.Seconds == 1) {
-                            messages.Add(folderSecond);
-                        }
-                        else if(timeSpan.Seconds > 1)
+                        if (timeSpan.Minutes == 0)
                         {
+                            if (timeSpan.Seconds == 1)
+                            {
+                                messages.Add(folderSecond);
+                            }
+                            else
+                            {
+                                messages.Add(folderSeconds);
+                            }
+                        }
+                        else
+                        {
+                            messages.Add(folderNamePoint);
+                            messages.Add(folderNameOh);
                             messages.Add(folderSeconds);
                         }
                     }

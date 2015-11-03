@@ -344,6 +344,7 @@ namespace CrewChiefV3.RaceRoom
             currentGameState.SessionData.PreviousLapWasValid = shared.LapTimePrevious > 0;
             currentGameState.SessionData.NumCars = shared.NumCars;
             currentGameState.SessionData.Position = getRacePosition(shared.slot_id, currentGameState.SessionData.Position, shared.Position, currentGameState.Now);
+            currentGameState.SessionData.UnFilteredPosition = shared.Position;
             currentGameState.SessionData.TimeDeltaBehind = shared.TimeDeltaBehind;
             currentGameState.SessionData.TimeDeltaFront = shared.TimeDeltaFront;
 
@@ -556,7 +557,8 @@ namespace CrewChiefV3.RaceRoom
                                 }
                             }
                             float secondsSinceLastUpdate = (float)new TimeSpan(currentGameState.Ticks - previousGameState.Ticks).TotalSeconds;
-                            upateOpponentData(currentOpponentData, getNameFromBytes(participantStruct.driver_info.nameByteArray), currentOpponentRacePosition, currentOpponentLapsCompleted,
+                            upateOpponentData(currentOpponentData, getNameFromBytes(participantStruct.driver_info.nameByteArray), currentOpponentRacePosition,
+                                    participantStruct.place, currentOpponentLapsCompleted,
                                     currentOpponentSector, sectorTime, participantStruct.lap_time_current_self,
                                     isEnteringPits || isLeavingPits, participantStruct.current_lap_valid == 1,
                                     currentGameState.SessionData.SessionRunningTime, secondsSinceLastUpdate,
@@ -1157,7 +1159,7 @@ namespace CrewChiefV3.RaceRoom
             }
         }
 
-        private void upateOpponentData(OpponentData opponentData, String driverName, int racePosition, int completedLaps, int sector, float sectorTime, 
+        private void upateOpponentData(OpponentData opponentData, String driverName, int racePosition, int unfilteredRacePosition, int completedLaps, int sector, float sectorTime, 
             float currentLapTime, Boolean isInPits, Boolean lapIsValid, float sessionRunningTime, float secondsSinceLastUpdate, float[] currentWorldPosition, 
             float[] previousWorldPosition, float distanceRoundTrack, Boolean updateDriverName, int tire_type)
         {
@@ -1185,6 +1187,7 @@ namespace CrewChiefV3.RaceRoom
                 opponentData.SessionTimeAtLastPositionChange = sessionRunningTime;
             }
             opponentData.Position = racePosition;
+            opponentData.UnFilteredPosition = unfilteredRacePosition;
             opponentData.WorldPosition = currentWorldPosition;
             opponentData.IsNewLap = false;            
             if (opponentData.CurrentSectorNumber != sector)
@@ -1226,6 +1229,7 @@ namespace CrewChiefV3.RaceRoom
             OpponentData opponentData = new OpponentData();
             opponentData.DriverRawName = driverName;
             opponentData.Position = participantStruct.place;
+            opponentData.UnFilteredPosition = opponentData.Position;
             opponentData.CompletedLaps = participantStruct.completed_laps;
             opponentData.CurrentSectorNumber = participantStruct.track_sector;
             opponentData.WorldPosition = new float[] { participantStruct.position.X, participantStruct.position.Z };
