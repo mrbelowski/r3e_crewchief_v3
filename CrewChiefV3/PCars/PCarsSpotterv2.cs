@@ -120,7 +120,17 @@ namespace CrewChiefV3.PCars
                             {
                                 pCarsAPIParticipantStruct previousOpponentData = PCarsGameStateMapper.getParticipantDataForName(lastState.mParticipantData, opponentData.mName, i);
                                 float[] previousPositions = new float[] { previousOpponentData.mWorldPosition[0], previousOpponentData.mWorldPosition[2] };
-                                float opponentSpeed = getSpeed(currentPositions, previousPositions, interval);
+                                float opponentSpeed;
+
+                                // TODO: proper speed interpolation for network data. For no just use the player speed (i.e. don't discount any cars because of their speeds)
+                                if (CrewChief.gameDefinition.gameEnum == GameEnum.PCARS_NETWORK) 
+                                {
+                                    opponentSpeed = playerSpeed;
+                                }
+                                else 
+                                {
+                                    opponentSpeed = getSpeed(currentPositions, previousPositions, interval);
+                                }
                                 if (previousOpponentSpeeds.ContainsKey(opponentData.mName))
                                 {
                                     List<float> speeds = previousOpponentSpeeds[opponentData.mName];
