@@ -296,6 +296,8 @@ namespace CrewChiefV3.GameState
         public float bestSector3Time = -1;
 
         public float LastLapTime = -1;
+
+        public Boolean LastLapValid = true;
         
         public List<LapData> OpponentLapData = new List<LapData>();
 
@@ -423,6 +425,7 @@ namespace CrewChiefV3.GameState
                 if (lapData.SectorTimes.Count > 2)
                 {
                     float estimatedLapTime = lapData.SectorTimes.Sum();
+                    LastLapValid = lapData.IsValid;
                     if (estimatedLapTime > worldRecordLapTime - 0.1)
                     {
                         lapData.LapTime = estimatedLapTime;
@@ -435,6 +438,7 @@ namespace CrewChiefV3.GameState
                     }
                     else
                     {
+                        LastLapValid = false;
                         LastLapTime = -1;
                     }
                 }
@@ -455,6 +459,7 @@ namespace CrewChiefV3.GameState
                     PreviousBestLapTime = CurrentBestLapTime;
                     CurrentBestLapTime = lapData.LapTime;
                 }
+                LastLapValid = lapData.IsValid;
             }
         }
 

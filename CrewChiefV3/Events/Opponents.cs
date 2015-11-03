@@ -101,13 +101,26 @@ namespace CrewChiefV3.Events
                     // TODO: if this opponent's lap is the best overall, announce it ("fastest lap for [bob], [lap time]")
 
                     if (opponentData.IsNewLap && opponentData.LastLapTime > 0 && opponentData.OpponentLapData.Count > 1 &&
-                        opponentData.CurrentBestLapTime != -1)
+                        opponentData.LastLapValid && opponentData.CurrentBestLapTime != -1)
                     {
-                        float currentFastestLap = Math.Min(currentGameState.SessionData.PlayerLapTimeSessionBest, currentGameState.SessionData.OpponentsLapTimeSessionBestOverall);
+                        float currentFastestLap;
+                        if (currentGameState.SessionData.PlayerLapTimeSessionBest == -1)
+                        {
+                            currentFastestLap = currentGameState.SessionData.OpponentsLapTimeSessionBestOverall;
+                        }
+                        else if (currentGameState.SessionData.OpponentsLapTimeSessionBestOverall == -1)
+                        {
+                            currentFastestLap = currentGameState.SessionData.PlayerLapTimeSessionBest;
+                        }
+                        else
+                        {
+                            currentFastestLap = Math.Min(currentGameState.SessionData.PlayerLapTimeSessionBest, currentGameState.SessionData.OpponentsLapTimeSessionBestOverall);
+                        }
 
                         // this opponent has just completed a lap - do we need to report it? if it's fast overall and more than
                         // a tenth quicker then his previous best we do...
-                        if (currentGameState.SessionData.SessionType == SessionType.Race && opponentData.CompletedLaps > 2 && opponentData.LastLapTime <= currentFastestLap &&
+                        if (((currentGameState.SessionData.SessionType == SessionType.Race && opponentData.CompletedLaps > 2) ||
+                            (currentGameState.SessionData.SessionType != SessionType.Race && opponentData.CompletedLaps > 1)) && opponentData.LastLapTime <= currentFastestLap &&
                             AudioPlayer.availableDriverNames.Contains(DriverNameHelper.getUsableNameForRawName(opponentData.DriverRawName)))
                         {
                             audioPlayer.queueClip(new QueuedMessage("new_fastest_lap", MessageContents(folderNewFastestLapFor, opponentData,
