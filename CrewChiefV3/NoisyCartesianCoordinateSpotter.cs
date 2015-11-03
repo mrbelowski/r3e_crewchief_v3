@@ -295,7 +295,6 @@ namespace CrewChiefV3
             }
             if (Math.Abs(opponentSpeed - playerSpeed) > maxClosingSpeed)
             {
-                Console.WriteLine("opponent not racing, speed = " + opponentSpeed + " player speed = " + playerSpeed);
                 return false;
             }
             return true;

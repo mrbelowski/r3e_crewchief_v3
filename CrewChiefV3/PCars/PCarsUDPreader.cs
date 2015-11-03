@@ -30,10 +30,6 @@ namespace CrewChiefV3.PCars
         private IPEndPoint broadcastAddress;
         private UdpClient udpClient;
 
-        private byte[] timsDumpFileData = File.ReadAllBytes("c:/projects/udp.bin");
-
-        Boolean readFromTimsDumpFile = true;
-
         public override void DumpRawGameData()
         {
             if (dumpToFile && dataToDump != null && dataToDump.Count > 0 && filenameToDump != null)
@@ -77,31 +73,11 @@ namespace CrewChiefV3.PCars
             this.udpClient.Client.Bind(this.broadcastAddress);
             this.receivedDataBuffer = new byte[this.udpClient.Client.ReceiveBufferSize];
             this.udpClient.Client.BeginReceive(this.receivedDataBuffer, 0, this.receivedDataBuffer.Length, SocketFlags.None, ReceiveCallback, this.udpClient.Client);
-
-            if (readFromTimsDumpFile) 
-            {
-                ThreadStart readFileWork = readTimsFile;
-                Thread readFileThread = new Thread(readFileWork);
-                readFileThread.Start();
-            }
-            initialised = true;
+            this.initialised = true;
 
             return true;
         }
-
-        private void readTimsFile()
-        {
-            int offset = 0;
-            while (offset < timsDumpFileData.Count())
-            {
-                lock (this)
-                {
-                    offset = readFromOffset(offset, timsDumpFileData);
-                    Thread.Sleep(20);
-                }
-            }
-        }
-
+        
         private void ReceiveCallback(IAsyncResult result)
         {
             //Socket was the passed in as the state
