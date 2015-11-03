@@ -6,7 +6,7 @@
       <Value Profile="(Default)">sounds</Value>
     </Setting>
     <Setting Name="background_volume" Type="System.Single" Scope="User">
-      <Value Profile="(Default)">0.25</Value>
+      <Value Profile="(Default)">0.3</Value>
     </Setting>
     <Setting Name="update_interval" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">100</Value>
@@ -36,7 +36,7 @@
       <Value Profile="(Default)">0.5</Value>
     </Setting>
     <Setting Name="time_after_race_start_for_spotter" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">30</Value>
+      <Value Profile="(Default)">20</Value>
     </Setting>
     <Setting Name="min_speed_for_spotter" Type="System.Single" Scope="User">
       <Value Profile="(Default)">10</Value>
@@ -186,10 +186,10 @@
       <Value Profile="(Default)" />
     </Setting>
     <Setting Name="cumulative_lap_lockup_warning_threshold" Type="System.Single" Scope="User">
-      <Value Profile="(Default)">4</Value>
+      <Value Profile="(Default)">3</Value>
     </Setting>
     <Setting Name="cumulative_lap_wheelspin_warning_threshold" Type="System.Single" Scope="User">
-      <Value Profile="(Default)">5</Value>
+      <Value Profile="(Default)">4</Value>
     </Setting>
     <Setting Name="use_listen_beep" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>

@@ -37,7 +37,7 @@ namespace CrewChiefV3.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0.25")]
+        [global::System.Configuration.DefaultSettingValueAttribute("0.3")]
         public float background_volume {
             get {
                 return ((float)(this["background_volume"]));
@@ -154,7 +154,7 @@ namespace CrewChiefV3.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("30")]
+        [global::System.Configuration.DefaultSettingValueAttribute("20")]
         public int time_after_race_start_for_spotter {
             get {
                 return ((int)(this["time_after_race_start_for_spotter"]));
@@ -754,7 +754,7 @@ namespace CrewChiefV3.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("4")]
+        [global::System.Configuration.DefaultSettingValueAttribute("3")]
         public float cumulative_lap_lockup_warning_threshold {
             get {
                 return ((float)(this["cumulative_lap_lockup_warning_threshold"]));
@@ -766,7 +766,7 @@ namespace CrewChiefV3.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("5")]
+        [global::System.Configuration.DefaultSettingValueAttribute("4")]
         public float cumulative_lap_wheelspin_warning_threshold {
             get {
                 return ((float)(this["cumulative_lap_wheelspin_warning_threshold"]));
