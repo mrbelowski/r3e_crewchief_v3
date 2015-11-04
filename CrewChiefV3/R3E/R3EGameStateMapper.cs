@@ -16,10 +16,6 @@ namespace CrewChiefV3.RaceRoom
         public static String playerName = null;
         private TimeSpan minimumSessionParticipationTime = TimeSpan.FromSeconds(6);
 
-        // for locking / spinning check - the tolerance values are built into these tyre diameter values
-        private float minTyreCirumference = 0.4f * (float)Math.PI;  // 0.4m diameter
-        private float maxTyreCirumference = 1.2f * (float)Math.PI;
-
         private List<CornerData.EnumWithThresholds> suspensionDamageThresholds = new List<CornerData.EnumWithThresholds>();
         private List<CornerData.EnumWithThresholds> tyreWearThresholds = new List<CornerData.EnumWithThresholds>();
         private List<CornerData.EnumWithThresholds> brakeDamageThresholds = new List<CornerData.EnumWithThresholds>();
@@ -883,14 +879,14 @@ namespace CrewChiefV3.RaceRoom
             // some simple locking / spinning checks
             if (shared.CarSpeed > 7)
             {
-                float minRotatingSpeed = 2 * (float)Math.PI * shared.CarSpeed / maxTyreCirumference;
+                float minRotatingSpeed = 2 * (float)Math.PI * shared.CarSpeed / currentGameState.carClass.maxTyreCircumference;
                 // I think the tyreRPS is actually radians per second...
                 currentGameState.TyreData.LeftFrontIsLocked = Math.Abs(shared.wheel_speed.front_left) < minRotatingSpeed;
                 currentGameState.TyreData.RightFrontIsLocked = Math.Abs(shared.wheel_speed.front_right) < minRotatingSpeed;
                 currentGameState.TyreData.LeftRearIsLocked = Math.Abs(shared.wheel_speed.rear_left) < minRotatingSpeed;
                 currentGameState.TyreData.RightRearIsLocked = Math.Abs(shared.wheel_speed.rear_right) < minRotatingSpeed;
 
-                float maxRotatingSpeed = 2 * (float)Math.PI * shared.CarSpeed / minTyreCirumference;
+                float maxRotatingSpeed = 2 * (float)Math.PI * shared.CarSpeed / currentGameState.carClass.minTyreCircumference;
                 currentGameState.TyreData.LeftFrontIsSpinning = Math.Abs(shared.wheel_speed.front_left) > maxRotatingSpeed;
                 currentGameState.TyreData.RightFrontIsSpinning = Math.Abs(shared.wheel_speed.front_right) > maxRotatingSpeed;
                 currentGameState.TyreData.LeftRearIsSpinning = Math.Abs(shared.wheel_speed.rear_left) > maxRotatingSpeed;

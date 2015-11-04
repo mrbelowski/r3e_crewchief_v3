@@ -68,10 +68,6 @@ namespace CrewChiefV3.PCars
         private float majorTyreWearPercent = 40f;
         private float wornOutTyreWearPercent = 80f;
 
-        // for locking / spinning check - the tolerance values are built into these tyre diameter values
-        private float minTyreCirumference = 0.4f * (float)Math.PI;  // 0.4m diameter
-        private float maxTyreCirumference = 1.2f * (float)Math.PI;
-
         private TimeSpan minimumSessionParticipationTime = TimeSpan.FromSeconds(6);
 
         private Dictionary<String, int> previousSpeedReuseCount = new Dictionary<string, int>();
@@ -443,6 +439,7 @@ namespace CrewChiefV3.PCars
                     currentGameState.SessionData.BestLapSector1Time = previousGameState.SessionData.BestLapSector1Time;
                     currentGameState.SessionData.BestLapSector2Time = previousGameState.SessionData.BestLapSector2Time;
                     currentGameState.SessionData.BestLapSector3Time = previousGameState.SessionData.BestLapSector3Time;
+                    currentGameState.Conditions = previousGameState.Conditions;
                 }                
             }            
             
@@ -872,20 +869,25 @@ namespace CrewChiefV3.PCars
             // tyreRPS is much cleaner but we don't know the diameter of the tyre so can't compare it (accurately) to the car's speed
             if (shared.mSpeed > 7)
             {
-                float minRotatingSpeed = 2 * (float)Math.PI * shared.mSpeed / maxTyreCirumference;
+                float minRotatingSpeed = 2 * (float)Math.PI * shared.mSpeed / currentGameState.carClass.maxTyreCircumference;
                 // I think the tyreRPS is actually radians per second...
                 currentGameState.TyreData.LeftFrontIsLocked = Math.Abs(shared.mTyreRPS[0]) < minRotatingSpeed;
                 currentGameState.TyreData.RightFrontIsLocked = Math.Abs(shared.mTyreRPS[1]) < minRotatingSpeed;
                 currentGameState.TyreData.LeftRearIsLocked = Math.Abs(shared.mTyreRPS[2]) < minRotatingSpeed;
                 currentGameState.TyreData.RightRearIsLocked = Math.Abs(shared.mTyreRPS[3]) < minRotatingSpeed;
 
-                float maxRotatingSpeed = 2 * (float)Math.PI * shared.mSpeed / minTyreCirumference;
+                float maxRotatingSpeed = 2 * (float)Math.PI * shared.mSpeed / currentGameState.carClass.minTyreCircumference;
                 currentGameState.TyreData.LeftFrontIsSpinning = Math.Abs(shared.mTyreRPS[0]) > maxRotatingSpeed;
                 currentGameState.TyreData.RightFrontIsSpinning = Math.Abs(shared.mTyreRPS[1]) > maxRotatingSpeed;
                 currentGameState.TyreData.LeftRearIsSpinning = Math.Abs(shared.mTyreRPS[2]) > maxRotatingSpeed;
                 currentGameState.TyreData.RightRearIsSpinning = Math.Abs(shared.mTyreRPS[3]) > maxRotatingSpeed;
             }
-            
+
+            if (currentGameState.Conditions.timeOfMostRecentSample.Add(ConditionsMonitor.ConditionsSampleFrequency) < currentGameState.Now)
+            {
+                currentGameState.Conditions.addSample(currentGameState.Now, currentGameState.SessionData.CompletedLaps, currentGameState.SessionData.SectorNumber,
+                    shared.mAmbientTemperature, shared.mTrackTemperature, shared.mRainDensity, shared.mWindSpeed, shared.mWindDirectionX, shared.mWindDirectionY, shared.mCloudBrightness);
+            }
             return currentGameState;
         }
 

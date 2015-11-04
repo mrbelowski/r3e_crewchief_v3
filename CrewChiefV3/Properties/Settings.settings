@@ -254,5 +254,8 @@
     <Setting Name="frequency_of_opponent_practice_and_qual_lap_times" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">7</Value>
     </Setting>
+    <Setting Name="enable_track_and_air_temp_reports" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

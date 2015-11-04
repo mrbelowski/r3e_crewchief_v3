@@ -1027,5 +1027,17 @@ namespace CrewChiefV3.Properties {
                 this["frequency_of_opponent_practice_and_qual_lap_times"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool enable_track_and_air_temp_reports {
+            get {
+                return ((bool)(this["enable_track_and_air_temp_reports"]));
+            }
+            set {
+                this["enable_track_and_air_temp_reports"] = value;
+            }
+        }
     }
 }

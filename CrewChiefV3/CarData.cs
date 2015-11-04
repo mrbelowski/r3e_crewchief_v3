@@ -60,6 +60,13 @@ namespace CrewChiefV3
         private static float maxExoticRaceSafeWaterTemp = 105;
         private static float maxExoticRaceSafeOilTemp = 140;
 
+        // for locking / spinning check - the tolerance values are built into these tyre diameter values
+        private static float carMinTyreCircumference = 0.4f * (float)Math.PI;  // 0.4m diameter
+        private static float carMaxTyreCircumference = 1.2f * (float)Math.PI;
+
+        // for locking / spinning check - the tolerance values are built into these tyre diameter values
+        private static float kartMinTyreCircumference = 0.15f * (float)Math.PI;  // 0.15m diameter
+        private static float kartMaxTyreCircumference = 0.4f * (float)Math.PI;
 
         public enum CarClassEnum
         {
@@ -76,8 +83,11 @@ namespace CrewChiefV3
             public TyreType defaultTyreType;
             public float maxSafeWaterTemp;
             public float maxSafeOilTemp;
+            public float minTyreCircumference;
+            public float maxTyreCircumference;
 
-            public CarClass(CarClassEnum carClassEnum, String[] pCarsClassNames, int[] raceroomClassIds, BrakeType brakeType, TyreType defaultTyreType, float maxSafeWaterTemp, float maxSafeOilTemp)
+            public CarClass(CarClassEnum carClassEnum, String[] pCarsClassNames, int[] raceroomClassIds, BrakeType brakeType, TyreType defaultTyreType, float maxSafeWaterTemp,
+                float maxSafeOilTemp, float minTyreCircumference, float maxTyreCircumference)
             {
                 this.carClassEnum = carClassEnum;
                 this.pCarsClassNames = pCarsClassNames;
@@ -86,6 +96,22 @@ namespace CrewChiefV3
                 this.defaultTyreType = defaultTyreType;
                 this.maxSafeOilTemp = maxSafeOilTemp;
                 this.maxSafeWaterTemp = maxSafeWaterTemp;
+                this.minTyreCircumference = minTyreCircumference;
+                this.maxTyreCircumference = maxTyreCircumference;
+            }
+
+            public CarClass(CarClassEnum carClassEnum, String[] pCarsClassNames, int[] raceroomClassIds, BrakeType brakeType, TyreType defaultTyreType, float maxSafeWaterTemp,
+               float maxSafeOilTemp)
+            {
+                this.carClassEnum = carClassEnum;
+                this.pCarsClassNames = pCarsClassNames;
+                this.raceroomClassIds = raceroomClassIds;
+                this.brakeType = brakeType;
+                this.defaultTyreType = defaultTyreType;
+                this.maxSafeOilTemp = maxSafeOilTemp;
+                this.maxSafeWaterTemp = maxSafeWaterTemp;
+                this.minTyreCircumference = carMinTyreCircumference;
+                this.maxTyreCircumference = carMaxTyreCircumference;
             }
         }
 
@@ -110,7 +136,8 @@ namespace CrewChiefV3
             carClasses.Add(new CarClass(CarClassEnum.GT4, new String[] { "GT4" }, new int[] { 1717 }, BrakeType.Iron_Race, TyreType.Unknown_Race, maxRaceSafeWaterTemp, maxRaceSafeOilTemp));
             carClasses.Add(new CarClass(CarClassEnum.GT5, new String[] { "GT5" }, new int[] { }, BrakeType.Iron_Race, TyreType.Unknown_Race, maxRaceSafeWaterTemp, maxRaceSafeOilTemp));
 
-            carClasses.Add(new CarClass(CarClassEnum.Kart, new String[] { "Kart1", "Kart2" }, new int[] { }, BrakeType.Iron_Road, TyreType.Unknown_Race, maxRoadSafeWaterTemp, maxRoadSafeOilTemp));
+            carClasses.Add(new CarClass(CarClassEnum.Kart, new String[] { "Kart1", "Kart2" }, new int[] { }, BrakeType.Iron_Road, TyreType.Unknown_Race, maxRoadSafeWaterTemp, maxRoadSafeOilTemp,
+                kartMinTyreCircumference, kartMaxTyreCircumference));
 
             carClasses.Add(new CarClass(CarClassEnum.LMP1, new String[] { "LMP1" }, new int[] { 1716 }, BrakeType.Carbon, TyreType.Unknown_Race, maxExoticRaceSafeWaterTemp, maxExoticRaceSafeOilTemp));
             carClasses.Add(new CarClass(CarClassEnum.LMP2, new String[] { "LMP2" }, new int[] { 2337 }, BrakeType.Ceramic, TyreType.Unknown_Race, maxRaceSafeWaterTemp, maxRaceSafeOilTemp));

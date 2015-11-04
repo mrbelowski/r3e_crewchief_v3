@@ -407,7 +407,7 @@ namespace CrewChiefV3.GameState
         public void StartNewLap(int lapNumber, int position, Boolean inPits, float gameTimeAtStart, Boolean isRaining, float trackTemp, float airTemp)
         {
             LapData thisLapData = new LapData();
-            thisLapData.Conditions.Add(new Conditions(isRaining, trackTemp, airTemp));
+            thisLapData.Conditions.Add(new LapConditions(isRaining, trackTemp, airTemp));
             thisLapData.GameTimeAtLapStart = gameTimeAtStart;
             thisLapData.OutLap = inPits;
             thisLapData.PositionAtStart = position;
@@ -501,7 +501,7 @@ namespace CrewChiefV3.GameState
                 {
                     lapData.IsValid = false;
                 }
-                lapData.Conditions.Add(new Conditions(isRaining, trackTemp, airTemp));
+                lapData.Conditions.Add(new LapConditions(isRaining, trackTemp, airTemp));
             }
         }
 
@@ -587,18 +587,18 @@ namespace CrewChiefV3.GameState
         public float GameTimeAtLapStart = 0;
         public List<float> SectorTimes = new List<float>();
         public List<float> GameTimeAtSectorEnd = new List<float>();
-        public List<Conditions> Conditions = new List<Conditions>();
+        public List<LapConditions> Conditions = new List<LapConditions>();
         public List<int> SectorPositions = new List<int>();
         public Boolean OutLap = false;
         public Boolean InLap = false;
     }
 
-    public class Conditions
+    public class LapConditions
     {
         public Boolean Wet = false;
         public float TrackTemp = 30;
         public float AirTemp = 25;
-        public Conditions(Boolean wet, float trackTemp, float airTemp)
+        public LapConditions(Boolean wet, float trackTemp, float airTemp)
         {
             this.Wet = wet;
             this.TrackTemp = trackTemp;
@@ -782,7 +782,62 @@ namespace CrewChiefV3.GameState
         public Boolean RightFrontIsSpinning = false;
         public Boolean LeftRearIsSpinning = false;
         public Boolean RightRearIsSpinning = false;
+    }
 
+    public class Conditions
+    {
+        public class ConditionsSample
+        {
+            public DateTime Time;
+            public int LapCount;
+            public int SectorNumber;
+            // copied straight from PCars
+            public float AmbientTemperature;
+            public float TrackTemperature;
+            public float RainDensity;
+            public float WindSpeed;
+            public float WindDirectionX;
+            public float WindDirectionY;
+            public float CloudBrightness;
+
+            public ConditionsSample(DateTime time, int lapCount, int sectorNumber, float AmbientTemperature, float TrackTemperature, float RainDensity,
+                float WindSpeed, float WindDirectionX, float WindDirectionY, float CloudBrightness)
+            {
+                this.Time = time;
+                this.LapCount = lapCount;
+                this.SectorNumber = sectorNumber;
+                this.AmbientTemperature = AmbientTemperature;
+                this.TrackTemperature = TrackTemperature;
+                this.RainDensity = RainDensity;
+                this.WindSpeed = WindSpeed;
+                this.WindDirectionX = WindDirectionX;
+                this.WindDirectionY = WindDirectionY;
+                this.CloudBrightness = CloudBrightness;
+            }
+        }
+
+        public DateTime timeOfMostRecentSample = DateTime.MinValue;
+        public List<ConditionsSample> samples = new List<ConditionsSample>();
+
+        public void addSample(DateTime time, int lapCount, int sectorNumber, float AmbientTemperature, float TrackTemperature, float RainDensity,
+                float WindSpeed, float WindDirectionX, float WindDirectionY, float CloudBrightness)
+        {
+            timeOfMostRecentSample = time;
+            samples.Add(new ConditionsSample(time, lapCount, sectorNumber, AmbientTemperature, TrackTemperature, RainDensity,
+                WindSpeed, WindDirectionX, WindDirectionY, CloudBrightness));
+        }
+
+        public ConditionsSample getMostRecentConditions()
+        {
+            if (samples.Count == 0)
+            {
+                return null;
+            }
+            else
+            {
+                return samples[samples.Count - 1];
+            }
+        }
     }
 
     public class GameStateData
@@ -814,6 +869,8 @@ namespace CrewChiefV3.GameState
         public PositionAndMotionData PositionAndMotionData = new PositionAndMotionData();
 
         public Dictionary<Object, OpponentData> OpponentData = new Dictionary<Object, OpponentData>();
+
+        public Conditions Conditions = new Conditions();
 
         public GameStateData(long ticks)
         {

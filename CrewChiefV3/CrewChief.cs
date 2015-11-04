@@ -93,6 +93,7 @@ namespace CrewChiefV3
             eventsList.Add("DamageReporting", new DamageReporting(audioPlayer));
             eventsList.Add("PushNow", new PushNow(audioPlayer));
             eventsList.Add("FlagsMonitor", new FlagsMonitor(audioPlayer));
+            eventsList.Add("ConditionsMonitor", new ConditionsMonitor(audioPlayer));
             sessionEndMessages = new SessionEndMessages(audioPlayer);
         }
 
