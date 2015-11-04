@@ -14,6 +14,8 @@ namespace CrewChiefV3.PCars
 
         private Boolean paused = false;
 
+        private Boolean checkCarSpeedsForNetworkSpotter = true;
+
         // don't activate the spotter unless this many seconds have elapsed (race starts are messy)
         private int timeAfterRaceStartToActivate = UserSettings.GetUserSettings().getInt("time_after_race_start_for_spotter");
 
@@ -123,7 +125,7 @@ namespace CrewChiefV3.PCars
                                 float opponentSpeed;
 
                                 // TODO: proper speed interpolation for network data. For no just use the player speed (i.e. don't discount any cars because of their speeds)
-                                if (CrewChief.gameDefinition.gameEnum == GameEnum.PCARS_NETWORK) 
+                                if (CrewChief.gameDefinition.gameEnum == GameEnum.PCARS_NETWORK && !checkCarSpeedsForNetworkSpotter) 
                                 {
                                     opponentSpeed = playerSpeed;
                                 }

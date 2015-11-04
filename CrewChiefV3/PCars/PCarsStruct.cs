@@ -154,9 +154,9 @@ namespace CrewChiefV3.PCars
         {
             for (int i = 0; i < udpAdditionalStrings.sName.Count(); i++)
             {
-                String name = udpAdditionalStrings.sName[i].name;
+                String name = getNameFromBytes(udpAdditionalStrings.sName[i].nameByteArray);
                 existingState.mParticipantData[i].mIsActive = name != null && name.Length > 0;
-                existingState.mParticipantData[i].mName = udpAdditionalStrings.sName[i].name;
+                existingState.mParticipantData[i].mName = name;
             }
             return existingState;
         }
@@ -169,12 +169,17 @@ namespace CrewChiefV3.PCars
             existingState.mTrackVariation = udpParticipantStrings.sTrackVariation;
             for (int i = 0; i < udpParticipantStrings.sName.Count(); i++)
             {
-                String name = udpParticipantStrings.sName[i].name;
+                String name = getNameFromBytes(udpParticipantStrings.sName[i].nameByteArray);
                 existingState.mParticipantData[i].mIsActive = name != null && name.Length > 0;
-                existingState.mParticipantData[i].mName = udpParticipantStrings.sName[i].name;
+                existingState.mParticipantData[i].mName = name;
             }
             return existingState;
         }
+
+        private static String getNameFromBytes(byte[] name)
+        {
+            return Encoding.UTF8.GetString(name).TrimEnd('\0').Trim();
+        } 
 
         private static float[] toFloatArray(int[] intArray, int factor)
         {

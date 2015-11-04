@@ -80,7 +80,7 @@ namespace CrewChiefV3.PCars
             }            
         }
 
-        public override Object ReadGameData(Boolean allowRecording)
+        public override Object ReadGameData(Boolean forSpotter)
         {
             lock (this)
             {
@@ -106,7 +106,7 @@ namespace CrewChiefV3.PCars
                     PCarsStructWrapper structWrapper = new PCarsStructWrapper();
                     structWrapper.ticksWhenRead = DateTime.Now.Ticks;
                     structWrapper.data = _pcarsapistruct;
-                    if (allowRecording && dumpToFile && dataToDump != null && _pcarsapistruct.mTrackLocation != null &&
+                    if (!forSpotter && dumpToFile && dataToDump != null && _pcarsapistruct.mTrackLocation != null &&
                         _pcarsapistruct.mTrackLocation.Length > 0)
                     {
                         dataToDump.Add(structWrapper);

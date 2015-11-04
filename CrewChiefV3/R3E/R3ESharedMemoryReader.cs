@@ -87,7 +87,7 @@ namespace CrewChiefV3.RaceRoom
             }
         }
 
-        public override Object ReadGameData(Boolean allowRecording)
+        public override Object ReadGameData(Boolean forSpotter)
         {
             lock (this)
             {
@@ -112,7 +112,7 @@ namespace CrewChiefV3.RaceRoom
                     R3EStructWrapper structWrapper = new R3EStructWrapper();
                     structWrapper.ticksWhenRead = DateTime.Now.Ticks;
                     structWrapper.data = _raceroomapistruct;
-                    if (allowRecording && dumpToFile && dataToDump != null)
+                    if (!forSpotter && dumpToFile && dataToDump != null)
                     {
                         dataToDump.Add(structWrapper);
                     }

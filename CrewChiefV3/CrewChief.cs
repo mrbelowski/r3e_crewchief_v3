@@ -261,9 +261,9 @@ namespace CrewChiefV3
             while (runSpotterThread)
             {
                 DateTime now = DateTime.Now;
-                if (now > nextRunTime && spotter != null)
+                if (now > nextRunTime && spotter != null && gameDataReader.hasNewSpotterData())
                 {
-                    currentSpotterState = gameDataReader.ReadGameData(false);
+                    currentSpotterState = gameDataReader.ReadGameData(true);
                     if (lastSpotterState != null && currentSpotterState != null)
                     {
                         try
@@ -373,7 +373,7 @@ namespace CrewChiefV3
                         }
                         else
                         {
-                            rawGameData = gameDataReader.ReadGameData(true);
+                            rawGameData = gameDataReader.ReadGameData(false);
                         }
                         gameStateMapper.versionCheck(rawGameData);
 

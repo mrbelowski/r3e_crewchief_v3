@@ -16,7 +16,7 @@ namespace CrewChiefV3
 
         protected abstract Boolean InitialiseInternal();
 
-        public abstract Object ReadGameData(Boolean allowRecording);
+        public abstract Object ReadGameData(Boolean forSpotter);
                 
         public abstract void Dispose();
 
@@ -96,6 +96,10 @@ namespace CrewChiefV3
 
             return objectOut;
         }
-        
+
+        public virtual Boolean hasNewSpotterData()
+        {
+            return true;
+        }
     }
 }

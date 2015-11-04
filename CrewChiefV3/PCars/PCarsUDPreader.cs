@@ -14,6 +14,7 @@ namespace CrewChiefV3.PCars
 {
     public class PCarsUDPreader : GameDataReader
     {
+        private Boolean newSpotterData = true;
         private GCHandle handle;
         private Boolean initialised = false;
         private List<CrewChiefV3.PCars.PCarsSharedMemoryReader.PCarsStructWrapper> dataToDump;
@@ -115,7 +116,7 @@ namespace CrewChiefV3.PCars
             }            
         }
 
-        public override Object ReadGameData(Boolean allowRecording)
+        public override Object ReadGameData(Boolean forSpotter)
         {
             CrewChiefV3.PCars.PCarsSharedMemoryReader.PCarsStructWrapper structWrapper = new CrewChiefV3.PCars.PCarsSharedMemoryReader.PCarsStructWrapper();
             structWrapper.ticksWhenRead = DateTime.Now.Ticks;
@@ -134,9 +135,13 @@ namespace CrewChiefV3.PCars
                 copyParticipantsArray(currentGameState, previousGameState);
                 currentGameState = workingGameState;
                 copyParticipantsArray(workingGameState, currentGameState);
+                if (forSpotter)
+                {
+                    newSpotterData = false;
+                }
             }
             structWrapper.data = currentGameState;
-            if (allowRecording && dumpToFile && dataToDump != null && currentGameState.mTrackLocation != null &&
+            if (!forSpotter && dumpToFile && dataToDump != null && currentGameState.mTrackLocation != null &&
                 currentGameState.mTrackLocation.Length > 0)
             {
                 dataToDump.Add(structWrapper);
@@ -156,6 +161,7 @@ namespace CrewChiefV3.PCars
                 sTelemetryData telem = (sTelemetryData)Marshal.PtrToStructure(handle.AddrOfPinnedObject(), typeof(sTelemetryData));
                 workingGameState = StructHelper.MergeWithExistingState(workingGameState, telem);
                 handle.Free();
+                newSpotterData = true;
             }
             else if (frameType == 1)
             {
@@ -179,6 +185,11 @@ namespace CrewChiefV3.PCars
         public override void Dispose()
         {
             udpClient.Close();
+        }
+
+        public override bool hasNewSpotterData()
+        {
+            return newSpotterData;
         }
     }
 }

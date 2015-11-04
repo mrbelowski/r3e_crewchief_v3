@@ -330,7 +330,7 @@ namespace CrewChiefV3.PCars
                     {
                         if (!currentGameState.OpponentData.ContainsKey(participantStruct.mName))
                         {
-                            currentGameState.OpponentData.Add(participantStruct.mName, createOpponentData(participantStruct));
+                            currentGameState.OpponentData.Add(participantStruct.mName, createOpponentData(participantStruct, false));
                         }
                     }
                 }
@@ -660,7 +660,7 @@ namespace CrewChiefV3.PCars
                         if (participantStruct.mIsActive && participantStruct.mName != null && participantStruct.mName.Length > 0)
                         {
                             Console.WriteLine("Creating opponent for name " + participantStruct.mName);
-                            currentGameState.OpponentData.Add(participantStruct.mName, createOpponentData(participantStruct));
+                            currentGameState.OpponentData.Add(participantStruct.mName, createOpponentData(participantStruct, true));
                         }
                     }
                 }
@@ -1009,10 +1009,14 @@ namespace CrewChiefV3.PCars
             opponentData.CompletedLaps = completedLaps;
         }
 
-        private OpponentData createOpponentData(pCarsAPIParticipantStruct participantStruct)
-        {
+        private OpponentData createOpponentData(pCarsAPIParticipantStruct participantStruct, Boolean loadDriverName)
+        {            
             OpponentData opponentData = new OpponentData();
             opponentData.DriverRawName = participantStruct.mName.Trim();
+            if (loadDriverName && CrewChief.enableDriverNames)
+            {
+                speechRecogniser.addNewOpponentName(opponentData.DriverRawName);
+            }
             opponentData.Position = (int)participantStruct.mRacePosition;
             opponentData.UnFilteredPosition = opponentData.Position;
             opponentData.CompletedLaps = (int)participantStruct.mLapsCompleted;

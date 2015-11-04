@@ -9,8 +9,8 @@ namespace CrewChiefV3.PCars
     // simple type to hold a name, so we can map to an array of these
     public struct nameString
     {
-        [MarshalAsAttribute(UnmanagedType.ByValTStr, SizeConst = 64)]
-        public string name;
+        [MarshalAsAttribute(UnmanagedType.ByValArray, SizeConst = 64)]
+        public byte[] nameByteArray;
     }
 
     public struct sParticipantInfoStrings
