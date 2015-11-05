@@ -63,7 +63,10 @@ namespace CrewChiefV3
             propertyHelp.Add("frequency_of_race_sector_delta_reports", "How often to report a player sector deltas in race. 0 (never) to 10 (as often as possible)");
             propertyHelp.Add("race_sector_reports_at_each_sector", "Play sector delta reports as you complete each sector");
             propertyHelp.Add("race_sector_reports_at_lap_end", "Play sector delta reports for whole lap when you complete the lap");
-
+            propertyHelp.Add("ambient_temp_check_interval_seconds", "How often to check for changes in ambient (air) temperature, in seconds");
+            propertyHelp.Add("track_temp_check_interval_seconds", "How often to check for changes in track temperature, in seconds");
+            propertyHelp.Add("report_ambient_temp_changes_greater_than", "Report ambient (air) temperature if it's changed by more than this amount (in celsius)");
+            propertyHelp.Add("report_track_temp_changes_greater_than", "Report track temperature if it's changed by more than this amount (in celsius)");
         }
 
         public String getHelp(String propertyId)

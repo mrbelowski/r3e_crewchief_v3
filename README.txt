@@ -2,6 +2,8 @@ CrewChief version 3.
 
 Changelog
 ---------
+Version 3.8.1: Added conditions monitoring for PCars - will report air and track temperature if there's been a significant change (report frequencies and change thresholds are configurable), and will report rain start / stop; fixed kart wheel sizes for PCars (should make the wheelspin and brake locking warnings behave properly); some fixes for PCars UDP network data; more driver names. This version requires a new sound pack *if you want to use the conditions monitoring*.
+
 Version 3.8.0: Overhauled sector time reporting to make the sound files neater and the logic for sector reports much more sensible; Fixed session end for PCars timed races; Added 'frequency_of...' options, some new and some replace existing enable / disable options. These give finer control over the behaviour of the app. For these, 0 means 'never play this message' and 10 means 'play this message whenever possible / practical'; Spotter fixes - better opponent speed calculation, don't call 'clear' if the game reports that the player and opponent cars are 'inside' each other. These should stop a lot of the bouncing; Made Raceroom aero damage threshold more sensitive; Added gap messages for gaps which are stable fluctuating a little (less than a second per sector) in addition to the existing messages for increasing / decreasing gaps;  Added some driver names. This version requires a new sound pack.
 
 Version 3.7.2: Fixed broken 'pace' calculation in qualifying and practice - was always using -1 seconds as best opponent laptime; Added additional checks to Raceroom blue flags; Some lap time / pace / deltas reporting tweaks to make it less intrusive; Initial work for PCars console data. No new sound pack for this version.
@@ -103,6 +105,7 @@ I've not finished implementing this but currently the app understands and respon
 "tell me the gaps / give me the gaps / tell me the deltas / give me the deltas" (switch on 'deltas' mode where the time deltas in front and behind get read out on each lap. Note that these messages will play even if you have disabled messages)
 "don't tell me the gaps / don't tell me the deltas / no more gaps / no more deltas" (switch off deltas mode)
 "repeat last message / say again" (replays the last message)
+"What's the air temp / what's the air temperature / what's the track temp / what's the track temperature" (current air / track temps in celsius)
 
 
 Other button assignments

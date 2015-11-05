@@ -1039,5 +1039,53 @@ namespace CrewChiefV3.Properties {
                 this["enable_track_and_air_temp_reports"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("120")]
+        public int ambient_temp_check_interval_seconds {
+            get {
+                return ((int)(this["ambient_temp_check_interval_seconds"]));
+            }
+            set {
+                this["ambient_temp_check_interval_seconds"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("60")]
+        public int track_temp_check_interval_seconds {
+            get {
+                return ((int)(this["track_temp_check_interval_seconds"]));
+            }
+            set {
+                this["track_temp_check_interval_seconds"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("2")]
+        public float report_ambient_temp_changes_greater_than {
+            get {
+                return ((float)(this["report_ambient_temp_changes_greater_than"]));
+            }
+            set {
+                this["report_ambient_temp_changes_greater_than"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("2")]
+        public float report_track_temp_changes_greater_than {
+            get {
+                return ((float)(this["report_track_temp_changes_greater_than"]));
+            }
+            set {
+                this["report_track_temp_changes_greater_than"] = value;
+            }
+        }
     }
 }

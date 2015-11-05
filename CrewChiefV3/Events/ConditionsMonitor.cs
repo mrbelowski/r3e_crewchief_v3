@@ -10,14 +10,15 @@ namespace CrewChiefV3.Events
     {
         private Boolean enableTrackAndAirTempReports = UserSettings.GetUserSettings().getBoolean("enable_track_and_air_temp_reports");
 
-        // externalise?
         public static TimeSpan ConditionsSampleFrequency = TimeSpan.FromSeconds(10);
-        private TimeSpan AirTemperatureReportMaxFrequency = TimeSpan.FromMinutes(2);
-        private TimeSpan TrackTemperatureReportMaxFrequency = TimeSpan.FromMinutes(2);
-        private TimeSpan RainReportMaxFrequency = TimeSpan.FromSeconds(10);
+        private TimeSpan AirTemperatureReportMaxFrequency = TimeSpan.FromSeconds(UserSettings.GetUserSettings().getInt("ambient_temp_check_interval_seconds"));
+        private TimeSpan TrackTemperatureReportMaxFrequency = TimeSpan.FromSeconds(UserSettings.GetUserSettings().getInt("track_temp_check_interval_seconds"));
 
-        private float minTrackTempDeltaToReport = 2f;
-        private float minAirTempDeltaToReport = 2f;
+        // is this acceptable? It means we report rain changes as quickly as possible but it might be noisy...
+        private TimeSpan RainReportMaxFrequency = ConditionsSampleFrequency;
+
+        private float minTrackTempDeltaToReport = UserSettings.GetUserSettings().getFloat("report_ambient_temp_changes_greater_than");
+        private float minAirTempDeltaToReport = UserSettings.GetUserSettings().getFloat("report_track_temp_changes_greater_than");
 
         private DateTime lastAirTempReport;
         private DateTime lastTrackTempReport;
