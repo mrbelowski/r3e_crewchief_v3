@@ -181,7 +181,6 @@ namespace CrewChiefV3.RaceRoom
                         currentGameState.PositionAndMotionData.DistanceRoundTrack = participantStruct.lap_distance;
                         currentGameState.carClass = CarData.getCarClassForRaceRoomId(participantStruct.driver_info.class_id);
                         Console.WriteLine("Player is using car class " + currentGameState.carClass.carClassEnum + " (class ID " + participantStruct.driver_info.class_id + ")");
-
                         brakeTempThresholdsForPlayersCar = CarData.getBrakeTempThresholds(currentGameState.carClass, null);
                     }
                     else if (driverName != null && driverName.Length > 0)
@@ -216,11 +215,13 @@ namespace CrewChiefV3.RaceRoom
                         currentGameState.SessionData.SessionStartPosition = shared.Position;
                         currentGameState.SessionData.NumCarsAtStartOfSession = shared.NumCars;
                         currentGameState.SessionData.SessionStartTime = currentGameState.Now;
+                        currentGameState.carClass = CarData.getCarClassForRaceRoomId(shared.all_drivers_data[shared.slot_id].driver_info.class_id);
+                        Console.WriteLine("Player is using car class " + currentGameState.carClass.carClassEnum);
+                        brakeTempThresholdsForPlayersCar = CarData.getBrakeTempThresholds(currentGameState.carClass, null);
                         if (previousGameState != null)
                         {
                             currentGameState.OpponentData = previousGameState.OpponentData;
                             currentGameState.SessionData.TrackDefinition = previousGameState.SessionData.TrackDefinition;
-                            currentGameState.carClass = previousGameState.carClass;
                             currentGameState.SessionData.DriverRawName = previousGameState.SessionData.DriverRawName;
                         }
                         currentGameState.PitData.PitWindowStart = shared.PitWindowStart;
@@ -575,7 +576,8 @@ namespace CrewChiefV3.RaceRoom
                                             currentGameState.SessionData.OverallSessionBestLapTime = currentOpponentData.CurrentBestLapTime;
                                         }
                                     }
-                                    if (currentOpponentData.CarClass.carClassEnum == currentGameState.carClass.carClassEnum)
+                                    if (currentOpponentData.CarClass.carClassEnum == CarData.getDefaultCarClass().carClassEnum || currentGameState.carClass.carClassEnum == CarData.getDefaultCarClass().carClassEnum ||
+                                        currentOpponentData.CarClass.carClassEnum == currentGameState.carClass.carClassEnum)
                                     {
                                         if (currentGameState.SessionData.OpponentsLapTimeSessionBestPlayerClass == -1 ||
                                             currentOpponentData.CurrentBestLapTime < currentGameState.SessionData.OpponentsLapTimeSessionBestPlayerClass)

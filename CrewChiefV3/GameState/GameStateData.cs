@@ -337,13 +337,15 @@ namespace CrewChiefV3.GameState
         public float[] getTimeAndSectorsForBestLapInWindow(int lapsToCheck)
         {
             float[] bestLapTimeAndSectorsSectors = new float[] {-1, -1, -1, -1};
-            if (OpponentLapData.Count > 0)
+            if (OpponentLapData.Count > 1)
             {
                 if (lapsToCheck == -1)
                 {
                     lapsToCheck = OpponentLapData.Count;
                 }
                 // count-2 because we're not interested in the current lap
+
+                // TODO: if the opponent has only completed 1 lap this will barf as the index is -1 :(
                 for (int i = OpponentLapData.Count - 2; i >= OpponentLapData.Count - lapsToCheck && i >= 0; i--)
                 {
                     LapData thisLapTime = OpponentLapData[i];
@@ -1044,7 +1046,7 @@ namespace CrewChiefV3.GameState
             foreach (KeyValuePair<Object, OpponentData> entry in OpponentData)
             {
                 // if we don't know the opponent's car class, include him
-                if (entry.Value.CarClass.carClassEnum == defaultCarClass || entry.Value.CarClass.carClassEnum == carClassToCheck)
+                if (carClassToCheck == defaultCarClass || entry.Value.CarClass.carClassEnum == defaultCarClass || entry.Value.CarClass.carClassEnum == carClassToCheck)
                 {
                     float[] thisOpponentsBest = entry.Value.getTimeAndSectorsForBestLapInWindow(lapsToCheck);
                     if (bestLapWithSectors[0] == -1 || (thisOpponentsBest[0] > 0 && thisOpponentsBest[0] < bestLapWithSectors[0]))
