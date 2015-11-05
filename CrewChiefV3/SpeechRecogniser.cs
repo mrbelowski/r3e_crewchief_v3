@@ -110,6 +110,11 @@ namespace CrewChiefV3
 
         public static String WHAT_ARE_MY_SECTOR_TIMES = "what are my sector times";
         public static String WHATS_MY_LAST_SECTOR_TIME = "what's my last sector time";
+
+        public static String WHATS_THE_AIR_TEMP = "what's the air temp"; 
+        public static String WHATS_THE_AIR_TEMPERATURE = "what's the air temperature"; 
+        public static String WHATS_THE_TRACK_TEMP = "what's the track temp"; 
+        public static String WHATS_THE_TRACK_TEMPERATURE = "what's the track temperature";
         
         private CrewChief crewChief;
 
@@ -245,7 +250,8 @@ namespace CrewChiefV3
                 info4.Add(new string[] { KEEP_QUIET, SHUT_UP, I_KNOW_WHAT_IM_DOING, LEAVE_ME_ALONE, DONT_TELL_ME_THE_GAPS, DONT_GIVE_ME_THE_DELTAS, DONT_TELL_ME_THE_GAPS,
                     NO_MORE_DELTAS, NO_MORE_GAPS, KEEP_ME_INFORMED, KEEP_ME_POSTED, KEEP_ME_UPDATED, TELL_ME_THE_GAPS, GIVE_ME_THE_DELTAS, TELL_ME_THE_DELTAS,
                     HOW_LONGS_LEFT, HOW_MANY_LAPS_LEFT, HOW_MANY_LAPS_TO_GO, SPOT, DONT_SPOT, REPEAT_LAST_MESSAGE, SAY_AGAIN,HAVE_I_SERVED_MY_PENALTY, DO_I_HAVE_A_PENALTY, DO_I_STILL_HAVE_A_PENALTY,
-                    DO_I_HAVE_A_MANDATORY_PIT_STOP, DO_I_NEED_TO_PIT, DO_I_HAVE_A_MANDATORY_STOP, DO_I_HAVE_TO_MAKE_A_PIT_STOP, DO_I_HAVE_TO_PIT, WHAT_ARE_MY_SECTOR_TIMES, WHATS_MY_LAST_SECTOR_TIME});
+                    DO_I_HAVE_A_MANDATORY_PIT_STOP, DO_I_NEED_TO_PIT, DO_I_HAVE_A_MANDATORY_STOP, DO_I_HAVE_TO_MAKE_A_PIT_STOP, DO_I_HAVE_TO_PIT, WHAT_ARE_MY_SECTOR_TIMES, WHATS_MY_LAST_SECTOR_TIME,
+                    WHATS_THE_AIR_TEMP, WHATS_THE_AIR_TEMPERATURE, WHATS_THE_TRACK_TEMP, WHATS_THE_TRACK_TEMPERATURE});
                 GrammarBuilder gb4 = new GrammarBuilder();
                 gb4.Culture = cultureInfo;
                 gb4.Append(info4);
@@ -544,6 +550,13 @@ namespace CrewChiefV3
             else if (recognisedSpeech.Contains(ENGINE_TEMPS) || recognisedSpeech.Contains(ENGINE_TEMPERATURES))
             {
                 return CrewChief.getEvent("EngineMonitor");
+            }
+            else if (recognisedSpeech.Contains(WHATS_THE_AIR_TEMP) ||
+               recognisedSpeech.Contains(WHATS_THE_AIR_TEMPERATURE) ||
+               recognisedSpeech.Contains(WHATS_THE_TRACK_TEMP) ||
+               recognisedSpeech.Contains(WHATS_THE_TRACK_TEMPERATURE))
+            {
+                return CrewChief.getEvent("ConditionsMonitor");
             }
             return null;
         }

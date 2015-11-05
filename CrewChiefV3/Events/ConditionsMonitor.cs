@@ -9,22 +9,37 @@ namespace CrewChiefV3.Events
     class ConditionsMonitor : AbstractEvent
     {
         private Boolean enableTrackAndAirTempReports = UserSettings.GetUserSettings().getBoolean("enable_track_and_air_temp_reports");
-        public static TimeSpan ConditionsSampleFrequency = TimeSpan.FromSeconds(20);
 
-        // 3 minutes of data
-        private int shortSampleWindow = 3 * 60 / ConditionsSampleFrequency.Seconds;
-        // 8 minutes of data
-        private int longSampleWindow = 8 * 60 / ConditionsSampleFrequency.Seconds;
+        // externalise?
+        public static TimeSpan ConditionsSampleFrequency = TimeSpan.FromSeconds(10);
+        private TimeSpan AirTemperatureReportMaxFrequency = TimeSpan.FromMinutes(2);
+        private TimeSpan TrackTemperatureReportMaxFrequency = TimeSpan.FromMinutes(2);
+        private TimeSpan RainReportMaxFrequency = TimeSpan.FromSeconds(10);
 
-        private float ambientTempChangeShortWindowReportThreshold = 1f;
-        private float trackTempChangeShortWindowReportThreshold = 1.3f;
+        private float minTrackTempDeltaToReport = 2f;
+        private float minAirTempDeltaToReport = 2f;
 
-        private float ambientTempChangeLongWindowReportThreshold = 1.5f;
-        private float trackTempChangeLongWindowReportThreshold = 2.3f;
+        private DateTime lastAirTempReport;
+        private DateTime lastTrackTempReport;
+        private DateTime lastRainReport;
 
-        public static String folderTrackTempIsNow = "conditions/track_temperature_is_now";
-        public static String folderAmbientTempIsNow = "conditions/ambient_temperature_is_now";
-        public static String folderCelcius = "conditions/celcius";
+        private float airTempAtLastReport;
+        private float trackTempAtLastReport;
+        private float rainAtLastReport;
+
+        public static String folderAirAndTrackTempIncreasing = "conditions/air_and_track_temp_increasing";
+        public static String folderAirAndTrackTempDecreasing = "conditions/air_and_track_temp_decreasing";
+        public static String folderTrackTempIsNow = "conditions/track_temp_is_now";
+        public static String folderAirTempIsNow = "conditions/air_temp_is_now";
+        public static String folderAirTempIncreasing = "conditions/air_temp_increasing_its_now";
+        public static String folderAirTempDecreasing = "conditions/air_temp_decreasing_its_now";
+        public static String folderTrackTempIncreasing = "conditions/track_temp_increasing_its_now";
+        public static String folderTrackTempDecreasing = "conditions/track_temp_decreasing_its_now";
+        public static String folderCelsius = "conditions/celsius";
+        public static String folderSeeingSomeRain = "conditions/seeing_some_rain";
+        public static String folderStoppedRaining = "conditions/stopped_raining";
+
+        private Conditions.ConditionsSample currentConditions;
 
         private int sampleCount;
 
@@ -36,106 +51,133 @@ namespace CrewChiefV3.Events
         public override void clearState()
         {
             sampleCount = 0;
+            lastRainReport = DateTime.MinValue;
+            lastAirTempReport = DateTime.MaxValue;
+            lastTrackTempReport = DateTime.MaxValue;
+            airTempAtLastReport = float.MinValue;
+            trackTempAtLastReport = float.MinValue;
+            rainAtLastReport = float.MinValue;
+            currentConditions = null;
         }
 
         override protected void triggerInternal(GameStateData previousGameState, GameStateData currentGameState)
         {
-            // 6 samples => 3 minutes of data
-            if (!enableTrackAndAirTempReports || currentGameState.Conditions.samples.Count() < shortSampleWindow || sampleCount == currentGameState.Conditions.samples.Count())
+            currentConditions = currentGameState.Conditions.getMostRecentConditions();
+            if (currentConditions != null) 
             {
-                return;
-            }
-            sampleCount = currentGameState.Conditions.samples.Count();
-            CrewChiefV3.GameState.Conditions.ConditionsSample endSample = currentGameState.Conditions.samples[currentGameState.Conditions.samples.Count() - 1];
-            CrewChiefV3.GameState.Conditions.ConditionsSample startSample = currentGameState.Conditions.samples[currentGameState.Conditions.samples.Count() - shortSampleWindow];
-            float shortWindowAmbientDelta = endSample.AmbientTemperature - startSample.AmbientTemperature;
-            if (Math.Abs(shortWindowAmbientDelta) > ambientTempChangeShortWindowReportThreshold)
-            {
-                Boolean increasing = shortWindowAmbientDelta > 0;
-                // now check this trend is consistent
-                int numberNotFollowingTrend = getNumberNotFollowingTrend(increasing, currentGameState.Conditions.samples, shortSampleWindow, true);
-                if (numberNotFollowingTrend < 2)
+                if (airTempAtLastReport == float.MinValue)
                 {
-                    // report it
-                    Console.WriteLine("short threshold ambient temp change: delta = " + shortWindowAmbientDelta);
-                    audioPlayer.queueClip(new QueuedMessage("ambientTemp", MessageContents
-                        (folderAmbientTempIsNow, QueuedMessage.folderNameNumbersStub + Math.Round(endSample.AmbientTemperature), folderCelcius), 0, this)); 
-                }
-            }
-
-            float shortWindowTrackDelta = endSample.TrackTemperature - startSample.TrackTemperature;
-            if (Math.Abs(shortWindowTrackDelta) > trackTempChangeShortWindowReportThreshold)
-            {
-                Boolean increasing = shortWindowTrackDelta > 0;
-                // now check this trend is consistent
-                int numberNotFollowingTrend = getNumberNotFollowingTrend(increasing, currentGameState.Conditions.samples, shortSampleWindow, false);
-                if (numberNotFollowingTrend < 2)
-                {
-                    // report it
-                    Console.WriteLine("short threshold track temp change: delta = " + shortWindowTrackDelta);
-                    audioPlayer.queueClip(new QueuedMessage("trackTemp", MessageContents
-                        (folderTrackTempIsNow, QueuedMessage.folderNameNumbersStub + Math.Round(endSample.TrackTemperature), folderCelcius), 0, this)); 
-                }
-            }
-
-            if (currentGameState.Conditions.samples.Count() < longSampleWindow)
-            {
-                return;
-            }
-            startSample = currentGameState.Conditions.samples[currentGameState.Conditions.samples.Count() - longSampleWindow];
-
-            float longWindowAmbientDelta = endSample.AmbientTemperature - startSample.AmbientTemperature;
-            if (Math.Abs(longWindowAmbientDelta) > ambientTempChangeLongWindowReportThreshold)
-            {
-                Boolean increasing = longWindowAmbientDelta > 0;
-                // now check this trend is consistent
-                int numberNotFollowingTrend = getNumberNotFollowingTrend(increasing, currentGameState.Conditions.samples, longSampleWindow, true);
-                if (numberNotFollowingTrend < 2)
-                {
-                    // report it
-                    Console.WriteLine("long threshold ambient temp change: delta = " + longWindowAmbientDelta);
-                    audioPlayer.queueClip(new QueuedMessage("ambientTemp", MessageContents
-                        (folderAmbientTempIsNow, QueuedMessage.folderNameNumbersStub + Math.Round(endSample.AmbientTemperature), folderCelcius), 0, this)); 
-                }
-            }
-
-            float longWindowTrackDelta = endSample.TrackTemperature - startSample.TrackTemperature;
-            if (Math.Abs(longWindowTrackDelta) > trackTempChangeLongWindowReportThreshold)
-            {
-                Boolean increasing = longWindowTrackDelta > 0;
-                // now check this trend is consistent
-                int numberNotFollowingTrend = getNumberNotFollowingTrend(increasing, currentGameState.Conditions.samples, longSampleWindow, false);
-                if (numberNotFollowingTrend < 2)
-                {
-                    // report it
-                    Console.WriteLine("long threshold track temp change: delta = " + longWindowTrackDelta);
-                    audioPlayer.queueClip(new QueuedMessage("trackTemp", MessageContents
-                        (folderTrackTempIsNow, QueuedMessage.folderNameNumbersStub + Math.Round(endSample.TrackTemperature), folderCelcius), 0, this)); 
-                }
-            }     
-        }
-
-        private int getNumberNotFollowingTrend(Boolean increasing, List<GameState.Conditions.ConditionsSample> samples, int window, Boolean isAmbient) 
-        {
-            int numberOfPairsNotFollowingTrend = 0;
-            // now check this trend is consistent
-            for (int i = samples.Count() - 1; i > samples.Count() - window; i--)
-            {
-                float delta;
-                if (isAmbient)
-                {
-                    delta = samples[i].AmbientTemperature - samples[i - 1].AmbientTemperature;
+                    airTempAtLastReport = currentConditions.AmbientTemperature;
+                    trackTempAtLastReport = currentConditions.TrackTemperature;
+                    rainAtLastReport = currentConditions.RainDensity;
+                    lastRainReport = currentGameState.Now;
+                    lastTrackTempReport = currentGameState.Now;
+                    lastAirTempReport = currentGameState.Now;
                 }
                 else
                 {
-                    delta = samples[i].TrackTemperature - samples[i - 1].TrackTemperature;
-                }
-                if ((increasing && delta < 0) | (!increasing && delta > 0))
-                {
-                    numberOfPairsNotFollowingTrend++;
+                    Boolean canReportAirChange = currentGameState.Now > lastAirTempReport.Add(AirTemperatureReportMaxFrequency);
+                    Boolean canReportTrackChange = currentGameState.Now > lastTrackTempReport.Add(TrackTemperatureReportMaxFrequency);
+                    Boolean reportedCombinedTemps = false;
+                    if (canReportAirChange || canReportTrackChange)
+                    {
+                        if (currentConditions.TrackTemperature > trackTempAtLastReport + minTrackTempDeltaToReport && currentConditions.AmbientTemperature > airTempAtLastReport + minAirTempDeltaToReport)
+                        {
+                            airTempAtLastReport = currentConditions.AmbientTemperature;
+                            trackTempAtLastReport = currentConditions.TrackTemperature;
+                            lastAirTempReport = currentGameState.Now;
+                            lastTrackTempReport = currentGameState.Now;
+                            // do the reporting
+                            audioPlayer.queueClip(new QueuedMessage("conditionsAirAndTrackIncreasing1", MessageContents
+                                (folderAirAndTrackTempIncreasing, folderAirTempIsNow, QueuedMessage.folderNameNumbersStub + Math.Round(currentConditions.AmbientTemperature), folderCelsius), 0, this));
+                            audioPlayer.queueClip(new QueuedMessage("conditionsAirAndTrackIncreasing2", MessageContents
+                                (folderTrackTempIsNow, QueuedMessage.folderNameNumbersStub + Math.Round(currentConditions.TrackTemperature)), 0, this));
+                            reportedCombinedTemps = true;
+                        }
+                        else if (currentConditions.TrackTemperature < trackTempAtLastReport - minTrackTempDeltaToReport && currentConditions.AmbientTemperature < airTempAtLastReport - minAirTempDeltaToReport)
+                        {
+                            airTempAtLastReport = currentConditions.AmbientTemperature;
+                            trackTempAtLastReport = currentConditions.TrackTemperature;
+                            lastAirTempReport = currentGameState.Now;
+                            lastTrackTempReport = currentGameState.Now;
+                            // do the reporting
+                            audioPlayer.queueClip(new QueuedMessage("conditionsAirAndTrackDecreasing1", MessageContents
+                                (folderAirAndTrackTempDecreasing, folderAirTempIsNow, QueuedMessage.folderNameNumbersStub + Math.Round(currentConditions.AmbientTemperature), folderCelsius), 0, this));
+                            audioPlayer.queueClip(new QueuedMessage("conditionsAirAndTrackDecreasing2", MessageContents
+                                (folderTrackTempIsNow, QueuedMessage.folderNameNumbersStub + Math.Round(currentConditions.TrackTemperature)), 0, this));
+                            reportedCombinedTemps = true;
+                        }
+                    }
+                    if (!reportedCombinedTemps && canReportAirChange)
+                    {
+                        if (currentConditions.AmbientTemperature > airTempAtLastReport + minAirTempDeltaToReport)
+                        {
+                            airTempAtLastReport = currentConditions.AmbientTemperature;
+                            lastAirTempReport = currentGameState.Now;
+                            // do the reporting
+                            audioPlayer.queueClip(new QueuedMessage("conditionsAirIncreasing", MessageContents
+                                (folderAirTempIncreasing, QueuedMessage.folderNameNumbersStub + Math.Round(currentConditions.AmbientTemperature), folderCelsius), 0, this));
+                        }
+                        else if (currentConditions.AmbientTemperature < airTempAtLastReport - minAirTempDeltaToReport)
+                        {
+                            airTempAtLastReport = currentConditions.AmbientTemperature;
+                            lastAirTempReport = currentGameState.Now;
+                            // do the reporting
+                            audioPlayer.queueClip(new QueuedMessage("conditionsAirDecreasing", MessageContents
+                                (folderAirTempDecreasing, QueuedMessage.folderNameNumbersStub + Math.Round(currentConditions.AmbientTemperature), folderCelsius), 0, this));
+                        }
+                    }
+                    if (!reportedCombinedTemps && canReportTrackChange)
+                    {
+                        if (currentConditions.TrackTemperature > trackTempAtLastReport + minTrackTempDeltaToReport)
+                        {
+                            trackTempAtLastReport = currentConditions.TrackTemperature;
+                            lastTrackTempReport = currentGameState.Now;
+                            // do the reporting
+                            audioPlayer.queueClip(new QueuedMessage("conditionsTrackIncreasing", MessageContents
+                                (folderTrackTempIncreasing, QueuedMessage.folderNameNumbersStub + Math.Round(currentConditions.TrackTemperature), folderCelsius), 0, this));
+                        }
+                        else if (currentConditions.TrackTemperature < trackTempAtLastReport - minTrackTempDeltaToReport)
+                        {
+                            trackTempAtLastReport = currentConditions.TrackTemperature;
+                            lastTrackTempReport = currentGameState.Now;
+                            // do the reporting
+                            audioPlayer.queueClip(new QueuedMessage("conditionsTrackDecreasing", MessageContents
+                                (folderTrackTempDecreasing, QueuedMessage.folderNameNumbersStub + Math.Round(currentConditions.TrackTemperature), folderCelsius), 0, this));
+                        }
+                    }
+                    if (currentGameState.Now > lastRainReport.Add(RainReportMaxFrequency))
+                    {
+                        // TODO: the implementation is coupled to the PCars mRainDensity value, which is 0 or 1
+                        if (currentConditions.RainDensity == 0 && rainAtLastReport == 1)
+                        {
+                            rainAtLastReport = currentConditions.RainDensity;
+                            lastRainReport = currentGameState.Now;
+                            audioPlayer.queueClip(new QueuedMessage(folderStoppedRaining, 0, this));
+                        }
+                        else if (currentConditions.RainDensity == 1 && rainAtLastReport == 0)
+                        {
+                            rainAtLastReport = currentConditions.RainDensity;
+                            lastRainReport = currentGameState.Now;
+                            audioPlayer.queueClip(new QueuedMessage(folderSeeingSomeRain, 0, this));
+                        }
+                    }
                 }
             }
-            return numberOfPairsNotFollowingTrend;
+        }
+
+        public override void respond(string voiceMessage)
+        {
+            if (voiceMessage.Contains(SpeechRecogniser.WHATS_THE_AIR_TEMP) || voiceMessage.Contains(SpeechRecogniser.WHATS_THE_AIR_TEMP))
+            {
+                audioPlayer.playClipImmediately(new QueuedMessage("airTempResponse", 
+                    MessageContents(folderAirTempIsNow, QueuedMessage.folderNameNumbersStub + Math.Round(currentConditions.AmbientTemperature), folderCelsius), 0, null), false);
+            }
+            if (voiceMessage.Contains(SpeechRecogniser.WHATS_THE_TRACK_TEMP) || voiceMessage.Contains(SpeechRecogniser.WHATS_THE_TRACK_TEMPERATURE))
+            {
+                audioPlayer.playClipImmediately(new QueuedMessage("trackTempResponse",
+                    MessageContents(folderTrackTempIsNow, QueuedMessage.folderNameNumbersStub + Math.Round(currentConditions.TrackTemperature), folderCelsius), 0, null), false);
+            }
         }
     }
 }
