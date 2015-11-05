@@ -179,11 +179,13 @@ namespace CrewChiefV3.Events
                 {
                     audioPlayer.playClipImmediately(new QueuedMessage("airTempResponse",
                         MessageContents(folderAirTempIsNow, QueuedMessage.folderNameNumbersStub + Math.Round(currentConditions.AmbientTemperature), folderCelsius), 0, null), false);
+                    audioPlayer.closeChannel();
                 }
                 if (voiceMessage.Contains(SpeechRecogniser.WHATS_THE_TRACK_TEMP) || voiceMessage.Contains(SpeechRecogniser.WHATS_THE_TRACK_TEMPERATURE))
                 {
                     audioPlayer.playClipImmediately(new QueuedMessage("trackTempResponse",
                         MessageContents(folderTrackTempIsNow, QueuedMessage.folderNameNumbersStub + Math.Round(currentConditions.TrackTemperature), folderCelsius), 0, null), false);
+                    audioPlayer.closeChannel();
                 }
             }
         }

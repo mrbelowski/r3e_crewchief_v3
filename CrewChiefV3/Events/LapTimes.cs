@@ -873,12 +873,10 @@ namespace CrewChiefV3.Events
                             if (sessionType == SessionType.Qualify && currentPosition == 1)
                             {
                                 audioPlayer.playClipImmediately(new QueuedMessage(Position.folderPole, 0, null), false);
-                                audioPlayer.closeChannel();
                             }
                             else
                             {
                                 audioPlayer.playClipImmediately(new QueuedMessage(folderQuickestOverall, 0, null), false);
-                                audioPlayer.closeChannel();
                             }
                             TimeSpan gapBehind = deltaPlayerBestToSessionBestInClass.Negate();
                             if ((gapBehind.Seconds > 0 || gapBehind.Milliseconds > 50) &&
@@ -898,7 +896,6 @@ namespace CrewChiefV3.Events
                                 audioPlayer.playClipImmediately(new QueuedMessage(Position.folderStub + currentPosition, 0, null), false);
                             }
                             audioPlayer.playClipImmediately(new QueuedMessage(folderLessThanATenthOffThePace, 0, null), false);
-                            audioPlayer.closeChannel();
                         }
                         else
                         {

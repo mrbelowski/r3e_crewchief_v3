@@ -353,9 +353,19 @@ namespace CrewChiefV3.GameState
                         (thisLapTime.IsValid && thisLapTime.LapTime != -1 && thisLapTime.LapTime < bestLapTimeAndSectorsSectors[0]))
                     {
                         bestLapTimeAndSectorsSectors[0] = thisLapTime.LapTime;
-                        bestLapTimeAndSectorsSectors[1] = thisLapTime.SectorTimes[0];
-                        bestLapTimeAndSectorsSectors[2] = thisLapTime.SectorTimes[1];
-                        bestLapTimeAndSectorsSectors[3] = thisLapTime.SectorTimes[2];
+                        int sectorCount = thisLapTime.SectorTimes.Count();
+                        if (sectorCount > 0)
+                        {
+                            bestLapTimeAndSectorsSectors[1] = thisLapTime.SectorTimes[0];
+                        }
+                        if (sectorCount > 1)
+                        {
+                            bestLapTimeAndSectorsSectors[2] = thisLapTime.SectorTimes[1];
+                        }
+                        if (sectorCount > 2)
+                        {
+                            bestLapTimeAndSectorsSectors[3] = thisLapTime.SectorTimes[2];
+                        }
                     }
                 }
             }
