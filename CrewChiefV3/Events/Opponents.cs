@@ -127,10 +127,11 @@ namespace CrewChiefV3.Events
                                         TimeSpan.FromSeconds(opponentData.LastLapTime)), 0, this));
                         }
                         else if ((currentGameState.SessionData.SessionType == SessionType.Race &&
-                                (opponentData.CurrentBestLapTime < opponentData.PreviousBestLapTime - minImprovementBeforeReadingOpponentRaceTime &&
-                                 opponentData.CurrentBestLapTime < currentFastestLap + maxOffPaceBeforeReadingOpponentRaceTime)) ||
+                                (opponentData.LastLapTime <= opponentData.CurrentBestLapTime &&
+                                 opponentData.LastLapTime < opponentData.PreviousBestLapTime - minImprovementBeforeReadingOpponentRaceTime &&
+                                 opponentData.LastLapTime < currentFastestLap + maxOffPaceBeforeReadingOpponentRaceTime)) ||
                            ((currentGameState.SessionData.SessionType == SessionType.Practice || currentGameState.SessionData.SessionType == SessionType.Qualify) &&
-                                 opponentData.CurrentBestLapTime == opponentData.LastLapTime))
+                                 opponentData.CurrentBestLapTime <= opponentData.LastLapTime))
                         {
                             if (currentGameState.SessionData.UnFilteredPosition > 1 && opponentData.UnFilteredPosition == 1 &&
                                 (currentGameState.SessionData.SessionType == SessionType.Race || frequencyOfOpponentPracticeAndQualLapTimes > 0))
