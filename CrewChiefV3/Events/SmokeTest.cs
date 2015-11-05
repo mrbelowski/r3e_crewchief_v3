@@ -38,11 +38,11 @@ namespace CrewChiefV3.Events
         {
             audioPlayer.queueClip(new QueuedMessage(folderTest, 0, this));
 
-            audioPlayer.queueClip(new QueuedMessage("conditionsAirAndTrackIncreasing1", MessageContents
+            /*audioPlayer.queueClip(new QueuedMessage("conditionsAirAndTrackIncreasing1", MessageContents
                                (ConditionsMonitor.folderAirAndTrackTempIncreasing, 
                                ConditionsMonitor.folderAirTempIsNow, QueuedMessage.folderNameNumbersStub + 26), 0, this));
             audioPlayer.queueClip(new QueuedMessage("conditionsAirAndTrackIncreasing2", MessageContents
-                (ConditionsMonitor.folderTrackTempIsNow, QueuedMessage.folderNameNumbersStub + 32, ConditionsMonitor.folderCelsius), 0, this));
+                (ConditionsMonitor.folderTrackTempIsNow, QueuedMessage.folderNameNumbersStub + 32, ConditionsMonitor.folderCelsius), 0, this));*/
                             
 
             /*List<String> rawDriverNames = new List<string>();
