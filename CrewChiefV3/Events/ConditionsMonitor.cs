@@ -64,7 +64,7 @@ namespace CrewChiefV3.Events
         override protected void triggerInternal(GameStateData previousGameState, GameStateData currentGameState)
         {
             currentConditions = currentGameState.Conditions.getMostRecentConditions();
-            if (currentConditions != null) 
+            if (currentConditions != null && enableTrackAndAirTempReports) 
             {
                 if (airTempAtLastReport == float.MinValue)
                 {
@@ -169,15 +169,22 @@ namespace CrewChiefV3.Events
 
         public override void respond(string voiceMessage)
         {
-            if (voiceMessage.Contains(SpeechRecogniser.WHATS_THE_AIR_TEMP) || voiceMessage.Contains(SpeechRecogniser.WHATS_THE_AIR_TEMP))
+            if (currentConditions == null)
             {
-                audioPlayer.playClipImmediately(new QueuedMessage("airTempResponse", 
-                    MessageContents(folderAirTempIsNow, QueuedMessage.folderNameNumbersStub + Math.Round(currentConditions.AmbientTemperature), folderCelsius), 0, null), false);
+                audioPlayer.playClipImmediately(new QueuedMessage(AudioPlayer.folderNoData, 0, null), false);
             }
-            if (voiceMessage.Contains(SpeechRecogniser.WHATS_THE_TRACK_TEMP) || voiceMessage.Contains(SpeechRecogniser.WHATS_THE_TRACK_TEMPERATURE))
+            else
             {
-                audioPlayer.playClipImmediately(new QueuedMessage("trackTempResponse",
-                    MessageContents(folderTrackTempIsNow, QueuedMessage.folderNameNumbersStub + Math.Round(currentConditions.TrackTemperature), folderCelsius), 0, null), false);
+                if (voiceMessage.Contains(SpeechRecogniser.WHATS_THE_AIR_TEMP) || voiceMessage.Contains(SpeechRecogniser.WHATS_THE_AIR_TEMP))
+                {
+                    audioPlayer.playClipImmediately(new QueuedMessage("airTempResponse",
+                        MessageContents(folderAirTempIsNow, QueuedMessage.folderNameNumbersStub + Math.Round(currentConditions.AmbientTemperature), folderCelsius), 0, null), false);
+                }
+                if (voiceMessage.Contains(SpeechRecogniser.WHATS_THE_TRACK_TEMP) || voiceMessage.Contains(SpeechRecogniser.WHATS_THE_TRACK_TEMPERATURE))
+                {
+                    audioPlayer.playClipImmediately(new QueuedMessage("trackTempResponse",
+                        MessageContents(folderTrackTempIsNow, QueuedMessage.folderNameNumbersStub + Math.Round(currentConditions.TrackTemperature), folderCelsius), 0, null), false);
+                }
             }
         }
     }
