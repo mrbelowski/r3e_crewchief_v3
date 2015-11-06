@@ -50,7 +50,10 @@ namespace CrewChiefV3.Events
                     String[] lines = File.ReadAllLines(Path.Combine(audioPlayer.soundFilesPath, fileInSoundDirectory.Name));
                     foreach (String line in lines)
                     {
-                        driversToTest.Add(makeTempDriver(line, rawDriverNames));
+                        if (line.Trim().Length > 0)
+                        {
+                            driversToTest.Add(makeTempDriver(line.Trim(), rawDriverNames));
+                        }
                     }
                     break;
                 }
