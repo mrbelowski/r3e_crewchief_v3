@@ -872,7 +872,7 @@ namespace CrewChiefV3.Events
                             {
                                 // delay this a bit...
                                 audioPlayer.queueClip(new QueuedMessage("lapTimeNotRaceGap",
-                                    MessageContents(folderGapIntro, gapBehind, folderQuickerThanSecondPlace), random.Next(0, 20), this));
+                                    MessageContents(folderGapIntro, gapBehind, folderQuickerThanSecondPlace), 0, this));
                             }
                             
                         }
