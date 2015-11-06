@@ -349,17 +349,6 @@ namespace CrewChiefV3.Events
                                 else if (lastLapRating == LastLapRating.BEST_IN_CLASS)
                                 {
                                     audioPlayer.queueClip(new QueuedMessage(folderFastestInClass, 0, this));
-                                    if (deltaPlayerLastToSessionBestInClass < TimeSpan.Zero)
-                                    {
-                                        TimeSpan gapBehind = deltaPlayerLastToSessionBestInClass.Negate();
-                                        if ((gapBehind.Seconds > 0 || gapBehind.Milliseconds > 50) &&
-                                            gapBehind.Seconds < 60)
-                                        {
-                                            // delay this a bit...
-                                            audioPlayer.queueClip(new QueuedMessage("lapTimeNotRaceGap",
-                                                MessageContents(folderGapIntro, gapBehind, folderQuickerThanSecondPlace), random.Next(0, 20), this));
-                                        }
-                                    }
                                 }
                                 else if (lastLapRating == LastLapRating.BEST_OVERALL)
                                 {
@@ -865,9 +854,9 @@ namespace CrewChiefV3.Events
                 }
                 else
                 {
-                    if (deltaPlayerBestToSessionBestInClass != TimeSpan.MaxValue)
+                    if (deltaPlayerBestToSessionBestOverall != TimeSpan.MaxValue)
                     {
-                        if (deltaPlayerBestToSessionBestInClass <= TimeSpan.Zero)
+                        if (deltaPlayerBestToSessionBestOverall <= TimeSpan.Zero)
                         {   
                             if (sessionType == SessionType.Qualify && currentPosition == 1)
                             {
@@ -877,7 +866,7 @@ namespace CrewChiefV3.Events
                             {
                                 audioPlayer.playClipImmediately(new QueuedMessage(folderQuickestOverall, 0, null), false);
                             }
-                            TimeSpan gapBehind = deltaPlayerBestToSessionBestInClass.Negate();
+                            TimeSpan gapBehind = deltaPlayerBestToSessionBestOverall.Negate();
                             if ((gapBehind.Seconds > 0 || gapBehind.Milliseconds > 50) &&
                                 gapBehind.Seconds < 60)
                             {
@@ -887,7 +876,7 @@ namespace CrewChiefV3.Events
                             }
                             
                         }
-                        else if (deltaPlayerBestToSessionBestInClass.Seconds == 0 && deltaPlayerBestToSessionBestInClass.Milliseconds < 50)
+                        else if (deltaPlayerBestToSessionBestOverall.Seconds == 0 && deltaPlayerBestToSessionBestOverall.Milliseconds < 50)
                         {
                             if (currentPosition > 1)
                             {
@@ -904,7 +893,7 @@ namespace CrewChiefV3.Events
                                 audioPlayer.playClipImmediately(new QueuedMessage(Position.folderStub + currentPosition, 0, null), false);
                             }
                             audioPlayer.playClipImmediately(new QueuedMessage("lapTimeNotRaceGap",
-                                MessageContents(deltaPlayerBestToSessionBestInClass, folderGapOutroOffPace), 0, null), false);
+                                MessageContents(deltaPlayerBestToSessionBestOverall, folderGapOutroOffPace), 0, null), false);
                         }
 
                         // TODO: wrap this in a try-catch until I work out why the array indices are being screwed up in online races (yuk...)
