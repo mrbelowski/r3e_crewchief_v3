@@ -350,7 +350,7 @@ namespace CrewChiefV3.Events
             }
             else if (lastTyreTempMessage == null || !messagesHaveSameContent(lastTyreTempMessage, messageContents))
             {
-                audioPlayer.queueClip(new QueuedMessage("tyre_temps", messageContents, 0, this));
+                audioPlayer.queueClip(new QueuedMessage("tyre_temps", messageContents, random.Next(0, 10), this));
             }
             lastTyreTempMessage = messageContents;
         }
@@ -373,7 +373,7 @@ namespace CrewChiefV3.Events
             }
             else if (lastBrakeTempMessage == null || !messagesHaveSameContent(lastBrakeTempMessage, messageContents))
             {
-                audioPlayer.queueClip(new QueuedMessage("brake_temps", messageContents, 0, this));
+                audioPlayer.queueClip(new QueuedMessage("brake_temps", messageContents, random.Next(0, 10), this));
             }
             lastBrakeTempMessage = messageContents;
         }
@@ -396,7 +396,7 @@ namespace CrewChiefV3.Events
             }
             else if (playEvenIfUnchanged || (lastTyreConditionMessage != null && !messagesHaveSameContent(lastTyreConditionMessage, messageContents)))
             {
-                audioPlayer.queueClip(new QueuedMessage("tyre_condition", messageContents, 0, this));
+                audioPlayer.queueClip(new QueuedMessage("tyre_condition", messageContents, random.Next(0, 10), this));
             }
             lastTyreConditionMessage = messageContents;
         }

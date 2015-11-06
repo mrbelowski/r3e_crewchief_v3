@@ -66,9 +66,9 @@ namespace CrewChiefV3.RaceRoom
 
         private Boolean gotBaselineEngineData = false;
         private int baselineEngineDataSamples = 0;
-        // record the average temperature between minutes 2 and 4
-        private double baselineEngineDataStartSeconds = 120;
-        private double baselineEngineDataFinishSeconds = 240;
+        // record the average temperature between minutes 3 and 5
+        private double baselineEngineDataStartSeconds = 180;
+        private double baselineEngineDataFinishSeconds = 300;
         private float baselineEngineDataOilTemp = 0;
         private float baselineEngineDataWaterTemp = 0;
         private float targetEngineWaterTemp = 88;

@@ -485,12 +485,12 @@ namespace CrewChiefV3.Events
                                     if (consistency == ConsistencyResult.CONSISTENT)
                                     {
                                         lastConsistencyUpdate = currentGameState.SessionData.CompletedLaps;
-                                        audioPlayer.queueClip(new QueuedMessage(folderConsistentTimes, 0, this));
+                                        audioPlayer.queueClip(new QueuedMessage(folderConsistentTimes, random.Next(0, 20), this));
                                     }
                                     else if (consistency == ConsistencyResult.IMPROVING)
                                     {
                                         lastConsistencyUpdate = currentGameState.SessionData.CompletedLaps;
-                                        audioPlayer.queueClip(new QueuedMessage(folderImprovingTimes, 0, this));
+                                        audioPlayer.queueClip(new QueuedMessage(folderImprovingTimes, random.Next(0, 20), this));
                                     }
                                     else if (consistency == ConsistencyResult.WORSENING)
                                     {
@@ -503,7 +503,7 @@ namespace CrewChiefV3.Events
                                         else
                                         {
                                             lastConsistencyUpdate = currentGameState.SessionData.CompletedLaps;
-                                            audioPlayer.queueClip(new QueuedMessage(folderWorseningTimes, 0, this));
+                                            audioPlayer.queueClip(new QueuedMessage(folderWorseningTimes, random.Next(0, 20), this));
                                         }
                                     }
                                 }
@@ -548,7 +548,7 @@ namespace CrewChiefV3.Events
                             String folder = getFolderForSectorCombination(getEnumForSectorDelta(playerSector - comparisonSector, currentGameState.SessionData.SessionType != SessionType.Race), sectorEnum);
                             if (folder != null)
                             {
-                                audioPlayer.queueClip(new QueuedMessage(folder, 0, this));
+                                audioPlayer.queueClip(new QueuedMessage(folder, random.Next(2, 4), this));
                             }
                         }
                     }
