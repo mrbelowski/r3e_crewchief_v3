@@ -867,7 +867,6 @@ namespace CrewChiefV3.Events
                 {
                     if (deltaPlayerBestToSessionBestInClass != TimeSpan.MaxValue)
                     {
-                        float[] bestOpponentLapData = currentGameState.getTimeAndSectorsForBestOpponentLapInWindow(-1, currentGameState.carClass.carClassEnum);
                         if (deltaPlayerBestToSessionBestInClass <= TimeSpan.Zero)
                         {   
                             if (sessionType == SessionType.Qualify && currentPosition == 1)
@@ -907,18 +906,29 @@ namespace CrewChiefV3.Events
                             audioPlayer.playClipImmediately(new QueuedMessage("lapTimeNotRaceGap",
                                 MessageContents(deltaPlayerBestToSessionBestInClass, folderGapOutroOffPace), 0, null), false);
                         }
-                        SectorReportOption reportOption = SectorReportOption.COMBINED;
-                        double r = random.NextDouble();
-                        // usually report the combined sectors, occasionally report all
-                        if (r > 0.33)
+
+                        // TODO: wrap this in a try-catch until I work out why the array indices are being screwed up in online races (yuk...)
+                        try
                         {
-                            reportOption = SectorReportOption.ALL_SECTORS;
+
+                            float[] bestOpponentLapData = currentGameState.getTimeAndSectorsForBestOpponentLapInWindow(-1, currentGameState.carClass.carClassEnum);
+                            SectorReportOption reportOption = SectorReportOption.COMBINED;
+                            double r = random.NextDouble();
+                            // usually report the combined sectors, occasionally report all
+                            if (r > 0.33)
+                            {
+                                reportOption = SectorReportOption.ALL_SECTORS;
+                            }
+                            List<MessageFragment> sectorDeltaMessages = getSectorDeltaMessages(reportOption, currentGameState.SessionData.BestLapSector1Time, bestOpponentLapData[1],
+                                currentGameState.SessionData.BestLapSector2Time, bestOpponentLapData[2], currentGameState.SessionData.BestLapSector3Time, bestOpponentLapData[3], true);
+                            if (sectorDeltaMessages.Count > 0)
+                            {
+                                audioPlayer.playClipImmediately(new QueuedMessage("non-race_sector_times_report", sectorDeltaMessages, 0, null), false);
+                            }
                         }
-                        List<MessageFragment> sectorDeltaMessages = getSectorDeltaMessages(reportOption, currentGameState.SessionData.BestLapSector1Time, bestOpponentLapData[1],
-                            currentGameState.SessionData.BestLapSector2Time, bestOpponentLapData[2], currentGameState.SessionData.BestLapSector3Time, bestOpponentLapData[3], true);
-                        if (sectorDeltaMessages.Count > 0)
+                        catch (Exception e)
                         {
-                            audioPlayer.playClipImmediately(new QueuedMessage("non-race_sector_times_report", sectorDeltaMessages, 0, null), false);
+                            Console.WriteLine("Unable to get sector deltas: " + e.Message);
                         }
                         audioPlayer.closeChannel();
                     }
