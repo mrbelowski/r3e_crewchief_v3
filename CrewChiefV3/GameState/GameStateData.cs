@@ -858,7 +858,7 @@ namespace CrewChiefV3.GameState
 
         public DateTime Now;
 
-        public CarData.CarClass carClass;
+        public CarData.CarClass carClass = CarData.getDefaultCarClass();
 
         public EngineData EngineData = new EngineData();
 

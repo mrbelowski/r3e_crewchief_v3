@@ -212,7 +212,18 @@ namespace CrewChiefV3.PCars
             currentGameState.SessionData.UnFilteredPosition = (int)viewedParticipant.mRacePosition;
             currentGameState.SessionData.IsNewSector = previousGameState == null || viewedParticipant.mCurrentSector != previousGameState.SessionData.SectorNumber;
             currentGameState.PositionAndMotionData.DistanceRoundTrack = viewedParticipant.mCurrentLapDistance;
-          
+            if (currentGameState.carClass.carClassEnum == CarData.CarClassEnum.UNKNOWN_RACE)
+            {
+                CarData.CarClass newClass = CarData.getCarClassForPCarsClassName(shared.mCarClassName);
+                if (newClass.carClassEnum != currentGameState.carClass.carClassEnum)
+                {
+                    currentGameState.carClass = newClass;
+                    Console.WriteLine("Player is using car class " + currentGameState.carClass.carClassEnum + " (class name " + shared.mCarClassName + ")");
+                    brakeTempThresholdsForPlayersCar = CarData.getBrakeTempThresholds(currentGameState.carClass, shared.mCarName);
+                    // no tyre data in the block so get the default tyre types for this car
+                    defaultTyreTypeForPlayersCar = CarData.getDefaultTyreType(currentGameState.carClass, shared.mCarName);
+                }
+            }
             
             // previous session data to check if we've started an new session
             SessionPhase lastSessionPhase = SessionPhase.Unavailable;
@@ -224,7 +235,6 @@ namespace CrewChiefV3.PCars
             int lastSessionNumberOfLaps = 0;
             float lastSessionRunTime = 0;
             float lastSessionTimeRemaining = 0;
-            CarData.CarClass carClass = CarData.getDefaultCarClass();
             if (previousGameState != null)
             {
                 lastSessionPhase = previousGameState.SessionData.SessionPhase;
@@ -236,13 +246,7 @@ namespace CrewChiefV3.PCars
                 lastSessionNumberOfLaps = previousGameState.SessionData.SessionNumberOfLaps;
                 lastSessionRunTime = previousGameState.SessionData.SessionRunTime;
                 lastSessionTimeRemaining = previousGameState.SessionData.SessionTimeRemaining;
-                if (previousGameState.carClass != null)
-                {
-                    carClass = previousGameState.carClass;
-                }
             }
-
-            currentGameState.carClass = carClass;
 
             // current session data
             currentGameState.SessionData.SessionType = mapToSessionType(shared);
@@ -331,9 +335,10 @@ namespace CrewChiefV3.PCars
                     }
                 }
                 currentGameState.carClass = CarData.getCarClassForPCarsClassName(shared.mCarClassName);
-                brakeTempThresholdsForPlayersCar = CarData.getBrakeTempThresholds(carClass, shared.mCarName);
+                Console.WriteLine("Player is using car class " + currentGameState.carClass.carClassEnum + " (class name " + shared.mCarClassName + ")");
+                brakeTempThresholdsForPlayersCar = CarData.getBrakeTempThresholds(currentGameState.carClass, shared.mCarName);
                 // no tyre data in the block so get the default tyre types for this car
-                defaultTyreTypeForPlayersCar = CarData.getDefaultTyreType(carClass, shared.mCarName);
+                defaultTyreTypeForPlayersCar = CarData.getDefaultTyreType(currentGameState.carClass, shared.mCarName);
             }
             else
             {
@@ -362,7 +367,11 @@ namespace CrewChiefV3.PCars
                         currentGameState.SessionData.LeaderHasFinishedRace = false;
                         currentGameState.SessionData.NumCarsAtStartOfSession = shared.mNumParticipants;
                         currentGameState.SessionData.TrackDefinition = TrackData.getTrackDefinition(shared.mTrackLocation + ":" + shared.mTrackVariation, shared.mTrackLength, GameEnum.PCARS_64BIT);
-
+                        currentGameState.carClass = CarData.getCarClassForPCarsClassName(shared.mCarClassName);
+                        Console.WriteLine("Player is using car class " + currentGameState.carClass.carClassEnum + " (class name " + shared.mCarClassName + ")");
+                        brakeTempThresholdsForPlayersCar = CarData.getBrakeTempThresholds(currentGameState.carClass, shared.mCarName);
+                        // no tyre data in the block so get the default tyre types for this car
+                        defaultTyreTypeForPlayersCar = CarData.getDefaultTyreType(currentGameState.carClass, shared.mCarName);
                         if (previousGameState != null)
                         {
                             currentGameState.OpponentData = previousGameState.OpponentData;
@@ -401,6 +410,7 @@ namespace CrewChiefV3.PCars
                 //
                 if (!justGoneGreen && previousGameState != null)
                 {
+                    currentGameState.carClass = previousGameState.carClass;
                     currentGameState.SessionData.SessionStartTime = previousGameState.SessionData.SessionStartTime;
                     currentGameState.SessionData.SessionRunTime = previousGameState.SessionData.SessionRunTime;
                     currentGameState.SessionData.SessionNumberOfLaps = previousGameState.SessionData.SessionNumberOfLaps;

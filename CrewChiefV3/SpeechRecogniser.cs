@@ -293,7 +293,6 @@ namespace CrewChiefV3
                     {
                         return;
                     }
-                    Console.WriteLine("Adding opponent name " + rawDriverName + " to speech recogniser, using " + usableName);
                     crewChief.audioPlayer.cacheDriverName(usableName);
                     if (initialised)
                     {                        
