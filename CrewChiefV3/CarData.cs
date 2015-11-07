@@ -65,7 +65,7 @@ namespace CrewChiefV3
         private static float carMaxTyreCircumference = 1.2f * (float)Math.PI;
 
         // for locking / spinning check - the tolerance values are built into these tyre diameter values
-        private static float kartMinTyreCircumference = 0.15f * (float)Math.PI;  // 0.15m diameter
+        private static float kartMinTyreCircumference = 0.25f * (float)Math.PI;  // 0.15m diameter
         private static float kartMaxTyreCircumference = 0.4f * (float)Math.PI;
 
         public enum CarClassEnum

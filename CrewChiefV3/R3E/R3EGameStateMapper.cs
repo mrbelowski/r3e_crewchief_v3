@@ -76,7 +76,7 @@ namespace CrewChiefV3.RaceRoom
 
         private SpeechRecogniser speechRecogniser;
 
-        private Dictionary<int, PendingRacePositionChange> PendingRacePositionChanges = new Dictionary<int, PendingRacePositionChange>();
+        private Dictionary<String, PendingRacePositionChange> PendingRacePositionChanges = new Dictionary<String, PendingRacePositionChange>();
         private TimeSpan PositionChangeLag = TimeSpan.FromMilliseconds(1000);
         class PendingRacePositionChange
         {
@@ -139,11 +139,13 @@ namespace CrewChiefV3.RaceRoom
                 currentGameState.SessionData.SessionRunningTime, shared.SessionPhase, currentGameState.ControlData.ControlType,
                 previousLapsCompleted, shared.CompletedLaps, isCarRunning);
 
+            List<String> opponentDriverNamesProcessedThisUpdate = new List<String>();
+
             if ((lastSessionPhase != currentGameState.SessionData.SessionPhase && (lastSessionPhase == SessionPhase.Unavailable || lastSessionPhase == SessionPhase.Finished)) ||
                 ((lastSessionPhase == SessionPhase.Checkered || lastSessionPhase == SessionPhase.Finished || lastSessionPhase == SessionPhase.Green) && 
                     currentGameState.SessionData.SessionPhase == SessionPhase.Countdown) ||
                 lastSessionRunningTime > currentGameState.SessionData.SessionRunningTime)
-            {
+            {                
                 currentGameState.SessionData.IsNewSession = true;
                 Console.WriteLine("New session, trigger data:");
                 Console.WriteLine("lastSessionPhase = " + lastSessionPhase);
@@ -177,11 +179,19 @@ namespace CrewChiefV3.RaceRoom
                         Console.WriteLine("Player is using car class " + currentGameState.carClass.carClassEnum + " (class ID " + participantStruct.driver_info.class_id + ")");
                         brakeTempThresholdsForPlayersCar = CarData.getBrakeTempThresholds(currentGameState.carClass, null);
                     }
-                    else if (driverName != null && driverName.Length > 0)
+                    else
                     {
-                        if (!currentGameState.OpponentData.ContainsKey(participantStruct.driver_info.slot_id))
+                        if (driverName.Length > 0 && currentGameState.SessionData.DriverRawName != driverName)
                         {
-                            currentGameState.OpponentData.Add(participantStruct.driver_info.slot_id, createOpponentData(participantStruct, driverName, false));
+                            if (opponentDriverNamesProcessedThisUpdate.Contains(driverName))
+                            {
+                                Console.WriteLine("************ Driver " + driverName + " appears more than once in the DriverData array, lap time reporting may be inaccurate ***********");
+                            }
+                            else
+                            {
+                                opponentDriverNamesProcessedThisUpdate.Add(driverName);
+                                currentGameState.OpponentData.Add(driverName, createOpponentData(participantStruct, driverName, false));
+                            }
                         }
                     }
                 }
@@ -334,7 +344,7 @@ namespace CrewChiefV3.RaceRoom
             currentGameState.SessionData.LapTimePrevious = shared.LapTimePrevious;
             currentGameState.SessionData.PreviousLapWasValid = shared.LapTimePrevious > 0;
             currentGameState.SessionData.NumCars = shared.NumCars;
-            currentGameState.SessionData.Position = getRacePosition(shared.slot_id, currentGameState.SessionData.Position, shared.Position, currentGameState.Now);
+            currentGameState.SessionData.Position = getRacePosition(currentGameState.SessionData.DriverRawName, currentGameState.SessionData.Position, shared.Position, currentGameState.Now);
             currentGameState.SessionData.UnFilteredPosition = shared.Position;
             currentGameState.SessionData.TimeDeltaBehind = shared.TimeDeltaBehind;
             currentGameState.SessionData.TimeDeltaFront = shared.TimeDeltaFront;
@@ -447,19 +457,40 @@ namespace CrewChiefV3.RaceRoom
             {
                 if (participantStruct.driver_info.slot_id != -1 && participantStruct.driver_info.slot_id != shared.slot_id)
                 {
-                    if (currentGameState.OpponentData.ContainsKey(participantStruct.driver_info.slot_id))
+                    String driverName = getNameFromBytes(participantStruct.driver_info.nameByteArray);
+                    if (driverName.Length == 0 || driverName == currentGameState.SessionData.DriverRawName || opponentDriverNamesProcessedThisUpdate.Contains(driverName))
                     {
-                        OpponentData currentOpponentData = currentGameState.OpponentData[participantStruct.driver_info.slot_id];
+                        continue;
+                    }
+                    if (currentGameState.OpponentData.ContainsKey(driverName))
+                    {
+                        opponentDriverNamesProcessedThisUpdate.Add(driverName);
                         if (previousGameState != null)
                         {
+                            OpponentData previousOpponentData = null;
+                            Boolean newOpponentLap = false;
                             int previousOpponentSectorNumber = 1;
                             int previousOpponentCompletedLaps = 0;
                             int previousOpponentPosition = 0;
                             Boolean previousOpponentIsEnteringPits = false;
                             Boolean previousOpponentIsExitingPits = false;
-
                             float[] previousOpponentWorldPosition = new float[] { 0, 0, 0 };
                             float previousOpponentSpeed = 0;
+                            if (previousGameState.OpponentData.ContainsKey(driverName))
+                            {
+                                previousOpponentData = previousGameState.OpponentData[driverName];
+                                previousOpponentSectorNumber = previousOpponentData.CurrentSectorNumber;
+                                previousOpponentCompletedLaps = previousOpponentData.CompletedLaps;
+                                previousOpponentPosition = previousOpponentData.Position;
+                                previousOpponentIsEnteringPits = previousOpponentData.isEnteringPits();
+                                previousOpponentIsExitingPits = previousOpponentData.isExitingPits();
+                                previousOpponentWorldPosition = previousOpponentData.WorldPosition;
+                                previousOpponentSpeed = previousOpponentData.Speed;
+                                newOpponentLap = previousOpponentData.CurrentSectorNumber == 3 && participantStruct.track_sector == 1;
+                            }
+
+                            OpponentData currentOpponentData = currentGameState.OpponentData[driverName];
+                            
                             float sectorTime = -1;
                             if (participantStruct.track_sector == 1)
                             {
@@ -474,22 +505,7 @@ namespace CrewChiefV3.RaceRoom
                                 sectorTime = participantStruct.sector_time_current_self.Sector2;
                             }
 
-                            OpponentData previousOpponentData = null;
-                            Boolean newOpponentLap = false;
-                            if (previousGameState.OpponentData.ContainsKey(participantStruct.driver_info.slot_id))
-                            {
-                                previousOpponentData = previousGameState.OpponentData[participantStruct.driver_info.slot_id];
-                                previousOpponentSectorNumber = previousOpponentData.CurrentSectorNumber;
-                                previousOpponentCompletedLaps = previousOpponentData.CompletedLaps;
-                                previousOpponentPosition = previousOpponentData.Position;
-                                previousOpponentIsEnteringPits = previousOpponentData.isEnteringPits();
-                                previousOpponentIsExitingPits = previousOpponentData.isExitingPits();
-                                previousOpponentWorldPosition = previousOpponentData.WorldPosition;
-                                previousOpponentSpeed = previousOpponentData.Speed;
-                                newOpponentLap = previousOpponentData.CurrentSectorNumber == 3 && participantStruct.track_sector == 1;
-                            }
-
-                            int currentOpponentRacePosition = getRacePosition(participantStruct.driver_info.slot_id, previousOpponentPosition, participantStruct.place, currentGameState.Now);
+                            int currentOpponentRacePosition = getRacePosition(driverName, previousOpponentPosition, participantStruct.place, currentGameState.Now);
                             int currentOpponentLapsCompleted = participantStruct.completed_laps;
                             int currentOpponentSector = participantStruct.track_sector;
                             if (currentOpponentSector == 0)
@@ -559,29 +575,13 @@ namespace CrewChiefV3.RaceRoom
                             }
                             float secondsSinceLastUpdate = (float)new TimeSpan(currentGameState.Ticks - previousGameState.Ticks).TotalSeconds;
 
-                            // a driver swap means an opponent has dropped out and must be replaced.
-                            String driverName = getNameFromBytes(participantStruct.driver_info.nameByteArray);
-                            if (driverName != null && driverName.Length > 0 && driverName != currentOpponentData.DriverRawName)
-                            {
-                                Console.WriteLine("opponent " + driverName + " replaces opponent " + currentOpponentData.DriverRawName + " at slot_id " + participantStruct.driver_info.slot_id);
-                                currentGameState.OpponentData[participantStruct.driver_info.slot_id] = createOpponentData(participantStruct, driverName, true);
-                                // if it's a race session, this new opponent needs some data from the previous driver
-                                if (currentGameState.SessionData.SessionType == SessionType.Race &&
-                                    currentOpponentLapsCompleted > currentGameState.OpponentData[participantStruct.driver_info.slot_id].CompletedLaps)
-                                {
-                                    currentGameState.OpponentData[participantStruct.driver_info.slot_id].CompletedLaps = currentOpponentLapsCompleted;
-                                }
-                            }
-                            else
-                            {
-                                upateOpponentData(currentOpponentData, currentOpponentRacePosition,
+                            upateOpponentData(currentOpponentData, currentOpponentRacePosition,
                                     participantStruct.place, currentOpponentLapsCompleted,
                                     currentOpponentSector, sectorTime, participantStruct.lap_time_current_self,
                                     isEnteringPits || isLeavingPits, participantStruct.current_lap_valid == 1,
                                     currentGameState.SessionData.SessionRunningTime, secondsSinceLastUpdate,
                                     new float[] { participantStruct.position.X, participantStruct.position.Z }, previousOpponentWorldPosition,
                                     participantStruct.lap_distance, participantStruct.tire_type);
-                            }
                             if (newOpponentLap)
                             {
                                 if (currentOpponentData.CurrentBestLapTime > 0)
@@ -628,11 +628,8 @@ namespace CrewChiefV3.RaceRoom
                     }
                     else
                     {
-                        String driverName = getNameFromBytes(participantStruct.driver_info.nameByteArray);
-                        if (driverName != null && driverName.Length > 0)
-                        {
-                            currentGameState.OpponentData.Add(participantStruct.driver_info.slot_id, createOpponentData(participantStruct, driverName, true));
-                        }
+                        opponentDriverNamesProcessedThisUpdate.Add(driverName);
+                        currentGameState.OpponentData.Add(driverName, createOpponentData(participantStruct, driverName, true));
                     }
                 }
             }
@@ -668,6 +665,7 @@ namespace CrewChiefV3.RaceRoom
 
             currentGameState.SessionData.IsRacingSameCarBehind = previousGameState != null && previousGameState.getOpponentKeyBehind() == currentGameState.getOpponentKeyBehind();
             currentGameState.SessionData.IsRacingSameCarInFront = previousGameState != null && previousGameState.getOpponentKeyInFront() == currentGameState.getOpponentKeyInFront();
+
             if (!currentGameState.SessionData.IsRacingSameCarInFront)
             {
                 currentGameState.SessionData.GameTimeAtLastPositionFrontChange = currentGameState.SessionData.SessionRunningTime;
@@ -918,7 +916,7 @@ namespace CrewChiefV3.RaceRoom
             return currentGameState;
         }
 
-        private int getRacePosition(int slot_id, int oldPosition, int newPosition, DateTime now)
+        private int getRacePosition(String driverName, int oldPosition, int newPosition, DateTime now)
         {
             if (oldPosition < 1)
             {
@@ -932,22 +930,22 @@ namespace CrewChiefV3.RaceRoom
             if (oldPosition == newPosition)
             {
                 // clear any pending position change
-                if (PendingRacePositionChanges.ContainsKey(slot_id))
+                if (PendingRacePositionChanges.ContainsKey(driverName))
                 {
-                    PendingRacePositionChanges.Remove(slot_id);
+                    PendingRacePositionChanges.Remove(driverName);
                 }
                 return oldPosition;
             }
-            else if (PendingRacePositionChanges.ContainsKey(slot_id))
+            else if (PendingRacePositionChanges.ContainsKey(driverName))
             {
-                PendingRacePositionChange pendingRacePositionChange = PendingRacePositionChanges[slot_id];
+                PendingRacePositionChange pendingRacePositionChange = PendingRacePositionChanges[driverName];
                 if (newPosition == pendingRacePositionChange.newPosition)
                 {
                     // R3E is still reporting this driver is in the same race position, see if it's been long enough...
                     if (now > pendingRacePositionChange.positionChangeTime + PositionChangeLag)
                     {
                         int positionToReturn = newPosition;
-                        PendingRacePositionChanges.Remove(slot_id);
+                        PendingRacePositionChanges.Remove(driverName);
                         return positionToReturn;
                     }
                     else
@@ -965,7 +963,7 @@ namespace CrewChiefV3.RaceRoom
             }
             else
             {
-                PendingRacePositionChanges.Add(slot_id, new PendingRacePositionChange(newPosition, now));
+                PendingRacePositionChanges.Add(driverName, new PendingRacePositionChange(newPosition, now));
                 return oldPosition;
             }
         }

@@ -212,19 +212,7 @@ namespace CrewChiefV3.PCars
             currentGameState.SessionData.UnFilteredPosition = (int)viewedParticipant.mRacePosition;
             currentGameState.SessionData.IsNewSector = previousGameState == null || viewedParticipant.mCurrentSector != previousGameState.SessionData.SectorNumber;
             currentGameState.PositionAndMotionData.DistanceRoundTrack = viewedParticipant.mCurrentLapDistance;
-            if (currentGameState.carClass.carClassEnum == CarData.CarClassEnum.UNKNOWN_RACE)
-            {
-                CarData.CarClass newClass = CarData.getCarClassForPCarsClassName(shared.mCarClassName);
-                if (newClass.carClassEnum != currentGameState.carClass.carClassEnum)
-                {
-                    currentGameState.carClass = newClass;
-                    Console.WriteLine("Player is using car class " + currentGameState.carClass.carClassEnum + " (class name " + shared.mCarClassName + ")");
-                    brakeTempThresholdsForPlayersCar = CarData.getBrakeTempThresholds(currentGameState.carClass, shared.mCarName);
-                    // no tyre data in the block so get the default tyre types for this car
-                    defaultTyreTypeForPlayersCar = CarData.getDefaultTyreType(currentGameState.carClass, shared.mCarName);
-                }
-            }
-            
+                        
             // previous session data to check if we've started an new session
             SessionPhase lastSessionPhase = SessionPhase.Unavailable;
             SessionType lastSessionType = SessionType.Unavailable;
@@ -246,6 +234,20 @@ namespace CrewChiefV3.PCars
                 lastSessionNumberOfLaps = previousGameState.SessionData.SessionNumberOfLaps;
                 lastSessionRunTime = previousGameState.SessionData.SessionRunTime;
                 lastSessionTimeRemaining = previousGameState.SessionData.SessionTimeRemaining;
+                currentGameState.carClass = previousGameState.carClass;
+            }
+
+            if (currentGameState.carClass.carClassEnum == CarData.CarClassEnum.UNKNOWN_RACE)
+            {
+                CarData.CarClass newClass = CarData.getCarClassForPCarsClassName(shared.mCarClassName);
+                if (newClass.carClassEnum != currentGameState.carClass.carClassEnum)
+                {
+                    currentGameState.carClass = newClass;
+                    Console.WriteLine("Player is using car class " + currentGameState.carClass.carClassEnum + " (class name " + shared.mCarClassName + ")");
+                    brakeTempThresholdsForPlayersCar = CarData.getBrakeTempThresholds(currentGameState.carClass, shared.mCarName);
+                    // no tyre data in the block so get the default tyre types for this car
+                    defaultTyreTypeForPlayersCar = CarData.getDefaultTyreType(currentGameState.carClass, shared.mCarName);
+                }
             }
 
             // current session data
@@ -642,6 +644,8 @@ namespace CrewChiefV3.PCars
                                 if (currentOpponentData.IsNewLap && currentOpponentData.CurrentBestLapTime > 0)
                                 {
                                     // the car class is always Unknown for PCars - it's not in the opponent data
+
+                                    // TODO: is this right?
                                     if (currentGameState.SessionData.OpponentsLapTimeSessionBestOverall == -1 ||
                                         currentOpponentData.CurrentBestLapTime < currentGameState.SessionData.OpponentsLapTimeSessionBestOverall)
                                     {
@@ -684,22 +688,23 @@ namespace CrewChiefV3.PCars
                 currentGameState.SessionData.PreviousLapWasValid = previousGameState.SessionData.PreviousLapWasValid;
             }
 
+            // TODO: run a session with slow opponents, set fastest lap on lap 2 or 3 then back off - does the fastest lap message keep playing?
             if (currentGameState.SessionData.IsNewLap && currentGameState.SessionData.PreviousLapWasValid &&
                 currentGameState.SessionData.LapTimePrevious > 0)
             {
-                if ((currentGameState.SessionData.PlayerLapTimeSessionBest == -1 ||
-                     currentGameState.SessionData.LapTimePrevious < currentGameState.SessionData.PlayerLapTimeSessionBest))
+                if (currentGameState.SessionData.PlayerLapTimeSessionBest == -1 ||
+                     currentGameState.SessionData.LapTimePrevious < currentGameState.SessionData.PlayerLapTimeSessionBest)
                 {
                     currentGameState.SessionData.PlayerLapTimeSessionBest = currentGameState.SessionData.LapTimePrevious;
                     if (currentGameState.SessionData.OverallSessionBestLapTime == -1 ||
-                        currentGameState.SessionData.OverallSessionBestLapTime > currentGameState.SessionData.PlayerLapTimeSessionBest)
+                        currentGameState.SessionData.LapTimePrevious < currentGameState.SessionData.OverallSessionBestLapTime)
                     {
-                        currentGameState.SessionData.OverallSessionBestLapTime = currentGameState.SessionData.PlayerLapTimeSessionBest;
+                        currentGameState.SessionData.OverallSessionBestLapTime = currentGameState.SessionData.LapTimePrevious;
                     }
                     if (currentGameState.SessionData.PlayerClassSessionBestLapTime == -1 ||
-                        currentGameState.SessionData.PlayerClassSessionBestLapTime > currentGameState.SessionData.PlayerLapTimeSessionBest)
+                        currentGameState.SessionData.LapTimePrevious < currentGameState.SessionData.PlayerClassSessionBestLapTime)
                     {
-                        currentGameState.SessionData.PlayerClassSessionBestLapTime = currentGameState.SessionData.PlayerLapTimeSessionBest;
+                        currentGameState.SessionData.PlayerClassSessionBestLapTime = currentGameState.SessionData.LapTimePrevious;
                     }
                 }
             }
