@@ -76,6 +76,9 @@ namespace CrewChiefV3.RaceRoom
 
         private SpeechRecogniser speechRecogniser;
 
+
+        // TODO: now we're much stricter with the bollocks opponents data (duplicates, missing entries, stuff randomly being given the wrong
+        // slot_id), can we remove this grotty delayed-position hack and all the associated crap it creates?
         private Dictionary<String, PendingRacePositionChange> PendingRacePositionChanges = new Dictionary<String, PendingRacePositionChange>();
         private TimeSpan PositionChangeLag = TimeSpan.FromMilliseconds(1000);
         class PendingRacePositionChange
@@ -158,7 +161,7 @@ namespace CrewChiefV3.RaceRoom
                 currentGameState.SessionData.SessionIteration = shared.SessionIteration;
                 currentGameState.SessionData.SessionStartTime = currentGameState.Now;
                 currentGameState.OpponentData.Clear();
-                currentGameState.SessionData.TrackDefinition = TrackData.getTrackDefinition(null, shared.track_info.length, GameEnum.RACE_ROOM);
+                currentGameState.SessionData.TrackDefinition = TrackData.getTrackDefinition(null, shared.track_info.length);
                 for (int i = 0; i < shared.all_drivers_data.Length; i++)
                 {
                     DriverData participantStruct = shared.all_drivers_data[i];
@@ -185,7 +188,7 @@ namespace CrewChiefV3.RaceRoom
                         {
                             if (opponentDriverNamesProcessedThisUpdate.Contains(driverName))
                             {
-                                Console.WriteLine("************ Driver " + driverName + " appears more than once in the DriverData array, lap time reporting may be inaccurate ***********");
+                                // would be nice to warn here, but this happens a lot :(
                             }
                             else
                             {
@@ -458,7 +461,7 @@ namespace CrewChiefV3.RaceRoom
                 if (participantStruct.driver_info.slot_id != -1 && participantStruct.driver_info.slot_id != shared.slot_id)
                 {
                     String driverName = getNameFromBytes(participantStruct.driver_info.nameByteArray);
-                    if (driverName.Length == 0 || driverName == currentGameState.SessionData.DriverRawName || opponentDriverNamesProcessedThisUpdate.Contains(driverName))
+                    if (driverName.Length == 0 || driverName == currentGameState.SessionData.DriverRawName || opponentDriverNamesProcessedThisUpdate.Contains(driverName) || participantStruct.place < 1) 
                     {
                         continue;
                     }

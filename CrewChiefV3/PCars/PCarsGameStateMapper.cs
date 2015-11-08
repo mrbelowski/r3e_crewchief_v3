@@ -264,7 +264,10 @@ namespace CrewChiefV3.PCars
                 currentGameState.SessionData.SessionHasFixedTime = true;
                 sessionTimeRemaining = shared.mEventTimeRemaining;
             }
-            currentGameState.SessionData.TrackDefinition = TrackData.getTrackDefinition(shared.mTrackLocation + ":" + shared.mTrackVariation, shared.mTrackLength, GameEnum.PCARS_64BIT);
+            if (currentGameState.SessionData.TrackDefinition == null)
+            {
+                currentGameState.SessionData.TrackDefinition = TrackData.getTrackDefinition(shared.mTrackLocation + ":" + shared.mTrackVariation, shared.mTrackLength);
+            }
             // Console.WriteLine(lastSessionPhase + ", " + currentGameState.SessionData.SessionPhase + "; " + lastSessionType + ", " + currentGameState.SessionData.SessionType);
             // now check if this is a new session...
             Boolean raceRestarted = currentGameState.SessionData.SessionType == SessionType.Race &&
@@ -368,7 +371,7 @@ namespace CrewChiefV3.PCars
                         }          
                         currentGameState.SessionData.LeaderHasFinishedRace = false;
                         currentGameState.SessionData.NumCarsAtStartOfSession = shared.mNumParticipants;
-                        currentGameState.SessionData.TrackDefinition = TrackData.getTrackDefinition(shared.mTrackLocation + ":" + shared.mTrackVariation, shared.mTrackLength, GameEnum.PCARS_64BIT);
+                        currentGameState.SessionData.TrackDefinition = TrackData.getTrackDefinition(shared.mTrackLocation + ":" + shared.mTrackVariation, shared.mTrackLength);
                         currentGameState.carClass = CarData.getCarClassForPCarsClassName(shared.mCarClassName);
                         Console.WriteLine("Player is using car class " + currentGameState.carClass.carClassEnum + " (class name " + shared.mCarClassName + ")");
                         brakeTempThresholdsForPlayersCar = CarData.getBrakeTempThresholds(currentGameState.carClass, shared.mCarName);

@@ -70,9 +70,9 @@ namespace CrewChiefV3
             new TrackDefinition("Zolder:Grand Prix", 4, 4146.733f, new float[] {138.3811f, 132.7747f}, new float[] {682.2009f, 179.8147f})
         };
 
-        public static TrackDefinition getTrackDefinition(String trackName, float trackLength, GameEnum game)
+        public static TrackDefinition getTrackDefinition(String trackName, float trackLength)
         {
-            if (game == GameEnum.PCARS_32BIT || game == GameEnum.PCARS_64BIT || game == GameEnum.PCARS_NETWORK)
+            if (CrewChief.gameDefinition.gameEnum == GameEnum.PCARS_32BIT || CrewChief.gameDefinition.gameEnum == GameEnum.PCARS_64BIT || CrewChief.gameDefinition.gameEnum == GameEnum.PCARS_NETWORK) 
             {
                 foreach (TrackDefinition def in pCarsTracks)
                 {
@@ -80,18 +80,19 @@ namespace CrewChiefV3
                     {
                         return def;
                     }
-                } 
-                return getDefinitionForLength(trackLength);
+                }
+                TrackDefinition defGuessedFromLength = getDefinitionForLength(trackLength, 2);
+                if (defGuessedFromLength != null)
+                {
+                    return defGuessedFromLength;
+                }
             }
-            else
-            {
-                // don't get raceroom tracks by track length - pcars and raceroom disagree wildly on track lengths
-                // TODO: use the raceroom ID to map this
-                return new TrackDefinition("unknown track", trackLength); 
-            }
+            // TODO: use the raceroom ID to map this for raceroom
+            String nameToLog = trackName != null ? trackName : "null";
+            return new TrackDefinition("unknown track - name " + nameToLog + ", length = " + trackLength, trackLength); 
         }
 
-        private static TrackDefinition getDefinitionForLength(float trackLength)
+        private static TrackDefinition getDefinitionForLength(float trackLength, int maxError)
         {
             TrackDefinition closestLengthDef = null;
             float closestLengthDifference = float.MaxValue;
@@ -103,26 +104,22 @@ namespace CrewChiefV3
                 }
                 else
                 {
-                    float thisDiff = Math.Abs(trackLength - def.trackLength) ;
-                    if (closestLengthDef == null || thisDiff < closestLengthDifference)
+                    float thisDiff = Math.Abs(trackLength - def.trackLength);
+                    if (thisDiff < maxError)
                     {
-                        closestLengthDef = def;
-                        closestLengthDifference = thisDiff;
+                        if (closestLengthDef == null || thisDiff < closestLengthDifference)
+                        {
+                            closestLengthDef = def;
+                            closestLengthDifference = thisDiff;
+                        }
                     }
                 }
             }
-            if (closestLengthDef == null)
+            if (closestLengthDef != null)
             {
-                return new TrackDefinition("unknown track", trackLength);
+                Console.WriteLine("best track guess is " + closestLengthDef.name + " length = " + closestLengthDef.trackLength + ", length error = " + closestLengthDifference);                
             }
-            else
-            {
-                if (closestLengthDef != null)
-                {
-                    Console.WriteLine("best track guess is " + closestLengthDef.name + ", length error = " + closestLengthDifference);
-                }
-                return closestLengthDef;
-            }
+            return closestLengthDef;
         }
     }
 

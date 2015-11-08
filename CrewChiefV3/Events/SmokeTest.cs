@@ -92,8 +92,8 @@ namespace CrewChiefV3.Events
         override protected void triggerInternal(GameStateData previousGameState, GameStateData currentGameState)
         {
             audioPlayer.queueClip(new QueuedMessage(folderTest, 0, this));
-            testDriverNames();         
-            
+            testDriverNames();
+
             /*
             audioPlayer.queueClip(new QueuedMessage("conditionsAirAndTrackIncreasing1", MessageContents
                                (ConditionsMonitor.folderAirAndTrackTempIncreasing, 
