@@ -115,10 +115,6 @@ namespace CrewChiefV3
                     }
                 }
             }
-            if (closestLengthDef != null)
-            {
-                Console.WriteLine("best track guess is " + closestLengthDef.name + " length = " + closestLengthDef.trackLength + ", length error = " + closestLengthDifference);                
-            }
             return closestLengthDef;
         }
     }

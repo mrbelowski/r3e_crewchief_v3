@@ -264,10 +264,7 @@ namespace CrewChiefV3.PCars
                 currentGameState.SessionData.SessionHasFixedTime = true;
                 sessionTimeRemaining = shared.mEventTimeRemaining;
             }
-            if (currentGameState.SessionData.TrackDefinition == null)
-            {
-                currentGameState.SessionData.TrackDefinition = TrackData.getTrackDefinition(shared.mTrackLocation + ":" + shared.mTrackVariation, shared.mTrackLength);
-            }
+            currentGameState.SessionData.TrackDefinition = TrackData.getTrackDefinition(shared.mTrackLocation + ":" + shared.mTrackVariation, shared.mTrackLength);
             // Console.WriteLine(lastSessionPhase + ", " + currentGameState.SessionData.SessionPhase + "; " + lastSessionType + ", " + currentGameState.SessionData.SessionType);
             // now check if this is a new session...
             Boolean raceRestarted = currentGameState.SessionData.SessionType == SessionType.Race &&
