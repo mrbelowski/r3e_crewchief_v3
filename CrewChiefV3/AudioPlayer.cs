@@ -300,6 +300,7 @@ namespace CrewChiefV3
         public void cacheDriverNames(List<String> driverNames)
         {
             List<String> namesWithNoSoundFile = new List<string>();
+            List<String> namesWithSoundFile = new List<String>();
             namesWithNoSoundFile.AddRange(driverNames);
             try
             {
@@ -322,9 +323,9 @@ namespace CrewChiefV3
                                 driverNameFile.Name.ToLowerInvariant().Equals(driverName.ToLower() + ".wav"))
                             {
                                 namesWithNoSoundFile.Remove(driverName);
+                                namesWithSoundFile.Add(driverName);
                                 if (!clips.ContainsKey(driverName))
                                 {
-                                    Console.WriteLine("Caching driver name sound file for " + driverName);
                                     SoundPlayer clip = new SoundPlayer(driverNameFile.FullName);
                                     clip.Load();
                                     List<SoundPlayer> driverNameClips = new List<SoundPlayer>();
@@ -338,6 +339,11 @@ namespace CrewChiefV3
                             }
                         }
                     }
+                }
+                if (namesWithSoundFile.Count > 0)
+                {
+                    Console.WriteLine("Cached sound files for driver names:");
+                    Console.WriteLine(String.Join(", ", namesWithSoundFile));
                 }
                 if (namesWithNoSoundFile.Count > 0)
                 {
