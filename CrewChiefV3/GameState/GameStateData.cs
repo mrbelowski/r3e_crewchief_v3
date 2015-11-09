@@ -1080,8 +1080,6 @@ namespace CrewChiefV3.GameState
                 {
                     // there's an historical lap which is quicker than all the data we currently hold. Due to limitations in the shared memory blocks,
                     // we never have sector times for this historical lap, so we have to remove them and disable sector deltas until a better lap is recorded
-                    Console.WriteLine("There's an historical lap quicker than " + bestLapWithSectors[0]);
-                    Console.WriteLine("Replacing laptime " + bestLapWithSectors[0] + " with " + SessionData.SessionFastestLapTimeFromGamePlayerClass);
                     bestLapWithSectors[0] = SessionData.SessionFastestLapTimeFromGamePlayerClass;
                     bestLapWithSectors[1] = -1;
                     bestLapWithSectors[2] = -1;

@@ -131,7 +131,7 @@ namespace CrewChiefV3.Events
                                  opponentData.LastLapTime < opponentData.PreviousBestLapTime - minImprovementBeforeReadingOpponentRaceTime &&
                                  opponentData.LastLapTime < currentFastestLap + maxOffPaceBeforeReadingOpponentRaceTime)) ||
                            ((currentGameState.SessionData.SessionType == SessionType.Practice || currentGameState.SessionData.SessionType == SessionType.Qualify) &&
-                                 opponentData.CurrentBestLapTime <= opponentData.LastLapTime))
+                                 opponentData.LastLapTime <= opponentData.CurrentBestLapTime))
                         {
                             if (currentGameState.SessionData.UnFilteredPosition > 1 && opponentData.UnFilteredPosition == 1 &&
                                 (currentGameState.SessionData.SessionType == SessionType.Race || frequencyOfOpponentPracticeAndQualLapTimes > 0))
@@ -144,7 +144,7 @@ namespace CrewChiefV3.Events
                                 (currentGameState.SessionData.SessionType == SessionType.Race || random.Next(10) < frequencyOfOpponentPracticeAndQualLapTimes))
                             {
                                 // he's ahead of us, and has recorded 3 or more laps, and this one's his fastest
-                                audioPlayer.queueClip(new QueuedMessage("car_ahead_good_laptime", MessageContents(folderTheCarAheadHasJustDoneA,
+                                 audioPlayer.queueClip(new QueuedMessage("car_ahead_good_laptime", MessageContents(folderTheCarAheadHasJustDoneA,
                                         TimeSpan.FromSeconds(opponentData.LastLapTime)), 0, this));
                             }
                             else if (!currentGameState.isLast() && opponentData.UnFilteredPosition == currentGameState.SessionData.Position + 1 &&
