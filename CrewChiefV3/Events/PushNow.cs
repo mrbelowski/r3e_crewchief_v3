@@ -35,6 +35,11 @@ namespace CrewChiefV3.Events
             playedNearEndLapsPush = false;
         }
 
+        public override List<SessionType> applicableSessionTypes
+        {
+            get { return new List<SessionType> { SessionType.Race }; }
+        }
+
         override protected void triggerInternal(GameStateData previousGameState, GameStateData currentGameState)
         {
             Boolean checkPushToGain = currentGameState.SessionData.SessionRunningTime - currentGameState.SessionData.GameTimeAtLastPositionFrontChange < minTimeToBeInThisPosition;

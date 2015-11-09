@@ -295,6 +295,11 @@ namespace CrewChiefV3.PCars
         public float mTrackLength;                              // [ UNITS = Metres ]   [ RANGE = 0.0f->... ]    [ UNSET = 0.0f ]
 
         // Timing & Scoring
+
+        // NOTE: 
+        // The mSessionFastest... times are only for the player. The overall session fastest time is NOT in the block. Anywhere...
+        // The mPersonalFastest... times are often -1. Perhaps they're the player's hotlap / offline practice records for this track.
+        //
         public bool mLapInvalidated;                            // [ UNITS = boolean ]   [ RANGE = false->true ]   [ UNSET = false ]
         public float mSessionFastestLapTime;                              // [ UNITS = seconds ]   [ RANGE = 0.0f->... ]   [ UNSET = -1.0f ]
         public float mLastLapTime;                              // [ UNITS = seconds ]   [ RANGE = 0.0f->... ]   [ UNSET = 0.0f ]

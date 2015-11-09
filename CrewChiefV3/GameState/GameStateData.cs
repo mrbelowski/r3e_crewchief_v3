@@ -232,13 +232,19 @@ namespace CrewChiefV3.GameState
         public float LastSector2Time = -1;
         public float LastSector3Time = -1;
 
-        public float BestSector1Time = -1;
-        public float BestSector2Time = -1;
-        public float BestSector3Time = -1;
+        // best sector times for the player
+        public float PlayerBestSector1Time = -1;
+        public float PlayerBestSector2Time = -1;
+        public float PlayerBestSector3Time = -1;
 
-        public float BestLapSector1Time = -1;
-        public float BestLapSector2Time = -1;
-        public float BestLapSector3Time = -1;
+        // sector times set on the player's fastest lap
+        public float PlayerBestLapSector1Time = -1;
+        public float PlayerBestLapSector2Time = -1;
+        public float PlayerBestLapSector3Time = -1;
+
+        // data sent by the game, rather than derived (useful for mid-session joining)
+        public float SessionFastestLapTimeFromGame = -1;
+        public float SessionFastestLapTimeFromGamePlayerClass = -1;
 
         public SessionData()
         {
@@ -300,8 +306,6 @@ namespace CrewChiefV3.GameState
         public Boolean LastLapValid = true;
         
         public List<LapData> OpponentLapData = new List<LapData>();
-
-        public float CurrentLapTime = 0;
 
         public CarData.CarClass CarClass = CarData.getDefaultCarClass();
 
@@ -482,7 +486,7 @@ namespace CrewChiefV3.GameState
                 LapData lapData = OpponentLapData[OpponentLapData.Count - 1];
                 if (cumulativeSectorTime <= 0)
                 {
-                    cumulativeSectorTime = gameTimeAtSectorEnd - lapData.GameTimeAtLapStart;                    
+                    cumulativeSectorTime = gameTimeAtSectorEnd - lapData.GameTimeAtLapStart;
                 }
                 float thisSectorTime = cumulativeSectorTime;
                 int sectorNumber = 1;
@@ -1063,6 +1067,25 @@ namespace CrewChiefV3.GameState
                     {
                         bestLapWithSectors = thisOpponentsBest;
                     }
+                }
+            }
+
+            // special case for practice and qual - if we're looking for all the laps in the session, we might want to use the data sent by the game
+            // because the play may have joined mid-session. In these cases there might be an historical lap (before the player joined) that's actually faster.
+            if (lapsToCheck == -1 && SessionData.SessionFastestLapTimeFromGamePlayerClass > 0 && 
+                (SessionData.PlayerLapTimeSessionBest == -1 || SessionData.PlayerLapTimeSessionBest > SessionData.SessionFastestLapTimeFromGamePlayerClass))
+            {
+                // the player isn't the fastest in his class. This means that the game-sent best lap data will be an opponent lap
+                if (bestLapWithSectors[0] == -1 || bestLapWithSectors[0] > SessionData.SessionFastestLapTimeFromGamePlayerClass)
+                {
+                    // there's an historical lap which is quicker than all the data we currently hold. Due to limitations in the shared memory blocks,
+                    // we never have sector times for this historical lap, so we have to remove them and disable sector deltas until a better lap is recorded
+                    Console.WriteLine("There's an historical lap quicker than " + bestLapWithSectors[0]);
+                    Console.WriteLine("Replacing laptime " + bestLapWithSectors[0] + " with " + SessionData.SessionFastestLapTimeFromGamePlayerClass);
+                    bestLapWithSectors[0] = SessionData.SessionFastestLapTimeFromGamePlayerClass;
+                    bestLapWithSectors[1] = -1;
+                    bestLapWithSectors[2] = -1;
+                    bestLapWithSectors[3] = -1;
                 }
             }
             return bestLapWithSectors;

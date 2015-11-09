@@ -261,9 +261,9 @@ namespace CrewChiefV3.Events
                     currentGameState.OpponentData.Count == 1 && currentGameState.OpponentData.First().Value.DriverRawName == currentGameState.SessionData.DriverRawName));
                 if (isHotLapping)
                 {
-                    lapAndSectorsComparisonData[1] = currentGameState.SessionData.BestLapSector1Time;
-                    lapAndSectorsComparisonData[2] = currentGameState.SessionData.BestLapSector2Time;
-                    lapAndSectorsComparisonData[3] = currentGameState.SessionData.BestLapSector3Time;
+                    lapAndSectorsComparisonData[1] = currentGameState.SessionData.PlayerBestLapSector1Time;
+                    lapAndSectorsComparisonData[2] = currentGameState.SessionData.PlayerBestLapSector2Time;
+                    lapAndSectorsComparisonData[3] = currentGameState.SessionData.PlayerBestLapSector3Time;
                 }
                 else
                 {
@@ -338,7 +338,7 @@ namespace CrewChiefV3.Events
                                     if (practiceAndQualSectorReportsLapEnd && frequencyOfPracticeAndQualSectorDeltaReports > random.NextDouble() * 10)
                                     {
                                         List<MessageFragment> sectorMessageFragments = getSectorDeltaMessages(SectorReportOption.COMBINED, currentGameState.SessionData.LastSector1Time, lapAndSectorsComparisonData[1],
-                                            currentGameState.SessionData.LastSector2Time, currentGameState.SessionData.BestLapSector2Time, lapAndSectorsComparisonData[2], lapAndSectorsComparisonData[3], true);
+                                            currentGameState.SessionData.LastSector2Time, lapAndSectorsComparisonData[2], currentGameState.SessionData.LastSector3Time, lapAndSectorsComparisonData[3], true);
                                         if (sectorMessageFragments.Count > 0)
                                         {
                                             audioPlayer.queueClip(new QueuedMessage("sectorsHotLap", sectorMessageFragments, 0, this));
@@ -908,8 +908,8 @@ namespace CrewChiefV3.Events
                             {
                                 reportOption = SectorReportOption.ALL_SECTORS;
                             }
-                            List<MessageFragment> sectorDeltaMessages = getSectorDeltaMessages(reportOption, currentGameState.SessionData.BestLapSector1Time, bestOpponentLapData[1],
-                                currentGameState.SessionData.BestLapSector2Time, bestOpponentLapData[2], currentGameState.SessionData.BestLapSector3Time, bestOpponentLapData[3], true);
+                            List<MessageFragment> sectorDeltaMessages = getSectorDeltaMessages(reportOption, currentGameState.SessionData.PlayerBestLapSector1Time, bestOpponentLapData[1],
+                                currentGameState.SessionData.PlayerBestLapSector2Time, bestOpponentLapData[2], currentGameState.SessionData.PlayerBestLapSector3Time, bestOpponentLapData[3], true);
                             if (sectorDeltaMessages.Count > 0)
                             {
                                 audioPlayer.playClipImmediately(new QueuedMessage("non-race_sector_times_report", sectorDeltaMessages, 0, null), false);

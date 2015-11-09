@@ -2,7 +2,7 @@ CrewChief version 3.
 
 Changelog
 ---------
-Version 3.8.3: Fixes to Raceroom car class handling - should ensure the app gets the right class for the player instead of using the default class sometimes (and giving inappropriate multiclass messages); Fixed some laptime comparisons; Major overhaul of Raceroom opponent data handling - stopped using the slot_id to index opponents as this is very unreliable (caused inaccurate position change message, pitting message, lap times, sector deltas, etc). Opponents are now indexed using their names, and it's important to note that this causes issues when multiple opponents have the same name (e.g. when selecting more AI opponents than the car class has unique names for). The app will only record lap times and stuff for one of these opponents; Use a more sensible wheel size minimum for karts in PCars; Don't spam log with best-guess track messages. No new sound pack for this version.
+Version 3.8.3: Fixes to Raceroom car class handling - should ensure the app gets the right class for the player instead of using the default class sometimes (and giving inappropriate multiclass messages); Fixed some laptime comparisons; Major overhaul of Raceroom opponent data handling - stopped using the slot_id to index opponents as this is very unreliable (caused inaccurate position change message, pitting message, lap times, sector deltas, etc). Opponents are now indexed using their names, and it's important to note that this causes issues when multiple opponents have the same name (e.g. when selecting more AI opponents than the car class has unique names for). The app will only record lap times and stuff for one of these opponents; Use a more sensible wheel size minimum for karts in PCars; Don't spam log with best-guess track messages; Don't play 'push-now' messages in practice and qual; In practice and qual sessions, if the fastest lap is set before the player joins we use this historical lap for pace reports (note there will be no sector times for this lap so no sector reports until a faster lap is set) - RaceRoom only; Fixed broken sectors comparison in hotlap mode. No new sound pack for this version.
 
 Version 3.8.2: Added info and test harness for adding new driver names and driver name mappings; Added small random delays to some messages; Tweaked R3E engine temperature check; Bug fixes - fixed some array index bugs in opponent lap times & pace reports, removed confusing per-class pace reported in qual, added missing closeChannel call to ambient & track temp request. No new sound pack for this version.
 
@@ -61,6 +61,26 @@ Version 3.0.2: Fixed 32bit Project Cars
 Version 3.0.1: Minor spotter tweak to minimise the inappropriate 'clear' calls for PCars; changed prac / qual session end detection method
 
 Version 3.0.0: Major internal rework and rewiring; added project cars; loads and loads of other stuff
+
+
+
+Known Issues Which Aren't Fixable
+---------------------------------
+
+Project Cars doesn't send opponent laptime data, so the app has to time their laps. In practice and qual sessions this is fairly reliable (because the app can use the time remaining in the session, sent by the game, for its 'clock' when timing). In race sessions with a fixed number of laps the app has nothing it can use as a clock to time the laps, so times them itself. This can lead to opponent lap / sector time inaccuracies if the player pauses the game (the app's clock is still running).
+
+
+Joining a session part way through (practice or qualify session online) will result in the app having an incomplete set of data for opponent lap and sector times. In such cases the best opponent lap and sector data is inaccurate. For Project Cars, there's nothing I can do about this. The opponent lap and sector times aren't in the shared memory (the app has to time their laps), so the pace and sector delta reports may be inaccurate (they use the fastest lap completed while the app is running). For Raceroom we can get the fastest opponent lap time, but if this lap was completed before the app was running, the sectors within that lap aren't accessible. In this case the pace report will include the lap time delta, but there'll be no sector delta reports.
+
+In both cases as soon as an opponent sets a faster lap, the app will have up to date best lap data so the pace and sector reports will be accurate and complete.
+
+
+Project Cars doesn't send opponent car class data, so the app has to assume that all drivers in the race are in the same car class. For multiclass races, all pace and other reports will be relative to the overall leader / fastest car.
+
+
+RaceRoom uses a 'slot_id' field to uniquely identify drivers in a race. However, this field doesn't really work properly (there are lots of issues with it), so the app has to use the driver's names. Driver names for AI driver are not unique. All the lap time and other data held for each driver is indexed by driver name so if a race has 2 or more drivers with the same name, the app will get things like lap and sector times wrong. This is only a problem racing the AI - be aware that if you have a car class with a limited number of unique AI drivers (Daytona Prototypes / German Nationals / Americal Nationals / Hill Climb Legends / etc), but select a field size greater than this, the app will do weird things.
+
+
 
 
 Quick start
