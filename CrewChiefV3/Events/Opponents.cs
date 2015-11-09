@@ -137,6 +137,7 @@ namespace CrewChiefV3.Events
                                 (currentGameState.SessionData.SessionType == SessionType.Race || frequencyOfOpponentPracticeAndQualLapTimes > 0))
                             {
                                 // he's leading, and has recorded 3 or more laps, and this one's his fastest
+                                Console.WriteLine("Leader fast lap - this lap time = " + opponentData.LastLapTime +" session best = " + currentFastestLap);
                                 audioPlayer.queueClip(new QueuedMessage("leader_good_laptime", MessageContents(folderLeaderHasJustDoneA,
                                         TimeSpan.FromSeconds(opponentData.LastLapTime)), 0, this));
                             }
@@ -144,6 +145,7 @@ namespace CrewChiefV3.Events
                                 (currentGameState.SessionData.SessionType == SessionType.Race || random.Next(10) < frequencyOfOpponentPracticeAndQualLapTimes))
                             {
                                 // he's ahead of us, and has recorded 3 or more laps, and this one's his fastest
+                                Console.WriteLine("Car ahead fast lap - this lap time = " + opponentData.LastLapTime + " session best = " + currentFastestLap);
                                  audioPlayer.queueClip(new QueuedMessage("car_ahead_good_laptime", MessageContents(folderTheCarAheadHasJustDoneA,
                                         TimeSpan.FromSeconds(opponentData.LastLapTime)), 0, this));
                             }
@@ -151,6 +153,7 @@ namespace CrewChiefV3.Events
                                 (currentGameState.SessionData.SessionType == SessionType.Race || random.Next(10) < frequencyOfOpponentPracticeAndQualLapTimes))
                             {
                                 // he's behind us, and has recorded 3 or more laps, and this one's his fastest
+                                Console.WriteLine("Car behind fast lap - this lap time = " + opponentData.LastLapTime + " session best = " + currentFastestLap);
                                 audioPlayer.queueClip(new QueuedMessage("car_behind_good_laptime", MessageContents(folderTheCarBehindHasJustDoneA,
                                         TimeSpan.FromSeconds(opponentData.LastLapTime)), 0, this));
                             }

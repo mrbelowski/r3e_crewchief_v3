@@ -550,7 +550,6 @@ namespace CrewChiefV3.RaceRoom
                             }
                             if (currentOpponentRacePosition == 1 && previousOpponentPosition > 1)
                             {
-                                Console.WriteLine("lead change, new leader = " + getNameFromBytes(participantStruct.driver_info.nameByteArray) + ", race time = " + shared.Player.GameSimulationTime);
                                 currentGameState.SessionData.HasLeadChanged = true;
                             }
                             Boolean isEnteringPits = participantStruct.in_pitlane == 1 && currentOpponentSector == 3;
