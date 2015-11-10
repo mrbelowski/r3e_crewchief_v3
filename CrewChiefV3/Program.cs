@@ -38,7 +38,7 @@ namespace CrewChiefV3
                             // Set Core 
                             process.ProcessorAffinity = processorAffinities[commandLineArg];
                         }
-                        catch (Exception e)
+                        catch (Exception)
                         {
                             Console.WriteLine("Failed to set process affinity");
                         }

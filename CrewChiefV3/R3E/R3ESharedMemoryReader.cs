@@ -78,7 +78,7 @@ namespace CrewChiefV3.RaceRoom
                         initialised = true;
                         Console.WriteLine("Initialised raceroom shared memory");
                     }
-                    catch (Exception ex)
+                    catch (Exception)
                     {
                         initialised = false;
                     }

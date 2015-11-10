@@ -42,8 +42,6 @@ namespace CrewChiefV3.Events
 
         private Conditions.ConditionsSample currentConditions;
 
-        private int sampleCount;
-
         public ConditionsMonitor(AudioPlayer audioPlayer)
         {
             this.audioPlayer = audioPlayer;
@@ -51,7 +49,6 @@ namespace CrewChiefV3.Events
 
         public override void clearState()
         {
-            sampleCount = 0;
             lastRainReport = DateTime.MinValue;
             lastAirTempReport = DateTime.MaxValue;
             lastTrackTempReport = DateTime.MaxValue;

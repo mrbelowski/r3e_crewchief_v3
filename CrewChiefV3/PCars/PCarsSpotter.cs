@@ -215,7 +215,7 @@ namespace CrewChiefV3.PCars
                             previousOpponentX = previousOpponentData.mWorldPosition[0];
                             previousOpponentY = previousOpponentData.mWorldPosition[2];
                         }
-                        catch (Exception e)
+                        catch (Exception)
                         {
                             // ignore - the mParticipantData array is frequently full of crap
                         }

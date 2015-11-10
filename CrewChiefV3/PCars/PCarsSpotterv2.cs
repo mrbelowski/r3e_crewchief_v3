@@ -151,7 +151,7 @@ namespace CrewChiefV3.PCars
                                 }
                                 opponentSpeeds.Add(opponentSpeed);
                             }
-                            catch (Exception e)
+                            catch (Exception)
                             {
                                 opponentSpeeds.Add(playerSpeed);
                             }

@@ -71,7 +71,7 @@ namespace CrewChiefV3.PCars
                         initialised = true;
                         Console.WriteLine("Initialised pcars shared memory");
                     }
-                    catch (Exception ex)
+                    catch (Exception)
                     {
                         initialised = false;
                     }

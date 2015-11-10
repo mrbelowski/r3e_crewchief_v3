@@ -5,6 +5,7 @@ using System.Text;
 
 namespace CrewChiefV3
 {
+    [Serializable]
     class GameDataReadException : Exception
     {
         public Exception cause;

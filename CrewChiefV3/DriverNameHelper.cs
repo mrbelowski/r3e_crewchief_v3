@@ -93,7 +93,7 @@ namespace CrewChiefV3
                     return name.Trim();
                 }
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 
             }

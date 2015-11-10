@@ -85,7 +85,7 @@ namespace CrewChiefV3.RaceRoom
             {
                 currentPlayerData = getDriverData(currentState, currentState.slot_id);
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return;
             }

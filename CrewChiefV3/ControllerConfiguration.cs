@@ -98,7 +98,7 @@ namespace CrewChiefV3
                         } 
                     }                      
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
 
                 }          

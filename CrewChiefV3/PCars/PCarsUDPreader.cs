@@ -98,7 +98,7 @@ namespace CrewChiefV3.PCars
                 //Restablish the callback
                 socket.BeginReceive(this.receivedDataBuffer, 0, this.receivedDataBuffer.Length, SocketFlags.None, new AsyncCallback(ReceiveCallback), socket);
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 //Handle error
             }
