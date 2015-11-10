@@ -211,7 +211,9 @@ namespace CrewChiefV3.PCars
             currentGameState.SessionData.Position = (int)viewedParticipant.mRacePosition;
             currentGameState.SessionData.UnFilteredPosition = (int)viewedParticipant.mRacePosition;
             currentGameState.SessionData.IsNewSector = previousGameState == null || viewedParticipant.mCurrentSector != previousGameState.SessionData.SectorNumber;
-            currentGameState.PositionAndMotionData.DistanceRoundTrack = viewedParticipant.mCurrentLapDistance;
+
+            // When in the pit lane, mCurrentLapDistance gets set to 0 when crossing the start line and *remains at 0* until some distance into the lap (about 300 metres)
+            Console.WriteLine("distance = " + currentGameState.PositionAndMotionData.DistanceRoundTrack);
                         
             // previous session data to check if we've started an new session
             SessionPhase lastSessionPhase = SessionPhase.Unavailable;

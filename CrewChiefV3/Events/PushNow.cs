@@ -8,7 +8,7 @@ namespace CrewChiefV3.Events
 {
     class PushNow : AbstractEvent
     {
-        private float maxSeparationForPitExitWarning = 300;   // metres
+        private float maxSeparationForPitExitWarning = 250;   // metres
         private float minSeparationForPitExitWarning = 20;   // metres
 
         // TODO: use driver names here?
@@ -37,33 +37,31 @@ namespace CrewChiefV3.Events
             playedNearEndTimePush = false;
             playedNearEndLapsPush = false;
         }
-
-        public override List<SessionType> applicableSessionTypes
-        {
-            get { return new List<SessionType> { SessionType.Race }; }
-        }
-
+        
         override protected void triggerInternal(GameStateData previousGameState, GameStateData currentGameState)
         {
             Boolean checkPushToGain = currentGameState.SessionData.SessionRunningTime - currentGameState.SessionData.GameTimeAtLastPositionFrontChange < minTimeToBeInThisPosition;
             Boolean checkPushToHold = currentGameState.SessionData.SessionRunningTime - currentGameState.SessionData.GameTimeAtLastPositionBehindChange < minTimeToBeInThisPosition;
-            if ((checkPushToGain || checkPushToHold) && !playedNearEndTimePush && currentGameState.SessionData.SessionNumberOfLaps <= 0 && 
-                    currentGameState.SessionData.SessionTimeRemaining < 4 * 60 && currentGameState.SessionData.SessionTimeRemaining > 2 * 60)
-            {                
-                // estimate the number of remaining laps - be optimistic...
-                int numLapsLeft = (int)Math.Ceiling((double)currentGameState.SessionData.SessionTimeRemaining / (double)currentGameState.SessionData.PlayerLapTimeSessionBest);
-                if (currentGameState.carClass.carClassEnum == CarData.CarClassEnum.DTM_2015)
-                {
-                    numLapsLeft = numLapsLeft + 1;
-                }
-                playedNearEndTimePush = checkGaps(currentGameState, numLapsLeft, checkPushToGain, checkPushToHold);
-            }
-            else if ((checkPushToGain || checkPushToHold) && !playedNearEndLapsPush && currentGameState.SessionData.SessionNumberOfLaps > 0 && 
-                currentGameState.SessionData.SessionNumberOfLaps - currentGameState.SessionData.CompletedLaps <= 4)
+            if (currentGameState.SessionData.SessionType == SessionType.Race)
             {
-                playedNearEndLapsPush = checkGaps(currentGameState, currentGameState.SessionData.SessionNumberOfLaps - currentGameState.SessionData.CompletedLaps, checkPushToGain, checkPushToHold);
+                if ((checkPushToGain || checkPushToHold) && !playedNearEndTimePush && currentGameState.SessionData.SessionNumberOfLaps <= 0 &&
+                        currentGameState.SessionData.SessionTimeRemaining < 4 * 60 && currentGameState.SessionData.SessionTimeRemaining > 2 * 60)
+                {
+                    // estimate the number of remaining laps - be optimistic...
+                    int numLapsLeft = (int)Math.Ceiling((double)currentGameState.SessionData.SessionTimeRemaining / (double)currentGameState.SessionData.PlayerLapTimeSessionBest);
+                    if (currentGameState.carClass.carClassEnum == CarData.CarClassEnum.DTM_2015)
+                    {
+                        numLapsLeft = numLapsLeft + 1;
+                    }
+                    playedNearEndTimePush = checkGaps(currentGameState, numLapsLeft, checkPushToGain, checkPushToHold);
+                }
+                else if ((checkPushToGain || checkPushToHold) && !playedNearEndLapsPush && currentGameState.SessionData.SessionNumberOfLaps > 0 &&
+                    currentGameState.SessionData.SessionNumberOfLaps - currentGameState.SessionData.CompletedLaps <= 4)
+                {
+                    playedNearEndLapsPush = checkGaps(currentGameState, currentGameState.SessionData.SessionNumberOfLaps - currentGameState.SessionData.CompletedLaps, checkPushToGain, checkPushToHold);
+                }
             }
-            else if (currentGameState.PitData.IsAtPitExit)
+            if (currentGameState.PitData.IsAtPitExit && currentGameState.PositionAndMotionData.CarSpeed > 10)
             {
                 // we've just been handed control back after a pitstop
                 if (isOpponentApproachingPitExit(currentGameState))
@@ -80,8 +78,20 @@ namespace CrewChiefV3.Events
 
         private Boolean isOpponentApproachingPitExit(GameStateData currentGameState)
         {
-            float distanceStartCheckPoint = currentGameState.PositionAndMotionData.DistanceRoundTrack - maxSeparationForPitExitWarning;
-            float distanceEndCheckPoint = currentGameState.PositionAndMotionData.DistanceRoundTrack - minSeparationForPitExitWarning;
+            float distanceStartCheckPoint;
+            float distanceEndCheckPoint;
+
+            // hack for PCars - the distanceRoundTrack will be zero until we enter turn one after leaving the pits. Stupid...
+            if (currentGameState.PositionAndMotionData.DistanceRoundTrack == 0)
+            {
+                distanceStartCheckPoint = 0;
+                distanceEndCheckPoint = maxSeparationForPitExitWarning - minSeparationForPitExitWarning;
+            }
+            else
+            {
+                distanceStartCheckPoint = currentGameState.PositionAndMotionData.DistanceRoundTrack - maxSeparationForPitExitWarning;
+                distanceEndCheckPoint = currentGameState.PositionAndMotionData.DistanceRoundTrack - minSeparationForPitExitWarning;
+            }
             Boolean startCheckPointIsInSector1 = true;
             // here we assume the end check point will be in sector 1 (after the s/f line)
             if (distanceStartCheckPoint < 0) 
