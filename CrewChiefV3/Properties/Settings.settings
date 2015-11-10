@@ -30,7 +30,7 @@
       <Value Profile="(Default)">en</Value>
     </Setting>
     <Setting Name="r3e_spotter_car_length" Type="System.Single" Scope="User">
-      <Value Profile="(Default)">5</Value>
+      <Value Profile="(Default)">4.7</Value>
     </Setting>
     <Setting Name="spotter_gap_for_clear" Type="System.Single" Scope="User">
       <Value Profile="(Default)">0.5</Value>
@@ -153,7 +153,7 @@
       <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="pcars_spotter_car_length" Type="System.Single" Scope="User">
-      <Value Profile="(Default)">5</Value>
+      <Value Profile="(Default)">4.7</Value>
     </Setting>
     <Setting Name="last_game_definition" Type="System.String" Scope="User">
       <Value Profile="(Default)" />

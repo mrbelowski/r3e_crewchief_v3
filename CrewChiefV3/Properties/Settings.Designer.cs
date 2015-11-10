@@ -130,7 +130,7 @@ namespace CrewChiefV3.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("5")]
+        [global::System.Configuration.DefaultSettingValueAttribute("4.7")]
         public float r3e_spotter_car_length {
             get {
                 return ((float)(this["r3e_spotter_car_length"]));
@@ -622,7 +622,7 @@ namespace CrewChiefV3.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("5")]
+        [global::System.Configuration.DefaultSettingValueAttribute("4.7")]
         public float pcars_spotter_car_length {
             get {
                 return ((float)(this["pcars_spotter_car_length"]));
