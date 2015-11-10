@@ -211,9 +211,8 @@ namespace CrewChiefV3.PCars
             currentGameState.SessionData.Position = (int)viewedParticipant.mRacePosition;
             currentGameState.SessionData.UnFilteredPosition = (int)viewedParticipant.mRacePosition;
             currentGameState.SessionData.IsNewSector = previousGameState == null || viewedParticipant.mCurrentSector != previousGameState.SessionData.SectorNumber;
-
             // When in the pit lane, mCurrentLapDistance gets set to 0 when crossing the start line and *remains at 0* until some distance into the lap (about 300 metres)
-            Console.WriteLine("distance = " + currentGameState.PositionAndMotionData.DistanceRoundTrack);
+            currentGameState.PositionAndMotionData.DistanceRoundTrack = viewedParticipant.mCurrentLapDistance;
                         
             // previous session data to check if we've started an new session
             SessionPhase lastSessionPhase = SessionPhase.Unavailable;
@@ -434,6 +433,8 @@ namespace CrewChiefV3.PCars
                     currentGameState.PitData.IsRefuellingAllowed = previousGameState.PitData.IsRefuellingAllowed;
                     currentGameState.PitData.MaxPermittedDistanceOnCurrentTyre = previousGameState.PitData.MaxPermittedDistanceOnCurrentTyre;
                     currentGameState.PitData.MinPermittedDistanceOnCurrentTyre = previousGameState.PitData.MinPermittedDistanceOnCurrentTyre;
+                    currentGameState.PitData.OnInLap = previousGameState.PitData.OnInLap;
+                    currentGameState.PitData.OnOutLap = previousGameState.PitData.OnOutLap;
                     currentGameState.SessionData.SessionTimesAtEndOfSectors = previousGameState.SessionData.SessionTimesAtEndOfSectors;
                     currentGameState.PenaltiesData.CutTrackWarnings = previousGameState.PenaltiesData.CutTrackWarnings;
                     currentGameState.SessionData.formattedPlayerLapTimes = previousGameState.SessionData.formattedPlayerLapTimes;
@@ -716,41 +717,30 @@ namespace CrewChiefV3.PCars
                 shared.mPitMode == (int)ePitMode.PIT_MODE_IN_PIT ||
                 shared.mPitMode == (int)ePitMode.PIT_MODE_DRIVING_OUT_OF_PITS ||
                 shared.mPitMode == (int)ePitMode.PIT_MODE_IN_GARAGE;
-            currentGameState.PitData.IsAtPitExit = previousGameState != null && previousGameState.PitData.InPitlane && !currentGameState.PitData.InPitlane;
-            if (currentGameState.PitData.IsAtPitExit)
-            {
-                int lapCount = currentGameState.SessionData.CompletedLaps - 1;
-                if (lapCount < 0)
-                {
-                    lapCount = 0;
-                }
-                currentGameState.PitData.LapCountWhenLastEnteredPits = lapCount;
-            }
-            else if (previousGameState != null)
-            {
-                currentGameState.PitData.LapCountWhenLastEnteredPits = previousGameState.PitData.LapCountWhenLastEnteredPits;
-            }
 
-            if (shared.mPitMode == (int)ePitMode.PIT_MODE_DRIVING_INTO_PITS)
+            if (currentGameState.PitData.InPitlane)
             {
-                currentGameState.PitData.OnInLap = true; 
-                currentGameState.PitData.OnOutLap = false;
-            }
-            else if (shared.mPitMode == (int)ePitMode.PIT_MODE_DRIVING_OUT_OF_PITS || shared.mPitMode == (int)ePitMode.PIT_MODE_IN_GARAGE)
-            {
-                currentGameState.PitData.OnInLap = false;
-                currentGameState.PitData.OnOutLap = true;
+                // should we just use the sector number to check this?
+                if (shared.mPitMode == (int)ePitMode.PIT_MODE_DRIVING_INTO_PITS)
+                {
+                    currentGameState.PitData.OnInLap = true;
+                    currentGameState.PitData.OnOutLap = false;
+                }
+                else if (shared.mPitMode == (int)ePitMode.PIT_MODE_DRIVING_OUT_OF_PITS || shared.mPitMode == (int)ePitMode.PIT_MODE_IN_GARAGE)
+                {
+                    currentGameState.PitData.OnInLap = false;
+                    currentGameState.PitData.OnOutLap = true;
+                }
             }
             else if (currentGameState.SessionData.IsNewLap)
             {
                 currentGameState.PitData.OnInLap = false;
                 currentGameState.PitData.OnOutLap = false;
             }
-            else if (previousGameState != null)
-            {
-                currentGameState.PitData.OnInLap = previousGameState.PitData.OnInLap;
-                currentGameState.PitData.OnOutLap = previousGameState.PitData.OnOutLap;
-            }
+
+            currentGameState.PitData.IsAtPitExit = previousGameState != null && currentGameState.PitData.OnOutLap && 
+                previousGameState.PitData.InPitlane && !currentGameState.PitData.InPitlane;
+            
             currentGameState.PitData.HasRequestedPitStop = shared.mPitSchedule == (int)ePitSchedule.PIT_SCHEDULE_STANDARD;
             if (previousGameState != null && previousGameState.PitData.HasRequestedPitStop)
             {

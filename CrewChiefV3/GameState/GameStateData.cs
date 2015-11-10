@@ -662,8 +662,6 @@ namespace CrewChiefV3.GameState
 
         public Boolean OnOutLap = false;
 
-        public int LapCountWhenLastEnteredPits = 0;
-
         public Boolean IsMakingMandatoryPitStop = false;
 
         // this is true for one tick, when the player is about to exit the pits

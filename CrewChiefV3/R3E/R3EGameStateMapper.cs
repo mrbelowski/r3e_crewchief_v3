@@ -312,6 +312,8 @@ namespace CrewChiefV3.RaceRoom
                     currentGameState.PitData.IsRefuellingAllowed = previousGameState.PitData.IsRefuellingAllowed;
                     currentGameState.PitData.MaxPermittedDistanceOnCurrentTyre = previousGameState.PitData.MaxPermittedDistanceOnCurrentTyre;
                     currentGameState.PitData.MinPermittedDistanceOnCurrentTyre = previousGameState.PitData.MinPermittedDistanceOnCurrentTyre;
+                    currentGameState.PitData.OnInLap = previousGameState.PitData.OnInLap;
+                    currentGameState.PitData.OnOutLap = previousGameState.PitData.OnOutLap;
                     currentGameState.SessionData.TrackDefinition = previousGameState.SessionData.TrackDefinition;
                     currentGameState.SessionData.formattedPlayerLapTimes = previousGameState.SessionData.formattedPlayerLapTimes;
                     currentGameState.SessionData.PlayerLapTimeSessionBest = previousGameState.SessionData.PlayerLapTimeSessionBest;
@@ -441,20 +443,28 @@ namespace CrewChiefV3.RaceRoom
                     currentGameState.SessionData.SectorNumber = participantStruct.track_sector;
                     currentGameState.PitData.InPitlane = participantStruct.in_pitlane == 1;
                     currentGameState.PositionAndMotionData.DistanceRoundTrack = participantStruct.lap_distance;
-                    if (participantStruct.track_sector == 3 && currentGameState.PitData.InPitlane)
+                    if (currentGameState.PitData.InPitlane)
                     {
-                        currentGameState.PitData.OnInLap = true;
-                        currentGameState.PitData.OnOutLap = false;
-                    }
-                    else if (participantStruct.track_sector == 1 && currentGameState.PitData.InPitlane)
-                    {
-                        currentGameState.PitData.OnInLap = false;
-                        currentGameState.PitData.OnOutLap = true;
+                        if (participantStruct.track_sector == 3)
+                        {
+                            currentGameState.PitData.OnInLap = true;
+                            currentGameState.PitData.OnOutLap = false;
+                        }
+                        else if (participantStruct.track_sector == 1)
+                        {
+                            currentGameState.PitData.OnInLap = false;
+                            currentGameState.PitData.OnOutLap = true;
+                        }
                     }
                     else if (currentGameState.SessionData.IsNewLap)
                     {
+                        // starting a new lap while not in the pitlane so clear the in / out lap flags
                         currentGameState.PitData.OnInLap = false;
                         currentGameState.PitData.OnOutLap = false;
+                    }
+                    if (previousGameState != null && currentGameState.PitData.OnOutLap && previousGameState.PitData.InPitlane && !currentGameState.PitData.InPitlane)
+                    {
+                        currentGameState.PitData.IsAtPitExit = true;
                     }
                     break;
                 }
@@ -799,14 +809,6 @@ namespace CrewChiefV3.RaceRoom
             currentGameState.PitData.PitWindow = mapToPitWindow(shared.PitWindowStatus);
             currentGameState.PitData.IsMakingMandatoryPitStop = (currentGameState.PitData.PitWindow == PitWindow.Open || currentGameState.PitData.PitWindow == PitWindow.StopInProgress) &&
                (currentGameState.PitData.OnInLap || currentGameState.PitData.OnOutLap);
-            if (previousGameState == null || previousGameState.PitData.IsAtPitExit)
-            {
-                currentGameState.PitData.IsAtPitExit = false;
-            }
-            else if (currentGameState.PitData.OnOutLap && currentGameState.ControlData.ControlType == ControlType.Player && previousGameState.ControlData.ControlType == ControlType.AI)
-            {
-                currentGameState.PitData.IsAtPitExit = true;
-            }
 
             //------------------------ Car position / motion data -----------------------
             currentGameState.PositionAndMotionData.CarSpeed = shared.CarSpeed;
