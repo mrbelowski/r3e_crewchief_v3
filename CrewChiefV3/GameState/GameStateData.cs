@@ -348,8 +348,6 @@ namespace CrewChiefV3.GameState
                     lapsToCheck = OpponentLapData.Count;
                 }
                 // count-2 because we're not interested in the current lap
-
-                // TODO: if the opponent has only completed 1 lap this will barf as the index is -1 :(
                 for (int i = OpponentLapData.Count - 2; i >= OpponentLapData.Count - lapsToCheck && i >= 0; i--)
                 {
                     LapData thisLapTime = OpponentLapData[i];

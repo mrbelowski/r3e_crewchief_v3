@@ -648,8 +648,6 @@ namespace CrewChiefV3.PCars
                                 if (currentOpponentData.IsNewLap && currentOpponentData.CurrentBestLapTime > 0)
                                 {
                                     // the car class is always Unknown for PCars - it's not in the opponent data
-
-                                    // TODO: is this right?
                                     if (currentGameState.SessionData.OpponentsLapTimeSessionBestOverall == -1 ||
                                         currentOpponentData.CurrentBestLapTime < currentGameState.SessionData.OpponentsLapTimeSessionBestOverall)
                                     {
@@ -692,7 +690,6 @@ namespace CrewChiefV3.PCars
                 currentGameState.SessionData.PreviousLapWasValid = previousGameState.SessionData.PreviousLapWasValid;
             }
 
-            // TODO: run a session with slow opponents, set fastest lap on lap 2 or 3 then back off - does the fastest lap message keep playing?
             if (currentGameState.SessionData.IsNewLap && currentGameState.SessionData.PreviousLapWasValid &&
                 currentGameState.SessionData.LapTimePrevious > 0)
             {

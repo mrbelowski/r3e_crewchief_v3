@@ -124,7 +124,7 @@ namespace CrewChiefV3.PCars
                                 float[] previousPositions = new float[] { previousOpponentData.mWorldPosition[0], previousOpponentData.mWorldPosition[2] };
                                 float opponentSpeed;
 
-                                // TODO: proper speed interpolation for network data. For no just use the player speed (i.e. don't discount any cars because of their speeds)
+                                // TODO: check that the network data are up to the task of calculating opponent speeds
                                 if (CrewChief.gameDefinition.gameEnum == GameEnum.PCARS_NETWORK && !checkCarSpeedsForNetworkSpotter) 
                                 {
                                     opponentSpeed = playerSpeed;

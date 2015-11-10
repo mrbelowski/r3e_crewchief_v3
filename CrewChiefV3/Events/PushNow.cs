@@ -8,6 +8,9 @@ namespace CrewChiefV3.Events
 {
     class PushNow : AbstractEvent
     {
+        private float maxSeparationForPitExitWarning = 300;   // metres
+        private float minSeparationForPitExitWarning = 20;   // metres
+
         // TODO: use driver names here?
         private String folderPushToImprove = "push_now/push_to_improve";
         private String folderPushToGetWin = "push_now/push_to_get_win";
@@ -63,18 +66,40 @@ namespace CrewChiefV3.Events
             else if (currentGameState.PitData.IsAtPitExit)
             {
                 // we've just been handed control back after a pitstop
-                if (currentGameState.SessionData.TimeDeltaFront > 3 && currentGameState.SessionData.TimeDeltaBehind > 4)
+                if (isOpponentApproachingPitExit(currentGameState))
                 {
                     // we've exited into clean air
-                    audioPlayer.queueClip(new QueuedMessage(folderPushExitingPits, 0, this));
-                }
-                else if (currentGameState.SessionData.TimeDeltaBehind > 0 && currentGameState.SessionData.TimeDeltaBehind <= 4 &&
-                    previousGameState != null && currentGameState.SessionData.TimeDeltaBehind < previousGameState.SessionData.TimeDeltaBehind)
-                {
-                    // we've exited the pits but there's traffic behind
                     audioPlayer.queueClip(new QueuedMessage(folderTrafficBehindExitingPits, 0, this));
                 }
+                else
+                {
+                    audioPlayer.queueClip(new QueuedMessage(folderPushExitingPits, 0, this));
+                }
             }
+        }
+
+        private Boolean isOpponentApproachingPitExit(GameStateData currentGameState)
+        {
+            float distanceStartCheckPoint = currentGameState.PositionAndMotionData.DistanceRoundTrack - maxSeparationForPitExitWarning;
+            float distanceEndCheckPoint = currentGameState.PositionAndMotionData.DistanceRoundTrack - minSeparationForPitExitWarning;
+            Boolean startCheckPointIsInSector1 = true;
+            // here we assume the end check point will be in sector 1 (after the s/f line)
+            if (distanceStartCheckPoint < 0) 
+            {
+                startCheckPointIsInSector1 = false;
+                distanceStartCheckPoint = currentGameState.SessionData.TrackDefinition.trackLength + distanceStartCheckPoint;
+            }
+
+            foreach (KeyValuePair<Object, OpponentData> opponent in currentGameState.OpponentData)
+            {
+                if (!opponent.Value.isEnteringPits() && !opponent.Value.isExitingPits() &&
+                    ((startCheckPointIsInSector1 && opponent.Value.DistanceRoundTrack > distanceStartCheckPoint && opponent.Value.DistanceRoundTrack < distanceEndCheckPoint) ||
+                     (!startCheckPointIsInSector1 && (opponent.Value.DistanceRoundTrack > distanceStartCheckPoint || opponent.Value.DistanceRoundTrack < distanceEndCheckPoint))))
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         private Boolean checkGaps(GameStateData currentGameState, int numLapsLeft, Boolean checkPushToGain, Boolean checkPushToHold)
