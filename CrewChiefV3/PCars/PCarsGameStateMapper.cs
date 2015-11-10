@@ -272,8 +272,9 @@ namespace CrewChiefV3.PCars
                 lastSessionPhase == SessionPhase.Green && currentGameState.SessionData.SessionPhase == SessionPhase.Countdown;
             if (raceRestarted || 
                 (currentGameState.SessionData.SessionType != SessionType.Unavailable && (lastSessionType != currentGameState.SessionData.SessionType ||
-                lastSessionHasFixedTime != currentGameState.SessionData.SessionHasFixedTime || 
-                lastSessionTrack != currentGameState.SessionData.TrackDefinition || lastSessionLapsCompleted > currentGameState.SessionData.CompletedLaps ||
+                lastSessionHasFixedTime != currentGameState.SessionData.SessionHasFixedTime ||
+                lastSessionTrack == null || lastSessionTrack.name != currentGameState.SessionData.TrackDefinition.name || 
+                lastSessionLapsCompleted > currentGameState.SessionData.CompletedLaps ||
                 (numberOfLapsInSession > 0 && lastSessionNumberOfLaps > 0 && lastSessionNumberOfLaps != numberOfLapsInSession) ||
                 (sessionTimeRemaining > 0 && sessionTimeRemaining > lastSessionRunTime))))
             {
