@@ -2,6 +2,8 @@ CrewChief version 3.
 
 Changelog
 ---------
+Version 3.8.4b: Fixed unknown track causing constant session restarts in the app. No new sound pack for this version.
+
 Version 3.8.4: Reworked approaching car check when exiting pits; A few minor fixes; More driver names. No new sound pack for this version.
 
 Version 3.8.3: Fixes to Raceroom car class handling - should ensure the app gets the right class for the player instead of using the default class sometimes (and giving inappropriate multiclass messages); Fixed some laptime comparisons (including backwards time comparison in qual / practice lap time check that resulted in slow laptimes, rather than fast ones, being reported); Major overhaul of Raceroom opponent data handling - stopped using the slot_id to index opponents as this is very unreliable (caused inaccurate position change message, pitting message, lap times, sector deltas, etc). Opponents are now indexed using their names, and it's important to note that this causes issues when multiple opponents have the same name (e.g. when selecting more AI opponents than the car class has unique names for). The app will only record lap times and stuff for one of these opponents; Use a more sensible wheel size minimum for karts in PCars to prevent inappropriate wheelspin warnings; Don't spam log with best-guess track messages; Don't play 'push-now' messages in practice and qual; In practice and qual sessions, if the fastest lap is set before the player joins we use this historical lap for pace reports (note there will be no sector times for this lap so no sector reports until a faster lap is set) - RaceRoom only; Fixed broken sectors comparison in hotlap mode; Added a few driver names. No new sound pack for this version.
