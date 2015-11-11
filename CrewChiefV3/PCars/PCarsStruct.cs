@@ -30,7 +30,7 @@ namespace CrewChiefV3.PCars
 
             // Timing & Scoring
             existingState.mLapInvalidated = (udpTelemetryData.sRaceStateFlags >> 3 & 1) == 1;
-            //existingState.mSessionFastestLapTime = udpTelemetryData. *************** UNDEFINED ***************; 
+            existingState.mSessionFastestLapTime = udpTelemetryData.sBestLapTime;
             existingState.mLastLapTime = udpTelemetryData.sLastLapTime;
             existingState.mCurrentTime = udpTelemetryData.sCurrentTime;
             existingState.mSplitTimeAhead = udpTelemetryData.sSplitTimeAhead;
@@ -54,11 +54,11 @@ namespace CrewChiefV3.PCars
 
             // Flags
             existingState.mHighestFlagColour = (uint) udpTelemetryData.sHighestFlag & 7; 
-            existingState.mHighestFlagReason = (uint) udpTelemetryData.sHighestFlag >> 3 & 4;
+            existingState.mHighestFlagReason = (uint) udpTelemetryData.sHighestFlag >> 3 & 3;
 
             // Pit Info
             existingState.mPitMode = (uint) udpTelemetryData.sPitModeSchedule & 7;
-            existingState.mPitSchedule = (uint) udpTelemetryData.sPitModeSchedule >> 3 & 4;
+            existingState.mPitSchedule = (uint) udpTelemetryData.sPitModeSchedule >> 3 & 3;
 
             // Car State
             existingState.mCarFlags = udpTelemetryData.sCarFlags;
@@ -80,8 +80,6 @@ namespace CrewChiefV3.PCars
             // existingState.mNumGears = udpTelemetryData.**************** TODO **************************;
             existingState.mOdometerKM = udpTelemetryData.sOdometerKM;                               
             existingState.mAntiLockActive = (udpTelemetryData.sRaceStateFlags >> 4 & 1) == 1;
-            existingState.mLastOpponentCollisionIndex = udpTelemetryData.sLastOpponentCollisionIndex; 
-            existingState.mLastOpponentCollisionMagnitude = udpTelemetryData.sLastOpponentCollisionMagnitude; 
             existingState.mBoostActive = (udpTelemetryData.sRaceStateFlags >> 5 & 1) == 1;
             existingState.mBoostAmount = udpTelemetryData.sBoostAmount;
 
@@ -93,6 +91,8 @@ namespace CrewChiefV3.PCars
             existingState.mLocalAcceleration = udpTelemetryData.sLocalAcceleration;
             existingState.mWorldAcceleration = udpTelemetryData.sWorldAcceleration;
             existingState.mExtentsCentre = udpTelemetryData.sExtentsCentre; 
+
+
             existingState.mTyreFlags = toUIntArray(udpTelemetryData.sTyreFlags); 
             existingState.mTerrain = toUIntArray(udpTelemetryData.sTerrain);
             existingState.mTyreY = udpTelemetryData.sTyreY;
@@ -110,9 +110,19 @@ namespace CrewChiefV3.PCars
             existingState.mTyreLayerTemp = toFloatArray(udpTelemetryData.sTyreLayerTemp, 1); 
             existingState.mTyreCarcassTemp = toFloatArray(udpTelemetryData.sTyreCarcassTemp, 1); 
             existingState.mTyreRimTemp = toFloatArray(udpTelemetryData.sTyreRimTemp, 1);    
-            existingState.mTyreInternalAirTemp = toFloatArray(udpTelemetryData.sTyreInternalAirTemp, 1);   
+            existingState.mTyreInternalAirTemp = toFloatArray(udpTelemetryData.sTyreInternalAirTemp, 1);
+            existingState.mWheelLocalPosition = udpTelemetryData.sWheelLocalPositionY;
+            existingState.mRideHeight = udpTelemetryData.sRideHeight;
+            existingState.mSuspensionTravel = udpTelemetryData.sSuspensionTravel;
+            existingState.mSuspensionVelocity = udpTelemetryData.sSuspensionVelocity;
+            existingState.mAirPressure = toFloatArray(udpTelemetryData.sAirPressure, 1);
+
+            existingState.mEngineSpeed = udpTelemetryData.sEngineSpeed;
+            existingState.mEngineTorque = udpTelemetryData.sEngineTorque;
+            existingState.mEnforcedPitStopLap = (uint) udpTelemetryData.sEnforcedPitStopLap;
+
             // Car Damage
-            existingState.mCrashState = udpTelemetryData.sCrashState; 
+            existingState.mCrashState = udpTelemetryData.sCrashState;
             existingState.mAeroDamage = udpTelemetryData.sAeroDamage / 255;  
             existingState.mEngineDamage = udpTelemetryData.sEngineDamage / 255; 
 
@@ -123,7 +133,7 @@ namespace CrewChiefV3.PCars
             existingState.mWindSpeed = udpTelemetryData.sWindSpeed / 255;
             existingState.mWindDirectionX = udpTelemetryData.sWindDirectionX / 127;
             existingState.mWindDirectionY = udpTelemetryData.sWindDirectionY / 127;
-            existingState.mCloudBrightness = udpTelemetryData.sCloudBrightness / 255;
+            //existingState.mCloudBrightness = udpTelemetryData.sCloudBrightness / 255;
 
             if (existingState.mParticipantData == null)
             {
@@ -140,6 +150,16 @@ namespace CrewChiefV3.PCars
                     existingPartInfo.mLapsCompleted = newPartInfo.sLapsCompleted;
                     existingPartInfo.mRacePosition = newPartInfo.sRacePosition;
                     existingPartInfo.mWorldPosition = toFloatArray(newPartInfo.sWorldPosition, 1);
+
+                    // TODO: LastSectorTime is now in the UDP data, but there's no slot for this in the participants struct
+                    // existingPartInfo.mLastSectorTime = newPartInfo.sLastSectorTime;
+
+                    // and now the bit magic for the extra position precision...
+                    existingPartInfo.mCurrentSector = (uint) newPartInfo.sSector & 7;
+                    float xAdjustment = ((float)((uint)newPartInfo.sSector >> 3 & 3)) / 4f;
+                    float yAdjustment = ((float)((uint)newPartInfo.sSector >> 5 & 3)) / 4f;
+                    existingPartInfo.mWorldPosition[0] = existingPartInfo.mWorldPosition[0] + xAdjustment;
+                    existingPartInfo.mWorldPosition[2] = existingPartInfo.mWorldPosition[2] + yAdjustment;
                 }
                 else
                 {
@@ -147,16 +167,22 @@ namespace CrewChiefV3.PCars
                 }
                 existingState.mParticipantData[i] = existingPartInfo;
             }
+
+            // TODO: buttons
             return existingState;
         }
 
         public static pCarsAPIStruct MergeWithExistingState(pCarsAPIStruct existingState, sParticipantInfoStringsAdditional udpAdditionalStrings)
         {
+            if (existingState.mParticipantData == null)
+            {
+                existingState.mParticipantData = new pCarsAPIParticipantStruct[udpAdditionalStrings.sName.Count()];
+            }
             for (int i = 0; i < udpAdditionalStrings.sName.Count(); i++)
             {
                 String name = getNameFromBytes(udpAdditionalStrings.sName[i].nameByteArray);
-                existingState.mParticipantData[i].mIsActive = name != null && name.Length > 0;
-                existingState.mParticipantData[i].mName = name;
+                existingState.mParticipantData[i + udpAdditionalStrings.sOffset].mIsActive = name != null && name.Length > 0;
+                existingState.mParticipantData[i + udpAdditionalStrings.sOffset].mName = name;
             }
             return existingState;
         }
@@ -433,6 +459,7 @@ namespace CrewChiefV3.PCars
         [MarshalAsAttribute(UnmanagedType.ByValArray, SizeConst = (int)eTyres.TYRE_MAX)]
         public float[] mTyreInternalAirTemp;            // [ UNITS = Kelvin ]
 
+
         // Car Damage
         public uint mCrashState;                        // [ enum (Type#4) Crash Damage State ]
         public float mAeroDamage;                               // [ RANGE = 0.0f->1.0f ]
@@ -446,5 +473,24 @@ namespace CrewChiefV3.PCars
         public float mWindDirectionX;                           // [ UNITS = Normalised Vector X ]
         public float mWindDirectionY;                           // [ UNITS = Normalised Vector Y ]
         public float mCloudBrightness;                          // [ RANGE = 0.0f->... ]
+
+        // extras from the UDP data
+        public float[] mWheelLocalPosition;
+
+        public float[] mRideHeight;
+
+        public float[] mSuspensionTravel;
+
+        public float[] mSuspensionVelocity;
+
+        public float[] mAirPressure;
+
+        public float mEngineSpeed;
+
+        public float mEngineTorque;
+
+        public uint mEnforcedPitStopLap;
+
+        // TODO: front wing and rear wing 
     }
 }

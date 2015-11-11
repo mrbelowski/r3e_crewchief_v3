@@ -109,12 +109,12 @@ namespace CrewChiefV3.PCars
         public ushort sRpm;	// 124
         public ushort sMaxRpm;	// 126
         public byte sGearNumGears;	// 128
-        public sbyte sLastOpponentCollisionIndex;	// 129
-
-        public byte sLastOpponentCollisionMagnitude;	// 130
-        public byte sBoostAmount;	// 131
+        public byte sBoostAmount;	// 129
+        public sbyte sEnforcedPitStopLap;	// 130
+        public byte sCrashState;	// 131
 
         public Single sOdometerKM;	// 132
+
         [MarshalAsAttribute(UnmanagedType.ByValArray, SizeConst = 3)]
         public Single[] sOrientation;	// 136
         [MarshalAsAttribute(UnmanagedType.ByValArray, SizeConst = 3)]
@@ -168,28 +168,46 @@ namespace CrewChiefV3.PCars
         [MarshalAsAttribute(UnmanagedType.ByValArray, SizeConst = 4)]
         public ushort[] sTyreInternalAirTemp;	// 368
 
+        [MarshalAsAttribute(UnmanagedType.ByValArray, SizeConst = 4)]
+        public Single[] sWheelLocalPositionY;	// 376
+        [MarshalAsAttribute(UnmanagedType.ByValArray, SizeConst = 4)]
+        public Single[] sRideHeight;	// 392
+        [MarshalAsAttribute(UnmanagedType.ByValArray, SizeConst = 4)]
+        public Single[] sSuspensionTravel;	// 408
+        [MarshalAsAttribute(UnmanagedType.ByValArray, SizeConst = 4)]
+        public Single[] sSuspensionVelocity;	// 424
+        [MarshalAsAttribute(UnmanagedType.ByValArray, SizeConst = 4)]
+        public ushort[] sAirPressure;	// 440
+
+        // Extras
+        public Single sEngineSpeed;	// 448
+        public Single sEngineTorque;	// 452
+        [MarshalAsAttribute(UnmanagedType.ByValArray, SizeConst = 2)]
+        public byte[] sWings;	// 456
 
         // Car damage
-        public byte sCrashState;	// 376
-        public byte sAeroDamage;	// 377
-        public byte sEngineDamage;	// 378
+        public byte sAeroDamage;	// 458
+        public byte sEngineDamage;	// 459
 
         // Weather
-        public sbyte sAmbientTemperature;	// 379
-        public sbyte sTrackTemperature;	// 380
-        public byte sRainDensity;	// 381
-        public sbyte sWindSpeed;	// 382
-        public sbyte sWindDirectionX;	// 383
-        public sbyte sWindDirectionY;	// 384
-        public byte sCloudBrightness;	// 385
+        public sbyte sAmbientTemperature;	// 460
+        public sbyte sTrackTemperature;	// 461
+        public byte sRainDensity;	// 462
+        public sbyte sWindSpeed;	// 463
+        public sbyte sWindDirectionX;	// 464
+        public sbyte sWindDirectionY;	// 465
+        // TODO: has cloud brightness been removed??
+        // public byte sCloudBrightness;	// 466
 
         // Buttons
+        public byte sDPad;	// 467
 
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 46)]
-        public sParticipantInfo[] sParticipantInfo;	// 386
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 56)]
+        public sParticipantInfo[] sParticipantInfo;	// 468
+
         // 46*12=552
-        public ushort sJoyPad;	// 938
-        public byte sDPad;	// 940
+        public ushort sJoyPad;	// 1364
+        
     }
     public struct sParticipantInfo
     {
@@ -200,7 +218,8 @@ namespace CrewChiefV3.PCars
         public byte sLapsCompleted;	// 9
         public byte sCurrentLap;	// 10
         public byte sSector;	// 11
-        // 12
+        public Single sLastSectorTime;	// 14
+        // 16
         };
 
 }
