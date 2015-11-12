@@ -2,6 +2,8 @@ CrewChief version 3.
 
 Changelog
 ---------
+Version 3.8.5: Updated to use latest UDP network packet structures; Fixed incorrect laps remaining response in last 2 laps; Use Raceroom 'session best lap' data when joining part way through a session. No new sound pack for this version.
+
 Version 3.8.4b: Fixed unknown track causing constant session restarts in the app. No new sound pack for this version.
 
 Version 3.8.4: Reworked approaching car check when exiting pits; A few minor fixes; More driver names. No new sound pack for this version.
