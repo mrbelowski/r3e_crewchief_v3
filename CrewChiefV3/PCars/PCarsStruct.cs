@@ -142,13 +142,15 @@ namespace CrewChiefV3.PCars
             for (int i = 0; i < udpTelemetryData.sParticipantInfo.Count(); i++) 
             {
                 sParticipantInfo newPartInfo = udpTelemetryData.sParticipantInfo[i];
+                Boolean isActive = (newPartInfo.sRacePosition >> 7) == 1;
                 pCarsAPIParticipantStruct existingPartInfo = existingState.mParticipantData[i];
-                if (existingPartInfo.mIsActive) 
-                {
+                existingPartInfo.mIsActive = isActive;
+                if (isActive)
+                {                      
                     existingPartInfo.mCurrentLap = newPartInfo.sCurrentLap;
                     existingPartInfo.mCurrentLapDistance = newPartInfo.sCurrentLapDistance;
                     existingPartInfo.mLapsCompleted = newPartInfo.sLapsCompleted;
-                    existingPartInfo.mRacePosition = newPartInfo.sRacePosition;
+                    existingPartInfo.mRacePosition = (uint) newPartInfo.sRacePosition & 127;
                     existingPartInfo.mWorldPosition = toFloatArray(newPartInfo.sWorldPosition, 1);
 
                     // TODO: LastSectorTime is now in the UDP data, but there's no slot for this in the participants struct
@@ -181,6 +183,7 @@ namespace CrewChiefV3.PCars
             for (int i = 0; i < udpAdditionalStrings.sName.Count(); i++)
             {
                 String name = getNameFromBytes(udpAdditionalStrings.sName[i].nameByteArray);
+                // TODO: will the mIsActive flag always have been set by the time we reach here?
                 existingState.mParticipantData[i + udpAdditionalStrings.sOffset].mIsActive = name != null && name.Length > 0;
                 existingState.mParticipantData[i + udpAdditionalStrings.sOffset].mName = name;
             }

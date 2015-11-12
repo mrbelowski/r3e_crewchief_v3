@@ -354,7 +354,6 @@ namespace CrewChiefV3.RaceRoom
             currentGameState.SessionData.TimeDeltaBehind = shared.TimeDeltaBehind;
             currentGameState.SessionData.TimeDeltaFront = shared.TimeDeltaFront;
 
-            // TODO: propagate these best laptimes to the OverallSessionBestLapTime and PlayerClassSessionBestLapTime
             currentGameState.SessionData.SessionFastestLapTimeFromGame = shared.LapTimeBestLeader;
             currentGameState.SessionData.SessionFastestLapTimeFromGamePlayerClass = shared.LapTimeBestLeaderClass;
             if (currentGameState.SessionData.OverallSessionBestLapTime == -1 ||
