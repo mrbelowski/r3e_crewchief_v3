@@ -28,7 +28,7 @@ namespace CrewChiefV3.PCars
 
         private const int sParticipantInfoStrings_PacketSize = 1347;
         private const int sParticipantInfoStringsAdditional_PacketSize = 1028;
-        private const int sTelemetryData_PacketSize = 1366;
+        private const int sTelemetryData_PacketSize = 1367;
 
         private byte[] receivedDataBuffer;
 

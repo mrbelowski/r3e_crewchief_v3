@@ -269,19 +269,20 @@ namespace CrewChiefV3.Events
                 {
                     Console.WriteLine("Unable to process numbers higher than 59 in this version...");
                 }
-                else if (lapsLeft > 1)
+                else if (lapsLeft > 2)
                 {
                     audioPlayer.playClipImmediately(new QueuedMessage("RaceTime/laps_remaining",
                         MessageContents(QueuedMessage.folderNameNumbersStub + lapsLeft, folderLapsLeft), 0, this), false);
 
                     audioPlayer.closeChannel();
                 }
-                else if (lapsLeft == 1)
+                else if (lapsLeft == 2)
                 {
+                    // TODO: revised logic to this is correct for PCars - check it's OK for R3E
                     audioPlayer.playClipImmediately(new QueuedMessage(folderOneLapAfterThisOne, 0, this), false);
                     audioPlayer.closeChannel();
                 }
-                else if (lapsLeft == 0)
+                else if (lapsLeft == 1)
                 {
                     audioPlayer.playClipImmediately(new QueuedMessage(folderThisIsTheLastLap, 0, this), false);
                     audioPlayer.closeChannel();

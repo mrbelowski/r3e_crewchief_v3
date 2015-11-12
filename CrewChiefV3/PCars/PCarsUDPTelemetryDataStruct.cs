@@ -84,7 +84,7 @@ namespace CrewChiefV3.PCars
         public Single sWorldFastestSector2Time;	// 88
         public Single sWorldFastestSector3Time;	// 92
 
-        public ushort sTrackLength;	// 96
+        public ushort sJoyPad;	// 96
 
         // Flags
         public byte sHighestFlag;	// 98
@@ -196,17 +196,12 @@ namespace CrewChiefV3.PCars
         public sbyte sWindSpeed;	// 463
         public sbyte sWindDirectionX;	// 464
         public sbyte sWindDirectionY;	// 465
-        // TODO: has cloud brightness been removed??
-        // public byte sCloudBrightness;	// 466
-
-        // Buttons
-        public byte sDPad;	// 467
 
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 56)]
-        public sParticipantInfo[] sParticipantInfo;	// 468
+        public sParticipantInfo[] sParticipantInfo;	// 466
 
-        // 46*12=552
-        public ushort sJoyPad;	// 1364
+        public float sTrackLength;	// 1362
+        public byte sDPad;	// 1366
         
     }
     public struct sParticipantInfo
@@ -220,6 +215,5 @@ namespace CrewChiefV3.PCars
         public byte sSector;	// 11
         public Single sLastSectorTime;	// 14
         // 16
-        };
-
+    };
 }

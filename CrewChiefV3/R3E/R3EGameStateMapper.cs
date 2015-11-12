@@ -354,8 +354,19 @@ namespace CrewChiefV3.RaceRoom
             currentGameState.SessionData.TimeDeltaBehind = shared.TimeDeltaBehind;
             currentGameState.SessionData.TimeDeltaFront = shared.TimeDeltaFront;
 
+            // TODO: propagate these best laptimes to the OverallSessionBestLapTime and PlayerClassSessionBestLapTime
             currentGameState.SessionData.SessionFastestLapTimeFromGame = shared.LapTimeBestLeader;
             currentGameState.SessionData.SessionFastestLapTimeFromGamePlayerClass = shared.LapTimeBestLeaderClass;
+            if (currentGameState.SessionData.OverallSessionBestLapTime == -1 ||
+                currentGameState.SessionData.OverallSessionBestLapTime > shared.LapTimeBestLeader)
+            {
+                currentGameState.SessionData.OverallSessionBestLapTime = shared.LapTimeBestLeader;
+            }
+            if (currentGameState.SessionData.PlayerClassSessionBestLapTime == -1 ||
+                currentGameState.SessionData.PlayerClassSessionBestLapTime > shared.LapTimeBestLeaderClass)
+            {
+                currentGameState.SessionData.PlayerClassSessionBestLapTime = shared.LapTimeBestLeaderClass;
+            }
             // TODO: calculate the actual session best sector times from the bollocks in the block (cumulative deltas between the last player sector time and the session best)
 
             currentGameState.SessionData.IsNewLap = previousGameState != null && previousGameState.SessionData.IsNewLap == false &&
