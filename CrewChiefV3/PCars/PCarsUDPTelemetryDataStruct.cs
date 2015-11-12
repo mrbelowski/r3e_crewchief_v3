@@ -182,25 +182,27 @@ namespace CrewChiefV3.PCars
         // Extras
         public Single sEngineSpeed;	// 448
         public Single sEngineTorque;	// 452
-        [MarshalAsAttribute(UnmanagedType.ByValArray, SizeConst = 2)]
-        public byte[] sWings;	// 456
 
         // Car damage
-        public byte sAeroDamage;	// 458
-        public byte sEngineDamage;	// 459
+        public byte sAeroDamage;	// 456
+        public byte sEngineDamage;	// 457
 
         // Weather
-        public sbyte sAmbientTemperature;	// 460
-        public sbyte sTrackTemperature;	// 461
-        public byte sRainDensity;	// 462
-        public sbyte sWindSpeed;	// 463
-        public sbyte sWindDirectionX;	// 464
-        public sbyte sWindDirectionY;	// 465
+        public sbyte sAmbientTemperature;	// 458
+        public sbyte sTrackTemperature;	// 459
+        public byte sRainDensity;	// 460
+        public sbyte sWindSpeed;	// 461
+        public sbyte sWindDirectionX;	// 462
+        public sbyte sWindDirectionY;	// 463
 
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 56)]
-        public sParticipantInfo[] sParticipantInfo;	// 466
+        public sParticipantInfo[] sParticipantInfo;	// 464
 
-        public float sTrackLength;	// 1362
+        public float sTrackLength;	// 1360
+
+        [MarshalAsAttribute(UnmanagedType.ByValArray, SizeConst = 2)]
+        public byte[] sWings;	// 1364
+        
         public byte sDPad;	// 1366
         
     }

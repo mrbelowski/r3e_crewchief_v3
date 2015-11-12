@@ -21,6 +21,10 @@ namespace CrewChiefV3.PCars
             {0, -1},{1, -1},{2, -1}
         };
 
+        private int telemCount = 0;
+        private int strCount = 0;
+        private int addStrCount = 0;
+
         private Boolean newSpotterData = true;
         private GCHandle handle;
         private Boolean initialised = false;
@@ -106,15 +110,15 @@ namespace CrewChiefV3.PCars
                         // TODO: what's in the header? Is offset 0 correct?
                         readFromOffset(0, this.receivedDataBuffer);
                     }                    
-                }
-                //Restablish the callback
-                socket.BeginReceive(this.receivedDataBuffer, 0, this.receivedDataBuffer.Length, SocketFlags.None, new AsyncCallback(ReceiveCallback), socket);
+                }                
             }
             catch (Exception e)
             {
                 //Handle error
                 Console.WriteLine("Error receiving UDP data " + e.StackTrace);
             }
+            //Restablish the callback
+            socket.BeginReceive(this.receivedDataBuffer, 0, this.receivedDataBuffer.Length, SocketFlags.None, new AsyncCallback(ReceiveCallback), socket);
         }
 
         private void copyParticipantsArray(pCarsAPIStruct source, pCarsAPIStruct destination)
@@ -171,15 +175,17 @@ namespace CrewChiefV3.PCars
             int frameLength = 0;
             if (frameType == 0)
             {
+                telemCount++;
                 frameLength = sTelemetryData_PacketSize;
                 handle = GCHandle.Alloc(rawData.Skip(offset).Take(frameLength).ToArray(), GCHandleType.Pinned);
                 sTelemetryData telem = (sTelemetryData)Marshal.PtrToStructure(handle.AddrOfPinnedObject(), typeof(sTelemetryData));
                 workingGameState = StructHelper.MergeWithExistingState(workingGameState, telem);
                 handle.Free();
-                newSpotterData = true;
+                newSpotterData = true;                
             }
             else if (frameType == 1)
             {
+                strCount++;
                 frameLength = sParticipantInfoStrings_PacketSize;
                 handle = GCHandle.Alloc(rawData.Skip(offset).Take(frameLength).ToArray(), GCHandleType.Pinned);
                 sParticipantInfoStrings strings = (sParticipantInfoStrings)Marshal.PtrToStructure(handle.AddrOfPinnedObject(), typeof(sParticipantInfoStrings));
@@ -188,6 +194,7 @@ namespace CrewChiefV3.PCars
             }
             else if (frameType == 2)
             {
+                addStrCount++;
                 frameLength = sParticipantInfoStringsAdditional_PacketSize;
                 handle = GCHandle.Alloc(rawData.Skip(offset).Take(frameLength).ToArray(), GCHandleType.Pinned);
                 sParticipantInfoStringsAdditional additional = (sParticipantInfoStringsAdditional)Marshal.PtrToStructure(handle.AddrOfPinnedObject(), typeof(sParticipantInfoStringsAdditional));
