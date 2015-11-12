@@ -22,7 +22,7 @@ namespace CrewChiefV3.PCars
             // Unfiltered Input
             existingState.mUnfilteredThrottle = udpTelemetryData.sUnfilteredThrottle / 255;
             existingState.mUnfilteredBrake = udpTelemetryData.sUnfilteredBrake / 255;
-            existingState.mUnfilteredSteering = udpTelemetryData.sUnfilteredSteering / 255;
+            existingState.mUnfilteredSteering = udpTelemetryData.sUnfilteredSteering / 127;
             existingState.mUnfilteredClutch = udpTelemetryData.sUnfilteredClutch / 255;
 
             existingState.mLapsInEvent = udpTelemetryData.sLapsInEvent;
@@ -127,10 +127,10 @@ namespace CrewChiefV3.PCars
             existingState.mEngineDamage = udpTelemetryData.sEngineDamage / 255; 
 
             // Weather
-            existingState.mAmbientTemperature = udpTelemetryData.sAmbientTemperature / 127;
-            existingState.mTrackTemperature = udpTelemetryData.sTrackTemperature / 127;
+            existingState.mAmbientTemperature = udpTelemetryData.sAmbientTemperature;
+            existingState.mTrackTemperature = udpTelemetryData.sTrackTemperature;
             existingState.mRainDensity = udpTelemetryData.sRainDensity / 255;         
-            existingState.mWindSpeed = udpTelemetryData.sWindSpeed / 255;
+            existingState.mWindSpeed = udpTelemetryData.sWindSpeed * 2;
             existingState.mWindDirectionX = udpTelemetryData.sWindDirectionX / 127;
             existingState.mWindDirectionY = udpTelemetryData.sWindDirectionY / 127;
             //existingState.mCloudBrightness = udpTelemetryData.sCloudBrightness / 255;

@@ -14,6 +14,13 @@ namespace CrewChiefV3.PCars
 {
     public class PCarsUDPreader : GameDataReader
     {
+        private int sequenceWrapsAt = 63;
+        private Boolean strictPacketOrdering = true;
+        private Dictionary<int, int> lastSequenceNumberForPacketType = new Dictionary<int, int>
+        {
+            {0, -1},{1, -1},{2, -1}
+        };
+
         private Boolean newSpotterData = true;
         private GCHandle handle;
         private Boolean initialised = false;
@@ -197,6 +204,32 @@ namespace CrewChiefV3.PCars
         public override bool hasNewSpotterData()
         {
             return newSpotterData;
+        }
+
+        private Boolean checkSequence(int sequence, int packetNumber)
+        {
+            if (lastSequenceNumberForPacketType.ContainsKey(sequence))
+            {
+                int lastSequenceNumber = lastSequenceNumberForPacketType[sequence];
+                lastSequenceNumberForPacketType[sequence] = packetNumber;
+                if (lastSequenceNumber != -1)
+                {
+                    if (lastSequenceNumber == sequenceWrapsAt)
+                    {
+                        if (packetNumber != 0)
+                        {
+                            Console.WriteLine("Out of order packet - expected sequence number 0, got " + lastSequenceNumber);
+                            return false;
+                        }
+                    }
+                    else if (lastSequenceNumber + 1 != packetNumber)
+                    {
+                        Console.WriteLine("Out of order packet - expected sequence number " + (lastSequenceNumber + 1) + " got " + lastSequenceNumber);
+                        return false;
+                    }
+                }
+            }
+            return true;
         }
     }
 }
