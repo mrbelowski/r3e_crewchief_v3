@@ -269,5 +269,8 @@
     <Setting Name="report_track_temp_changes_greater_than" Type="System.Single" Scope="User">
       <Value Profile="(Default)">2</Value>
     </Setting>
+    <Setting Name="udp_data_port" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">5606</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

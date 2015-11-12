@@ -27,7 +27,7 @@ namespace CrewChiefV3.PCars
         private List<CrewChiefV3.PCars.PCarsSharedMemoryReader.PCarsStructWrapper> dataToDump;
         private CrewChiefV3.PCars.PCarsSharedMemoryReader.PCarsStructWrapper[] dataReadFromFile = null;
         private int dataReadFromFileIndex = 0;
-        private int udpPort = 5606; // TODO: get from properties
+        private int udpPort = UserSettings.GetUserSettings().getInt("udp_data_port");
 
         private pCarsAPIStruct workingGameState = new pCarsAPIStruct();
         private pCarsAPIStruct currentGameState = new pCarsAPIStruct();
@@ -86,6 +86,7 @@ namespace CrewChiefV3.PCars
             this.receivedDataBuffer = new byte[this.udpClient.Client.ReceiveBufferSize];
             this.udpClient.Client.BeginReceive(this.receivedDataBuffer, 0, this.receivedDataBuffer.Length, SocketFlags.None, ReceiveCallback, this.udpClient.Client);
             this.initialised = true;
+            Console.WriteLine("Listening for UDP data on port " + udpPort);
 
             return true;
         }
@@ -138,7 +139,7 @@ namespace CrewChiefV3.PCars
                 {
                     if (!InitialiseInternal())
                     {
-                        throw new GameDataReadException("Failed to initialise shared memory");
+                        throw new GameDataReadException("Failed to initialise UDP client");
                     }
                 }
                 // TODO: figure out the reference / copy semantics of nested structs. Do we actually need to clone this here?

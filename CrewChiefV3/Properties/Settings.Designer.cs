@@ -1087,5 +1087,17 @@ namespace CrewChiefV3.Properties {
                 this["report_track_temp_changes_greater_than"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("5606")]
+        public int udp_data_port {
+            get {
+                return ((int)(this["udp_data_port"]));
+            }
+            set {
+                this["udp_data_port"] = value;
+            }
+        }
     }
 }
