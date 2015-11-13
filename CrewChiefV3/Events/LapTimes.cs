@@ -452,15 +452,16 @@ namespace CrewChiefV3.Events
 
                                 if (raceSectorReportsAtLapEnd && frequencyOfRaceSectorDeltaReports > random.NextDouble() * 10)
                                 {
+                                    double r = random.NextDouble();
                                     SectorReportOption reportOption = SectorReportOption.COMBINED;
                                     if (playedLapTime && playedLapMessage)
                                     {
                                         // if we've already played a laptime and lap rating, use the short sector message.
                                         reportOption = SectorReportOption.WORST_ONLY;
                                     }
-                                    else if ((playedLapTime || playedLapMessage) && random.NextDouble() > 0.5)
+                                    else if (r > 0.6 || ((playedLapTime || playedLapMessage) && r > 0.3))
                                     {
-                                        // if we've played one of these, sometimes use the abrieviated version
+                                        // if we've played one of these, usually use the abbrieviated version. If we've played neither, sometimes use the abbrieviated version
                                         reportOption = SectorReportOption.BEST_AND_WORST;
                                     }
                                     

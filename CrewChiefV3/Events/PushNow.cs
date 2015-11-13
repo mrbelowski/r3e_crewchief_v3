@@ -61,7 +61,7 @@ namespace CrewChiefV3.Events
                     playedNearEndLapsPush = checkGaps(currentGameState, currentGameState.SessionData.SessionNumberOfLaps - currentGameState.SessionData.CompletedLaps, checkPushToGain, checkPushToHold);
                 }
             }
-            if (currentGameState.PitData.IsAtPitExit && currentGameState.PositionAndMotionData.CarSpeed > 10)
+            if (currentGameState.PitData.IsAtPitExit && currentGameState.PositionAndMotionData.CarSpeed > 5)
             {
                 // we've just been handed control back after a pitstop
                 if (isOpponentApproachingPitExit(currentGameState))
@@ -102,7 +102,7 @@ namespace CrewChiefV3.Events
 
             foreach (KeyValuePair<Object, OpponentData> opponent in currentGameState.OpponentData)
             {
-                if (!opponent.Value.isEnteringPits() && !opponent.Value.isExitingPits() &&
+                if (opponent.Value.OpponentLapData.Count > 0 && !opponent.Value.isEnteringPits() && !opponent.Value.isExitingPits() &&
                     ((startCheckPointIsInSector1 && opponent.Value.DistanceRoundTrack > distanceStartCheckPoint && opponent.Value.DistanceRoundTrack < distanceEndCheckPoint) ||
                      (!startCheckPointIsInSector1 && (opponent.Value.DistanceRoundTrack > distanceStartCheckPoint || opponent.Value.DistanceRoundTrack < distanceEndCheckPoint))))
                 {
