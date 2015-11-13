@@ -101,5 +101,10 @@ namespace CrewChiefV3
         {
             return true;
         }
+
+        public virtual void stop()
+        {
+            // no op - only implemented by UDP reader
+        }
     }
 }

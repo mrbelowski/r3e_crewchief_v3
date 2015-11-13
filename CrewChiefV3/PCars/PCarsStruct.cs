@@ -75,9 +75,9 @@ namespace CrewChiefV3.PCars
             existingState.mBrake = udpTelemetryData.sBrake / 255;
             existingState.mThrottle = udpTelemetryData.sThrottle / 255;
             existingState.mClutch = udpTelemetryData.sClutch / 255;
-            existingState.mSteering = udpTelemetryData.sSteering / 127; 
-            // existingState.mGear = udpTelemetryData. **************** TODO **************************; 
-            // existingState.mNumGears = udpTelemetryData.**************** TODO **************************;
+            existingState.mSteering = udpTelemetryData.sSteering / 127;
+            existingState.mGear = udpTelemetryData.sGearNumGears & 15;
+            existingState.mNumGears = udpTelemetryData.sGearNumGears >> 4;
             existingState.mOdometerKM = udpTelemetryData.sOdometerKM;                               
             existingState.mAntiLockActive = (udpTelemetryData.sRaceStateFlags >> 4 & 1) == 1;
             existingState.mBoostActive = (udpTelemetryData.sRaceStateFlags >> 5 & 1) == 1;

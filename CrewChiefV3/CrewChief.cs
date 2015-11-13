@@ -512,6 +512,7 @@ namespace CrewChiefV3
             {
                 gameDataReader.DumpRawGameData();
             }
+            gameDataReader.stop();
             return true;
         }
 

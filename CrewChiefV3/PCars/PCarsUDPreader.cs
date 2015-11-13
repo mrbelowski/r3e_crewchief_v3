@@ -26,6 +26,7 @@ namespace CrewChiefV3.PCars
         private int addStrCount = 0;
 
         private Boolean newSpotterData = true;
+        private Boolean running = false;
         private GCHandle handle;
         private Boolean initialised = false;
         private List<CrewChiefV3.PCars.PCarsSharedMemoryReader.PCarsStructWrapper> dataToDump;
@@ -88,6 +89,7 @@ namespace CrewChiefV3.PCars
             this.udpClient.ExclusiveAddressUse = false; // only if you want to send/receive on same machine.
             this.udpClient.Client.Bind(this.broadcastAddress);
             this.receivedDataBuffer = new byte[this.udpClient.Client.ReceiveBufferSize];
+            this.running = true;
             this.udpClient.Client.BeginReceive(this.receivedDataBuffer, 0, this.receivedDataBuffer.Length, SocketFlags.None, ReceiveCallback, this.udpClient.Client);
             this.initialised = true;
             Console.WriteLine("Listening for UDP data on port " + udpPort);
@@ -118,7 +120,10 @@ namespace CrewChiefV3.PCars
                 Console.WriteLine("Error receiving UDP data " + e.StackTrace);
             }
             //Restablish the callback
-            socket.BeginReceive(this.receivedDataBuffer, 0, this.receivedDataBuffer.Length, SocketFlags.None, new AsyncCallback(ReceiveCallback), socket);
+            if (running)
+            {
+                socket.BeginReceive(this.receivedDataBuffer, 0, this.receivedDataBuffer.Length, SocketFlags.None, new AsyncCallback(ReceiveCallback), socket);
+            }
         }
 
         private void copyParticipantsArray(pCarsAPIStruct source, pCarsAPIStruct destination)
@@ -208,6 +213,7 @@ namespace CrewChiefV3.PCars
         {
             if (udpClient != null)
             {
+                stop();
                 udpClient.Close();
             }
         }
@@ -215,6 +221,15 @@ namespace CrewChiefV3.PCars
         public override bool hasNewSpotterData()
         {
             return newSpotterData;
+        }
+
+        public override void stop()
+        {
+            running = false;
+            if (udpClient != null && udpClient.Client != null && udpClient.Client.Connected)
+            {
+                udpClient.Client.Disconnect(true);
+            }
         }
 
         private Boolean checkSequence(int sequence, int packetNumber)
