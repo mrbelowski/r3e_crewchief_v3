@@ -23,6 +23,8 @@ namespace CrewChiefV3
 
         private static Boolean useLastNameWherePossible = true;
 
+        private static Boolean rawNamesToUsableNamesFileRead = false;
+
         public static String getUsableNameForRawName(String rawName)
         {
             if (usableNamesForSession.ContainsKey(rawName))
@@ -46,8 +48,8 @@ namespace CrewChiefV3
                 if (separatorIndex > 0 && line.Length > separatorIndex + 1)
                 {
                     String lowerCaseRawName = line.Substring(0, separatorIndex).ToLower();
-                    String usableName = validateAndCleanUpName(line.Substring(separatorIndex + 1));
-                    if (usableName != null && !lowerCaseRawNameToUsableName.ContainsKey(lowerCaseRawName))
+                    String usableName = line.Substring(separatorIndex + 1).Trim();
+                    if (usableName != null && usableName.Length > 0 && !lowerCaseRawNameToUsableName.ContainsKey(lowerCaseRawName))
                     {
                         lowerCaseRawNameToUsableName.Add(lowerCaseRawName, usableName);
                     }
@@ -55,6 +57,7 @@ namespace CrewChiefV3
                 counter++;
             }
             file.Close();
+            rawNamesToUsableNamesFileRead = true;
         }
 
         private static String validateAndCleanUpName(String name)
@@ -105,7 +108,10 @@ namespace CrewChiefV3
             String usableDriverName = null;
             if (!usableNamesForSession.ContainsKey(rawDriverName))
             {
-                readRawNamesToUsableNamesFile(soundsFolderName);
+                if (!rawNamesToUsableNamesFileRead)
+                {
+                    readRawNamesToUsableNamesFile(soundsFolderName);
+                }
                 if (lowerCaseRawNameToUsableName.ContainsKey(rawDriverName.ToLower()))
                 {
                     usableDriverName = lowerCaseRawNameToUsableName[rawDriverName.ToLower()];
@@ -123,10 +129,20 @@ namespace CrewChiefV3
                             String lastName = getUnambiguousLastName(usableDriverName);
                             if (lastName != null && lastName.Count() > 0)
                             {
-                                Console.WriteLine("Using unmapped driver last name " + lastName + " for raw driver name " + rawDriverName);
-                                usableDriverName = lastName;
-                                usableNamesForSession.Add(rawDriverName, usableDriverName);
-                                usedLastName = true;
+                                if (lowerCaseRawNameToUsableName.ContainsKey(lastName.ToLower()))
+                                {
+                                    usableDriverName = lowerCaseRawNameToUsableName[lastName.ToLower()];
+                                    Console.WriteLine("Using mapped driver last name " + usableDriverName + " for raw driver last name " + lastName);
+                                    usableNamesForSession.Add(rawDriverName, usableDriverName);
+                                    usedLastName = true;
+                                }
+                                else
+                                {
+                                    Console.WriteLine("Using unmapped driver last name " + lastName + " for raw driver name " + rawDriverName);
+                                    usableDriverName = lastName;
+                                    usableNamesForSession.Add(rawDriverName, usableDriverName);
+                                    usedLastName = true;
+                                }
                             }
                         }
                         if (!usedLastName)
@@ -143,49 +159,13 @@ namespace CrewChiefV3
             }
             return usableDriverName;
         }
-
+        
         public static List<String> getUsableDriverNames(List<String> rawDriverNames, String soundsFolderName)
         {
-            readRawNamesToUsableNamesFile(soundsFolderName);
             usableNamesForSession.Clear();
             foreach (String rawDriverName in rawDriverNames)
             {
-                if (lowerCaseRawNameToUsableName.ContainsKey(rawDriverName.ToLower()))
-                {
-                    String usableDriverName = lowerCaseRawNameToUsableName[rawDriverName.ToLower()];
-                    if (!usableNamesForSession.ContainsKey(rawDriverName))
-                    {
-                        Console.WriteLine("Using mapped drivername " + usableDriverName + " for raw driver name " + rawDriverName);
-                        usableNamesForSession.Add(rawDriverName, usableDriverName);
-                    }
-                }
-                else
-                {
-                    String usableDriverName = validateAndCleanUpName(rawDriverName);
-                    if (usableDriverName != null)
-                    {
-                        Boolean usedLastName = false;
-                        if (useLastNameWherePossible)
-                        {
-                            String lastName = getUnambiguousLastName(usableDriverName);
-                            if (lastName != null && lastName.Count() > 0 && !usableNamesForSession.ContainsKey(rawDriverName))
-                            {
-                                Console.WriteLine("Using unmapped driver last name " + lastName + " for raw driver name " + rawDriverName);
-                                usableNamesForSession.Add(rawDriverName, lastName);
-                                usedLastName = true;
-                            }
-                        }
-                        if (!usedLastName && !usableNamesForSession.ContainsKey(rawDriverName))
-                        {
-                            Console.WriteLine("Using unmapped drivername " + usableDriverName + " for raw driver name " + rawDriverName);
-                            usableNamesForSession.Add(rawDriverName, usableDriverName);
-                        }                        
-                    }
-                    else
-                    {
-                        Console.WriteLine("Unable to create a usable driver name for " + rawDriverName);
-                    }
-                }
+                getUsableDriverName(rawDriverName, soundsFolderName);                
             }
             return usableNamesForSession.Values.ToList();
         }

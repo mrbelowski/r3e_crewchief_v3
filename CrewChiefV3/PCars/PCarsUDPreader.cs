@@ -206,7 +206,10 @@ namespace CrewChiefV3.PCars
 
         public override void Dispose()
         {
-            udpClient.Close();
+            if (udpClient != null)
+            {
+                udpClient.Close();
+            }
         }
 
         public override bool hasNewSpotterData()
