@@ -1135,5 +1135,17 @@ namespace CrewChiefV3.Properties {
                 this["enable_suspension_damage_messages"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool enable_overtake_messages {
+            get {
+                return ((bool)(this["enable_overtake_messages"]));
+            }
+            set {
+                this["enable_overtake_messages"] = value;
+            }
+        }
     }
 }
