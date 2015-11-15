@@ -272,5 +272,14 @@
     <Setting Name="udp_data_port" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">5606</Value>
     </Setting>
+    <Setting Name="enable_damage_messages" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="enable_brake_damage_messages" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="enable_suspension_damage_messages" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

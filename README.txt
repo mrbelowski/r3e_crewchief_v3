@@ -2,6 +2,8 @@ CrewChief version 3.
 
 Changelog
 ---------
+Version 3.8.6: Ignore cars which haven't completed a lap when checking for pit exit clear (prevents car sitting in pit lane at start of a session triggering messages); Tweaked sector time reports in race; Fixed resource leak in UDP connection handler; some internal refactoring; Added options to disable brake, suspension, or all damage reports. New sound pack not required, but recommended for this version (sounds_3.8f or sounds_lo_fi_3.8f).
+
 Version 3.8.5: Updated to use latest UDP network packet structures; Fixed incorrect laps remaining response in last 2 laps; Use Raceroom 'session best lap' data when joining part way through a session. No new sound pack for this version.
 
 Version 3.8.4b: Fixed unknown track causing constant session restarts in the app. No new sound pack for this version.

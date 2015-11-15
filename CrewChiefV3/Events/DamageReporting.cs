@@ -8,6 +8,10 @@ namespace CrewChiefV3.Events
 {
     class DamageReporting : AbstractEvent
     {
+        private Boolean enableDamageMessages = UserSettings.GetUserSettings().getBoolean("enable_damage_messages");
+        private Boolean enableBrakeDamageMessages = UserSettings.GetUserSettings().getBoolean("enable_brake_damage_messages");
+        private Boolean enableSuspensionDamageMessages = UserSettings.GetUserSettings().getBoolean("enable_suspension_damage_messages");
+
         private String folderMinorTransmissionDamage = "damage_reporting/minor_transmission_damage";
         private String folderMinorEngineDamage = "damage_reporting/minor_engine_damage";
         private String folderMinorAeroDamage = "damage_reporting/minor_aero_damage";
@@ -116,42 +120,47 @@ namespace CrewChiefV3.Events
                 aeroDamage = currentGameState.CarDamageData.OverallAeroDamage;
                 trannyDamage = currentGameState.CarDamageData.OverallTransmissionDamage;
                 engineDamage = currentGameState.CarDamageData.OverallEngineDamage;
-                if (currentGameState.CarDamageData.BrakeDamageStatus.hasValueAtLevel(DamageLevel.DESTROYED))
+                if (enableBrakeDamageMessages)
                 {
-                    maxBrakeDamage = DamageLevel.DESTROYED;
-                }
-                else if (currentGameState.CarDamageData.BrakeDamageStatus.hasValueAtLevel(DamageLevel.MAJOR))
-                {
-                    maxBrakeDamage = DamageLevel.MAJOR;
-                }
-                else if (currentGameState.CarDamageData.BrakeDamageStatus.hasValueAtLevel(DamageLevel.MINOR))
-                {
-                    maxBrakeDamage = DamageLevel.MINOR;
-                }
-                else if (currentGameState.CarDamageData.BrakeDamageStatus.hasValueAtLevel(DamageLevel.TRIVIAL))
-                {
-                    maxBrakeDamage = DamageLevel.TRIVIAL;
-                }
-
-                if (currentGameState.CarDamageData.SuspensionDamageStatus.hasValueAtLevel(DamageLevel.DESTROYED))
-                {
-                    maxSuspensionDamage = DamageLevel.DESTROYED;
-                }
-                else if (currentGameState.CarDamageData.SuspensionDamageStatus.hasValueAtLevel(DamageLevel.MAJOR))
-                {
-                    maxSuspensionDamage = DamageLevel.MAJOR;
-                }
-                else if (currentGameState.CarDamageData.SuspensionDamageStatus.hasValueAtLevel(DamageLevel.MINOR))
-                {
-                    maxSuspensionDamage = DamageLevel.MINOR;
-                }
-                else if (currentGameState.CarDamageData.SuspensionDamageStatus.hasValueAtLevel(DamageLevel.TRIVIAL))
-                {
-                    maxSuspensionDamage = DamageLevel.TRIVIAL;
+                    if (currentGameState.CarDamageData.BrakeDamageStatus.hasValueAtLevel(DamageLevel.DESTROYED))
+                    {
+                        maxBrakeDamage = DamageLevel.DESTROYED;
+                    }
+                    else if (currentGameState.CarDamageData.BrakeDamageStatus.hasValueAtLevel(DamageLevel.MAJOR))
+                    {
+                        maxBrakeDamage = DamageLevel.MAJOR;
+                    }
+                    else if (currentGameState.CarDamageData.BrakeDamageStatus.hasValueAtLevel(DamageLevel.MINOR))
+                    {
+                        maxBrakeDamage = DamageLevel.MINOR;
+                    }
+                    else if (currentGameState.CarDamageData.BrakeDamageStatus.hasValueAtLevel(DamageLevel.TRIVIAL))
+                    {
+                        maxBrakeDamage = DamageLevel.TRIVIAL;
+                    }
                 }
 
-                isMissingWheel = !currentGameState.PitData.InPitlane && (!currentGameState.TyreData.LeftFrontAttached || !currentGameState.TyreData.RightFrontAttached ||
-                        !currentGameState.TyreData.LeftRearAttached || !currentGameState.TyreData.RightRearAttached);
+                if (enableSuspensionDamageMessages)
+                {
+                    if (currentGameState.CarDamageData.SuspensionDamageStatus.hasValueAtLevel(DamageLevel.DESTROYED))
+                    {
+                        maxSuspensionDamage = DamageLevel.DESTROYED;
+                    }
+                    else if (currentGameState.CarDamageData.SuspensionDamageStatus.hasValueAtLevel(DamageLevel.MAJOR))
+                    {
+                        maxSuspensionDamage = DamageLevel.MAJOR;
+                    }
+                    else if (currentGameState.CarDamageData.SuspensionDamageStatus.hasValueAtLevel(DamageLevel.MINOR))
+                    {
+                        maxSuspensionDamage = DamageLevel.MINOR;
+                    }
+                    else if (currentGameState.CarDamageData.SuspensionDamageStatus.hasValueAtLevel(DamageLevel.TRIVIAL))
+                    {
+                        maxSuspensionDamage = DamageLevel.TRIVIAL;
+                    }
+                    isMissingWheel = !currentGameState.PitData.InPitlane && (!currentGameState.TyreData.LeftFrontAttached || !currentGameState.TyreData.RightFrontAttached ||
+                            !currentGameState.TyreData.LeftRearAttached || !currentGameState.TyreData.RightRearAttached);
+                }
 
                 if (engineDamage < getLastReportedDamageLevel(Component.ENGINE))
                 {
@@ -196,7 +205,10 @@ namespace CrewChiefV3.Events
                         {
                             reportedDamagesLevels.Add(damageToReportNext.Item1, damageToReportNext.Item2);
                         }
-                        playDamageToReport();
+                        if (enableDamageMessages)
+                        {
+                            playDamageToReport();
+                        }
                     }
                 }
             }
@@ -274,53 +286,69 @@ namespace CrewChiefV3.Events
             }
             if (voiceMessage.Contains(SpeechRecogniser.SUSPENSION))
             {
-                if (isMissingWheel)
+                if (!enableSuspensionDamageMessages)
                 {
-                    audioPlayer.playClipImmediately(new QueuedMessage(folderMissingWheel, 0, null), false);
+                    audioPlayer.playClipImmediately(new QueuedMessage(AudioPlayer.folderNoData, 0, null), false);
                     audioPlayer.closeChannel();
                 }
-                if ((maxSuspensionDamage == DamageLevel.NONE || maxSuspensionDamage == DamageLevel.TRIVIAL) && !isMissingWheel)
+                else
                 {
-                    audioPlayer.playClipImmediately(new QueuedMessage(folderNoSuspensionDamage, 0, null), false);
-                    audioPlayer.closeChannel();
-                }
-                else if (maxSuspensionDamage == DamageLevel.DESTROYED)
-                {
-                    audioPlayer.playClipImmediately(new QueuedMessage(folderBustedSuspension, 0, null), false);
-                    audioPlayer.closeChannel();
-                }
-                else if (maxSuspensionDamage == DamageLevel.MAJOR)
-                {
-                    audioPlayer.playClipImmediately(new QueuedMessage(folderSevereSuspensionDamage, 0, null), false);
-                    audioPlayer.closeChannel();
-                }
-                else if (maxSuspensionDamage == DamageLevel.MINOR && !isMissingWheel)
-                {
-                    audioPlayer.playClipImmediately(new QueuedMessage(folderMinorSuspensionDamage, 0, null), false);
-                    audioPlayer.closeChannel();
+                    if (isMissingWheel)
+                    {
+                        audioPlayer.playClipImmediately(new QueuedMessage(folderMissingWheel, 0, null), false);
+                        audioPlayer.closeChannel();
+                    }
+                    if ((maxSuspensionDamage == DamageLevel.NONE || maxSuspensionDamage == DamageLevel.TRIVIAL) && !isMissingWheel)
+                    {
+                        audioPlayer.playClipImmediately(new QueuedMessage(folderNoSuspensionDamage, 0, null), false);
+                        audioPlayer.closeChannel();
+                    }
+                    else if (maxSuspensionDamage == DamageLevel.DESTROYED)
+                    {
+                        audioPlayer.playClipImmediately(new QueuedMessage(folderBustedSuspension, 0, null), false);
+                        audioPlayer.closeChannel();
+                    }
+                    else if (maxSuspensionDamage == DamageLevel.MAJOR)
+                    {
+                        audioPlayer.playClipImmediately(new QueuedMessage(folderSevereSuspensionDamage, 0, null), false);
+                        audioPlayer.closeChannel();
+                    }
+                    else if (maxSuspensionDamage == DamageLevel.MINOR && !isMissingWheel)
+                    {
+                        audioPlayer.playClipImmediately(new QueuedMessage(folderMinorSuspensionDamage, 0, null), false);
+                        audioPlayer.closeChannel();
+                    }
                 }
             }
             if (voiceMessage.Contains(SpeechRecogniser.BRAKES))
             {
-                if (maxBrakeDamage == DamageLevel.NONE || maxBrakeDamage == DamageLevel.TRIVIAL)
+                if (!enableBrakeDamageMessages)
                 {
-                    audioPlayer.playClipImmediately(new QueuedMessage(folderNoBrakeDamage, 0, null), false);
+                    audioPlayer.playClipImmediately(new QueuedMessage(AudioPlayer.folderNoData, 0, null), false);
                     audioPlayer.closeChannel();
                 }
-                else if (maxBrakeDamage == DamageLevel.DESTROYED)
+                else
                 {
-                    audioPlayer.playClipImmediately(new QueuedMessage(folderBustedBrakes, 0, null), false);
-                    audioPlayer.closeChannel();
-                }
-                else if (maxBrakeDamage == DamageLevel.MAJOR)
-                {
-                    audioPlayer.playClipImmediately(new QueuedMessage(folderSevereBrakeDamage, 0, null), false);
-                    audioPlayer.closeChannel();
-                }
-                else if (maxBrakeDamage == DamageLevel.MINOR)
-                {
-                    audioPlayer.playClipImmediately(new QueuedMessage(folderMinorBrakeDamage, 0, null), false);
-                    audioPlayer.closeChannel();
+                    if (maxBrakeDamage == DamageLevel.NONE || maxBrakeDamage == DamageLevel.TRIVIAL)
+                    {
+                        audioPlayer.playClipImmediately(new QueuedMessage(folderNoBrakeDamage, 0, null), false);
+                        audioPlayer.closeChannel();
+                    }
+                    else if (maxBrakeDamage == DamageLevel.DESTROYED)
+                    {
+                        audioPlayer.playClipImmediately(new QueuedMessage(folderBustedBrakes, 0, null), false);
+                        audioPlayer.closeChannel();
+                    }
+                    else if (maxBrakeDamage == DamageLevel.MAJOR)
+                    {
+                        audioPlayer.playClipImmediately(new QueuedMessage(folderSevereBrakeDamage, 0, null), false);
+                        audioPlayer.closeChannel();
+                    }
+                    else if (maxBrakeDamage == DamageLevel.MINOR)
+                    {
+                        audioPlayer.playClipImmediately(new QueuedMessage(folderMinorBrakeDamage, 0, null), false);
+                        audioPlayer.closeChannel();
+                    }
                 }
             }
         }
@@ -336,11 +364,11 @@ namespace CrewChiefV3.Events
             {
                 componentsWithMoreDamage.Add(new Tuple<Component, DamageLevel>(Component.TRANNY, trannyDamage));
             }
-            if (maxSuspensionDamage > getLastReportedDamageLevel(Component.SUSPENSION))
+            if (enableSuspensionDamageMessages && maxSuspensionDamage > getLastReportedDamageLevel(Component.SUSPENSION))
             {
                 componentsWithMoreDamage.Add(new Tuple<Component, DamageLevel>(Component.SUSPENSION, maxSuspensionDamage));
             }
-            if (maxBrakeDamage > getLastReportedDamageLevel(Component.BRAKES))
+            if (enableBrakeDamageMessages && maxBrakeDamage > getLastReportedDamageLevel(Component.BRAKES))
             {
                 componentsWithMoreDamage.Add(new Tuple<Component, DamageLevel>(Component.BRAKES, maxBrakeDamage));
             }

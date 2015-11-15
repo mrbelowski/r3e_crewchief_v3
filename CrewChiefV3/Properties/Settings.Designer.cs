@@ -1099,5 +1099,41 @@ namespace CrewChiefV3.Properties {
                 this["udp_data_port"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool enable_damage_messages {
+            get {
+                return ((bool)(this["enable_damage_messages"]));
+            }
+            set {
+                this["enable_damage_messages"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool enable_brake_damage_messages {
+            get {
+                return ((bool)(this["enable_brake_damage_messages"]));
+            }
+            set {
+                this["enable_brake_damage_messages"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool enable_suspension_damage_messages {
+            get {
+                return ((bool)(this["enable_suspension_damage_messages"]));
+            }
+            set {
+                this["enable_suspension_damage_messages"] = value;
+            }
+        }
     }
 }
