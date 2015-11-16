@@ -1138,13 +1138,37 @@ namespace CrewChiefV3.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool enable_overtake_messages {
+        [global::System.Configuration.DefaultSettingValueAttribute("10")]
+        public int frequency_of_overtaking_messages {
             get {
-                return ((bool)(this["enable_overtake_messages"]));
+                return ((int)(this["frequency_of_overtaking_messages"]));
             }
             set {
-                this["enable_overtake_messages"] = value;
+                this["frequency_of_overtaking_messages"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("5")]
+        public int frequency_of_being_overtaken_messages {
+            get {
+                return ((int)(this["frequency_of_being_overtaken_messages"]));
+            }
+            set {
+                this["frequency_of_being_overtaken_messages"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("10")]
+        public int frequency_of_player_prac_and_qual_lap_time_reports {
+            get {
+                return ((int)(this["frequency_of_player_prac_and_qual_lap_time_reports"]));
+            }
+            set {
+                this["frequency_of_player_prac_and_qual_lap_time_reports"] = value;
             }
         }
     }

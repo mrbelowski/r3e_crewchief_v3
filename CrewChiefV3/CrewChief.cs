@@ -84,8 +84,8 @@ namespace CrewChiefV3
             eventsList.Add("Penalties", new Penalties(audioPlayer));
             eventsList.Add("MandatoryPitStops", new MandatoryPitStops(audioPlayer));
             eventsList.Add("Fuel", new Fuel(audioPlayer));
-            eventsList.Add("Opponents", new Opponents(audioPlayer));
             eventsList.Add("Position", new Position(audioPlayer));
+            eventsList.Add("Opponents", new Opponents(audioPlayer));
             eventsList.Add("RaceTime", new RaceTime(audioPlayer));
             eventsList.Add("TyreMonitor", new TyreMonitor(audioPlayer));
             eventsList.Add("EngineMonitor", new EngineMonitor(audioPlayer));

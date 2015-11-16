@@ -170,7 +170,8 @@ namespace CrewChiefV3.Events
                         OpponentData opponentData = currentGameState.getOpponentAtPosition(currentGameState.SessionData.Position - 1);
                         if (opponentData != null && !opponentData.isEnteringPits())
                         {
-                            audioPlayer.queueClip(new QueuedMessage("new_car_ahead", MessageContents(folderNextCarIs, opponentData), 4, this,
+                            audioPlayer.queueClip(new QueuedMessage("new_car_ahead", MessageContents(folderNextCarIs, opponentData),
+                                random.Next(Position.secondsToWaitBeforeReportingPass, Position.secondsToWaitBeforeReportingPass + 2), this,
                                 new Dictionary<string, object> { { validationDriverAheadKey, opponentData.DriverRawName } }));
                             nextCarAheadChangeMessage = currentGameState.Now.Add(TimeSpan.FromSeconds(30));
                         }                        

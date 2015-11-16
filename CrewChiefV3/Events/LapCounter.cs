@@ -23,8 +23,13 @@ namespace CrewChiefV3.Events
         private String folderTwoLeftLeading = "lap_counter/two_to_go_leading";
 
         private String folderTwoLeftTopThree = "lap_counter/two_to_go_top_three";
+
+        private String folderLapsMakeThemCount = "lap_counter/laps_make_them_count";
+        private String folderMinutesYouNeedToGetOnWithIt = "lap_counter/minutes_you_need_to_get_on_with_it";
         
-        Boolean playedGetReady;
+        private Boolean playedGetReady;
+
+        private Boolean playedPreLightsMessage;
 
         public Boolean playedFinished;
 
@@ -34,7 +39,7 @@ namespace CrewChiefV3.Events
 
         public override List<SessionPhase> applicableSessionPhases
         {
-            get { return new List<SessionPhase> { SessionPhase.Countdown, SessionPhase.Formation, SessionPhase.Green, SessionPhase.Checkered, SessionPhase.Finished }; }
+            get { return new List<SessionPhase> { SessionPhase.Countdown, SessionPhase.Formation, SessionPhase.Gridwalk, SessionPhase.Green, SessionPhase.Checkered, SessionPhase.Finished }; }
         }
 
         public LapCounter(AudioPlayer audioPlayer)
@@ -46,6 +51,7 @@ namespace CrewChiefV3.Events
         {
             playedGetReady = false;
             playedFinished = false;
+            playedPreLightsMessage = false;
         }
 
         public override bool isMessageStillValid(String eventSubType, GameStateData currentGameState, Dictionary<String, Object> validationData)
@@ -53,10 +59,60 @@ namespace CrewChiefV3.Events
             return applicableSessionPhases.Contains(currentGameState.SessionData.SessionPhase);
         }
 
+        private void playPreLightsMessage(GameStateData currentGameState, Boolean hasWeatherData)
+        {
+            playedPreLightsMessage = true;
+            CrewChiefV3.GameState.Conditions.ConditionsSample currentConditions = currentGameState.Conditions.getMostRecentConditions();
+            if (hasWeatherData && currentConditions != null)
+            {
+                audioPlayer.queueClip(new QueuedMessage("trackTemp", MessageContents(ConditionsMonitor.folderTrackTempIsNow, 
+                    QueuedMessage.folderNameNumbersStub + Math.Round(currentConditions.TrackTemperature), ConditionsMonitor.folderCelsius), 0, null));
+            }
+            if (currentGameState.PitData.HasMandatoryPitStop)
+            {
+                if (currentGameState.SessionData.SessionHasFixedTime)
+                {
+                    audioPlayer.queueClip(new QueuedMessage("pit_window_time", MessageContents(MandatoryPitStops.folderMandatoryPitPitWindowsOpensAfter,
+                        QueuedMessage.folderNameNumbersStub + currentGameState.PitData.PitWindowStart, MandatoryPitStops.folderMandatoryPitStopsMinutes), 0, this));
+                } 
+                else
+                {
+                    audioPlayer.queueClip(new QueuedMessage("pit_window_time", MessageContents(MandatoryPitStops.folderMandatoryPitPitWindowsOpensOnLap,
+                        QueuedMessage.folderNameNumbersStub + currentGameState.PitData.PitWindowStart), 0, this));
+                }
+            }
+            if (currentGameState.SessionData.Position == 1)
+            {
+                audioPlayer.queueClip(new QueuedMessage(Position.folderPole, 0, this));
+            }
+            else
+            {
+                audioPlayer.queueClip(new QueuedMessage(Position.folderStub + currentGameState.SessionData.Position, 0, this));
+            }
+            // TODO: in the countdown / pre-lights phase, we don't know how long the race is going to be so we can't use the 'get on with it' messages :(
+
+        }
+
         override protected void triggerInternal(GameStateData previousGameState, GameStateData currentGameState)
         {
-            if (!playedGetReady && currentGameState.SessionData.SessionType == SessionType.Race && currentGameState.SessionData.SessionPhase == SessionPhase.Countdown)
+            if (!playedPreLightsMessage && currentGameState.SessionData.SessionType == SessionType.Race && currentGameState.SessionData.SessionPhase == SessionPhase.Gridwalk)
             {
+                playPreLightsMessage(currentGameState, false);
+                playedPreLightsMessage = true;
+            }
+            // TODO: in R3E online there's a GridWalk phase before the Countdown. In PCars they're combined. Add some messages to this phase
+            if (!playedGetReady && currentGameState.SessionData.SessionType == SessionType.Race && (currentGameState.SessionData.SessionPhase == SessionPhase.Countdown ||
+                (currentGameState.SessionData.SessionPhase == SessionPhase.Formation && CrewChief.gameDefinition.gameEnum == GameEnum.RACE_ROOM)))
+            {
+                if (CrewChief.gameDefinition.gameEnum == GameEnum.PCARS_64BIT || CrewChief.gameDefinition.gameEnum == GameEnum.PCARS_32BIT || CrewChief.gameDefinition.gameEnum == GameEnum.PCARS_NETWORK)
+                {
+                    // special case for PCars...
+                    if (!playedPreLightsMessage)
+                    {
+                        playedPreLightsMessage = true;
+                        playPreLightsMessage(currentGameState, true);
+                    }
+                }
                 audioPlayer.playClipImmediately(new QueuedMessage(folderGetReady, 0, this), false);
                 playedGetReady = true;
                 audioPlayer.closeChannel();

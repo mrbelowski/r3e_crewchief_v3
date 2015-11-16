@@ -20,6 +20,12 @@ namespace CrewChiefV3.Events
         public static String folderLapsBehind = "position/laps_behind"; 
         public static String folderOneLapAhead = "position/one_lap_ahead";
         public static String folderOneLapBehind = "position/one_lap_down";
+        public static String folderOvertaking = "position/overtaking";
+        public static String folderBeingOvertaken = "position/being_overtaken";
+
+        // we use this in the Opponents event too...
+        public static int secondsToWaitBeforeReportingPass = 4;
+        private TimeSpan timeToWaitBeforeReportingPass = TimeSpan.FromSeconds(secondsToWaitBeforeReportingPass);
 
         private String folderConsistentlyLast = "position/consistently_last";
         private String folderGoodStart = "position/good_start";
@@ -43,8 +49,8 @@ namespace CrewChiefV3.Events
 
         private Boolean enablePositionMessages = UserSettings.GetUserSettings().getBoolean("enable_position_messages");
 
-        // TODO: replace with frequency_of options
-        private Boolean enableOvertakeMessages = UserSettings.GetUserSettings().getBoolean("enable_overtake_messages");
+        private int frequencyOfOvertakingMessages = UserSettings.GetUserSettings().getInt("frequency_of_overtaking_messages");
+        private int frequencyOfBeingOvertakenMessages = UserSettings.GetUserSettings().getInt("frequency_of_being_overtaken_messages");
 
         private int startMessageTime;
 
@@ -52,17 +58,18 @@ namespace CrewChiefV3.Events
         
         private List<float> gapsAhead = new List<float>();
         private List<float> gapsBehind = new List<float>();
-
-        private float minAverageGapForPassMessage = 2;
         private TimeSpan passCheckInterval = TimeSpan.FromSeconds(1);
-        private TimeSpan timeToWaitBeforeReportingPass = TimeSpan.FromSeconds(4);
 
-        // should this be 20 / passCheckInterval.Seconds()?
-        private int passCheckSampleToCheck = 20;
-
+        private float minAverageGapForPassMessage;
+        private float minAverageGapForBeingPassedMessage;
+        private int passCheckSamplesToCheck ;
+        private int beingPassedCheckSamplesToCheck;
         private float maxSpeedDifferenceForReportablePass = 10;
+        private TimeSpan minTimeBetweenOvertakeMessages;
 
         private DateTime lastPassCheck;
+
+        private DateTime lastOvertakeMessageTime;
 
         private DateTime timeWhenWeMadeAPass;
         private DateTime timeWhenWeWerePassed;
@@ -77,6 +84,14 @@ namespace CrewChiefV3.Events
         public Position(AudioPlayer audioPlayer)
         {
             this.audioPlayer = audioPlayer;
+            // frequency of 5 means you need to be < 2.5 seconds apart for at least 20 seconds
+            // 9 means you need to be < 4.5 seconds apart for at least 11 seconds
+            minAverageGapForPassMessage = 0.5f * (float)frequencyOfOvertakingMessages;
+            minAverageGapForBeingPassedMessage = 0.5f * (float)frequencyOfBeingOvertakenMessages;
+            passCheckSamplesToCheck = (int)(100 / frequencyOfOvertakingMessages);
+            beingPassedCheckSamplesToCheck = (int)(100 / frequencyOfBeingOvertakenMessages);
+
+            minTimeBetweenOvertakeMessages = TimeSpan.FromSeconds(20);
         }
 
         public override void clearState()
@@ -94,6 +109,7 @@ namespace CrewChiefV3.Events
             opponentKeyForCarThatJustPassedUs = null;
             timeWhenWeWerePassed = DateTime.MinValue;
             timeWhenWeMadeAPass = DateTime.MinValue;
+            lastOvertakeMessageTime = DateTime.MinValue;
         }
 
         public override bool isMessageStillValid(string eventSubType, GameStateData currentGameState, Dictionary<String, Object> validationData)
@@ -108,15 +124,15 @@ namespace CrewChiefV3.Events
                 !currentGameState.PitData.InPitlane && isStillInThisPosition;
         }
 
-        private Boolean isPassMessageCandidate(List<float> gapsList)
+        private Boolean isPassMessageCandidate(List<float> gapsList, int samplesToCheck, float minAverageGap)
         {
-            return gapsList.Count >= passCheckSampleToCheck &&
-                    gapsAhead.GetRange(gapsList.Count - passCheckSampleToCheck, passCheckSampleToCheck).Average() < minAverageGapForPassMessage;
+            return gapsList.Count >= samplesToCheck &&
+                    gapsAhead.GetRange(gapsList.Count - samplesToCheck, samplesToCheck).Average() < minAverageGap;
         }
 
         private void checkForNewOvertakes(GameStateData previousGameState, GameStateData currentGameState)
         {
-            if (enableOvertakeMessages && currentGameState.SessionData.SessionPhase == SessionPhase.Green &&
+            if (currentGameState.SessionData.SessionPhase == SessionPhase.Green &&
                 currentGameState.SessionData.SessionType == SessionType.Race && currentGameState.SessionData.CompletedLaps > 0)
             {                
                 if (currentGameState.Now > lastPassCheck.Add(passCheckInterval))
@@ -126,11 +142,11 @@ namespace CrewChiefV3.Events
                     gapsBehind.Add(currentGameState.SessionData.TimeDeltaBehind);
                     Object currentOpponentAheadKey = currentGameState.getOpponentKeyInFront();
                     Object currentOpponentBehindKey = currentGameState.getOpponentKeyBehind();
-                    Console.WriteLine("Current ahead = " + currentOpponentAheadKey + " previous = " + opponentAheadKey);
                     // seems like belt and braces, but as Raceroom names aren't unique we need to double check a pass actually happened here:
-                    if (currentOpponentAheadKey != opponentAheadKey)
+                    if (frequencyOfOvertakingMessages > 0 && currentOpponentAheadKey != opponentAheadKey)
                     {
-                        if (currentOpponentBehindKey == opponentAheadKey && isPassMessageCandidate(gapsAhead))
+                        if (currentGameState.SessionData.CurrentLapIsValid && !currentGameState.PitData.InPitlane &&
+                            currentOpponentBehindKey == opponentAheadKey && isPassMessageCandidate(gapsAhead, passCheckSamplesToCheck, minAverageGapForPassMessage))
                         {
                             // TODO: check if we need to do a pit check here - don't think so
                             OpponentData carWeJustPassed = currentGameState.OpponentData[currentOpponentBehindKey];
@@ -142,9 +158,9 @@ namespace CrewChiefV3.Events
                         }
                         gapsAhead.Clear();
                     }
-                    else if (opponentBehindKey != currentOpponentBehindKey)
+                    else if (frequencyOfBeingOvertakenMessages > 0 && opponentBehindKey != currentOpponentBehindKey)
                     {
-                        if (currentOpponentAheadKey == opponentBehindKey && isPassMessageCandidate(gapsBehind))
+                        if (!currentGameState.PitData.InPitlane && currentOpponentAheadKey == opponentBehindKey && isPassMessageCandidate(gapsBehind, beingPassedCheckSamplesToCheck, minAverageGapForBeingPassedMessage))
                         {
                             // TODO: check if we need to do a pit check here - don't think so
                             OpponentData carThatJustPassedUs = currentGameState.OpponentData[currentOpponentAheadKey];
@@ -170,7 +186,7 @@ namespace CrewChiefV3.Events
                 {
                     // check the pass is still valid
                     OpponentData carWeJustPassed = currentGameState.OpponentData[opponentKeyForCarWeJustPassed];
-                    if (carWeJustPassed.Position < currentGameState.SessionData.Position ||
+                    if (!currentGameState.SessionData.CurrentLapIsValid || carWeJustPassed.isEnteringPits() || carWeJustPassed.Position < currentGameState.SessionData.Position ||
                             (carWeJustPassed.Speed - currentGameState.PositionAndMotionData.CarSpeed) > maxSpeedDifferenceForReportablePass)
                     {
                         opponentKeyForCarWeJustPassed = null;
@@ -179,7 +195,12 @@ namespace CrewChiefV3.Events
                 else
                 {
                     // report the overtake
-                    Console.WriteLine("Reporting overtake on car " + opponentKeyForCarWeJustPassed);
+                    if (currentGameState.Now > lastOvertakeMessageTime.Add(minTimeBetweenOvertakeMessages))
+                    {
+                        lastOvertakeMessageTime = currentGameState.Now;
+                        Console.WriteLine("-----------------------------Reporting overtake on car " + opponentKeyForCarWeJustPassed);
+                        audioPlayer.queueClip(new QueuedMessage(folderOvertaking, 0, this));
+                    }
                     opponentKeyForCarWeJustPassed = null;
                     gapsAhead.Clear();
                 }
@@ -188,7 +209,7 @@ namespace CrewChiefV3.Events
             {
                 if (currentGameState.Now < timeWhenWeWerePassed.Add(timeToWaitBeforeReportingPass))
                 {
-                    // check the pass is still valid
+                    // check the pass is still valid - no lap validity check here because we're being passed
                     OpponentData carThatJustPassedUs = currentGameState.OpponentData[opponentKeyForCarThatJustPassedUs];
                     if (carThatJustPassedUs.Position > currentGameState.SessionData.Position ||
                             (carThatJustPassedUs.Speed - currentGameState.PositionAndMotionData.CarSpeed) > maxSpeedDifferenceForReportablePass)
@@ -199,7 +220,12 @@ namespace CrewChiefV3.Events
                 else
                 {
                     // report the overtake
-                    Console.WriteLine("Reporting being overtake by car " + opponentKeyForCarThatJustPassedUs);
+                    if (currentGameState.Now > lastOvertakeMessageTime.Add(minTimeBetweenOvertakeMessages))
+                    {
+                        lastOvertakeMessageTime = currentGameState.Now;
+                        Console.WriteLine("-------------------------------Reporting being overtaken by car " + opponentKeyForCarThatJustPassedUs);
+                        audioPlayer.queueClip(new QueuedMessage(folderBeingOvertaken, 0, this));
+                    }
                     opponentKeyForCarThatJustPassedUs = null;
                     gapsBehind.Clear();
                 }
