@@ -8,6 +8,8 @@ namespace CrewChiefV3.Events
 {
     class LapCounter : AbstractEvent
     {
+        private Random rand = new Random();
+
         private String folderGreenGreenGreen = "lap_counter/green_green_green";
 
         private String folderGetReady = "lap_counter/get_ready";
@@ -59,46 +61,43 @@ namespace CrewChiefV3.Events
             return applicableSessionPhases.Contains(currentGameState.SessionData.SessionPhase);
         }
 
-
-        // TODO: Randomise the order of these
         private void playPreLightsMessage(GameStateData currentGameState, Boolean hasWeatherData)
         {
             playedPreLightsMessage = true;
             CrewChiefV3.GameState.Conditions.ConditionsSample currentConditions = currentGameState.Conditions.getMostRecentConditions();
-            Boolean playedMessage = false;
+            List<QueuedMessage> possibleMessages = new List<QueuedMessage>();
             if (hasWeatherData && currentConditions != null)
             {
-                audioPlayer.queueClip(new QueuedMessage("trackTemp", MessageContents(ConditionsMonitor.folderTrackTempIsNow, 
+                possibleMessages.Add(new QueuedMessage("trackTemp", MessageContents(ConditionsMonitor.folderTrackTempIsNow, 
                     QueuedMessage.folderNameNumbersStub + Math.Round(currentConditions.TrackTemperature), ConditionsMonitor.folderCelsius), 0, null));
-                playedMessage = true;
             }
-            if (!playedMessage && currentGameState.PitData.HasMandatoryPitStop)
+            if (currentGameState.PitData.HasMandatoryPitStop)
             {
                 if (currentGameState.SessionData.SessionHasFixedTime)
                 {
-                    audioPlayer.queueClip(new QueuedMessage("pit_window_time", MessageContents(MandatoryPitStops.folderMandatoryPitPitWindowsOpensAfter,
+                    possibleMessages.Add(new QueuedMessage("pit_window_time", MessageContents(MandatoryPitStops.folderMandatoryPitPitWindowsOpensAfter,
                         QueuedMessage.folderNameNumbersStub + currentGameState.PitData.PitWindowStart, MandatoryPitStops.folderMandatoryPitStopsMinutes), 0, this));
-                    playedMessage = true;
                 } 
                 else
                 {
-                    audioPlayer.queueClip(new QueuedMessage("pit_window_time", MessageContents(MandatoryPitStops.folderMandatoryPitPitWindowsOpensOnLap,
+                    possibleMessages.Add(new QueuedMessage("pit_window_time", MessageContents(MandatoryPitStops.folderMandatoryPitPitWindowsOpensOnLap,
                         QueuedMessage.folderNameNumbersStub + currentGameState.PitData.PitWindowStart), 0, this));
-                    playedMessage = true;
                 }
             }
-            if (!playedMessage && currentGameState.SessionData.Position == 1)
+            if (currentGameState.SessionData.Position == 1)
             {
-                audioPlayer.queueClip(new QueuedMessage(Position.folderPole, 0, this));
-                playedMessage = true;
+                possibleMessages.Add(new QueuedMessage(Position.folderPole, 0, this));
             }
-            else if (!playedMessage) 
+            else
             {
-                audioPlayer.queueClip(new QueuedMessage(Position.folderStub + currentGameState.SessionData.Position, 0, this));
-                playedMessage = true;
+                possibleMessages.Add(new QueuedMessage(Position.folderStub + currentGameState.SessionData.Position, 0, this));
+            }
+            // now pick a random one
+            if (possibleMessages.Count > 0)
+            {
+                audioPlayer.queueClip(possibleMessages[rand.Next(possibleMessages.Count)]);
             }
             // TODO: in the countdown / pre-lights phase, we don't know how long the race is going to be so we can't use the 'get on with it' messages :(
-
         }
 
         override protected void triggerInternal(GameStateData previousGameState, GameStateData currentGameState)

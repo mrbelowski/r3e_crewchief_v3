@@ -391,16 +391,12 @@ namespace CrewChiefV3.Events
                     audioPlayer.closeChannel();
                     haveData = true;
                 }
-                else if (currentGapInFront < 60)
+                else 
                 {
                     audioPlayer.playClipImmediately(new QueuedMessage("Timings/gaps",
                         MessageContents(TimeSpanWrapper.FromMilliseconds(currentGapInFront * 1000, true)), 0, this), false);
                     audioPlayer.closeChannel();
                     haveData = true;
-                }
-                else
-                {
-                    Console.WriteLine("Unable to read gap as it's more than 59 seconds");
                 }
             }
             else if (voiceMessage.Contains(SpeechRecogniser.GAP_BEHIND) &&
@@ -412,16 +408,12 @@ namespace CrewChiefV3.Events
                     audioPlayer.closeChannel();
                     haveData = true;
                 }
-                else if (currentGapBehind < 60)
+                else
                 {
                     audioPlayer.playClipImmediately(new QueuedMessage("Timings/gaps",
                         MessageContents(TimeSpanWrapper.FromMilliseconds(currentGapBehind * 1000, true)), 0, this), false);
                     audioPlayer.closeChannel();
                     haveData = true;
-                }
-                else
-                {
-                    Console.WriteLine("Unable to read gap as it's more than 59 seconds");
                 }
             }
             if (!haveData)

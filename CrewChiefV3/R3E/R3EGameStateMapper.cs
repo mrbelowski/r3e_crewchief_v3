@@ -162,6 +162,12 @@ namespace CrewChiefV3.RaceRoom
                 currentGameState.SessionData.SessionStartTime = currentGameState.Now;
                 currentGameState.OpponentData.Clear();
                 currentGameState.SessionData.TrackDefinition = TrackData.getTrackDefinition(null, shared.track_info.length);
+
+                // reset the engine temp monitor stuff
+                gotBaselineEngineData = false;
+                baselineEngineDataSamples = 0;
+                baselineEngineDataOilTemp = 0;
+                baselineEngineDataWaterTemp = 0;
                 for (int i = 0; i < shared.all_drivers_data.Length; i++)
                 {
                     DriverData participantStruct = shared.all_drivers_data[i];
