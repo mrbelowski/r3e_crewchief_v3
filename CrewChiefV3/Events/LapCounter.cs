@@ -33,6 +33,8 @@ namespace CrewChiefV3.Events
 
         private Boolean playedPreLightsMessage;
 
+        private Boolean purgePreLightsMessages;
+
         public Boolean playedFinished;
 
         private DateTime lastFinishMessageTime = DateTime.MinValue;
@@ -54,6 +56,7 @@ namespace CrewChiefV3.Events
             playedGetReady = false;
             playedFinished = false;
             playedPreLightsMessage = false;
+            purgePreLightsMessages = false;
         }
 
         public override bool isMessageStillValid(String eventSubType, GameStateData currentGameState, Dictionary<String, Object> validationData)
@@ -61,12 +64,12 @@ namespace CrewChiefV3.Events
             return applicableSessionPhases.Contains(currentGameState.SessionData.SessionPhase);
         }
 
-        private void playPreLightsMessage(GameStateData currentGameState, Boolean hasWeatherData)
+        private void playPreLightsMessage(GameStateData currentGameState, int maxNumberToPlay)
         {
             playedPreLightsMessage = true;
             CrewChiefV3.GameState.Conditions.ConditionsSample currentConditions = currentGameState.Conditions.getMostRecentConditions();
             List<QueuedMessage> possibleMessages = new List<QueuedMessage>();
-            if (hasWeatherData && currentConditions != null)
+            if (currentConditions != null)
             {
                 possibleMessages.Add(new QueuedMessage("trackTemp", MessageContents(ConditionsMonitor.folderTrackTempIsNow, 
                     QueuedMessage.folderNameNumbersStub + Math.Round(currentConditions.TrackTemperature), ConditionsMonitor.folderCelsius), 0, null));
@@ -92,10 +95,15 @@ namespace CrewChiefV3.Events
             {
                 possibleMessages.Add(new QueuedMessage(Position.folderStub + currentGameState.SessionData.Position, 0, this));
             }
-            // now pick a random one
+            // now pick a random selection
+            List<int> playedIndexes = new List<int>();
             if (possibleMessages.Count > 0)
             {
-                audioPlayer.queueClip(possibleMessages[rand.Next(possibleMessages.Count)]);
+                List<QueuedMessage> shuffled = (List<QueuedMessage>) possibleMessages.OrderBy(item => rand.Next());
+                for (int i=0; i<maxNumberToPlay; i++) 
+                {
+                    audioPlayer.queueClip(possibleMessages[i]);
+                }                
             }
             // TODO: in the countdown / pre-lights phase, we don't know how long the race is going to be so we can't use the 'get on with it' messages :(
         }
@@ -104,21 +112,24 @@ namespace CrewChiefV3.Events
         {
             if (!playedPreLightsMessage && currentGameState.SessionData.SessionType == SessionType.Race && currentGameState.SessionData.SessionPhase == SessionPhase.Gridwalk)
             {
-                playPreLightsMessage(currentGameState, false);
+                playPreLightsMessage(currentGameState, 3);
                 playedPreLightsMessage = true;
+                purgePreLightsMessages = true;
             }
             // TODO: in R3E online there's a GridWalk phase before the Countdown. In PCars they're combined. Add some messages to this phase
             if (!playedGetReady && currentGameState.SessionData.SessionType == SessionType.Race && (currentGameState.SessionData.SessionPhase == SessionPhase.Countdown ||
                 (currentGameState.SessionData.SessionPhase == SessionPhase.Formation && CrewChief.gameDefinition.gameEnum == GameEnum.RACE_ROOM)))
             {
-                if (CrewChief.gameDefinition.gameEnum == GameEnum.PCARS_64BIT || CrewChief.gameDefinition.gameEnum == GameEnum.PCARS_32BIT || CrewChief.gameDefinition.gameEnum == GameEnum.PCARS_NETWORK)
+                // If we've not yet played the pre-lights messages, just play one of them here, but not for RaceRoom as the lights will already have started
+                if (!playedPreLightsMessage && CrewChief.gameDefinition.gameEnum != GameEnum.RACE_ROOM)
                 {
-                    // special case for PCars...
-                    if (!playedPreLightsMessage)
-                    {
-                        playedPreLightsMessage = true;
-                        playPreLightsMessage(currentGameState, true);
-                    }
+                    playedPreLightsMessage = true;
+                    playPreLightsMessage(currentGameState, 1);
+                    purgePreLightsMessages = false;
+                }
+                if (purgePreLightsMessages)
+                {
+                    audioPlayer.purgeQueues();
                 }
                 audioPlayer.queueClip(new QueuedMessage(folderGetReady, 0, this));
                 playedGetReady = true;

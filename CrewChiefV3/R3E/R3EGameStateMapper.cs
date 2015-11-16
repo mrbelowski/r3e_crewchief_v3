@@ -355,7 +355,9 @@ namespace CrewChiefV3.RaceRoom
             currentGameState.SessionData.LapTimePrevious = shared.LapTimePrevious;
             currentGameState.SessionData.PreviousLapWasValid = shared.LapTimePrevious > 0;
             currentGameState.SessionData.NumCars = shared.NumCars;
+            
             currentGameState.SessionData.Position = getRacePosition(currentGameState.SessionData.DriverRawName, currentGameState.SessionData.Position, shared.Position, currentGameState.Now);
+            // currentGameState.SessionData.Position = shared.Position;
             currentGameState.SessionData.UnFilteredPosition = shared.Position;
             currentGameState.SessionData.TimeDeltaBehind = shared.TimeDeltaBehind;
             currentGameState.SessionData.TimeDeltaFront = shared.TimeDeltaFront;
@@ -539,6 +541,7 @@ namespace CrewChiefV3.RaceRoom
                             }
 
                             int currentOpponentRacePosition = getRacePosition(driverName, previousOpponentPosition, participantStruct.place, currentGameState.Now);
+                            //int currentOpponentRacePosition = participantStruct.place;
                             int currentOpponentLapsCompleted = participantStruct.completed_laps;
                             int currentOpponentSector = participantStruct.track_sector;
                             if (currentOpponentSector == 0)
@@ -695,8 +698,8 @@ namespace CrewChiefV3.RaceRoom
                 currentGameState.SessionData.LeaderHasFinishedRace = true;
             }
 
-            currentGameState.SessionData.IsRacingSameCarBehind = previousGameState != null && previousGameState.getOpponentKeyBehind() == currentGameState.getOpponentKeyBehind();
-            currentGameState.SessionData.IsRacingSameCarInFront = previousGameState != null && previousGameState.getOpponentKeyInFront() == currentGameState.getOpponentKeyInFront();
+            currentGameState.SessionData.IsRacingSameCarBehind = previousGameState != null && previousGameState.getOpponentKeyBehind(false) == currentGameState.getOpponentKeyBehind(false);
+            currentGameState.SessionData.IsRacingSameCarInFront = previousGameState != null && previousGameState.getOpponentKeyInFront(false) == currentGameState.getOpponentKeyInFront(false);
 
             if (!currentGameState.SessionData.IsRacingSameCarInFront)
             {

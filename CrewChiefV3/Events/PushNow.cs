@@ -158,7 +158,7 @@ namespace CrewChiefV3.Events
 
         private float getOpponentBestLap(int opponentPosition, int lapsToCheck, GameStateData gameState)
         {
-            OpponentData opponent = gameState.getOpponentAtPosition(opponentPosition);
+            OpponentData opponent = gameState.getOpponentAtPosition(opponentPosition, false);
             if (opponent == null || opponent.OpponentLapData.Count < lapsToCheck)
             {
                 return -1;

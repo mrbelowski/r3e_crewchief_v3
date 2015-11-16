@@ -910,9 +910,9 @@ namespace CrewChiefV3.GameState
             return rawDriverNames;
         }
 
-        public OpponentData getOpponentAtPosition(int position) 
+        public OpponentData getOpponentAtPosition(int position, Boolean useUnfilteredPosition) 
         {
-            Object opponentKey = getOpponentKeyAtPosition(position);
+            Object opponentKey = getOpponentKeyAtPosition(position, useUnfilteredPosition);
             if (opponentKey != null && OpponentData.ContainsKey(opponentKey))
             {
                 return OpponentData[opponentKey];
@@ -991,11 +991,11 @@ namespace CrewChiefV3.GameState
             }
         }
 
-        public Object getOpponentKeyInFront()
+        public Object getOpponentKeyInFront(Boolean useUnfilteredPosition)
         {
             if (SessionData.Position > 1)
             {
-                 return getOpponentKeyAtPosition(SessionData.Position - 1);
+                return getOpponentKeyAtPosition(SessionData.Position - 1, useUnfilteredPosition);
             }
             else
             {
@@ -1003,11 +1003,11 @@ namespace CrewChiefV3.GameState
             }
         }
 
-        public Object getOpponentKeyBehind()
+        public Object getOpponentKeyBehind(Boolean useUnfilteredPosition)
         {
             if (SessionData.Position < SessionData.NumCars)
             {
-                return getOpponentKeyAtPosition(SessionData.Position + 1);
+                return getOpponentKeyAtPosition(SessionData.Position + 1, useUnfilteredPosition);
             }
             else
             {
@@ -1015,16 +1015,26 @@ namespace CrewChiefV3.GameState
             }
         }
 
-        public Object getOpponentKeyAtPosition(int position)
+        public Object getOpponentKeyAtPosition(int position, Boolean useUnfilteredPosition)
         {
             if (OpponentData.Count != 0)
             {
                 foreach (KeyValuePair<Object, OpponentData> entry in OpponentData)
                 {
-                    if (entry.Value.Position == position)
+                    if (useUnfilteredPosition)
                     {
-                        return entry.Key;
+                        if (entry.Value.UnFilteredPosition == position)
+                        {
+                            return entry.Key;
+                        }
                     }
+                    else
+                    {
+                        if (entry.Value.Position == position)
+                        {
+                            return entry.Key;
+                        }
+                    }                    
                 }
             }
             return null;

@@ -65,7 +65,7 @@ namespace CrewChiefV3.Events
         {
             if (validationData != null && validationData.ContainsKey(validationDriverAheadKey)) {
                 String expectedOpponentName = (String)validationData[validationDriverAheadKey];
-                OpponentData opponentInFront = currentGameState.SessionData.Position > 1 ? currentGameState.getOpponentAtPosition(currentGameState.SessionData.Position - 1) : null;
+                OpponentData opponentInFront = currentGameState.SessionData.Position > 1 ? currentGameState.getOpponentAtPosition(currentGameState.SessionData.Position - 1, false) : null;
                 String actualOpponentName = opponentInFront == null ? null : opponentInFront.DriverRawName;
                 if (actualOpponentName != expectedOpponentName)
                 {
@@ -167,11 +167,11 @@ namespace CrewChiefV3.Events
                     if (currentGameState.SessionData.Position > 2 && currentGameState.Now > nextCarAheadChangeMessage && !currentGameState.PitData.InPitlane
                         && currentGameState.SessionData.CompletedLaps > 0)
                     {
-                        OpponentData opponentData = currentGameState.getOpponentAtPosition(currentGameState.SessionData.Position - 1);
+                        OpponentData opponentData = currentGameState.getOpponentAtPosition(currentGameState.SessionData.Position - 1, false);
                         if (opponentData != null && !opponentData.isEnteringPits())
                         {
                             audioPlayer.queueClip(new QueuedMessage("new_car_ahead", MessageContents(folderNextCarIs, opponentData),
-                                random.Next(Position.secondsToWaitBeforeReportingPass + 1, Position.secondsToWaitBeforeReportingPass + 3), this,
+                                random.Next(Position.secondsToWaitBeforeReportingPass + 3, Position.secondsToWaitBeforeReportingPass + 6), this,
                                 new Dictionary<string, object> { { validationDriverAheadKey, opponentData.DriverRawName } }));
                             nextCarAheadChangeMessage = currentGameState.Now.Add(TimeSpan.FromSeconds(30));
                         }                        
@@ -179,14 +179,14 @@ namespace CrewChiefV3.Events
                 }
                 if (currentGameState.SessionData.HasLeadChanged)
                 {
-                    OpponentData leader = currentGameState.getOpponentAtPosition(1);
+                    OpponentData leader = currentGameState.getOpponentAtPosition(1, false);
                     if (leader != null)
                     {
                         String name = leader.DriverRawName;
                         if (currentGameState.SessionData.Position > 1 && previousGameState.SessionData.Position > 1 && currentGameState.Now > nextLeadChangeMessage)
                         {
                             Console.WriteLine("Lead change, current leader is " + name + " laps completed = " + currentGameState.SessionData.CompletedLaps);
-                            audioPlayer.queueClip(new QueuedMessage("new_leader", MessageContents(currentGameState.getOpponentAtPosition(1), folderIsNowLeading), 0, this));
+                            audioPlayer.queueClip(new QueuedMessage("new_leader", MessageContents(currentGameState.getOpponentAtPosition(1, false), folderIsNowLeading), 0, this));
                             nextLeadChangeMessage = currentGameState.Now.Add(TimeSpan.FromSeconds(30));
                         }
                     }                    
@@ -222,7 +222,7 @@ namespace CrewChiefV3.Events
             {
                 if (currentGameState.SessionData.Position > 1)
                 {
-                    opponentKey = currentGameState.getOpponentKeyAtPosition(1);
+                    opponentKey = currentGameState.getOpponentKeyAtPosition(1, false);
                 }
                 else if (currentGameState.SessionData.Position == 1)
                 {
@@ -232,12 +232,12 @@ namespace CrewChiefV3.Events
             if ((voiceMessage.Contains(SpeechRecogniser.THE_CAR_AHEAD) || voiceMessage.Contains(SpeechRecogniser.THE_GUY_AHEAD) ||
                 voiceMessage.Contains(SpeechRecogniser.THE_GUY_IN_FRONT) || voiceMessage.Contains(SpeechRecogniser.THE_CAR_IN_FRONT)) && currentGameState.SessionData.Position > 1)
             {
-                opponentKey = currentGameState.getOpponentKeyInFront();
+                opponentKey = currentGameState.getOpponentKeyInFront(false);
             }
             else if ((voiceMessage.Contains(SpeechRecogniser.THE_CAR_BEHIND) || voiceMessage.Contains(SpeechRecogniser.THE_GUY_BEHIND)) &&
                             !currentGameState.isLast())
             {
-                opponentKey = currentGameState.getOpponentKeyBehind();
+                opponentKey = currentGameState.getOpponentKeyBehind(false);
             }
             else if (voiceMessage.Contains(SpeechRecogniser.POSITION) || voiceMessage.Contains(SpeechRecogniser.PEA))
             {
@@ -263,7 +263,7 @@ namespace CrewChiefV3.Events
                 }
                 if (position != currentGameState.SessionData.Position)
                 {
-                    opponentKey = currentGameState.getOpponentKeyAtPosition(position);
+                    opponentKey = currentGameState.getOpponentKeyAtPosition(position, false);
                 }
                 else
                 {
@@ -456,7 +456,7 @@ namespace CrewChiefV3.Events
                     } 
                     else 
                     {
-                        OpponentData opponent = currentGameState.getOpponentAtPosition(currentGameState.SessionData.Position + 1);
+                        OpponentData opponent = currentGameState.getOpponentAtPosition(currentGameState.SessionData.Position + 1, false);
                         if (opponent != null)
                         {
                             QueuedMessage queuedMessage = new QueuedMessage("opponentName", MessageContents(opponent), MessageContents(folderCantPronounceName), 0, null);
@@ -480,7 +480,7 @@ namespace CrewChiefV3.Events
                     }
                     else
                     {
-                        OpponentData opponent = currentGameState.getOpponentAtPosition(currentGameState.SessionData.Position - 1);
+                        OpponentData opponent = currentGameState.getOpponentAtPosition(currentGameState.SessionData.Position - 1, false);
                         if (opponent != null)
                         {
                             QueuedMessage queuedMessage = new QueuedMessage("opponentName", MessageContents(opponent), MessageContents(folderCantPronounceName), 0, null);
@@ -495,7 +495,7 @@ namespace CrewChiefV3.Events
                 }                
                 else if (voiceMessage.StartsWith(SpeechRecogniser.WHOS_LEADING) && currentGameState.SessionData.Position > 1)
                 {
-                    OpponentData opponent = currentGameState.getOpponentAtPosition(1);
+                    OpponentData opponent = currentGameState.getOpponentAtPosition(1, false);
                     if (opponent != null)
                     {
                         QueuedMessage queuedMessage = new QueuedMessage("opponentName", MessageContents(opponent), MessageContents(folderCantPronounceName), 0, null);

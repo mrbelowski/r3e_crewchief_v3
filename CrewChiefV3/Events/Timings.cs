@@ -168,6 +168,15 @@ namespace CrewChiefV3.Events
             return sectorsTillNextReport;
         }
 
+        public override bool isMessageStillValid(string eventSubType, GameStateData currentGameState, Dictionary<string, object> validationData)
+        {
+            if (validationData != null && validationData.ContainsKey("position") && (int)validationData["position"] != currentGameState.SessionData.Position)
+            {
+                return false;
+            }
+            return true;
+        }
+
         protected override void triggerInternal(GameStateData previousGameState, GameStateData currentGameState)
         {
             isLeading = currentGameState.SessionData.Position == 1;
@@ -229,7 +238,7 @@ namespace CrewChiefV3.Events
                                 sectorsSinceLastCloseCarAheadReport = 0;
                                 sectorsUntilNextCloseCarAheadReport = adjustForMidLapPreference(currentGameState.SessionData.SectorNumber,
                                     rand.Next(closeAheadMinSectorWait, closeAheadMaxSectorWait));
-                                audioPlayer.queueClip(new QueuedMessage(folderBeingHeldUp, 0, this));
+                                audioPlayer.queueClip(new QueuedMessage(folderBeingHeldUp, 0, this, new Dictionary<string, object> { { "position", currentGameState.SessionData.Position } }));
                                 gapInFrontAtLastReport = gapsInFront[0];
                             }
                         }
@@ -245,20 +254,20 @@ namespace CrewChiefV3.Events
                                 if (gapInFrontStatus == GapStatus.INCREASING)
                                 {
                                     audioPlayer.queueClip(new QueuedMessage("Timings/gap_in_front",
-                                        MessageContents(folderTheGapTo, currentGameState.getOpponentAtPosition(currentGameState.SessionData.Position - 1), folderAheadIsIncreasing,
-                                        gapInFront), MessageContents(folderGapInFrontIncreasing, gapInFront), 0, this));
+                                        MessageContents(folderTheGapTo, currentGameState.getOpponentAtPosition(currentGameState.SessionData.Position - 1, false), folderAheadIsIncreasing,
+                                        gapInFront), MessageContents(folderGapInFrontIncreasing, gapInFront), 0, this, new Dictionary<string, object> { { "position", currentGameState.SessionData.Position } }));
                                 }
                                 else if (gapInFrontStatus == GapStatus.DECREASING)
                                 {
                                     audioPlayer.queueClip(new QueuedMessage("Timings/gap_in_front",
-                                        MessageContents(folderYoureReeling, currentGameState.getOpponentAtPosition(currentGameState.SessionData.Position - 1),
-                                        folderInTheGapIsNow, gapInFront), MessageContents(folderGapInFrontDecreasing, gapInFront), 0, this));
+                                        MessageContents(folderYoureReeling, currentGameState.getOpponentAtPosition(currentGameState.SessionData.Position - 1, false),
+                                        folderInTheGapIsNow, gapInFront), MessageContents(folderGapInFrontDecreasing, gapInFront), 0, this, new Dictionary<string, object> { { "position", currentGameState.SessionData.Position } }));
                                 }
                                 else if (gapInFrontStatus == GapStatus.OTHER)
                                 {
                                     audioPlayer.queueClip(new QueuedMessage("Timings/gap_in_front",
-                                        MessageContents(folderTheGapTo, currentGameState.getOpponentAtPosition(currentGameState.SessionData.Position - 1),
-                                        folderAheadIsNow, gapInFront), MessageContents(folderGapInFrontIsNow, gapInFront), 0, this));
+                                        MessageContents(folderTheGapTo, currentGameState.getOpponentAtPosition(currentGameState.SessionData.Position - 1, false),
+                                        folderAheadIsNow, gapInFront), MessageContents(folderGapInFrontIsNow, gapInFront), 0, this, new Dictionary<string, object> { { "position", currentGameState.SessionData.Position } }));
                                 }
                             }
                             gapInFrontAtLastReport = gapsInFront[0];
@@ -273,7 +282,7 @@ namespace CrewChiefV3.Events
                                 sectorsSinceLastCloseCarBehindReport = 0;
                                 sectorsUntilNextCloseCarBehindReport = adjustForMidLapPreference(currentGameState.SessionData.SectorNumber,
                                     rand.Next(closeBehindMinSectorWait, closeBehindMaxSectorWait));
-                                audioPlayer.queueClip(new QueuedMessage(folderBeingPressured, 0, this));
+                                audioPlayer.queueClip(new QueuedMessage(folderBeingPressured, 0, this, new Dictionary<string, object> { { "position", currentGameState.SessionData.Position } }));
                                 gapBehindAtLastReport = gapsBehind[0];
                             }
                         }
@@ -289,20 +298,20 @@ namespace CrewChiefV3.Events
                                 if (gapBehindStatus == GapStatus.INCREASING)
                                 {
                                     audioPlayer.queueClip(new QueuedMessage("Timings/gap_behind",
-                                        MessageContents(folderTheGapTo, currentGameState.getOpponentAtPosition(currentGameState.SessionData.Position + 1),
-                                        folderBehindIsIncreasing, gapBehind), MessageContents(folderGapBehindIncreasing, gapBehind), 0, this));
+                                        MessageContents(folderTheGapTo, currentGameState.getOpponentAtPosition(currentGameState.SessionData.Position + 1, false),
+                                        folderBehindIsIncreasing, gapBehind), MessageContents(folderGapBehindIncreasing, gapBehind), 0, this, new Dictionary<string, object> { { "position", currentGameState.SessionData.Position } }));
                                 }
                                 else if (gapBehindStatus == GapStatus.DECREASING)
                                 {
                                     audioPlayer.queueClip(new QueuedMessage("Timings/gap_behind",
-                                        MessageContents(currentGameState.getOpponentAtPosition(currentGameState.SessionData.Position + 1), folderIsReelingYouIn, gapBehind),
-                                        MessageContents(folderGapBehindDecreasing, gapBehind), 0, this));
+                                        MessageContents(currentGameState.getOpponentAtPosition(currentGameState.SessionData.Position + 1, false), folderIsReelingYouIn, gapBehind),
+                                        MessageContents(folderGapBehindDecreasing, gapBehind), 0, this, new Dictionary<string, object> { { "position", currentGameState.SessionData.Position } }));
                                 }
                                 else if (gapBehindStatus == GapStatus.OTHER)
                                 {
                                     audioPlayer.queueClip(new QueuedMessage("Timings/gap_behind",
-                                        MessageContents(folderTheGapTo, currentGameState.getOpponentAtPosition(currentGameState.SessionData.Position + 1), 
-                                        folderBehindIsNow, gapBehind), MessageContents(folderGapBehindIsNow, gapBehind), 0, this));
+                                        MessageContents(folderTheGapTo, currentGameState.getOpponentAtPosition(currentGameState.SessionData.Position + 1, false),
+                                        folderBehindIsNow, gapBehind), MessageContents(folderGapBehindIsNow, gapBehind), 0, this, new Dictionary<string, object> { { "position", currentGameState.SessionData.Position } }));
                                 }
                             }
                             gapBehindAtLastReport = gapsBehind[0];
@@ -317,8 +326,8 @@ namespace CrewChiefV3.Events
                         {
                             TimeSpanWrapper gap = TimeSpanWrapper.FromSeconds(currentGapInFront, true);
                             QueuedMessage message = new QueuedMessage("Timings/gap_ahead", MessageContents(folderTheGapTo,
-                                currentGameState.getOpponentAtPosition(currentGameState.SessionData.Position - 1), folderAheadIsNow, gap),
-                                MessageContents(folderGapInFrontIsNow, gap), 0, this);
+                                currentGameState.getOpponentAtPosition(currentGameState.SessionData.Position - 1, false), folderAheadIsNow, gap),
+                                MessageContents(folderGapInFrontIsNow, gap), 0, this, new Dictionary<string,object>{ {"position", currentGameState.SessionData.Position} });
                             message.playEvenWhenSilenced = true;
                             audioPlayer.queueClip(message);
                         }
@@ -332,8 +341,8 @@ namespace CrewChiefV3.Events
                             playedGapBehindForThisLap = true;
                             TimeSpanWrapper gap = TimeSpanWrapper.FromSeconds(currentGapBehind, true);
                             QueuedMessage message = new QueuedMessage("Timings/gap_behind", MessageContents(folderTheGapTo,
-                                currentGameState.getOpponentAtPosition(currentGameState.SessionData.Position + 1), folderBehindIsNow, gap),
-                                MessageContents(folderGapBehindIsNow, gap), 0, this);
+                                currentGameState.getOpponentAtPosition(currentGameState.SessionData.Position + 1, false), folderBehindIsNow, gap),
+                                MessageContents(folderGapBehindIsNow, gap), 0, this, new Dictionary<string, object> { { "position", currentGameState.SessionData.Position } });
                             message.playEvenWhenSilenced = true;
                             audioPlayer.queueClip(message);
                         }

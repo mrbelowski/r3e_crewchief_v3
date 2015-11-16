@@ -146,8 +146,8 @@ namespace CrewChiefV3.Events
                     {
                         gapsBehind.Add(currentGameState.SessionData.TimeDeltaBehind);
                     }
-                    Object currentOpponentAheadKey = currentGameState.getOpponentKeyInFront();
-                    Object currentOpponentBehindKey = currentGameState.getOpponentKeyBehind();
+                    Object currentOpponentAheadKey = currentGameState.getOpponentKeyInFront(true);
+                    Object currentOpponentBehindKey = currentGameState.getOpponentKeyBehind(true);
                     // seems like belt and braces, but as Raceroom names aren't unique we need to double check a pass actually happened here:
                     if (frequencyOfOvertakingMessages > 0 && currentOpponentAheadKey != opponentAheadKey)
                     {
@@ -196,6 +196,7 @@ namespace CrewChiefV3.Events
                             (carWeJustPassed.Speed - currentGameState.PositionAndMotionData.CarSpeed) > maxSpeedDifferenceForReportablePass)
                     {
                         opponentKeyForCarWeJustPassed = null;
+                        gapsAhead.Clear();
                     }
                 }
                 else
@@ -221,6 +222,7 @@ namespace CrewChiefV3.Events
                             (carThatJustPassedUs.Speed - currentGameState.PositionAndMotionData.CarSpeed) > maxSpeedDifferenceForReportablePass)
                     {
                         opponentKeyForCarThatJustPassedUs = null;
+                        gapsBehind.Clear();
                     }
                 }
                 else
