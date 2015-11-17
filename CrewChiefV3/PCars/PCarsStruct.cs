@@ -149,7 +149,9 @@ namespace CrewChiefV3.PCars
                 {                      
                     existingPartInfo.mCurrentLap = newPartInfo.sCurrentLap;
                     existingPartInfo.mCurrentLapDistance = newPartInfo.sCurrentLapDistance;
-                    existingPartInfo.mLapsCompleted = newPartInfo.sLapsCompleted;
+                    existingPartInfo.mLapsCompleted = (uint) newPartInfo.sLapsCompleted & 127;
+                    // TODO: there's a 'lapInvalidated' flag here but nowhere to put it in the existing struct
+                    Boolean lapInvalidated = (newPartInfo.sLapsCompleted >> 7) == 1;
                     existingPartInfo.mRacePosition = (uint) newPartInfo.sRacePosition & 127;
                     existingPartInfo.mWorldPosition = toFloatArray(newPartInfo.sWorldPosition, 1);
 

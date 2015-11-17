@@ -2,7 +2,7 @@ CrewChief version 3.
 
 Changelog
 ---------
-Version 3.9.0: Fixed Raceroom engine temp baseline data collection (should fix false positives); Allow gap requests to be read for gaps > 1 minute; Tweaked brake damage levels; Driver name mapping enhancements (can now have multiple lastname spellings map to the same sound file); Added pre-start procedure messages (some more work to do here and some known issues / limitations); Added overtake and being overtaken messages; Some re-ordering of message priorities; Added optional alternate radio beeps (with no actual beeps) - select the "use_alternate_beeps" to enable this - thanks to Georg Ortner for these; Don't play gap messages if the car they're referring to has been overtaken; Added more driver names. This version requires a new sound pack.
+Version 3.9.0: Fixed Raceroom engine temp baseline data collection (should fix false positives); Allow gap requests to be read for gaps > 1 minute; Tweaked brake damage levels; Driver name mapping enhancements (can now have multiple lastname spellings map to the same sound file); Added pre-start procedure messages (PCars only for now - some more work to do here and some known issues / limitations); Added overtake and being overtaken messages; Some re-ordering of message priorities; Added optional alternate radio beeps (with no actual beeps) - select the "use_alternate_beeps" to enable this - thanks to Georg Ortner for these; Don't play gap messages if the car they're referring to has been overtaken; Added more driver names. This version requires a new sound pack.
 
 Version 3.8.6: Ignore cars which haven't completed a lap when checking for pit exit clear (prevents car sitting in pit lane at start of a session triggering messages); Tweaked sector time reports in race; Fixed resource leak in UDP connection handler; some internal refactoring; Added options to disable brake, suspension, or all damage reports. New sound pack not required, but recommended for this version (sounds_3.8f or sounds_lo_fi_3.8f).
 
@@ -91,7 +91,7 @@ Project Cars doesn't send opponent car class data, so the app has to assume that
 RaceRoom uses a 'slot_id' field to uniquely identify drivers in a race. However, this field doesn't really work properly (there are lots of issues with it), so the app has to use the driver's names. Driver names for AI driver are not unique. All the lap time and other data held for each driver is indexed by driver name so if a race has 2 or more drivers with the same name, the app will get things like lap and sector times wrong. This is only a problem racing the AI - be aware that if you have a car class with a limited number of unique AI drivers (Daytona Prototypes / German Nationals / Americal Nationals / Hill Climb Legends / etc), but select a field size greater than this, the app will do weird things.
 
 
-RaceRoom doesn't have a pre-start procedure phase for offline races, and in the pre-start phase online very little valid data is avaiable. This means messages played before the 'get ready' will be very limited.
+RaceRoom doesn't have a pre-start procedure phase for offline races, and in the pre-start phase online ("Gridwalk") very little valid and accurate data is available.
 
 
 Project Cars doesn't have a distinct pre-start procedure phase. I've added some more messages before the 'get ready' but there's a risk here that they might delay the 'get ready' message.

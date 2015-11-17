@@ -8,6 +8,9 @@ namespace CrewChiefV3.Events
 {
     class LapCounter : AbstractEvent
     {
+        // can't play these messages as the GridWalk phase has bollocks data :(
+        private Boolean playPreLightsInRaceroom = false;
+
         private Random rand = new Random();
 
         private String folderGreenGreenGreen = "lap_counter/green_green_green";
@@ -80,12 +83,12 @@ namespace CrewChiefV3.Events
             {
                 if (currentGameState.SessionData.SessionHasFixedTime)
                 {
-                    possibleMessages.Add(new QueuedMessage("pit_window_time", MessageContents(MandatoryPitStops.folderMandatoryPitPitWindowsOpensAfter,
+                    possibleMessages.Add(new QueuedMessage("pit_window_time", MessageContents(MandatoryPitStops.folderMandatoryPitStopsPitWindowOpensAfter,
                         QueuedMessage.folderNameNumbersStub + currentGameState.PitData.PitWindowStart, MandatoryPitStops.folderMandatoryPitStopsMinutes), 0, this));
                 } 
                 else
                 {
-                    possibleMessages.Add(new QueuedMessage("pit_window_time", MessageContents(MandatoryPitStops.folderMandatoryPitPitWindowsOpensOnLap,
+                    possibleMessages.Add(new QueuedMessage("pit_window_lap", MessageContents(MandatoryPitStops.folderMandatoryPitStopsPitWindowOpensOnLap,
                         QueuedMessage.folderNameNumbersStub + currentGameState.PitData.PitWindowStart), 0, this));
                 }
             }
@@ -95,6 +98,7 @@ namespace CrewChiefV3.Events
             }
             else
             {
+                Console.WriteLine("pre-start message for P " + currentGameState.SessionData.Position);
                 possibleMessages.Add(new QueuedMessage(Position.folderStub + currentGameState.SessionData.Position, 0, this));
             }
             // now pick a random selection
@@ -117,13 +121,16 @@ namespace CrewChiefV3.Events
 
         override protected void triggerInternal(GameStateData previousGameState, GameStateData currentGameState)
         {
-            if (!playedPreLightsMessage && currentGameState.SessionData.SessionType == SessionType.Race && currentGameState.SessionData.SessionPhase == SessionPhase.Gridwalk)
+            if (!playedPreLightsMessage && currentGameState.SessionData.SessionType == SessionType.Race && currentGameState.SessionData.SessionPhase == SessionPhase.Gridwalk && 
+                (playPreLightsInRaceroom || CrewChief.gameDefinition.gameEnum != GameEnum.RACE_ROOM))
             {
                 playPreLightsMessage(currentGameState, 3);
                 playedPreLightsMessage = true;
                 purgePreLightsMessages = true;
             }
-            // TODO: in R3E online there's a GridWalk phase before the Countdown. In PCars they're combined. Add some messages to this phase
+            // TODO: in R3E online there's a GridWalk phase before the Countdown. In PCars they're combined. Add some messages to this phase.
+
+            // R3E's gridWalk phase isn't useable here - the data during this phase are bollocks
             if (!playedGetReady && currentGameState.SessionData.SessionType == SessionType.Race && (currentGameState.SessionData.SessionPhase == SessionPhase.Countdown ||
                 (currentGameState.SessionData.SessionPhase == SessionPhase.Formation && CrewChief.gameDefinition.gameEnum == GameEnum.RACE_ROOM)))
             {

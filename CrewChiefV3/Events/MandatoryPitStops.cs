@@ -8,8 +8,8 @@ namespace CrewChiefV3.Events
 {
     class MandatoryPitStops : AbstractEvent
     {
-        public static String folderMandatoryPitPitWindowsOpensOnLap = "mandatory_pit_stops/pit_window_opens_on_lap";
-        public static String folderMandatoryPitPitWindowsOpensAfter = "mandatory_pit_stops/pit_window_opens_after";
+        public static String folderMandatoryPitStopsPitWindowOpensOnLap = "mandatory_pit_stops/pit_window_opens_on_lap";
+        public static String folderMandatoryPitStopsPitWindowOpensAfter = "mandatory_pit_stops/pit_window_opens_after";
 
         private String folderMandatoryPitStopsFitPrimesThisLap = "mandatory_pit_stops/box_to_fit_primes_now";
 
