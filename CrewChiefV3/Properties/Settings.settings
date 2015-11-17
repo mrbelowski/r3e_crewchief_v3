@@ -282,7 +282,7 @@
       <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="frequency_of_overtaking_messages" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">10</Value>
+      <Value Profile="(Default)">7</Value>
     </Setting>
     <Setting Name="frequency_of_being_overtaken_messages" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">3</Value>

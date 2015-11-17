@@ -65,7 +65,7 @@ namespace CrewChiefV3.Events
         private int passCheckSamplesToCheck ;
         private int beingPassedCheckSamplesToCheck;
         private float maxSpeedDifferenceForReportablePass = 10;
-        private float minTimeDeltaForPassToBeCompleted = 0.3f;
+        private float minTimeDeltaForPassToBeCompleted = 0.15f;
         private TimeSpan minTimeBetweenOvertakeMessages;
 
         private DateTime lastPassCheck;
@@ -87,8 +87,8 @@ namespace CrewChiefV3.Events
             this.audioPlayer = audioPlayer;
             // frequency of 5 means you need to be < 2.5 seconds apart for at least 20 seconds
             // 9 means you need to be < 4.5 seconds apart for at least 11 seconds
-            minAverageGapForPassMessage = 0.3f * (float)frequencyOfOvertakingMessages;
-            minAverageGapForBeingPassedMessage = 0.3f * (float)frequencyOfBeingOvertakenMessages;
+            minAverageGapForPassMessage = 0.2f * (float)frequencyOfOvertakingMessages;
+            minAverageGapForBeingPassedMessage = 0.4f * (float)frequencyOfBeingOvertakenMessages;
             passCheckSamplesToCheck = (int)(100 / frequencyOfOvertakingMessages);
             beingPassedCheckSamplesToCheck = (int)(100 / frequencyOfBeingOvertakenMessages);
 

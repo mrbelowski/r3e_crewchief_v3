@@ -1138,7 +1138,7 @@ namespace CrewChiefV3.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("10")]
+        [global::System.Configuration.DefaultSettingValueAttribute("7")]
         public int frequency_of_overtaking_messages {
             get {
                 return ((int)(this["frequency_of_overtaking_messages"]));
