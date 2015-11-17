@@ -33,6 +33,8 @@ namespace CrewChiefV3
         public static String folderDeltasEnabled = "acknowledge/deltasEnabled";
         public static String folderDeltasDisabled = "acknowledge/deltasDisabled";
 
+        public static Boolean useAlternateBeeps = UserSettings.GetUserSettings().getBoolean("use_alternate_beeps");
+
         private QueuedMessage lastMessagePlayed = null;
 
         private Boolean allowPearlsOnNextPlay = true;
@@ -139,7 +141,14 @@ namespace CrewChiefV3
             }
 
             voiceFolderPath = Path.Combine(soundFilesPath, "voice");
-            fxFolderPath = Path.Combine(soundFilesPath, "fx");
+            if (useAlternateBeeps)
+            {
+                fxFolderPath = Path.Combine(soundFilesPath, "fx/alternate");
+            }
+            else
+            {
+                fxFolderPath = Path.Combine(soundFilesPath, "fx");
+            }
             driverNamesFolderPath = Path.Combine(soundFilesPath, "driver_names");
             backgroundFilesPath = Path.Combine(soundFilesPath, "background_sounds");
             Console.WriteLine("Voice dir full path = " + voiceFolderPath);

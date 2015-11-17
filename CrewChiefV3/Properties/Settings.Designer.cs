@@ -1171,5 +1171,17 @@ namespace CrewChiefV3.Properties {
                 this["frequency_of_player_prac_and_qual_lap_time_reports"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool use_alternate_beeps {
+            get {
+                return ((bool)(this["use_alternate_beeps"]));
+            }
+            set {
+                this["use_alternate_beeps"] = value;
+            }
+        }
     }
 }

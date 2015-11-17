@@ -171,7 +171,7 @@ namespace CrewChiefV3.Events
                         if (opponentData != null && !opponentData.isEnteringPits())
                         {
                             audioPlayer.queueClip(new QueuedMessage("new_car_ahead", MessageContents(folderNextCarIs, opponentData),
-                                random.Next(Position.secondsToWaitBeforeReportingPass + 3, Position.secondsToWaitBeforeReportingPass + 6), this,
+                                random.Next(Position.maxSecondsToWaitBeforeReportingPass + 1, Position.maxSecondsToWaitBeforeReportingPass + 3), this,
                                 new Dictionary<string, object> { { validationDriverAheadKey, opponentData.DriverRawName } }));
                             nextCarAheadChangeMessage = currentGameState.Now.Add(TimeSpan.FromSeconds(30));
                         }                        
