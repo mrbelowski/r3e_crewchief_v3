@@ -31,7 +31,9 @@ namespace CrewChiefV3.Events
         public static String folderAirAndTrackTempIncreasing = "conditions/air_and_track_temp_increasing";
         public static String folderAirAndTrackTempDecreasing = "conditions/air_and_track_temp_decreasing";
         public static String folderTrackTempIsNow = "conditions/track_temp_is_now";
-        public static String folderAirTempIsNow = "conditions/air_temp_is_now";
+        public static String folderAirTempIsNow = "conditions/air_temp_is_now"; 
+        public static String folderTrackTempIs = "conditions/track_temp_is";
+        public static String folderAirTempIs = "conditions/air_temp_is";
         public static String folderAirTempIncreasing = "conditions/air_temp_increasing_its_now";
         public static String folderAirTempDecreasing = "conditions/air_temp_decreasing_its_now";
         public static String folderTrackTempIncreasing = "conditions/track_temp_increasing_its_now";
