@@ -202,7 +202,9 @@ namespace CrewChiefV3.Events
                             Console.WriteLine("Reporting overtake on car " + opponentKeyForCarWeJustPassed);
                             opponentKeyForCarWeJustPassed = null;
                             gapsAhead.Clear();
-                            audioPlayer.queueClip(new QueuedMessage(folderOvertaking, 0, this));
+                            // adding a 'good' pearl with 0 probability of playing seems odd, but this forces the app to only
+                            // allow an existing queued pearl to be played if it's type is 'good'
+                            audioPlayer.queueClip(new QueuedMessage(folderOvertaking, 0, this), PearlsOfWisdom.PearlType.GOOD, 0);
                             reported = true;
                         }
                     }
@@ -238,7 +240,9 @@ namespace CrewChiefV3.Events
                             Console.WriteLine("Reporting being overtaken by car " + opponentKeyForCarThatJustPassedUs);
                             opponentKeyForCarThatJustPassedUs = null;
                             gapsBehind.Clear();
-                            audioPlayer.queueClip(new QueuedMessage(folderBeingOvertaken, 0, this));
+                            // adding a 'bad' pearl with 0 probability of playing seems odd, but this forces the app to only
+                            // allow an existing queued pearl to be played if it's type is 'bad'
+                            audioPlayer.queueClip(new QueuedMessage(folderBeingOvertaken, 0, this), PearlsOfWisdom.PearlType.BAD, 0);
                             reported = true;
                         }
                     }
