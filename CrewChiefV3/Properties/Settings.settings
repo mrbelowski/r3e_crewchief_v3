@@ -285,10 +285,10 @@
       <Value Profile="(Default)">10</Value>
     </Setting>
     <Setting Name="frequency_of_being_overtaken_messages" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">5</Value>
+      <Value Profile="(Default)">3</Value>
     </Setting>
     <Setting Name="frequency_of_player_prac_and_qual_lap_time_reports" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">10</Value>
+      <Value Profile="(Default)">6</Value>
     </Setting>
     <Setting Name="use_alternate_beeps" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>

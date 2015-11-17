@@ -1150,7 +1150,7 @@ namespace CrewChiefV3.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("5")]
+        [global::System.Configuration.DefaultSettingValueAttribute("3")]
         public int frequency_of_being_overtaken_messages {
             get {
                 return ((int)(this["frequency_of_being_overtaken_messages"]));
@@ -1162,7 +1162,7 @@ namespace CrewChiefV3.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("10")]
+        [global::System.Configuration.DefaultSettingValueAttribute("6")]
         public int frequency_of_player_prac_and_qual_lap_time_reports {
             get {
                 return ((int)(this["frequency_of_player_prac_and_qual_lap_time_reports"]));
