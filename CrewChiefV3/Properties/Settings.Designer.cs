@@ -1162,7 +1162,7 @@ namespace CrewChiefV3.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("6")]
+        [global::System.Configuration.DefaultSettingValueAttribute("8")]
         public int frequency_of_player_prac_and_qual_lap_time_reports {
             get {
                 return ((int)(this["frequency_of_player_prac_and_qual_lap_time_reports"]));
