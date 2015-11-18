@@ -515,7 +515,9 @@ namespace CrewChiefV3.Events
                     lapIsValid = true;
                 }
                 // report sector delta at the completion of a sector?
-                if (!sectorsReportedForLap && currentGameState.SessionData.IsNewSector && (practiceAndQualSectorReportsAtEachSector || raceSectorReportsAtEachSector))
+                if (!sectorsReportedForLap && currentGameState.SessionData.IsNewSector && 
+                    ((currentGameState.SessionData.SessionType == SessionType.Race && raceSectorReportsAtEachSector) ||
+                     (currentGameState.SessionData.SessionType != SessionType.Race && practiceAndQualSectorReportsAtEachSector))) 
                 {
                     double r = random.NextDouble() * 10;
                     Boolean canPlayForRace = frequencyOfRaceSectorDeltaReports > r;
