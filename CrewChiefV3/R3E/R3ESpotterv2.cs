@@ -72,9 +72,10 @@ namespace CrewChiefV3.RaceRoom
 
             RaceRoomShared lastState = ((CrewChiefV3.RaceRoom.R3ESharedMemoryReader.R3EStructWrapper)lastStateObj).data;
             RaceRoomShared currentState = ((CrewChiefV3.RaceRoom.R3ESharedMemoryReader.R3EStructWrapper)currentStateObj).data;
-          
+            
             if (!enabled || currentState.Player.GameSimulationTime < timeAfterRaceStartToActivate ||
-                currentState.ControlType != (int)RaceRoomConstant.Control.Player || currentState.all_drivers_data.Count() <= 1)
+                currentState.ControlType != (int)RaceRoomConstant.Control.Player || 
+                ((int)RaceRoomConstant.Session.Qualify == currentState.SessionType && (currentState.NumCars == 1 || currentState.NumCars == 2)))
             {
                 return;
             }

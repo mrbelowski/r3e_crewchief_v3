@@ -2,6 +2,8 @@ CrewChief version 3.
 
 Changelog
 ---------
+Version 3.9.1: Disabled spotter in Raceroom hotlap / leaderboard challenge mode. No new sound pack required for this version but a few more messages have been added to existing events (sound pack is now version 3.9b).
+
 Version 3.9.0: Fixed Raceroom engine temp baseline data collection (should fix false positives); Allow gap requests to be read for gaps > 1 minute; Tweaked brake damage levels; Driver name mapping enhancements (can now have multiple lastname spellings map to the same sound file); Added pre-start procedure messages (PCars only for now - some more work to do here and some known issues / limitations); Added overtake and being overtaken messages; Some re-ordering of message priorities; Added optional alternate radio beeps (with no actual beeps) - select the "use_alternate_beeps" to enable this - thanks to Georg Ortner for these; Don't play gap messages if the car they're referring to has been overtaken; Added more driver names. This version requires a new sound pack.
 
 Version 3.8.6: Ignore cars which haven't completed a lap when checking for pit exit clear (prevents car sitting in pit lane at start of a session triggering messages); Tweaked sector time reports in race; Fixed resource leak in UDP connection handler; some internal refactoring; Added options to disable brake, suspension, or all damage reports. New sound pack not required, but recommended for this version (sounds_3.8f or sounds_lo_fi_3.8f).
