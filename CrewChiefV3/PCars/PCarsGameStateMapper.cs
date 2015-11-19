@@ -412,7 +412,6 @@ namespace CrewChiefV3.PCars
                 //
                 if (!justGoneGreen && previousGameState != null)
                 {
-                    currentGameState.carClass = previousGameState.carClass;
                     currentGameState.SessionData.SessionStartTime = previousGameState.SessionData.SessionStartTime;
                     currentGameState.SessionData.SessionRunTime = previousGameState.SessionData.SessionRunTime;
                     currentGameState.SessionData.SessionNumberOfLaps = previousGameState.SessionData.SessionNumberOfLaps;

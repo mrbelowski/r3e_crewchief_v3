@@ -125,19 +125,7 @@ namespace CrewChiefV3.PCars
                 socket.BeginReceive(this.receivedDataBuffer, 0, this.receivedDataBuffer.Length, SocketFlags.None, new AsyncCallback(ReceiveCallback), socket);
             }
         }
-
-        private void copyParticipantsArray(pCarsAPIStruct source, pCarsAPIStruct destination)
-        {
-            if (source.mParticipantData != null)
-            {
-                destination.mParticipantData = new pCarsAPIParticipantStruct[source.mParticipantData.Count()];
-                for (int i = 0; i < source.mParticipantData.Count(); i++)
-                {
-                    destination.mParticipantData[i] = source.mParticipantData[i];
-                }
-            }            
-        }
-
+        
         public override Object ReadGameData(Boolean forSpotter)
         {
             CrewChiefV3.PCars.PCarsSharedMemoryReader.PCarsStructWrapper structWrapper = new CrewChiefV3.PCars.PCarsSharedMemoryReader.PCarsStructWrapper();
@@ -151,12 +139,8 @@ namespace CrewChiefV3.PCars
                         throw new GameDataReadException("Failed to initialise UDP client");
                     }
                 }
-                // TODO: figure out the reference / copy semantics of nested structs. Do we actually need to clone this here?
-                // does the struct get copied anyway when we pass it around?
-                previousGameState = currentGameState;
-                copyParticipantsArray(currentGameState, previousGameState);
-                currentGameState = workingGameState;
-                copyParticipantsArray(workingGameState, currentGameState);
+                previousGameState = StructHelper.Clone(currentGameState);
+                currentGameState = StructHelper.Clone(workingGameState);
                 if (forSpotter)
                 {
                     newSpotterData = false;
@@ -185,8 +169,8 @@ namespace CrewChiefV3.PCars
                 handle = GCHandle.Alloc(rawData.Skip(offset).Take(frameLength).ToArray(), GCHandleType.Pinned);
                 sTelemetryData telem = (sTelemetryData)Marshal.PtrToStructure(handle.AddrOfPinnedObject(), typeof(sTelemetryData));
                 workingGameState = StructHelper.MergeWithExistingState(workingGameState, telem);
+                newSpotterData = workingGameState.hasNewPositionData;
                 handle.Free();
-                newSpotterData = true;                
             }
             else if (frameType == 1)
             {
@@ -208,7 +192,7 @@ namespace CrewChiefV3.PCars
             }
             return frameLength + offset;
         }
-
+        
         public override void Dispose()
         {
             if (udpClient != null)

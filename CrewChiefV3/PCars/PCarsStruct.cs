@@ -4,13 +4,27 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.IO;
 
 namespace CrewChiefV3.PCars
 {
     public class StructHelper
     {
+        public static pCarsAPIStruct Clone<pCarsAPIStruct>(pCarsAPIStruct pcarsStruct)
+        {
+            using (var ms = new MemoryStream())
+            {
+                var formatter = new BinaryFormatter();
+                formatter.Serialize(ms, pcarsStruct);
+                ms.Position = 0;
+                return (pCarsAPIStruct)formatter.Deserialize(ms);
+            }
+        }
+
         public static pCarsAPIStruct MergeWithExistingState(pCarsAPIStruct existingState, sTelemetryData udpTelemetryData)
         {
+            existingState.hasNewPositionData = false;
             existingState.mGameState = (uint) udpTelemetryData.sGameSessionState & 7;
             existingState.mSessionState = (uint) udpTelemetryData.sGameSessionState >> 4;
             existingState.mRaceState = (uint) udpTelemetryData.sRaceStateFlags & 7;
@@ -153,17 +167,23 @@ namespace CrewChiefV3.PCars
                     // TODO: there's a 'lapInvalidated' flag here but nowhere to put it in the existing struct
                     Boolean lapInvalidated = (newPartInfo.sLapsCompleted >> 7) == 1;
                     existingPartInfo.mRacePosition = (uint) newPartInfo.sRacePosition & 127;
-                    existingPartInfo.mWorldPosition = toFloatArray(newPartInfo.sWorldPosition, 1);
+                    existingPartInfo.mCurrentSector = (uint)newPartInfo.sSector & 7;
+
+                    // and now the bit magic for the extra position precision...
+                    float[] newWorldPositions = toFloatArray(newPartInfo.sWorldPosition, 1);
+                    float xAdjustment = ((float)((uint)newPartInfo.sSector >> 3 & 3)) / 4f;
+                    float zAdjustment = ((float)((uint)newPartInfo.sSector >> 5 & 3)) / 4f;
+                    newWorldPositions[0] = newWorldPositions[0] + xAdjustment;
+                    newWorldPositions[2] = newWorldPositions[2] + zAdjustment;
+                    if (!existingState.hasNewPositionData && i != udpTelemetryData.sViewedParticipantIndex && 
+                        (existingPartInfo.mWorldPosition == null || (newWorldPositions[0] != existingPartInfo.mWorldPosition[0] || newWorldPositions[2] != existingPartInfo.mWorldPosition[2])))
+                    {
+                        existingState.hasNewPositionData = true;
+                    }
+                    existingPartInfo.mWorldPosition = newWorldPositions;
 
                     // TODO: LastSectorTime is now in the UDP data, but there's no slot for this in the participants struct
                     // existingPartInfo.mLastSectorTime = newPartInfo.sLastSectorTime;
-
-                    // and now the bit magic for the extra position precision...
-                    existingPartInfo.mCurrentSector = (uint) newPartInfo.sSector & 7;
-                    float xAdjustment = ((float)((uint)newPartInfo.sSector >> 3 & 3)) / 4f;
-                    float yAdjustment = ((float)((uint)newPartInfo.sSector >> 5 & 3)) / 4f;
-                    existingPartInfo.mWorldPosition[0] = existingPartInfo.mWorldPosition[0] + xAdjustment;
-                    existingPartInfo.mWorldPosition[2] = existingPartInfo.mWorldPosition[2] + yAdjustment;
                 }
                 else
                 {
@@ -497,5 +517,7 @@ namespace CrewChiefV3.PCars
         public uint mEnforcedPitStopLap;
 
         // TODO: front wing and rear wing 
+
+        public Boolean hasNewPositionData;
     }
 }

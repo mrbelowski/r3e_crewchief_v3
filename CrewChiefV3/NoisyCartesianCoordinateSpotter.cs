@@ -325,43 +325,46 @@ namespace CrewChiefV3
             else if (carsOnLeftCount > 0 && carsOnRightCount > 0 && (!hasCarLeft || !hasCarRight))
             {
                 // new 'in the middle'
-                Console.WriteLine("3 wide, carsOnLeftCount " + carsOnLeftCount + " carsOnRightCount " + carsOnRightCount + " hasCarLeft " + hasCarLeft + " hasCarRight " + hasCarRight);
                 // if there's a 'pending clear' at this point (that is, we would have said "clear" but the delay time isn't up yet), then we're 
                 // still in overlap-mode so don't want to say this immediately
                 if (reportedOverlapLeft && reportedOverlapRight)
                 {
+                    Console.WriteLine("Delayed 3 wide, carsOnLeftCount " + carsOnLeftCount + " carsOnRightCount " + carsOnRightCount + " hasCarLeft " + hasCarLeft + " hasCarRight " + hasCarRight);
                     nextMessageDue = now.Add(repeatHoldFrequency);
                 }
                 else
                 {
+                    Console.WriteLine("3 wide, carsOnLeftCount " + carsOnLeftCount + " carsOnRightCount " + carsOnRightCount + " hasCarLeft " + hasCarLeft + " hasCarRight " + hasCarRight);
                     nextMessageDue = now;
                 }
                 nextMessageType = NextMessageType.threeWide;                
             }
             else if (carsOnLeftCount > 0 && carsOnRightCount == 0 && !hasCarLeft && !hasCarRight)
             {
-                Console.WriteLine("car left, carsOnLeftCount " + carsOnLeftCount + " carsOnRightCount " + carsOnRightCount + " hasCarLeft " + hasCarLeft + " hasCarRight " + hasCarRight);
                 // if there's a 'pending clear' at this point (that is, we would have said "clear" but the delay time isn't up yet), then we're 
                 // still in overlap-mode so don't want to say this immediately
                 if (reportedOverlapLeft)
                 {
+                    Console.WriteLine("Delayed car left, carsOnLeftCount " + carsOnLeftCount + " carsOnRightCount " + carsOnRightCount + " hasCarLeft " + hasCarLeft + " hasCarRight " + hasCarRight);
                     nextMessageDue = now.Add(repeatHoldFrequency);
                 }
                 else
                 {
+                    Console.WriteLine("Car left, carsOnLeftCount " + carsOnLeftCount + " carsOnRightCount " + carsOnRightCount + " hasCarLeft " + hasCarLeft + " hasCarRight " + hasCarRight);
                     nextMessageDue = now;
                 }
                 nextMessageType = NextMessageType.carLeft;
             }
             else if (carsOnLeftCount == 0 && carsOnRightCount > 0 && !hasCarLeft && !hasCarRight)
             {
-                Console.WriteLine("car right, carsOnLeftCount " + carsOnLeftCount + " carsOnRightCount " + carsOnRightCount + " hasCarLeft " + hasCarLeft + " hasCarRight " + hasCarRight);
                 if (reportedOverlapRight)
                 {
+                    Console.WriteLine("Delayed car right, carsOnLeftCount " + carsOnLeftCount + " carsOnRightCount " + carsOnRightCount + " hasCarLeft " + hasCarLeft + " hasCarRight " + hasCarRight);
                     nextMessageDue = now.Add(repeatHoldFrequency);
                 }
                 else
                 {
+                    Console.WriteLine("Car right, carsOnLeftCount " + carsOnLeftCount + " carsOnRightCount " + carsOnRightCount + " hasCarLeft " + hasCarLeft + " hasCarRight " + hasCarRight);
                     nextMessageDue = now;
                 }
                 nextMessageType = NextMessageType.carRight;

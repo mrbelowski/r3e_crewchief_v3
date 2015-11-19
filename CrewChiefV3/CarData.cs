@@ -254,8 +254,10 @@ namespace CrewChiefV3
                 }
             }
             CarClass defaultClass = getDefaultCarClass();
-            String className = carClassName == null ? "null" : carClassName;
-            Console.WriteLine("Using default car class " + defaultClass.carClassEnum + " for class name " + className);
+            if (carClassName != null)
+            {
+                Console.WriteLine("Using default car class " + defaultClass.carClassEnum + " for class name " + carClassName);
+            }
             return defaultClass;
         }
 
