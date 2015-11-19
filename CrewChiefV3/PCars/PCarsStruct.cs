@@ -12,7 +12,7 @@ namespace CrewChiefV3.PCars
         public static pCarsAPIStruct MergeWithExistingState(pCarsAPIStruct existingState, sTelemetryData udpTelemetryData)
         {
             existingState.mGameState = (uint) udpTelemetryData.sGameSessionState & 7;
-            existingState.mSessionState = (uint) udpTelemetryData.sGameSessionState >> 3 & 7;
+            existingState.mSessionState = (uint) udpTelemetryData.sGameSessionState >> 4;
             existingState.mRaceState = (uint) udpTelemetryData.sRaceStateFlags & 7;
 
             // Participant Info
