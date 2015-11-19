@@ -17,7 +17,7 @@ namespace CrewChiefV3
 {
     public class CrewChief : IDisposable
     {
-        public static String Version = "3.9.1";
+        public static String Version = "3.9.2";
 
         public static Boolean loadDataFromFile = false;
 
