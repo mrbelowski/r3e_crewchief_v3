@@ -547,7 +547,7 @@ namespace CrewChiefV3.Events
                                 sectorEnum = SectorSet.TWO;
                                 break;
                         }
-                        if (playerSector != -1 && comparisonSector != -1)
+                        if (playerSector > 0 && comparisonSector > 0)
                         {
                             String folder = getFolderForSectorCombination(getEnumForSectorDelta(playerSector - comparisonSector, currentGameState.SessionData.SessionType != SessionType.Race), sectorEnum);
                             if (folder != null)
