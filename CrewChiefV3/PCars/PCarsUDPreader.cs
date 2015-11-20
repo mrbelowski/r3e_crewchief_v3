@@ -30,8 +30,8 @@ namespace CrewChiefV3.PCars
         private int discardedTelemCount = 0;
         private int acceptedOutOfSequenceTelemCount = 0;
 
-        private float currentLapTime = -1;
-        private float lapsCompleted = 0;
+        private float lastValidTelemCurrentLapTime = -1;
+        private float lastValidTelemLapsCompleted = 0;
 
         private Boolean newSpotterData = true;
         private Boolean running = false;
@@ -91,8 +91,8 @@ namespace CrewChiefV3.PCars
             discardedTelemCount = 0;
             telemPacketCount = 0;
             totalPacketCount = 0;
-            currentLapTime = -1;
-            lapsCompleted = 0;
+            lastValidTelemCurrentLapTime = -1;
+            lastValidTelemLapsCompleted = 0;
             rateEstimate = 0;
             ticksAtRateEstimateStart = -1;
             if (dumpToFile)
@@ -207,7 +207,7 @@ namespace CrewChiefV3.PCars
                         newSpotterData = workingGameState.hasNewPositionData;
                         handle.Free();
                     }
-                }                
+                }    
             }
             else if (frameType == 1)
             {
@@ -247,22 +247,25 @@ namespace CrewChiefV3.PCars
 
         private Boolean telemIsOutOfSequence(sTelemetryData telem)
         {
-            int lapsCompletedInTelem = telem.sParticipantInfo[telem.sViewedParticipantIndex].sLapsCompleted;
-            float lapTimeInTelem = telem.sCurrentTime;
-            if (lapTimeInTelem > 0 && currentLapTime > 0)
-            {                
-                // if the number of completed laps has decreased, or our laptime has decreased without starting
-                // a new lap then we need to discard the packet. The lapsCompleted is unreliable, this may end badly
-                if (lapsCompleted > lapsCompletedInTelem || 
-                    (telem.sCurrentTime < currentLapTime && lapsCompleted == lapsCompletedInTelem)) 
+            if (telem.sViewedParticipantIndex >= 0 && telem.sParticipantInfo.Length > telem.sViewedParticipantIndex)
+            {
+                int lapsCompletedInTelem = telem.sParticipantInfo[telem.sViewedParticipantIndex].sLapsCompleted;
+                float lapTimeInTelem = telem.sCurrentTime;
+                if (lapTimeInTelem > 0 && lastValidTelemCurrentLapTime > 0)
                 {
-                    discardedTelemCount++;
-                    return true;
+                    // if the number of completed laps has decreased, or our laptime has decreased without starting
+                    // a new lap then we need to discard the packet. The lapsCompleted is unreliable, this may end badly
+                    if (lastValidTelemLapsCompleted > lapsCompletedInTelem ||
+                        (lapTimeInTelem < lastValidTelemCurrentLapTime && lastValidTelemLapsCompleted == lapsCompletedInTelem))
+                    {
+                        discardedTelemCount++;
+                        return true;
+                    }
                 }
-            }
-            currentLapTime = telem.sCurrentTime;
-            lapsCompleted = lapsCompletedInTelem;
-            acceptedOutOfSequenceTelemCount++;
+                lastValidTelemCurrentLapTime = lapTimeInTelem;
+                lastValidTelemLapsCompleted = lapsCompletedInTelem;
+                acceptedOutOfSequenceTelemCount++;
+            }            
             return false;
         }
     
@@ -298,8 +301,8 @@ namespace CrewChiefV3.PCars
             telemPacketCount = 0;
             totalPacketCount = 0;
             ticksAtRateEstimateStart = -1;
-            currentLapTime = -1;
-            lapsCompleted = 0; 
+            lastValidTelemCurrentLapTime = -1;
+            lastValidTelemLapsCompleted = 0; 
             rateEstimate = 0;
         }
     }
