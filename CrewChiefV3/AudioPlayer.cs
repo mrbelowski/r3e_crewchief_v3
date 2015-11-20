@@ -897,7 +897,14 @@ namespace CrewChiefV3
                     {
                         initialiseBackgroundPlayer();
                     }
-                    backgroundPlayer.Stop();
+                    try
+                    {
+                        backgroundPlayer.Stop();
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine("Unable to stop background player");
+                    }
                 }
                 channelOpen = false;
             }

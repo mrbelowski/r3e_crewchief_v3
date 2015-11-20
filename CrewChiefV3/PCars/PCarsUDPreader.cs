@@ -14,16 +14,24 @@ namespace CrewChiefV3.PCars
 {
     public class PCarsUDPreader : GameDataReader
     {
+        private float rateEstimate = 0;
+        private long ticksAtRateEstimateStart = 0;
+        private int estimateRateStartPacket = 1000;
+        private int estimateRateEndPacket = 2000;
         private int sequenceWrapsAt = 63;
-        private Boolean strictPacketOrdering = true;
-        private Dictionary<int, int> lastSequenceNumberForPacketType = new Dictionary<int, int>
-        {
-            {0, -1},{1, -1},{2, -1}
-        };
+        private Boolean strictPacketOrdering = false;    // when false, out-of-order packets are checked before being discarded
 
-        private int telemCount = 0;
-        private int strCount = 0;
-        private int addStrCount = 0;
+        // we only check the telem packets, not the strings...
+        private int lastSequenceNumberForTelemPacket = -1;
+
+        private int telemPacketCount = 0;
+        private int totalPacketCount = 0;
+
+        private int discardedTelemCount = 0;
+        private int acceptedOutOfSequenceTelemCount = 0;
+
+        private float currentLapTime = -1;
+        private float lapsCompleted = 0;
 
         private Boolean newSpotterData = true;
         private Boolean running = false;
@@ -79,6 +87,14 @@ namespace CrewChiefV3.PCars
             workingGameState.mVersion = 5;
             currentGameState.mVersion = 5;
             previousGameState.mVersion = 5;
+            acceptedOutOfSequenceTelemCount = 0;
+            discardedTelemCount = 0;
+            telemPacketCount = 0;
+            totalPacketCount = 0;
+            currentLapTime = -1;
+            lapsCompleted = 0;
+            rateEstimate = 0;
+            ticksAtRateEstimateStart = -1;
             if (dumpToFile)
             {
                 dataToDump = new List<CrewChiefV3.PCars.PCarsSharedMemoryReader.PCarsStructWrapper>();
@@ -96,7 +112,7 @@ namespace CrewChiefV3.PCars
 
             return true;
         }
-        
+
         private void ReceiveCallback(IAsyncResult result)
         {
             //Socket was the passed in as the state
@@ -111,8 +127,8 @@ namespace CrewChiefV3.PCars
                     {
                         // TODO: what's in the header? Is offset 0 correct?
                         readFromOffset(0, this.receivedDataBuffer);
-                    }                    
-                }                
+                    }
+                }
             }
             catch (Exception e)
             {
@@ -125,7 +141,7 @@ namespace CrewChiefV3.PCars
                 socket.BeginReceive(this.receivedDataBuffer, 0, this.receivedDataBuffer.Length, SocketFlags.None, new AsyncCallback(ReceiveCallback), socket);
             }
         }
-        
+
         public override Object ReadGameData(Boolean forSpotter)
         {
             CrewChiefV3.PCars.PCarsSharedMemoryReader.PCarsStructWrapper structWrapper = new CrewChiefV3.PCars.PCarsSharedMemoryReader.PCarsStructWrapper();
@@ -152,11 +168,20 @@ namespace CrewChiefV3.PCars
             {
                 dataToDump.Add(structWrapper);
             }
-            return structWrapper;                       
+            return structWrapper;
         }
 
         private int readFromOffset(int offset, byte[] rawData)
         {
+            totalPacketCount++;
+            if (totalPacketCount == estimateRateStartPacket)
+            {
+                ticksAtRateEstimateStart = DateTime.Now.Ticks;
+            }
+            else if (totalPacketCount == estimateRateEndPacket && ticksAtRateEstimateStart > 0)
+            {
+                rateEstimate = (float)(TimeSpan.TicksPerSecond * (estimateRateEndPacket - estimateRateStartPacket)) / (float)(DateTime.Now.Ticks - ticksAtRateEstimateStart);
+            }
             // the first 2 bytes are the version - discard it for now
             int frameTypeAndSequence = rawData[offset + 2];
             int frameType = frameTypeAndSequence & 3;
@@ -164,17 +189,28 @@ namespace CrewChiefV3.PCars
             int frameLength = 0;
             if (frameType == 0)
             {
-                telemCount++;
+                telemPacketCount++;
                 frameLength = sTelemetryData_PacketSize;
-                handle = GCHandle.Alloc(rawData.Skip(offset).Take(frameLength).ToArray(), GCHandleType.Pinned);
-                sTelemetryData telem = (sTelemetryData)Marshal.PtrToStructure(handle.AddrOfPinnedObject(), typeof(sTelemetryData));
-                workingGameState = StructHelper.MergeWithExistingState(workingGameState, telem);
-                newSpotterData = workingGameState.hasNewPositionData;
-                handle.Free();
+                Boolean sequenceCheckOK = isNextInSequence(sequence);
+                if (strictPacketOrdering && !sequenceCheckOK)
+                {
+                    discardedTelemCount++;
+                }
+                else
+                {
+                    handle = GCHandle.Alloc(rawData.Skip(offset).Take(frameLength).ToArray(), GCHandleType.Pinned);
+                    sTelemetryData telem = (sTelemetryData)Marshal.PtrToStructure(handle.AddrOfPinnedObject(), typeof(sTelemetryData));
+                    if (sequenceCheckOK || !telemIsOutOfSequence(telem))
+                    {
+                        lastSequenceNumberForTelemPacket = sequence;
+                        workingGameState = StructHelper.MergeWithExistingState(workingGameState, telem);
+                        newSpotterData = workingGameState.hasNewPositionData;
+                        handle.Free();
+                    }
+                }                
             }
             else if (frameType == 1)
             {
-                strCount++;
                 frameLength = sParticipantInfoStrings_PacketSize;
                 handle = GCHandle.Alloc(rawData.Skip(offset).Take(frameLength).ToArray(), GCHandleType.Pinned);
                 sParticipantInfoStrings strings = (sParticipantInfoStrings)Marshal.PtrToStructure(handle.AddrOfPinnedObject(), typeof(sParticipantInfoStrings));
@@ -183,7 +219,6 @@ namespace CrewChiefV3.PCars
             }
             else if (frameType == 2)
             {
-                addStrCount++;
                 frameLength = sParticipantInfoStringsAdditional_PacketSize;
                 handle = GCHandle.Alloc(rawData.Skip(offset).Take(frameLength).ToArray(), GCHandleType.Pinned);
                 sParticipantInfoStringsAdditional additional = (sParticipantInfoStringsAdditional)Marshal.PtrToStructure(handle.AddrOfPinnedObject(), typeof(sParticipantInfoStringsAdditional));
@@ -192,7 +227,45 @@ namespace CrewChiefV3.PCars
             }
             return frameLength + offset;
         }
-        
+
+        private Boolean isNextInSequence(int thisPacketSequenceNumber)
+        {
+            if (lastSequenceNumberForTelemPacket != -1)
+            {
+                int expected = lastSequenceNumberForTelemPacket + 1;
+                if (expected > sequenceWrapsAt)
+                {
+                    expected = 0;
+                }
+                if (expected != thisPacketSequenceNumber)
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        private Boolean telemIsOutOfSequence(sTelemetryData telem)
+        {
+            int lapsCompletedInTelem = telem.sParticipantInfo[telem.sViewedParticipantIndex].sLapsCompleted;
+            float lapTimeInTelem = telem.sCurrentTime;
+            if (lapTimeInTelem > 0 && currentLapTime > 0)
+            {                
+                // if the number of completed laps has decreased, or our laptime has decreased without starting
+                // a new lap then we need to discard the packet. The lapsCompleted is unreliable, this may end badly
+                if (lapsCompleted > lapsCompletedInTelem || 
+                    (telem.sCurrentTime < currentLapTime && lapsCompleted == lapsCompletedInTelem)) 
+                {
+                    discardedTelemCount++;
+                    return true;
+                }
+            }
+            currentLapTime = telem.sCurrentTime;
+            lapsCompleted = lapsCompletedInTelem;
+            acceptedOutOfSequenceTelemCount++;
+            return false;
+        }
+    
         public override void Dispose()
         {
             if (udpClient != null)
@@ -214,32 +287,20 @@ namespace CrewChiefV3.PCars
             {
                 udpClient.Client.Disconnect(true);
             }
-        }
-
-        private Boolean checkSequence(int sequence, int packetNumber)
-        {
-            if (lastSequenceNumberForPacketType.ContainsKey(sequence))
+            Console.WriteLine("Stopped UDP data receiver, received " + telemPacketCount + 
+                " telem packets, accepted " + acceptedOutOfSequenceTelemCount + " out-of-sequence packets, discarded " + discardedTelemCount + " packets");
+            if (rateEstimate > 0) 
             {
-                int lastSequenceNumber = lastSequenceNumberForPacketType[sequence];
-                lastSequenceNumberForPacketType[sequence] = packetNumber;
-                if (lastSequenceNumber != -1)
-                {
-                    if (lastSequenceNumber == sequenceWrapsAt)
-                    {
-                        if (packetNumber != 0)
-                        {
-                            Console.WriteLine("Out of order packet - expected sequence number 0, got " + lastSequenceNumber);
-                            return false;
-                        }
-                    }
-                    else if (lastSequenceNumber + 1 != packetNumber)
-                    {
-                        Console.WriteLine("Out of order packet - expected sequence number " + (lastSequenceNumber + 1) + " got " + lastSequenceNumber);
-                        return false;
-                    }
-                }
+                Console.WriteLine("Received " + totalPacketCount + " total packets at an estimated rate of " + rateEstimate + "Hz");
             }
-            return true;
+            acceptedOutOfSequenceTelemCount = 0;
+            discardedTelemCount = 0;
+            telemPacketCount = 0;
+            totalPacketCount = 0;
+            ticksAtRateEstimateStart = -1;
+            currentLapTime = -1;
+            lapsCompleted = 0; 
+            rateEstimate = 0;
         }
     }
 }
