@@ -13,16 +13,12 @@ namespace CrewChiefV3
     public class GameDefinition
     {
         public static GameDefinition pCars64Bit = new GameDefinition(GameEnum.PCARS_64BIT, "Project Cars (64 bit)", "pCARS64",
-            "CrewChiefV3.PCars.PCarsSharedMemoryReader", "CrewChiefV3.PCars.PCarsGameStateMapper", "CrewChiefV3.PCars.PCarsSpotterv2",
-            "pcars64_launch_exe", "pcars64_launch_params", "launch_pcars");
+            "CrewChiefV3.PCars.PCarsSpotterv2", "pcars64_launch_exe", "pcars64_launch_params", "launch_pcars");
         public static GameDefinition pCars32Bit = new GameDefinition(GameEnum.PCARS_32BIT, "Project Cars (32 bit)", "pCARS",
-            "CrewChiefV3.PCars.PCarsSharedMemoryReader", "CrewChiefV3.PCars.PCarsGameStateMapper", "CrewChiefV3.PCars.PCarsSpotterv2",
-            "pcars32_launch_exe", "pcars32_launch_params", "launch_pcars");
-        public static GameDefinition raceRoom = new GameDefinition(GameEnum.RACE_ROOM, "Race Room", "RRRE",
-            "CrewChiefV3.RaceRoom.R3ESharedMemoryReader", "CrewChiefV3.RaceRoom.R3EGameStateMapper", "CrewChiefV3.RaceRoom.R3ESpotterv2",
+            "CrewChiefV3.PCars.PCarsSpotterv2", "pcars32_launch_exe", "pcars32_launch_params", "launch_pcars");
+        public static GameDefinition raceRoom = new GameDefinition(GameEnum.RACE_ROOM, "Race Room", "RRRE", "CrewChiefV3.RaceRoom.R3ESpotterv2",
             "r3e_launch_exe", "r3e_launch_params", "launch_raceroom");
-        public static GameDefinition pCarsNetwork = new GameDefinition(GameEnum.PCARS_NETWORK, "Project Cars (network data)", null,
-            "CrewChiefV3.PCars.PCarsUDPreader", "CrewChiefV3.PCars.PCarsGameStateMapper", "CrewChiefV3.PCars.PCarsSpotterv2",
+        public static GameDefinition pCarsNetwork = new GameDefinition(GameEnum.PCARS_NETWORK, "Project Cars (network data)", null, "CrewChiefV3.PCars.PCarsSpotterv2",
             null, null, null);
 
         public static List<GameDefinition> getAllGameDefinitions()
@@ -71,21 +67,17 @@ namespace CrewChiefV3
         public GameEnum gameEnum;
         public String friendlyName;
         public String processName;
-        public String gameDataReaderName;
-        public String gameStateMapperName;
         public String spotterName;
         public String gameStartCommandProperty;
         public String gameStartCommandOptionsProperty;
         public String gameStartEnabledProperty;
 
-        public GameDefinition(GameEnum gameEnum, String friendlyName, String processName, String gameDataReaderName, String gameStateMapperName, 
+        public GameDefinition(GameEnum gameEnum, String friendlyName, String processName, 
             String spotterName, String gameStartCommandProperty, String gameStartCommandOptionsProperty, String gameStartEnabledProperty)
         {
             this.gameEnum = gameEnum;
             this.friendlyName = friendlyName;
-            this.processName = processName;
-            this.gameDataReaderName = gameDataReaderName;
-            this.gameStateMapperName = gameStateMapperName;
+            this.processName = processName;            
             this.spotterName = spotterName;
             this.gameStartCommandProperty = gameStartCommandProperty;
             this.gameStartCommandOptionsProperty = gameStartCommandOptionsProperty;

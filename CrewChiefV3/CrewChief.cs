@@ -305,9 +305,9 @@ namespace CrewChiefV3
                 dumpToFile = false;
             }
             
-            gameStateMapper = (GameStateMapper)Activator.CreateInstance(Type.GetType(gameDefinition.gameStateMapperName));
+            gameStateMapper = GameStateReaderFactory.getInstance().getGameStateMapper(gameDefinition);
             gameStateMapper.setSpeechRecogniser(speechRecogniser);
-            gameDataReader = (GameDataReader)Activator.CreateInstance(Type.GetType(gameDefinition.gameDataReaderName));
+            gameDataReader = GameStateReaderFactory.getInstance().getGameStateReader(gameDefinition);
             gameDataReader.dumpToFile = System.Diagnostics.Debugger.IsAttached && dumpToFile;
             if (gameDefinition.spotterName != null)
             {

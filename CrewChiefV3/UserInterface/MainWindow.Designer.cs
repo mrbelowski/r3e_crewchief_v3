@@ -81,7 +81,6 @@ namespace CrewChiefV3
             this.textBox1.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.textBox1.Size = new System.Drawing.Size(1093, 417);
             this.textBox1.TabIndex = 1;
-            this.textBox1.Click += new System.EventHandler(this.assignButtonToActionClick);
             // 
             // startApplicationButton
             // 
@@ -271,14 +270,15 @@ namespace CrewChiefV3
             this.gameDefinitionList.AllowDrop = true;
             this.gameDefinitionList.FormattingEnabled = true;
             this.gameDefinitionList.Items.AddRange(new object[] {
-                "Project Cars (64 bit)",
-                "Project Cars (32 bit)",
-                "Race Room",            
-                "Project Cars (network data)"});            
+            "Project Cars (64 bit)",
+            "Project Cars (32 bit)",
+            "Race Room",
+            "Project Cars (network data)"});
             this.gameDefinitionList.Location = new System.Drawing.Point(782, 26);
             this.gameDefinitionList.Name = "gameDefinitionList";
             this.gameDefinitionList.Size = new System.Drawing.Size(203, 43);
             this.gameDefinitionList.TabIndex = 21;
+            this.gameDefinitionList.SelectedValueChanged += new System.EventHandler(this.updateSelectedGameDefinition);
             // 
             // label5
             // 

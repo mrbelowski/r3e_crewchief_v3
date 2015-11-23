@@ -27,13 +27,18 @@ namespace CrewChiefV3.RaceRoom
 
         private AudioPlayer audioPlayer;
 
+        private float maxClosingSpeed = 30;
+
+        private float trackWidth = 10f;
+
+        private float carWidth = 1.8f;
 
         public R3ESpotterv2(AudioPlayer audioPlayer, Boolean initialEnabledState)
         {
             this.audioPlayer = audioPlayer;
             this.enabled = initialEnabledState;
             this.initialEnabledState = initialEnabledState;
-            this.internalSpotter = new NoisyCartesianCoordinateSpotter(audioPlayer, initialEnabledState, carLength);
+            this.internalSpotter = new NoisyCartesianCoordinateSpotter(audioPlayer, initialEnabledState, carLength, carWidth, trackWidth, maxClosingSpeed);
         }
 
         public void clearState()

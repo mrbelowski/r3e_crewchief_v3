@@ -55,6 +55,13 @@ namespace CrewChiefV3.PCars
         private IPEndPoint broadcastAddress;
         private UdpClient udpClient;
 
+        private static Boolean[] buttonsState = new Boolean[8];
+
+        public static Boolean getButtonState(int index) 
+        {
+            return buttonsState[index];
+        }
+
         public override void DumpRawGameData()
         {
             if (dumpToFile && dataToDump != null && dataToDump.Count > 0 && filenameToDump != null)
@@ -84,61 +91,73 @@ namespace CrewChiefV3.PCars
 
         protected override Boolean InitialiseInternal()
         {
-            workingGameState.mVersion = 5;
-            currentGameState.mVersion = 5;
-            previousGameState.mVersion = 5;
-            acceptedOutOfSequenceTelemCount = 0;
-            discardedTelemCount = 0;
-            telemPacketCount = 0;
-            totalPacketCount = 0;
-            lastValidTelemCurrentLapTime = -1;
-            lastValidTelemLapsCompleted = 0;
-            rateEstimate = 0;
-            ticksAtRateEstimateStart = -1;
-            if (dumpToFile)
+            if (!this.initialised)
             {
-                dataToDump = new List<CrewChiefV3.PCars.PCarsSharedMemoryReader.PCarsStructWrapper>();
+                workingGameState.mVersion = 5;
+                currentGameState.mVersion = 5;
+                previousGameState.mVersion = 5;
+                acceptedOutOfSequenceTelemCount = 0;
+                discardedTelemCount = 0;
+                telemPacketCount = 0;
+                totalPacketCount = 0;
+                lastValidTelemCurrentLapTime = -1;
+                lastValidTelemLapsCompleted = 0;
+                rateEstimate = 0;
+                ticksAtRateEstimateStart = -1;
+                if (dumpToFile)
+                {
+                    dataToDump = new List<CrewChiefV3.PCars.PCarsSharedMemoryReader.PCarsStructWrapper>();
+                }
+                this.broadcastAddress = new IPEndPoint(IPAddress.Any, udpPort);
+                this.udpClient = new UdpClient();
+                this.udpClient.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
+                this.udpClient.ExclusiveAddressUse = false; // only if you want to send/receive on same machine.
+                this.udpClient.Client.Bind(this.broadcastAddress);
+                this.receivedDataBuffer = new byte[this.udpClient.Client.ReceiveBufferSize];
+                this.running = true;
+                this.udpClient.Client.BeginReceive(this.receivedDataBuffer, 0, this.receivedDataBuffer.Length, SocketFlags.None, ReceiveCallback, this.udpClient.Client);
+                this.initialised = true;
+                Console.WriteLine("Listening for UDP data on port " + udpPort);                
             }
-            this.broadcastAddress = new IPEndPoint(IPAddress.Any, udpPort);
-            this.udpClient = new UdpClient();
-            this.udpClient.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
-            this.udpClient.ExclusiveAddressUse = false; // only if you want to send/receive on same machine.
-            this.udpClient.Client.Bind(this.broadcastAddress);
-            this.receivedDataBuffer = new byte[this.udpClient.Client.ReceiveBufferSize];
-            this.running = true;
-            this.udpClient.Client.BeginReceive(this.receivedDataBuffer, 0, this.receivedDataBuffer.Length, SocketFlags.None, ReceiveCallback, this.udpClient.Client);
-            this.initialised = true;
-            Console.WriteLine("Listening for UDP data on port " + udpPort);
-
-            return true;
+            return this.initialised;
         }
 
         private void ReceiveCallback(IAsyncResult result)
         {
             //Socket was the passed in as the state
-            Socket socket = (Socket)result.AsyncState;
             try
             {
+                Socket socket = (Socket)result.AsyncState;
                 int received = socket.EndReceive(result);
                 if (received > 0)
                 {
                     // do something with the data
                     lock (this)
                     {
-                        // TODO: what's in the header? Is offset 0 correct?
-                        readFromOffset(0, this.receivedDataBuffer);
+                        try
+                        {
+                            readFromOffset(0, this.receivedDataBuffer);
+                        }
+                        catch (Exception e)
+                        {
+                            Console.WriteLine("Error reading UDP data ", e.Message);
+                        }
                     }
+                }
+                if (running)
+                {
+                    socket.BeginReceive(this.receivedDataBuffer, 0, this.receivedDataBuffer.Length, SocketFlags.None, new AsyncCallback(ReceiveCallback), socket);
                 }
             }
             catch (Exception e)
             {
-                //Handle error
-                Console.WriteLine("Error receiving UDP data " + e.StackTrace);
-            }
-            //Restablish the callback
-            if (running)
-            {
-                socket.BeginReceive(this.receivedDataBuffer, 0, this.receivedDataBuffer.Length, SocketFlags.None, new AsyncCallback(ReceiveCallback), socket);
+                this.initialised = false;
+                if (e is ObjectDisposedException || e is SocketException)
+                {
+                    Console.WriteLine("Socket is closed");                    
+                    return;
+                }
+                throw;
             }
         }
 
@@ -202,6 +221,7 @@ namespace CrewChiefV3.PCars
                     sTelemetryData telem = (sTelemetryData)Marshal.PtrToStructure(handle.AddrOfPinnedObject(), typeof(sTelemetryData));
                     if (sequenceCheckOK || !telemIsOutOfSequence(telem))
                     {
+                        buttonsState = ConvertByteToBoolArray(telem.sDPad);
                         lastSequenceNumberForTelemPacket = sequence;
                         workingGameState = StructHelper.MergeWithExistingState(workingGameState, telem);
                         newSpotterData = workingGameState.hasNewPositionData;
@@ -296,6 +316,7 @@ namespace CrewChiefV3.PCars
             {
                 Console.WriteLine("Received " + totalPacketCount + " total packets at an estimated rate of " + rateEstimate + "Hz");
             }
+            this.initialised = false;
             acceptedOutOfSequenceTelemCount = 0;
             discardedTelemCount = 0;
             telemPacketCount = 0;
@@ -304,6 +325,50 @@ namespace CrewChiefV3.PCars
             lastValidTelemCurrentLapTime = -1;
             lastValidTelemLapsCompleted = 0; 
             rateEstimate = 0;
+            buttonsState = new Boolean[8];
+        }
+
+        public int getButtonIndexForAssignment()
+        {
+            Boolean isAlreadyRunning = this.initialised;
+            if (!isAlreadyRunning)
+            {
+                InitialiseInternal();
+            }
+            int pressedIndex = -1;
+            DateTime timeout = DateTime.Now.Add(TimeSpan.FromSeconds(10));
+            while (pressedIndex == -1 && DateTime.Now < timeout)
+            {
+                for (int i = 0; i < buttonsState.Count(); i++)
+                {
+                    if (buttonsState[i])
+                    {
+                        pressedIndex = i;
+                        break;
+                    }
+                }
+            }
+            if (!isAlreadyRunning)
+            {
+                udpClient.Close();
+                this.initialised = false;
+            }
+            buttonsState = new Boolean[8];
+            initialised = false;
+            return pressedIndex;
+        }
+
+        public static bool[] ConvertByteToBoolArray(byte b)
+        {
+            bool[] result = new bool[8];
+            // check each bit in the byte. if 1 set to true, if 0 set to false
+            for (int i = 0; i < 8; i++)
+            {
+                result[i] = (b & (1 << i)) == 0 ? false : true;
+            }
+            // reverse the array?
+            Array.Reverse(result);
+            return result;
         }
     }
 }

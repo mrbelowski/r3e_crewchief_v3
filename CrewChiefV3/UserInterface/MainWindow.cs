@@ -118,8 +118,14 @@ namespace CrewChiefV3
             }
         }
 
+        private void updateSelectedGame()
+        {
+
+        }
+
         public MainWindow()
         {
+            controllerConfiguration = new ControllerConfiguration();
             InitializeComponent();
             setSelectedGameType();
             this.app_version.Text = CrewChief.Version;
@@ -130,7 +136,6 @@ namespace CrewChiefV3
             CheckForIllegalCrossThreadCalls = false;
             Console.SetOut(new ControlWriter(textBox1));
             crewChief = new CrewChief();
-            controllerConfiguration = new ControllerConfiguration();
             float messagesVolume = UserSettings.GetUserSettings().getFloat("messages_volume");
             float backgroundVolume = UserSettings.GetUserSettings().getFloat("background_volume");
             setMessagesVolume(messagesVolume);
@@ -390,22 +395,21 @@ namespace CrewChiefV3
 
         private void buttonActionSelect_SelectedIndexChanged(object sender, EventArgs e)
         {
-            this.deleteAssigmentButton.Enabled = this.buttonActionSelect.SelectedIndex > -1 &&
-                this.controllerConfiguration.buttonAssignments[this.buttonActionSelect.SelectedIndex].joystick != null;
-            this.assignButtonToAction.Enabled = this.buttonActionSelect.SelectedIndex > -1 && this.controllersList.SelectedIndex > -1;
+            this.deleteAssigmentButton.Enabled = this.buttonActionSelect.SelectedIndex > -1 && !crewChief.running;
+            this.assignButtonToAction.Enabled = this.buttonActionSelect.SelectedIndex > -1 && this.controllersList.SelectedIndex > -1 && !crewChief.running;
         }
 
         private void controllersList_SelectedIndexChanged(object sender, EventArgs e)
         {
-            this.deleteAssigmentButton.Enabled = this.buttonActionSelect.SelectedIndex > -1 &&
-                this.controllerConfiguration.buttonAssignments[this.buttonActionSelect.SelectedIndex].joystick != null;
-            this.assignButtonToAction.Enabled = this.buttonActionSelect.SelectedIndex > -1 && this.controllersList.SelectedIndex > -1;
+            this.deleteAssigmentButton.Enabled = this.buttonActionSelect.SelectedIndex > -1 && !crewChief.running;
+            this.assignButtonToAction.Enabled = this.buttonActionSelect.SelectedIndex > -1 && this.controllersList.SelectedIndex > -1 && !crewChief.running;
         }
 
         private void getControllers() {
+            this.controllersList.Items.Clear();
             foreach (ControllerConfiguration.ControllerData configData in controllerConfiguration.controllers)
             {
-                this.controllersList.Items.Add(configData.deviceType.ToString() + configData.deviceName);
+                this.controllersList.Items.Add(configData.deviceType.ToString() + " " + configData.deviceName);
             }
         }
 
@@ -596,6 +600,19 @@ namespace CrewChiefV3
                     // swallow - nothing to log it to
                 }
             }
+        }
+
+        private void updateSelectedGameDefinition(object sender, EventArgs e)
+        {
+            if (this.gameDefinitionList.Text.Equals(GameDefinition.pCarsNetwork.friendlyName))
+            {
+                controllerConfiguration.addNetworkControllerToList();
+            }
+            else
+            {
+                controllerConfiguration.removeNetworkControllerFromList();                
+            }
+            getControllers();
         }  
     }
 

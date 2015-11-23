@@ -744,6 +744,12 @@ namespace CrewChiefV3.PCars
             {
                 Console.WriteLine("Has requested pitstop");
             }
+            if (currentGameState.SessionData.SessionType == SessionType.Race && shared.mEnforcedPitStopLap > 0)
+            {
+                currentGameState.PitData.HasMandatoryPitStop = true;
+                currentGameState.PitData.PitWindowStart = (int) shared.mEnforcedPitStopLap;
+                // TODO: mapping of mandatory pit stop state (open / completd / etc) - need to check for a pit stop after the window
+            }
             currentGameState.CarDamageData.DamageEnabled = true;    // no way to tell if it's disabled from the shared memory
             currentGameState.CarDamageData.OverallAeroDamage = mapToAeroDamageLevel(shared.mAeroDamage);
             currentGameState.CarDamageData.OverallEngineDamage = mapToEngineDamageLevel(shared.mEngineDamage);

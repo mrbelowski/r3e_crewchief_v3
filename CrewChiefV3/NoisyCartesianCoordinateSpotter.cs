@@ -27,9 +27,6 @@ namespace CrewChiefV3
         // don't play spotter messages if we're going < 10ms
         private float minSpeedForSpotterToOperate = UserSettings.GetUserSettings().getFloat("min_speed_for_spotter");
 
-        // for PCars we use this purely as a de-noising parameter
-        private float maxClosingSpeed = 30;
-
         // don't activate the spotter unless this many seconds have elapsed (race starts are messy)
         private int timeAfterRaceStartToActivate = UserSettings.GetUserSettings().getInt("time_after_race_start_for_spotter");
 
@@ -41,10 +38,9 @@ namespace CrewChiefV3
         private Boolean hasCarLeft;
         private Boolean hasCarRight;
 
-        private float trackWidth = 10f;
-
-        // TODO: consider the impact of using width when getting data from the UDP stream - 0.25 metre resolution
-        private float carWidth = 1.8f;
+        private float trackWidth;
+        private float carWidth;
+        private float maxClosingSpeed;
 
         private String folderStillThere = "spotter/still_there";
         private String folderInTheMiddle = "spotter/in_the_middle";
@@ -91,11 +87,14 @@ namespace CrewChiefV3
             none, clearLeft, clearRight, clearAllRound, carLeft, carRight, threeWide, stillThere
         }
 
-        public NoisyCartesianCoordinateSpotter(AudioPlayer audioPlayer, Boolean initialEnabledState, float carLength)
+        public NoisyCartesianCoordinateSpotter(AudioPlayer audioPlayer, Boolean initialEnabledState, float carLength, float carWidth, float trackWidth, float maxClosingSpeed)
         {
             this.audioPlayer = audioPlayer;
             this.carLength = carLength;
             this.longCarLength = carLength + gapNeededForClear;
+            this.carWidth = carWidth;
+            this.trackWidth = trackWidth;
+            this.maxClosingSpeed = maxClosingSpeed;
         }
 
         public void clearState()
@@ -135,9 +134,10 @@ namespace CrewChiefV3
                         currentOpponentPosition[0] != -1 && currentOpponentPosition[1] != -1)
                     {
                         float opponentSpeed = opponentSpeeds[i];
-                        if (opponentIsRacing(currentOpponentPosition, currentPlayerPosition, opponentSpeed, playerSpeed))
+                        if (opponentPositionInRange(currentOpponentPosition, currentPlayerPosition))
                         {
-                            Side side = getSide(playerRotationInRadians, currentPlayerPosition[0], currentPlayerPosition[1], currentOpponentPosition[0], currentOpponentPosition[1]);
+                            Boolean isOpponentSpeedInRange = opponentSpeedInRange(opponentSpeed, playerSpeed);
+                            Side side = getSide(playerRotationInRadians, currentPlayerPosition[0], currentPlayerPosition[1], currentOpponentPosition[0], currentOpponentPosition[1], isOpponentSpeedInRange);
                             if (side == Side.left)
                             {
                                 carsOnLeft++;
@@ -233,7 +233,7 @@ namespace CrewChiefV3
             }
         }
 
-        private Side getSide(float playerRotationInRadians, float playerX, float playerY, float oppponentX, float opponentY)
+        private Side getSide(float playerRotationInRadians, float playerX, float playerY, float oppponentX, float opponentY, Boolean isOpponentSpeedInRange)
         {
             float rawXCoordinate = oppponentX - playerX;
             float rawYCoordinate = opponentY - playerY;
@@ -261,9 +261,9 @@ namespace CrewChiefV3
                             return Side.right;
                         }
                     }
-                    else if (Math.Abs(alignedYCoordinate) < carLength && alignedXCoordinate * -1 > carWidth)
+                    else if (Math.Abs(alignedYCoordinate) < carLength && alignedXCoordinate * -1 > carWidth && isOpponentSpeedInRange)
                     {
-                        // we have a new overlap on this side, it's only valid if we're not inside the other car
+                        // we have a new overlap on this side, it's only valid if we're not inside the other car and the speed isn't out of range
                         return Side.right;
                     }
                 }
@@ -276,7 +276,7 @@ namespace CrewChiefV3
                             return Side.left;
                         }
                     }
-                    else if (Math.Abs(alignedYCoordinate) < carLength && alignedXCoordinate > carWidth)
+                    else if (Math.Abs(alignedYCoordinate) < carLength && alignedXCoordinate > carWidth && isOpponentSpeedInRange)
                     {
                         return Side.left;
                     }
@@ -285,19 +285,16 @@ namespace CrewChiefV3
             return Side.none;
         }
 
-        private Boolean opponentIsRacing(float[] opponentPosition, float[] playerPosition, float opponentSpeed, float playerSpeed)
+        private Boolean opponentPositionInRange(float[] opponentPosition, float[] playerPosition)
         {
             float deltaX = Math.Abs(opponentPosition[0] - playerPosition[0]);
             float deltaY = Math.Abs(opponentPosition[1] - playerPosition[1]);
-            if (deltaX > trackWidth || deltaY > trackWidth)
-            {
-                return false;
-            }
-            if (Math.Abs(opponentSpeed - playerSpeed) > maxClosingSpeed)
-            {
-                return false;
-            }
-            return true;
+            return deltaX <= trackWidth && deltaY <= trackWidth;
+        }
+
+        private Boolean opponentSpeedInRange(float opponentSpeed, float playerSpeed)
+        {
+            return Math.Abs(opponentSpeed - playerSpeed) <= maxClosingSpeed;
         }
 
         private void getNextMessage(int carsOnLeftCount, int carsOnRightCount, DateTime now)

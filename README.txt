@@ -2,6 +2,8 @@ CrewChief version 3.
 
 Changelog
 ---------
+Version 3.9.3: Added UDP packet ordering checks and data rate estimate; Spotter tweaks to make it function better with the UDP data (don't allow an existing overlap to be called 'clear' if the closing speed is out of range, allow different car / track size params for the UDP spotter); Fixed and edge-case crash bug with the background sound player.
+
 Verions 3.9.2: Fixes for PCars UDP network data stream. No new sound pack for this version.
 
 Version 3.9.1: Disabled spotter in Raceroom hotlap / leaderboard challenge mode; Fixed issue where race sector reports were being played every sector if practice / qual sector reports were configured to play for each sector. No new sound pack required for this version but a few more messages have been added to existing events (sound pack is now version 3.9b).

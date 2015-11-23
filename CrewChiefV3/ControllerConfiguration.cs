@@ -1,4 +1,5 @@
-﻿using SharpDX.DirectInput;
+﻿using CrewChiefV3.PCars;
+using SharpDX.DirectInput;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +10,8 @@ namespace CrewChiefV3
 {
     class ControllerConfiguration : IDisposable
     {
+        private static Guid NETWORK_CONSOLE_CONTROLLER_GUID = new Guid("2bbfed03-a04f-4408-91cf-e0aa6b20b8ff");
+
         public Boolean listenForAssignment = false;
         DirectInput directInput = new DirectInput();
         DeviceType[] supportedDeviceTypes = new DeviceType[] {DeviceType.Driving, DeviceType.Joystick, DeviceType.Gamepad, 
@@ -22,6 +25,8 @@ namespace CrewChiefV3
         public static String TOGGLE_SPOTTER_FUNCTION = "Toggle spotter on/off";
         public static String TOGGLE_READ_OPPONENT_DELTAS = "Toggle opponent deltas on/off for each lap";
         public static String REPEAT_LAST_MESSAGE_BUTTON = "Press to replay the last message";
+
+        private ControllerData networkGamePad = new ControllerData("Console controller", DeviceType.Gamepad, NETWORK_CONSOLE_CONTROLLER_GUID);
         
         // yuk...
         public Dictionary<String, int> buttonAssignmentIndexes = new Dictionary<String, int>();
@@ -81,27 +86,37 @@ namespace CrewChiefV3
 
         private void pollForButtonClicks(ButtonAssignment ba)
         {
-            if (ba != null && ba.buttonIndex != -1 && ba.joystick != null)
+            if (ba != null && ba.buttonIndex != -1)
             {
-                try
+                if (ba.joystick != null)
                 {
-                    if (ba.joystick != null)
+                    try
                     {
-                        JoystickState state = ba.joystick.GetCurrentState();
-                        if (state != null)
+                        if (ba.joystick != null)
                         {
-                            Boolean click = state.Buttons[ba.buttonIndex];
-                            if (click)
+                            JoystickState state = ba.joystick.GetCurrentState();
+                            if (state != null)
                             {
-                                ba.hasUnprocessedClick = true;
+                                Boolean click = state.Buttons[ba.buttonIndex];
+                                if (click)
+                                {
+                                    ba.hasUnprocessedClick = true;
+                                }
                             }
-                        } 
-                    }                      
-                }
-                catch (Exception)
-                {
+                        }
+                    }
+                    catch (Exception)
+                    {
 
-                }          
+                    }
+                }
+                else if (ba.controller.guid == NETWORK_CONSOLE_CONTROLLER_GUID)
+                {
+                    if (PCarsUDPreader.getButtonState(ba.buttonIndex))
+                    {
+                        ba.hasUnprocessedClick = true;
+                    }
+                }
             }
         }
 
@@ -120,7 +135,8 @@ namespace CrewChiefV3
         {
             foreach (ButtonAssignment buttonAssignment in buttonAssignments)
             {
-                if (buttonAssignment.action == CHANNEL_OPEN_FUNCTION && buttonAssignment.joystick != null && buttonAssignment.buttonIndex != -1)
+                if (buttonAssignment.action == CHANNEL_OPEN_FUNCTION && buttonAssignment.buttonIndex != -1 
+                    && (buttonAssignment.joystick != null || (buttonAssignment.controller != null && buttonAssignment.controller.guid == NETWORK_CONSOLE_CONTROLLER_GUID)))
                 {
                     return true;
                 }
@@ -133,7 +149,8 @@ namespace CrewChiefV3
             foreach (ButtonAssignment buttonAssignment in buttonAssignments)
             {
                 if ((channelOpenIsToggle || buttonAssignment.action != CHANNEL_OPEN_FUNCTION) &&
-                    buttonAssignment.joystick != null && buttonAssignment.buttonIndex != -1)
+                    (buttonAssignment.joystick != null || (buttonAssignment.controller != null && buttonAssignment.controller.guid == NETWORK_CONSOLE_CONTROLLER_GUID)) 
+                    && buttonAssignment.buttonIndex != -1)
                 {
                     return true;
                 }
@@ -167,7 +184,7 @@ namespace CrewChiefV3
                     actionId = "REPEAT_LAST_MESSAGE_BUTTON";
                 }
 
-                if (buttonAssignment.controller != null && buttonAssignment.joystick != null && buttonAssignment.buttonIndex != -1)
+                if (buttonAssignment.controller != null && (buttonAssignment.joystick != null || buttonAssignment.controller.guid == NETWORK_CONSOLE_CONTROLLER_GUID) && buttonAssignment.buttonIndex != -1)
                 {
                     UserSettings.GetUserSettings().setProperty(actionId + "_button_index", buttonAssignment.buttonIndex);
                     UserSettings.GetUserSettings().setProperty(actionId + "_device_guid", buttonAssignment.controller.guid.ToString());
@@ -221,17 +238,25 @@ namespace CrewChiefV3
 
         private void loadAssignment(System.Windows.Forms.Form parent, String functionName, int buttonIndex, String deviceGuid)
         {
-            foreach (ControllerData controller in getControllers()) {
+            if (deviceGuid == NETWORK_CONSOLE_CONTROLLER_GUID.ToString())
+            {
+                addNetworkControllerToList();
+            }
+            foreach (ControllerData controller in this.controllers)
+            {                
                 if (controller.guid.ToString() == deviceGuid)
                 {
-                    var joystick = new Joystick(directInput, controller.guid);
-                    // Acquire the joystick
-                    joystick.SetCooperativeLevel(parent, (CooperativeLevel.NonExclusive | CooperativeLevel.Background));
-                    joystick.Properties.BufferSize = 128;
-                    joystick.Acquire();
                     buttonAssignments[buttonAssignmentIndexes[functionName]].controller = controller;
-                    buttonAssignments[buttonAssignmentIndexes[functionName]].joystick = joystick;
                     buttonAssignments[buttonAssignmentIndexes[functionName]].buttonIndex = buttonIndex;
+                    if (controller.guid != NETWORK_CONSOLE_CONTROLLER_GUID)
+                    {
+                        var joystick = new Joystick(directInput, controller.guid);
+                        // Acquire the joystick
+                        joystick.SetCooperativeLevel(parent, (CooperativeLevel.NonExclusive | CooperativeLevel.Background));
+                        joystick.Properties.BufferSize = 128;
+                        joystick.Acquire();
+                        buttonAssignments[buttonAssignmentIndexes[functionName]].joystick = joystick;
+                    }
                 }
             }
         }
@@ -282,8 +307,24 @@ namespace CrewChiefV3
                         controllers.Add(new ControllerData(productName, deviceType, joystickGuid));
                     }
                 }
-            }           
+            }
             return controllers;
+        }
+
+        public void addNetworkControllerToList()
+        {
+            if (!controllers.Contains(networkGamePad))
+            {
+                controllers.Add(networkGamePad);
+            }
+        }
+
+        public void removeNetworkControllerFromList()
+        {
+            if (controllers.Contains(networkGamePad))
+            {
+                controllers.Remove(networkGamePad);
+            }
         }
 
         public Boolean assignButton(System.Windows.Forms.Form parent, int controllerIndex, int actionIndex)
@@ -292,35 +333,51 @@ namespace CrewChiefV3
         }
 
         private Boolean getFirstPressedButton(System.Windows.Forms.Form parent, ControllerData controllerData, ButtonAssignment buttonAssignment)
-        {            
-            listenForAssignment = true;
-            // Instantiate the joystick
-            var joystick = new Joystick(directInput, controllerData.guid);
-            // Acquire the joystick
-            joystick.SetCooperativeLevel(parent, (CooperativeLevel.NonExclusive | CooperativeLevel.Background));
-            joystick.Properties.BufferSize = 128;
-            joystick.Acquire();
+        {
             Boolean gotAssignment = false;
-            while (listenForAssignment)
+            if (controllerData.guid == NETWORK_CONSOLE_CONTROLLER_GUID)
             {
-                Boolean[] buttons = joystick.GetCurrentState().Buttons;
-                for (int i = 0; i < buttons.Count(); i++)
+                PCarsUDPreader gameDataReader = (PCarsUDPreader)GameStateReaderFactory.getInstance().getGameStateReader(GameDefinition.pCarsNetwork);
+                int assignedButton = gameDataReader.getButtonIndexForAssignment();
+                if (assignedButton != -1)
                 {
-                    if (buttons[i])
-                    {
-                        Console.WriteLine("Got button at index " + i);
-                        removeAssignmentsForControllerAndButton(controllerData.guid, i);
-                        buttonAssignment.controller = controllerData;
-                        buttonAssignment.joystick = joystick;
-                        buttonAssignment.buttonIndex = i;
-                        listenForAssignment = false;
-                        gotAssignment = true;
-                    }
+                    removeAssignmentsForControllerAndButton(controllerData.guid, assignedButton);
+                    buttonAssignment.controller = controllerData;
+                    buttonAssignment.buttonIndex = assignedButton;
+                    listenForAssignment = false;
+                    gotAssignment = true;
                 }
             }
-            if (!gotAssignment)
+            else
             {
-                joystick.Unacquire();
+                listenForAssignment = true;
+                // Instantiate the joystick
+                var joystick = new Joystick(directInput, controllerData.guid);
+                // Acquire the joystick
+                joystick.SetCooperativeLevel(parent, (CooperativeLevel.NonExclusive | CooperativeLevel.Background));
+                joystick.Properties.BufferSize = 128;
+                joystick.Acquire();                
+                while (listenForAssignment)
+                {
+                    Boolean[] buttons = joystick.GetCurrentState().Buttons;
+                    for (int i = 0; i < buttons.Count(); i++)
+                    {
+                        if (buttons[i])
+                        {
+                            Console.WriteLine("Got button at index " + i);
+                            removeAssignmentsForControllerAndButton(controllerData.guid, i);
+                            buttonAssignment.controller = controllerData;
+                            buttonAssignment.joystick = joystick;
+                            buttonAssignment.buttonIndex = i;
+                            listenForAssignment = false;
+                            gotAssignment = true;
+                        }
+                    }
+                }
+                if (!gotAssignment)
+                {
+                    joystick.Unacquire();
+                }
             }
             return gotAssignment;
         }
@@ -368,7 +425,7 @@ namespace CrewChiefV3
             {
                 if (controller != null && buttonIndex > -1)
                 {
-                    return action + " (assigned to" + controller.deviceName + ", button: " + buttonIndex + ")";
+                    return action + " (assigned to " + controller.deviceName + ", button: " + buttonIndex + ")";
                 }
                 else
                 {
@@ -380,8 +437,11 @@ namespace CrewChiefV3
             {
                 this.controller = null;
                 this.buttonIndex = -1;
-                this.joystick.Unacquire();
-                this.joystick.SetNotification(null);
+                if (this.joystick != null)
+                {
+                    this.joystick.Unacquire();
+                    this.joystick.SetNotification(null);
+                }
                 this.joystick = null;
             }
         }

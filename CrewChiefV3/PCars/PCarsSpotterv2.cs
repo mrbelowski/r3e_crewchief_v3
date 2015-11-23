@@ -32,13 +32,32 @@ namespace CrewChiefV3.PCars
         private DateTime timeToStartSpotting = DateTime.Now;
 
         private Dictionary<String, List<float>> previousOpponentSpeeds = new Dictionary<String, List<float>>();
-        
+
+        private float maxClosingSpeed = 30;
+
+        private float trackWidth = 10f;
+
+        private float carWidth = 1.8f;
+
+        private float udpMaxClosingSpeed = 60;
+
+        private float udpTrackWidth = 7f;
+
+        private float udpCarWidth = 1.5f;
+
         public PCarsSpotterv2(AudioPlayer audioPlayer, Boolean initialEnabledState)
         {
             this.audioPlayer = audioPlayer;
             this.enabled = initialEnabledState;
             this.initialEnabledState = initialEnabledState;
-            this.internalSpotter = new NoisyCartesianCoordinateSpotter(audioPlayer, initialEnabledState, carLength);
+            if (CrewChief.gameDefinition.gameEnum == GameEnum.PCARS_NETWORK)
+            {
+                this.internalSpotter = new NoisyCartesianCoordinateSpotter(audioPlayer, initialEnabledState, carLength, udpCarWidth, udpTrackWidth, udpMaxClosingSpeed);
+            }
+            else
+            {
+                this.internalSpotter = new NoisyCartesianCoordinateSpotter(audioPlayer, initialEnabledState, carLength, carWidth, trackWidth, maxClosingSpeed);
+            }
         }
 
         public void clearState()
