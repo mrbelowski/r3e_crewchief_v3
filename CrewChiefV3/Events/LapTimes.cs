@@ -157,6 +157,8 @@ namespace CrewChiefV3.Events
 
         private Boolean isHotLapping;
 
+        private TimeSpan lastGapToSecondWhenLeadingPracOrQual;
+
         public LapTimes(AudioPlayer audioPlayer)
         {
             this.audioPlayer = audioPlayer;
@@ -201,6 +203,7 @@ namespace CrewChiefV3.Events
             currentPosition = -1;
             currentGameState = null;
             isHotLapping = false;
+            lastGapToSecondWhenLeadingPracOrQual = TimeSpan.Zero;
         }
 
         protected override void triggerInternal(GameStateData previousGameState, GameStateData currentGameState)
@@ -347,22 +350,30 @@ namespace CrewChiefV3.Events
                                         }
                                     }
                                 }
-                                else if (lastLapRating == LastLapRating.BEST_IN_CLASS)
+                                    // need to be careful with the rating here as it's based on the known opponent laps, and we may have joined the session part way through
+                                else if (currentGameState.SessionData.Position == 1) 
                                 {
-                                    audioPlayer.queueClip(new QueuedMessage(folderFastestInClass, 0, this));
-                                }
-                                else if (lastLapRating == LastLapRating.BEST_OVERALL)
-                                {
-                                    if (currentGameState.SessionData.SessionType == SessionType.Qualify)
+                                    Boolean newGapToSecond = false;
+                                    if (previousGameState != null && previousGameState.SessionData.Position > 1)
                                     {
-                                        audioPlayer.queueClip(new QueuedMessage(Position.folderPole, 0, this));
+                                        newGapToSecond = true;
+                                        if (currentGameState.SessionData.SessionType == SessionType.Qualify)
+                                        {
+                                            audioPlayer.queueClip(new QueuedMessage(Position.folderPole, 0, this));
+                                        }
+                                        else if (currentGameState.SessionData.SessionType == SessionType.Practice)
+                                        {
+                                            audioPlayer.queueClip(new QueuedMessage(Position.folderStub + 1, 0, this));
+                                        }
                                     }
-                                    else if (currentGameState.SessionData.SessionType == SessionType.Practice)
+                                    else if (deltaPlayerLastToSessionBestOverall < lastGapToSecondWhenLeadingPracOrQual)
                                     {
-                                        audioPlayer.queueClip(new QueuedMessage(Position.folderStub + currentGameState.SessionData.Position, 0, this));
+                                        newGapToSecond = true;
+                                        lastGapToSecondWhenLeadingPracOrQual = deltaPlayerLastToSessionBestOverall;
                                     }
-                                    if (deltaPlayerLastToSessionBestOverall < TimeSpan.Zero)
+                                    if (newGapToSecond)
                                     {
+                                        lastGapToSecondWhenLeadingPracOrQual = deltaPlayerLastToSessionBestOverall;
                                         TimeSpan gapBehind = deltaPlayerLastToSessionBestOverall.Negate();
                                         if ((gapBehind.Seconds > 0 || gapBehind.Milliseconds > 50) &&
                                             gapBehind.Seconds < 60)
