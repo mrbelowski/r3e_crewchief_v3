@@ -42,7 +42,7 @@ namespace CrewChiefV3
                         {
                             pcarsSharedMemoryReader = new PCarsSharedMemoryReader();
                         }
-                        return pcarsUDPreader;
+                        return pcarsSharedMemoryReader;
                     case GameEnum.RACE_ROOM:
                         if (r3eSharedMemoryReader == null) 
                         {
