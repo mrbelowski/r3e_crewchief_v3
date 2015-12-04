@@ -1183,5 +1183,17 @@ namespace CrewChiefV3.Properties {
                 this["use_alternate_beeps"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool disable_pcars_prac_and_qual_pole_deltas {
+            get {
+                return ((bool)(this["disable_pcars_prac_and_qual_pole_deltas"]));
+            }
+            set {
+                this["disable_pcars_prac_and_qual_pole_deltas"] = value;
+            }
+        }
     }
 }

@@ -16,6 +16,7 @@ namespace CrewChiefV3.Events
         Boolean practiceAndQualSectorReportsAtEachSector = UserSettings.GetUserSettings().getBoolean("practice_and_qual_sector_reports_at_each_sector"); 
         Boolean raceSectorReportsAtLapEnd = UserSettings.GetUserSettings().getBoolean("race_sector_reports_at_lap_end");
         Boolean practiceAndQualSectorReportsLapEnd = UserSettings.GetUserSettings().getBoolean("practice_and_qual_sector_reports_at_lap_end");
+        Boolean disablePCarspracAndQualPoleDeltaReports = UserSettings.GetUserSettings().getBoolean("disable_pcars_prac_and_qual_pole_deltas");
 
         int maxQueueLengthForRaceSectorDeltaReports = 0;
         int maxQueueLengthForRaceLapTimeReports = 0;
@@ -375,8 +376,11 @@ namespace CrewChiefV3.Events
                                     {
                                         lastGapToSecondWhenLeadingPracOrQual = deltaPlayerLastToSessionBestOverall;
                                         TimeSpan gapBehind = deltaPlayerLastToSessionBestOverall.Negate();
-                                        if ((gapBehind.Seconds > 0 || gapBehind.Milliseconds > 50) &&
-                                            gapBehind.Seconds < 60)
+                                        // only play qual / prac deltas for Raceroom as the PCars data is inaccurate for sessions joined part way through
+                                        if ((!disablePCarspracAndQualPoleDeltaReports || 
+                                            CrewChief.gameDefinition.gameEnum == GameDefinition.raceRoom.gameEnum) &&
+                                            ((gapBehind.Seconds > 0 || gapBehind.Milliseconds > 50) &&
+                                            gapBehind.Seconds < 60))
                                         {
                                             // delay this a bit...
                                             audioPlayer.queueClip(new QueuedMessage("lapTimeNotRaceGap",
@@ -392,7 +396,9 @@ namespace CrewChiefV3.Events
                                         audioPlayer.queueClip(new QueuedMessage(folderPersonalBest, 0, this));
                                     }
                                     // don't read this message if the rounded time gap is 0.0 seconds or it's more than 59 seconds
-                                    if ((deltaPlayerLastToSessionBestInClass.Seconds > 0 || deltaPlayerLastToSessionBestInClass.Milliseconds > 50) &&
+                                    // only play qual / prac deltas for Raceroom as the PCars data is inaccurate for sessions joined part way through
+                                    if ((!disablePCarspracAndQualPoleDeltaReports || CrewChief.gameDefinition.gameEnum == GameDefinition.raceRoom.gameEnum) && 
+                                        (deltaPlayerLastToSessionBestInClass.Seconds > 0 || deltaPlayerLastToSessionBestInClass.Milliseconds > 50) &&
                                         deltaPlayerLastToSessionBestInClass.Seconds < 60)
                                     {
                                         // delay this a bit...

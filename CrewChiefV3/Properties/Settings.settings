@@ -293,5 +293,8 @@
     <Setting Name="use_alternate_beeps" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
+    <Setting Name="disable_pcars_prac_and_qual_pole_deltas" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
   </Settings>
 </SettingsFile>
