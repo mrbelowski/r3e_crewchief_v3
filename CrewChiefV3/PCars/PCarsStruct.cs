@@ -34,10 +34,10 @@ namespace CrewChiefV3.PCars
             existingState.mNumParticipants = udpTelemetryData.sNumParticipants;            
 
             // Unfiltered Input
-            existingState.mUnfilteredThrottle = udpTelemetryData.sUnfilteredThrottle / 255;
-            existingState.mUnfilteredBrake = udpTelemetryData.sUnfilteredBrake / 255;
-            existingState.mUnfilteredSteering = udpTelemetryData.sUnfilteredSteering / 127;
-            existingState.mUnfilteredClutch = udpTelemetryData.sUnfilteredClutch / 255;
+            existingState.mUnfilteredThrottle = (float)udpTelemetryData.sUnfilteredThrottle / 255f;
+            existingState.mUnfilteredBrake = (float)udpTelemetryData.sUnfilteredBrake / 255f;
+            existingState.mUnfilteredSteering = (float)udpTelemetryData.sUnfilteredSteering / 127f;
+            existingState.mUnfilteredClutch = (float)udpTelemetryData.sUnfilteredClutch / 255f;
 
             existingState.mLapsInEvent = udpTelemetryData.sLapsInEvent;
             existingState.mTrackLength = udpTelemetryData.sTrackLength; 
@@ -86,10 +86,10 @@ namespace CrewChiefV3.PCars
             existingState.mSpeed = udpTelemetryData.sSpeed; 
             existingState.mRPM = udpTelemetryData.sRpm;
             existingState.mMaxRPM = udpTelemetryData.sMaxRpm;
-            existingState.mBrake = udpTelemetryData.sBrake / 255;
-            existingState.mThrottle = udpTelemetryData.sThrottle / 255;
-            existingState.mClutch = udpTelemetryData.sClutch / 255;
-            existingState.mSteering = udpTelemetryData.sSteering / 127;
+            existingState.mBrake = (float)udpTelemetryData.sBrake / 255f;
+            existingState.mThrottle = (float)udpTelemetryData.sThrottle / 255f;
+            existingState.mClutch = (float)udpTelemetryData.sClutch / 255f;
+            existingState.mSteering = (float)udpTelemetryData.sSteering / 127f;
             existingState.mGear = udpTelemetryData.sGearNumGears & 15;
             existingState.mNumGears = udpTelemetryData.sGearNumGears >> 4;
             existingState.mOdometerKM = udpTelemetryData.sOdometerKM;                               
@@ -137,16 +137,16 @@ namespace CrewChiefV3.PCars
 
             // Car Damage
             existingState.mCrashState = udpTelemetryData.sCrashState;
-            existingState.mAeroDamage = udpTelemetryData.sAeroDamage / 255;  
-            existingState.mEngineDamage = udpTelemetryData.sEngineDamage / 255; 
+            existingState.mAeroDamage = (float)udpTelemetryData.sAeroDamage / 255f;
+            existingState.mEngineDamage = (float)udpTelemetryData.sEngineDamage / 255f; 
 
             // Weather
             existingState.mAmbientTemperature = udpTelemetryData.sAmbientTemperature;
             existingState.mTrackTemperature = udpTelemetryData.sTrackTemperature;
-            existingState.mRainDensity = udpTelemetryData.sRainDensity / 255;         
+            existingState.mRainDensity = (float)udpTelemetryData.sRainDensity / 255f;         
             existingState.mWindSpeed = udpTelemetryData.sWindSpeed * 2;
-            existingState.mWindDirectionX = udpTelemetryData.sWindDirectionX / 127;
-            existingState.mWindDirectionY = udpTelemetryData.sWindDirectionY / 127;
+            existingState.mWindDirectionX = (float)udpTelemetryData.sWindDirectionX / 127f;
+            existingState.mWindDirectionY = (float)udpTelemetryData.sWindDirectionY / 127f;
             //existingState.mCloudBrightness = udpTelemetryData.sCloudBrightness / 255;
 
             if (existingState.mParticipantData == null)
@@ -232,7 +232,7 @@ namespace CrewChiefV3.PCars
             return Encoding.UTF8.GetString(name).TrimEnd('\0').Trim();
         } 
 
-        private static float[] toFloatArray(int[] intArray, int factor)
+        private static float[] toFloatArray(int[] intArray, float factor)
         {
             List<float> l = new List<float>();
             foreach (int i in intArray)
@@ -242,7 +242,7 @@ namespace CrewChiefV3.PCars
             return l.ToArray();
         }
 
-        private static float[] toFloatArray(byte[] byteArray, int factor)
+        private static float[] toFloatArray(byte[] byteArray, float factor)
         {
             List<float> l = new List<float>();
             foreach (byte i in byteArray)
@@ -252,7 +252,7 @@ namespace CrewChiefV3.PCars
             return l.ToArray();
         }
 
-        private static float[] toFloatArray(short[] shortArray, int factor)
+        private static float[] toFloatArray(short[] shortArray, float factor)
         {
             List<float> l = new List<float>();
             foreach (short i in shortArray)
@@ -262,7 +262,7 @@ namespace CrewChiefV3.PCars
             return l.ToArray();
         }
 
-        private static float[] toFloatArray(ushort[] ushortArray, int factor)
+        private static float[] toFloatArray(ushort[] ushortArray, float factor)
         {
             List<float> l = new List<float>();
             foreach (ushort i in ushortArray)
