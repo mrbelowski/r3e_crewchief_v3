@@ -2,7 +2,7 @@ CrewChief version 3.
 
 Changelog
 ---------
-Version 3.9.3: Added UDP packet ordering checks and data rate estimate; Spotter tweaks to make it function better with the UDP data (don't allow an existing overlap to be called 'clear' if the closing speed is out of range, allow different car / track size params for the UDP spotter); Fixed and edge-case crash bug with the background sound player; Reworked internals to allow the app to assign and listen for button presses inside the UDP data packet (for console controller buttons). No new sound pack for this version.
+Version 3.9.3: Added UDP packet ordering checks and data rate estimate; Spotter tweaks to make it function better with the UDP data (don't allow an existing overlap to be called 'clear' if the closing speed is out of range, allow different car / track size params for the UDP spotter); Fixed and edge-case crash bug with the background sound player; Reworked internals to allow the app to assign and listen for button presses inside the UDP data packet (for console controller buttons); Fixes to qualify position reporting; Disable practice / qualify pole time delta report in PCars; Fixed UDP int -> float mapping for damage levels and some others (thanks to Pock for the heads-up); Various minor bug fixes; Added some driver names. No new sound pack for this version.
 
 Verions 3.9.2: Fixes for PCars UDP network data stream. No new sound pack for this version.
 

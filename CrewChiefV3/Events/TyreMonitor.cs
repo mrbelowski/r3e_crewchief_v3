@@ -905,10 +905,10 @@ namespace CrewChiefV3.Events
             int messageDelay = random.Next(0, 5);
             if (!warnedOnLockingForLap)
             {
-                if (timeLeftFrontIsLockedForLap > initialTotalLapLockupThreshold)
+                if (timeLeftFrontIsLockedForLap > totalLockupThresholdForNextLap)
                 {
                     warnedOnLockingForLap = true;
-                    if (timeRightFrontIsLockedForLap > initialTotalLapLockupThreshold / 2)
+                    if (timeRightFrontIsLockedForLap > totalLockupThresholdForNextLap / 2)
                     {
                         // lots of left front locking, some right front locking
                         audioPlayer.queueClip(new QueuedMessage(folderLockingFrontsForLapWarning, messageDelay, this));
@@ -919,10 +919,10 @@ namespace CrewChiefV3.Events
                         audioPlayer.queueClip(new QueuedMessage(folderLockingLeftFrontForLapWarning, messageDelay, this));
                     }
                 }
-                else if (timeRightFrontIsLockedForLap > initialTotalLapLockupThreshold)
+                else if (timeRightFrontIsLockedForLap > totalLockupThresholdForNextLap)
                 {
                     warnedOnLockingForLap = true;
-                    if (timeLeftFrontIsLockedForLap > initialTotalLapLockupThreshold / 2)
+                    if (timeLeftFrontIsLockedForLap > totalLockupThresholdForNextLap / 2)
                     {
                         // lots of right front locking, some left front locking
                         audioPlayer.queueClip(new QueuedMessage(folderLockingFrontsForLapWarning, messageDelay, this));
@@ -933,10 +933,10 @@ namespace CrewChiefV3.Events
                         audioPlayer.queueClip(new QueuedMessage(folderLockingRightFrontForLapWarning, messageDelay, this));
                     }
                 }
-                else if (timeLeftRearIsLockedForLap > initialTotalLapLockupThreshold)
+                else if (timeLeftRearIsLockedForLap > totalLockupThresholdForNextLap)
                 {
                     warnedOnLockingForLap = true;
-                    if (timeRightRearIsLockedForLap > initialTotalLapLockupThreshold / 2)
+                    if (timeRightRearIsLockedForLap > totalLockupThresholdForNextLap / 2)
                     {
                         // lots of left rear locking, some right rear locking
                         audioPlayer.queueClip(new QueuedMessage(folderLockingRearsForLapWarning, messageDelay, this));
@@ -947,10 +947,10 @@ namespace CrewChiefV3.Events
                         audioPlayer.queueClip(new QueuedMessage(folderLockingLeftRearForLapWarning, messageDelay, this));
                     }
                 }
-                else if (timeRightRearIsLockedForLap > initialTotalLapLockupThreshold)
+                else if (timeRightRearIsLockedForLap > totalLockupThresholdForNextLap)
                 {
                     warnedOnLockingForLap = true;
-                    if (timeLeftRearIsLockedForLap > initialTotalLapLockupThreshold / 2)
+                    if (timeLeftRearIsLockedForLap > totalLockupThresholdForNextLap / 2)
                     {
                         // lots of right rear locking, some left rear locking
                         audioPlayer.queueClip(new QueuedMessage(folderLockingRearsForLapWarning, messageDelay, this));
@@ -969,10 +969,10 @@ namespace CrewChiefV3.Events
             int messageDelay = random.Next(0, 5);
             if (!warnedOnWheelspinForLap)
             {
-                if (timeLeftFrontIsSpinningForLap > initialTotalWheelspinThreshold)
+                if (timeLeftFrontIsSpinningForLap > totalWheelspinThresholdForNextLap)
                 {
                     warnedOnWheelspinForLap = true;
-                    if (timeRightFrontIsSpinningForLap > initialTotalWheelspinThreshold / 2)
+                    if (timeRightFrontIsSpinningForLap > totalWheelspinThresholdForNextLap / 2)
                     {
                         // lots of left front spinning, some right front spinning
                         audioPlayer.queueClip(new QueuedMessage(folderSpinningFrontsForLapWarning, messageDelay, this));
@@ -983,10 +983,10 @@ namespace CrewChiefV3.Events
                         audioPlayer.queueClip(new QueuedMessage(folderSpinningLeftFrontForLapWarning, messageDelay, this));
                     }
                 }
-                else if (timeRightFrontIsSpinningForLap > initialTotalWheelspinThreshold)
+                else if (timeRightFrontIsSpinningForLap > totalWheelspinThresholdForNextLap)
                 {
                     warnedOnWheelspinForLap = true;
-                    if (timeLeftFrontIsSpinningForLap > initialTotalWheelspinThreshold / 2)
+                    if (timeLeftFrontIsSpinningForLap > totalWheelspinThresholdForNextLap / 2)
                     {
                         // lots of right front spinning, some left front spinning
                         audioPlayer.queueClip(new QueuedMessage(folderSpinningFrontsForLapWarning, messageDelay, this));
@@ -997,10 +997,10 @@ namespace CrewChiefV3.Events
                         audioPlayer.queueClip(new QueuedMessage(folderSpinningRightFrontForLapWarning, messageDelay, this));
                     }
                 }
-                else if (timeLeftRearIsSpinningForLap > initialTotalWheelspinThreshold)
+                else if (timeLeftRearIsSpinningForLap > totalWheelspinThresholdForNextLap)
                 {
                     warnedOnWheelspinForLap = true;
-                    if (timeRightRearIsSpinningForLap > initialTotalWheelspinThreshold / 2)
+                    if (timeRightRearIsSpinningForLap > totalWheelspinThresholdForNextLap / 2)
                     {
                         // lots of left rear spinning, some right rear spinning
                         audioPlayer.queueClip(new QueuedMessage(folderSpinningRearsForLapWarning, messageDelay, this));
@@ -1011,10 +1011,10 @@ namespace CrewChiefV3.Events
                         audioPlayer.queueClip(new QueuedMessage(folderSpinningLeftRearForLapWarning, messageDelay, this));
                     }
                 }
-                else if (timeRightRearIsSpinningForLap > initialTotalWheelspinThreshold)
+                else if (timeRightRearIsSpinningForLap > totalWheelspinThresholdForNextLap)
                 {
                     warnedOnWheelspinForLap = true;
-                    if (timeLeftRearIsSpinningForLap > initialTotalWheelspinThreshold / 2)
+                    if (timeLeftRearIsSpinningForLap > totalWheelspinThresholdForNextLap / 2)
                     {
                         // lots of right rear spinning, some left rear spinning
                         audioPlayer.queueClip(new QueuedMessage(folderSpinningRearsForLapWarning, messageDelay, this));
