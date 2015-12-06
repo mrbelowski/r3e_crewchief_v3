@@ -146,6 +146,8 @@ namespace CrewChiefV3.Events
 
         private float lastLapTime;
 
+        private float bestLapTime;
+        
         private int currentPosition;
 
         private Random random = new Random();
@@ -201,6 +203,7 @@ namespace CrewChiefV3.Events
             deltaPlayerLastToSessionBestInClass = TimeSpan.MaxValue;
             deltaPlayerLastToSessionBestOverall = TimeSpan.MaxValue;
             lastLapTime = 0;
+            bestLapTime = 0;
             currentPosition = -1;
             currentGameState = null;
             isHotLapping = false;
@@ -257,6 +260,11 @@ namespace CrewChiefV3.Events
             if (currentGameState.SessionData.IsNewLap)
             {
                 lastLapTime = currentGameState.SessionData.LapTimePrevious;
+                if (lastLapTime > 0 && lapIsValid) {
+                    if (bestLapTime == 0 || lastLapTime < bestLapTime) {
+                        bestLapTime = lastLapTime;
+                    }
+                }
             }
 
             float[] lapAndSectorsComparisonData = new float[] { -1, -1, -1, -1 };
@@ -768,8 +776,23 @@ namespace CrewChiefV3.Events
             {
                 if (lastLapTime > 0)
                 {
-                    audioPlayer.playClipImmediately(new QueuedMessage("lapTimeNotRaceTime",
+                    audioPlayer.playClipImmediately(new QueuedMessage("lasTLapTime",
                         MessageContents(folderLapTimeIntro, TimeSpan.FromSeconds(lastLapTime)), 0, this), false);
+                    audioPlayer.closeChannel();
+                }
+                else
+                {
+                    audioPlayer.playClipImmediately(new QueuedMessage(AudioPlayer.folderNoData, 0, this), false);
+                    audioPlayer.closeChannel();
+                }
+            }
+            if (voiceMessage.Contains(SpeechRecogniser.BEST_LAP) ||
+                voiceMessage.Contains(SpeechRecogniser.BEST_LAP_TIME))
+            {
+                if (bestLapTime > 0)
+                {
+                    audioPlayer.playClipImmediately(new QueuedMessage("bestLapTime",
+                        MessageContents(folderLapTimeIntro, TimeSpan.FromSeconds(bestLapTime)), 0, this), false);
                     audioPlayer.closeChannel();
                 }
                 else

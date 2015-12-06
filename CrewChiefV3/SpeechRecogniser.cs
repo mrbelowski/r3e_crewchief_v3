@@ -94,6 +94,7 @@ namespace CrewChiefV3
         public static String WHOS_LEADING = "who's leading";
         public static String WHATS = "what's";
         public static String BEST_LAP = "best lap";
+        public static String BEST_LAP_TIME = "best la time";
         public static String THE_LEADER = "the leader";
         public static String THE_CAR_AHEAD = "the car ahead";
         public static String THE_CAR_IN_FRONT = "the car in front";
@@ -231,7 +232,7 @@ namespace CrewChiefV3
                 Grammar g1 = new Grammar(gb1);
 
                 Choices info2 = new Choices();
-                info2.Add(new string[] { GAP_IN_FRONT, GAP_AHEAD, GAP_BEHIND, LAST_LAP, LAP_TIME, LAST_LAP_TIME, POSITION, FUEL_LEVEL });
+                info2.Add(new string[] { GAP_IN_FRONT, GAP_AHEAD, GAP_BEHIND, LAST_LAP, LAP_TIME, LAST_LAP_TIME, BEST_LAP, BEST_LAP_TIME, POSITION, FUEL_LEVEL });
                 GrammarBuilder gb2 = new GrammarBuilder();
                 gb2.Culture = cultureInfo;
                 gb2.Append("what's my");
@@ -512,9 +513,12 @@ namespace CrewChiefV3
             }
             else if (recognisedSpeech.Contains(LAST_LAP_TIME) ||
                 recognisedSpeech.Contains(LAP_TIME) ||
-                recognisedSpeech.Contains(LAST_LAP) ||
+                recognisedSpeech.Contains(LAST_LAP) || 
+                recognisedSpeech.Contains(BEST_LAP_TIME) ||
+                recognisedSpeech.Contains(BEST_LAP) ||
                 recognisedSpeech.Contains(PACE) ||
-                recognisedSpeech.Contains(WHAT_ARE_MY_SECTOR_TIMES) || recognisedSpeech.Contains(WHATS_MY_LAST_SECTOR_TIME))
+                recognisedSpeech.Contains(WHAT_ARE_MY_SECTOR_TIMES) || 
+                recognisedSpeech.Contains(WHATS_MY_LAST_SECTOR_TIME))
             {
                 return CrewChief.getEvent("LapTimes");
             }

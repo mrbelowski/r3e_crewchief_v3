@@ -34,7 +34,7 @@ namespace CrewChiefV3
         public static String folderDeltasDisabled = "acknowledge/deltasDisabled";
 
         public static Boolean useAlternateBeeps = UserSettings.GetUserSettings().getBoolean("use_alternate_beeps");
-        public static float pauseBetweeenMessages = UserSettings.GetUserSettings().getFloat("pause_between_messages");
+        public static float pauseBetweenMessages = UserSettings.GetUserSettings().getFloat("pause_between_messages");
 
         private QueuedMessage lastMessagePlayed = null;
 
@@ -750,10 +750,10 @@ namespace CrewChiefV3
                     if (thisQueue.Contains(eventName))
                     {
                         QueuedMessage thisMessage = (QueuedMessage)thisQueue[eventName];
-                        if (!isImmediateMessages && playedEventCount > 0 && pauseBetweeenMessages > 0)
+                        if (!isImmediateMessages && playedEventCount > 0 && pauseBetweenMessages > 0)
                         {
                             Console.WriteLine("Pausing before " + eventName);
-                            Thread.Sleep(TimeSpan.FromSeconds(pauseBetweeenMessages));
+                            Thread.Sleep(TimeSpan.FromSeconds(pauseBetweenMessages));
                         }
                         if (clipIsPearlOfWisdom(eventName))
                         {
