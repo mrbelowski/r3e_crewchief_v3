@@ -67,6 +67,7 @@ namespace CrewChiefV3
             propertyHelp.Add("track_temp_check_interval_seconds", "How often to check for changes in track temperature, in seconds");
             propertyHelp.Add("report_ambient_temp_changes_greater_than", "Report ambient (air) temperature if it's changed by more than this amount (in celsius)");
             propertyHelp.Add("report_track_temp_changes_greater_than", "Report track temperature if it's changed by more than this amount (in celsius)");
+            propertyHelp.Add("pause_between_messages", "Time pause between messages (in seconds) when reading multiple messages together in a single group.");
         }
 
         public String getHelp(String propertyId)

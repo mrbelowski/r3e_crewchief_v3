@@ -1195,5 +1195,17 @@ namespace CrewChiefV3.Properties {
                 this["disable_pcars_prac_and_qual_pole_deltas"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public float pause_between_messages {
+            get {
+                return ((float)(this["pause_between_messages"]));
+            }
+            set {
+                this["pause_between_messages"] = value;
+            }
+        }
     }
 }

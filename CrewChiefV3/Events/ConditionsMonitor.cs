@@ -89,9 +89,8 @@ namespace CrewChiefV3.Events
                             lastTrackTempReport = currentGameState.Now;
                             // do the reporting
                             audioPlayer.queueClip(new QueuedMessage("conditionsAirAndTrackIncreasing1", MessageContents
-                                (folderAirAndTrackTempIncreasing, folderAirTempIsNow, QueuedMessage.folderNameNumbersStub + Math.Round(currentConditions.AmbientTemperature)), 0, this));
-                            audioPlayer.queueClip(new QueuedMessage("conditionsAirAndTrackIncreasing2", MessageContents
-                                (folderTrackTempIsNow, QueuedMessage.folderNameNumbersStub + Math.Round(currentConditions.TrackTemperature), folderCelsius), 0, this));
+                                (folderAirAndTrackTempIncreasing, folderAirTempIsNow, QueuedMessage.folderNameNumbersStub + Math.Round(currentConditions.AmbientTemperature),
+                                folderTrackTempIsNow, QueuedMessage.folderNameNumbersStub + Math.Round(currentConditions.TrackTemperature), folderCelsius), 0, this));
                             reportedCombinedTemps = true;
                         }
                         else if (currentConditions.TrackTemperature < trackTempAtLastReport - minTrackTempDeltaToReport && currentConditions.AmbientTemperature < airTempAtLastReport - minAirTempDeltaToReport)
@@ -102,9 +101,8 @@ namespace CrewChiefV3.Events
                             lastTrackTempReport = currentGameState.Now;
                             // do the reporting
                             audioPlayer.queueClip(new QueuedMessage("conditionsAirAndTrackDecreasing1", MessageContents
-                                (folderAirAndTrackTempDecreasing, folderAirTempIsNow, QueuedMessage.folderNameNumbersStub + Math.Round(currentConditions.AmbientTemperature)), 0, this));
-                            audioPlayer.queueClip(new QueuedMessage("conditionsAirAndTrackDecreasing2", MessageContents
-                                (folderTrackTempIsNow, QueuedMessage.folderNameNumbersStub + Math.Round(currentConditions.TrackTemperature), folderCelsius), 0, this));
+                                (folderAirAndTrackTempDecreasing, folderAirTempIsNow, QueuedMessage.folderNameNumbersStub + Math.Round(currentConditions.AmbientTemperature),
+                                folderTrackTempIsNow, QueuedMessage.folderNameNumbersStub + Math.Round(currentConditions.TrackTemperature), folderCelsius), 0, this));
                             reportedCombinedTemps = true;
                         }
                     }

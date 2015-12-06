@@ -75,9 +75,9 @@ namespace CrewChiefV3.Events
             if (currentConditions != null)
             {
                 possibleMessages.Add(new QueuedMessage("trackTemp", MessageContents(ConditionsMonitor.folderTrackTempIs, 
-                    QueuedMessage.folderNameNumbersStub + Math.Round(currentConditions.TrackTemperature), ConditionsMonitor.folderCelsius), 0, null));
-                possibleMessages.Add(new QueuedMessage("airTemp", MessageContents(ConditionsMonitor.folderAirTempIs,
-                   QueuedMessage.folderNameNumbersStub + Math.Round(currentConditions.AmbientTemperature), ConditionsMonitor.folderCelsius), 0, null));
+                    QueuedMessage.folderNameNumbersStub + Math.Round(currentConditions.TrackTemperature), ConditionsMonitor.folderCelsius,
+                    ConditionsMonitor.folderAirTempIs, QueuedMessage.folderNameNumbersStub + Math.Round(currentConditions.AmbientTemperature), 
+                    ConditionsMonitor.folderCelsius), 0, null));
             }
             if (currentGameState.PitData.HasMandatoryPitStop)
             {

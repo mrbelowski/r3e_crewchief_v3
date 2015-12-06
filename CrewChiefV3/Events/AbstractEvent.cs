@@ -13,6 +13,17 @@ namespace CrewChiefV3.Events
         protected PearlsOfWisdom pearlsOfWisdom;
 
         // some convienence methods for building up compound messages
+        public static List<MessageFragment> MessageContents(Object o1, Object o2, Object o3, Object o4, Object o5,Object o6)
+        {
+            List<MessageFragment> messages = new List<MessageFragment>();
+            addObjectToMessages(messages, o1);
+            addObjectToMessages(messages, o2);
+            addObjectToMessages(messages, o3);
+            addObjectToMessages(messages, o4);
+            addObjectToMessages(messages, o5);
+            addObjectToMessages(messages, o6);
+            return messages;
+        }
         public static List<MessageFragment> MessageContents(Object o1, Object o2, Object o3, Object o4, Object o5)
         {
             List<MessageFragment> messages = new List<MessageFragment>();

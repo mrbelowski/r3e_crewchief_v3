@@ -296,5 +296,8 @@
     <Setting Name="disable_pcars_prac_and_qual_pole_deltas" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
+    <Setting Name="pause_between_messages" Type="System.Single" Scope="User">
+      <Value Profile="(Default)">0</Value>
+    </Setting>
   </Settings>
 </SettingsFile>
