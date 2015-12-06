@@ -167,7 +167,7 @@ namespace CrewChiefV3
             carClasses.Add(new CarClass(CarClassEnum.DTM_2015, new String[] { }, new int[] { 4260 }, BrakeType.Carbon, TyreType.Unknown_Race, maxExoticRaceSafeWaterTemp, maxExoticRaceSafeOilTemp)); // modern DTM
             carClasses.Add(new CarClass(CarClassEnum.CLIO_CUP, new String[] { "TC1" }, new int[] { }, BrakeType.Iron_Race, TyreType.Unknown_Race, maxRaceSafeWaterTemp, maxRaceSafeOilTemp)); // clios
             carClasses.Add(new CarClass(CarClassEnum.TC1, new String[] { "WTCC_2014" }, new int[] { 3905 }, BrakeType.Iron_Race, TyreType.Unknown_Race, maxRaceSafeWaterTemp, maxRaceSafeOilTemp)); // clios
-            carClasses.Add(new CarClass(CarClassEnum.TC2, new String[] { "BTCC, WTCC_2013" }, new int[] { 1922 }, BrakeType.Iron_Race, TyreType.Unknown_Race, maxRaceSafeWaterTemp, maxRaceSafeOilTemp)); // clios
+            carClasses.Add(new CarClass(CarClassEnum.TC2, new String[] { "BTCC, WTCC_2013", "TC2" }, new int[] { 1922 }, BrakeType.Iron_Race, TyreType.Unknown_Race, maxRaceSafeWaterTemp, maxRaceSafeOilTemp)); // clios
 
             carClasses.Add(new CarClass(CarClassEnum.ROAD, new String[] { "Road B", "Road C1", "Road C2", "Road D" }, new int[] { }, BrakeType.Iron_Road, TyreType.Road, maxRoadSafeWaterTemp, maxRoadSafeOilTemp));
             carClasses.Add(new CarClass(CarClassEnum.ROAD_SUPERCAR, new String[] { "Road A" }, new int[] { }, BrakeType.Ceramic, TyreType.Road, maxRoadSafeWaterTemp, maxRoadSafeOilTemp));
@@ -253,12 +253,7 @@ namespace CrewChiefV3
                     
                 }
             }
-            CarClass defaultClass = getDefaultCarClass();
-            if (carClassName != null)
-            {
-                Console.WriteLine("Using default car class " + defaultClass.carClassEnum + " for class name " + carClassName);
-            }
-            return defaultClass;
+            return getDefaultCarClass();
         }
 
         public static CarClass getCarClassForRaceRoomId(int carClassId)
