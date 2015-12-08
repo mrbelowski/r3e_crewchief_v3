@@ -2,6 +2,8 @@ CrewChief version 3.
 
 Changelog
 ---------
+Version 3.9.5: tidied up radio bleep / click sound handling. This version requires a new sound pack.
+
 Version 3.9.4: Added optional between-message delay to slow things down a bit when there's a big pile of queued messages to be played ("pause_between_message" property); added "what's my best lap" / "what's my best lap time" response. No new sound pack for this version.
 
 Version 3.9.3: Added UDP packet ordering checks and data rate estimate; Spotter tweaks to make it function better with the UDP data (don't allow an existing overlap to be called 'clear' if the closing speed is out of range, allow different car / track size params for the UDP spotter); Fixed and edge-case crash bug with the background sound player; Reworked internals to allow the app to assign and listen for button presses inside the UDP data packet (for console controller buttons); Fixes to qualify position reporting; Disable practice / qualify pole time delta report in PCars; Fixed UDP int -> float mapping for damage levels and some others (thanks to Pock for the heads-up); Various minor bug fixes; Added some driver names. No new sound pack for this version.
