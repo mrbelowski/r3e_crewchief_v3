@@ -142,14 +142,7 @@ namespace CrewChiefV3
             }
 
             voiceFolderPath = Path.Combine(soundFilesPath, "voice");
-            if (useAlternateBeeps)
-            {
-                fxFolderPath = Path.Combine(soundFilesPath, "fx/alternate");
-            }
-            else
-            {
-                fxFolderPath = Path.Combine(soundFilesPath, "fx");
-            }
+            fxFolderPath = Path.Combine(soundFilesPath, "fx");
             driverNamesFolderPath = Path.Combine(soundFilesPath, "driver_names");
             backgroundFilesPath = Path.Combine(soundFilesPath, "background_sounds");
             Console.WriteLine("Voice dir full path = " + voiceFolderPath);
@@ -189,21 +182,22 @@ namespace CrewChiefV3
                     return;
                 }
                 FileInfo[] bleepFiles = fxSoundDirectory.GetFiles();
+                String alternate_prefix = useAlternateBeeps ? "alternate_" : "";
                 foreach (FileInfo bleepFile in bleepFiles)
                 {
                     if (bleepFile.Name.EndsWith(".wav"))
                     {
-                        if (bleepFile.Name.StartsWith("start"))
+                        if (bleepFile.Name.StartsWith(alternate_prefix + "start"))
                         {
                             enableStartBleep = true;
                             openAndCacheClip("start_bleep", bleepFile.FullName);
                         }
-                        else if (bleepFile.Name.StartsWith("end"))
+                        else if (bleepFile.Name.StartsWith(alternate_prefix + "end"))
                         {
                             enableEndBleep = true;
                             openAndCacheClip("end_bleep", bleepFile.FullName);
                         }
-                        else if (bleepFile.Name.StartsWith("short"))
+                        else if (bleepFile.Name.StartsWith(alternate_prefix + "short"))
                         {
                             enableEndBleep = true;
                             openAndCacheClip("short_bleep", bleepFile.FullName);
@@ -992,16 +986,6 @@ namespace CrewChiefV3
             {
                 immediateClips.Clear();
             }
-        }
-
-        private void openChannel()
-        {
-            openChannel(false);
-        }
-
-        public void holdOpenChannel()
-        {
-            holdOpenChannel(false);
         }
 
         private void openChannel(Boolean useShortBeep)
