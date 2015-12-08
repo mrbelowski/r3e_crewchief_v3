@@ -197,10 +197,10 @@ namespace CrewChiefV3
                             enableEndBleep = true;
                             openAndCacheClip("end_bleep", bleepFile.FullName);
                         }
-                        else if (bleepFile.Name.StartsWith(alternate_prefix + "short"))
+                        else if (bleepFile.Name.StartsWith(alternate_prefix + "short_start"))
                         {
                             enableEndBleep = true;
-                            openAndCacheClip("short_bleep", bleepFile.FullName);
+                            openAndCacheClip("short_start_bleep", bleepFile.FullName);
                         }
                         else if (bleepFile.Name.StartsWith("listen_start"))
                         {
@@ -938,7 +938,7 @@ namespace CrewChiefV3
 
         public void playShortStartSpeakingBeep()
         {
-            List<SoundPlayer> bleeps = clips["short_bleep"];
+            List<SoundPlayer> bleeps = clips["short_start_bleep"];
             int bleepIndex = random.Next(0, bleeps.Count);
             // Console.WriteLine("*** Opening channel, using bleep short_bleep at position " + bleepIndex);
             if (!mute)
