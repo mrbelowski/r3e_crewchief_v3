@@ -163,6 +163,8 @@ namespace CrewChiefV3.RaceRoom
                 currentGameState.OpponentData.Clear();
                 currentGameState.SessionData.TrackDefinition = TrackData.getTrackDefinition(null, shared.track_info.length);
 
+                currentGameState.PitData.IsRefuellingAllowed = true;
+
                 // reset the engine temp monitor stuff
                 gotBaselineEngineData = false;
                 baselineEngineDataSamples = 0;
@@ -233,6 +235,7 @@ namespace CrewChiefV3.RaceRoom
                         brakeTempThresholdsForPlayersCar = CarData.getBrakeTempThresholds(currentGameState.carClass, null);
                         if (previousGameState != null)
                         {
+                            currentGameState.PitData.IsRefuellingAllowed = previousGameState.PitData.IsRefuellingAllowed;
                             currentGameState.OpponentData = previousGameState.OpponentData;
                             currentGameState.SessionData.TrackDefinition = previousGameState.SessionData.TrackDefinition;
                             currentGameState.SessionData.DriverRawName = previousGameState.SessionData.DriverRawName;
