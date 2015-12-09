@@ -580,7 +580,7 @@ namespace CrewChiefV3.RaceRoom
 	        public TrackInfo track_info;
 
 	        // Push to pass data
-	        //public PushToPass push_to_pass;
+	        public PushToPass push_to_pass;
 
 	        // Contains name and vehicle info for all drivers in place order
             [MarshalAs(UnmanagedType.ByValArray, SizeConst = 128)]

@@ -2,6 +2,8 @@ CrewChief version 3.
 
 Changelog
 ---------
+Version 3.9.6: Updated to support shared memory change.
+
 Version 3.9.5: tidied up radio bleep / click sound handling. This version requires a new sound pack.
 
 Version 3.9.4: Added optional between-message delay to slow things down a bit when there's a big pile of queued messages to be played ("pause_between_message" property); added "what's my best lap" / "what's my best lap time" response. No new sound pack for this version.
