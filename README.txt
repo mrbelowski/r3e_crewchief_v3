@@ -2,6 +2,8 @@ CrewChief version 3.
 
 Changelog
 ---------
+Version 3.9.7: Overhauled PCars mandatory pitstop handling. No new sound pack for this version
+
 Version 3.9.6: Updated to support shared memory change.
 
 Version 3.9.5: tidied up radio bleep / click sound handling. This version requires a new sound pack.

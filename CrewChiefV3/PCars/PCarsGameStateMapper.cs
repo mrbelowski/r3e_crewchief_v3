@@ -421,17 +421,7 @@ namespace CrewChiefV3.PCars
                     currentGameState.SessionData.EventIndex = previousGameState.SessionData.EventIndex;
                     currentGameState.SessionData.SessionIteration = previousGameState.SessionData.SessionIteration;
                     currentGameState.OpponentData = previousGameState.OpponentData;
-                    currentGameState.PitData.PitWindowStart = previousGameState.PitData.PitWindowStart;
-                    currentGameState.PitData.PitWindowEnd = previousGameState.PitData.PitWindowEnd;
-                    currentGameState.PitData.HasMandatoryPitStop = previousGameState.PitData.HasMandatoryPitStop;
-                    currentGameState.PitData.HasMandatoryDriverChange = previousGameState.PitData.HasMandatoryDriverChange;
-                    currentGameState.PitData.HasMandatoryTyreChange = previousGameState.PitData.HasMandatoryTyreChange;
-                    currentGameState.PitData.MandatoryTyreChangeRequiredTyreType = previousGameState.PitData.MandatoryTyreChangeRequiredTyreType;
-                    currentGameState.PitData.IsRefuellingAllowed = previousGameState.PitData.IsRefuellingAllowed;
-                    currentGameState.PitData.MaxPermittedDistanceOnCurrentTyre = previousGameState.PitData.MaxPermittedDistanceOnCurrentTyre;
-                    currentGameState.PitData.MinPermittedDistanceOnCurrentTyre = previousGameState.PitData.MinPermittedDistanceOnCurrentTyre;
-                    currentGameState.PitData.OnInLap = previousGameState.PitData.OnInLap;
-                    currentGameState.PitData.OnOutLap = previousGameState.PitData.OnOutLap;
+                    currentGameState.PitData = previousGameState.PitData;
                     currentGameState.SessionData.SessionTimesAtEndOfSectors = previousGameState.SessionData.SessionTimesAtEndOfSectors;
                     currentGameState.PenaltiesData.CutTrackWarnings = previousGameState.PenaltiesData.CutTrackWarnings;
                     currentGameState.SessionData.formattedPlayerLapTimes = previousGameState.SessionData.formattedPlayerLapTimes;
@@ -747,7 +737,9 @@ namespace CrewChiefV3.PCars
             {
                 currentGameState.PitData.HasMandatoryPitStop = true;
                 currentGameState.PitData.PitWindowStart = (int) shared.mEnforcedPitStopLap;
-                // TODO: mapping of mandatory pit stop state (open / completd / etc) - need to check for a pit stop after the window
+                currentGameState.PitData.PitWindow = mapToPitWindow(currentGameState, shared.mPitSchedule, shared.mPitMode);
+                currentGameState.PitData.IsMakingMandatoryPitStop = (currentGameState.PitData.PitWindow == PitWindow.Open || currentGameState.PitData.PitWindow == PitWindow.StopInProgress) &&
+                                                                    (currentGameState.PitData.OnInLap || currentGameState.PitData.OnOutLap);
             }
             currentGameState.CarDamageData.DamageEnabled = true;    // no way to tell if it's disabled from the shared memory
             currentGameState.CarDamageData.OverallAeroDamage = mapToAeroDamageLevel(shared.mAeroDamage);
@@ -1203,6 +1195,38 @@ namespace CrewChiefV3.PCars
                 return FlagEnum.GREEN;
             }
             return FlagEnum.UNKNOWN;
+        }
+
+        private PitWindow mapToPitWindow(GameStateData currentGameState, uint pitSchedule, uint pitMode)
+        {
+            if (currentGameState.PitData.PitWindowStart > 0)
+            {
+                if ((currentGameState.SessionData.SessionNumberOfLaps > 0 && currentGameState.SessionData.CompletedLaps < currentGameState.PitData.PitWindowStart - 1) ||
+                    (currentGameState.SessionData.SessionRunTime > 0 && currentGameState.SessionData.SessionRunningTime < currentGameState.PitData.PitWindowStart))
+                {
+                    return PitWindow.Closed;
+                }
+                else if ((currentGameState.SessionData.SessionNumberOfLaps > 0 && currentGameState.SessionData.CompletedLaps >= currentGameState.PitData.PitWindowStart - 1) ||
+                    (currentGameState.SessionData.SessionRunTime > 0 && currentGameState.SessionData.SessionRunningTime >= currentGameState.PitData.PitWindowStart))
+                {
+                    if (currentGameState.PitData.PitWindow == PitWindow.Completed ||
+                        (currentGameState.PitData.PitWindow == PitWindow.StopInProgress && pitMode == (uint)ePitMode.PIT_MODE_DRIVING_OUT_OF_PITS))
+                    {
+                        return PitWindow.Completed;
+                    }
+                    else 
+                    if (pitSchedule == (uint)ePitSchedule.PIT_SCHEDULE_STANDARD &&
+                        (pitMode == (uint)ePitMode.PIT_MODE_DRIVING_INTO_PITS || pitMode == (uint)ePitMode.PIT_MODE_IN_PIT))
+                    {
+                        return PitWindow.StopInProgress;
+                    }
+                    else
+                    {
+                        return PitWindow.Open;
+                    }
+                }
+            }
+            return PitWindow.Unavailable;
         }
 
         private float getMean(List<float> data)
