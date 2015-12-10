@@ -15,7 +15,7 @@ namespace CrewChiefV3
         // use the last part
         private static Boolean optimisticSurnameExtraction = true;
 
-        private static String[] middleBits = new String[] { "van", "de", "da", "le", "la", "von", "di", "eg", "du", "el", "del", "de la", "de le", "saint", "st"};
+        private static String[] middleBits = new String[] { "van", "de", "da", "le", "la", "von", "di", "eg", "du", "el", "del", "de la", "de le", "saint", "van der", "van de", "st"};
 
         private static Dictionary<String, String> lowerCaseRawNameToUsableName = new Dictionary<String, String>();
 
