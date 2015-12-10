@@ -215,19 +215,19 @@ namespace CrewChiefV3.Events
                                 }
                             }
                         }
-                        
-                        if (currentGameState.SessionData.CompletedLaps == pitWindowOpenLap - 1)
+
+                        if (pitWindowOpenLap > 0 && currentGameState.SessionData.CompletedLaps == pitWindowOpenLap - 1)
                         {
                             // note this is a 'pit window opens at the end of this lap' message, 
                             // so we play it 1 lap before the window opens
                             audioPlayer.queueClip(new QueuedMessage(folderMandatoryPitStopsPitWindowOpening, random.Next(0, 20), this));
                         }
-                        else if (currentGameState.SessionData.CompletedLaps == pitWindowOpenLap)
+                        else if (pitWindowOpenLap > 0 && currentGameState.SessionData.CompletedLaps == pitWindowOpenLap)
                         {
                             audioPlayer.setBackgroundSound(AudioPlayer.dtmPitWindowOpenBackground);
                             audioPlayer.queueClip(new QueuedMessage(folderMandatoryPitStopsPitWindowOpen, 0, this));
                         }
-                        else if (currentGameState.SessionData.CompletedLaps == pitWindowClosedLap - 1)
+                        else if (pitWindowClosedLap > 0 && currentGameState.SessionData.CompletedLaps == pitWindowClosedLap - 1)
                         {
                             audioPlayer.queueClip(new QueuedMessage(folderMandatoryPitStopsPitWindowClosing, random.Next(0, 20), this));
                             if (currentGameState.PitData.PitWindow != PitWindow.Completed &&
@@ -248,7 +248,7 @@ namespace CrewChiefV3.Events
                                 }
                             }
                         }
-                        else if (currentGameState.SessionData.CompletedLaps == pitWindowClosedLap)
+                        else if (pitWindowClosedLap > 0 && currentGameState.SessionData.CompletedLaps == pitWindowClosedLap)
                         {
                             mandatoryStopBoxThisLap = false;
                             if (currentGameState.PitData.PitWindow != PitWindow.Completed)
@@ -261,7 +261,7 @@ namespace CrewChiefV3.Events
                     }
                     else if (currentGameState.SessionData.IsNewLap && currentGameState.SessionData.CompletedLaps > 0 && currentGameState.SessionData.SessionTimeRemaining > 0)
                     {
-                        if (currentGameState.PitData.PitWindow != PitWindow.StopInProgress &&
+                        if (pitWindowClosedTime > 0 && currentGameState.PitData.PitWindow != PitWindow.StopInProgress &&
                             currentGameState.PitData.PitWindow != PitWindow.Completed &&
                             currentGameState.SessionData.SessionRunTime - currentGameState.SessionData.SessionTimeRemaining > pitWindowOpenTime * 60 &&
                             currentGameState.SessionData.SessionRunTime - currentGameState.SessionData.SessionTimeRemaining < pitWindowClosedTime * 60)
@@ -319,7 +319,7 @@ namespace CrewChiefV3.Events
                         play2minOpenWarning = false;
                         audioPlayer.queueClip(new QueuedMessage(folderMandatoryPitStopsPitWindowOpen2Min, 0, this));
                     }
-                    else if (playClosedNow && currentGameState.SessionData.SessionTimeRemaining > 0 &&
+                    else if (pitWindowClosedTime > 0 && playClosedNow && currentGameState.SessionData.SessionTimeRemaining > 0 &&
                         currentGameState.SessionData.SessionRunTime - currentGameState.SessionData.SessionTimeRemaining > (pitWindowClosedTime * 60))
                     {
                         playClosedNow = false;
@@ -334,14 +334,14 @@ namespace CrewChiefV3.Events
                         }
                         audioPlayer.queueClip(new QueuedMessage(folderMandatoryPitStopsPitWindowClosed, 0, this));
                     }
-                    else if (play1minCloseWarning && currentGameState.SessionData.SessionTimeRemaining > 0 &&
+                    else if (pitWindowClosedTime > 0 && play1minCloseWarning && currentGameState.SessionData.SessionTimeRemaining > 0 &&
                         currentGameState.SessionData.SessionRunTime - currentGameState.SessionData.SessionTimeRemaining > ((pitWindowClosedTime - 1) * 60))
                     {
                         play1minCloseWarning = false;
                         play2minCloseWarning = false;
                         audioPlayer.queueClip(new QueuedMessage(folderMandatoryPitStopsPitWindowCloses1min, 0, this));
                     }
-                    else if (play2minCloseWarning && currentGameState.SessionData.SessionTimeRemaining > 0 &&
+                    else if (pitWindowClosedTime > 0 && play2minCloseWarning && currentGameState.SessionData.SessionTimeRemaining > 0 &&
                         currentGameState.SessionData.SessionRunTime - currentGameState.SessionData.SessionTimeRemaining > ((pitWindowClosedTime - 2) * 60))
                     {
                         play2minCloseWarning = false;
