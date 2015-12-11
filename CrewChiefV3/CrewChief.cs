@@ -17,7 +17,7 @@ namespace CrewChiefV3
 {
     public class CrewChief : IDisposable
     {
-        public static String Version = "3.9.7";
+        public static String Version = "3.10.0";
 
         public static Boolean loadDataFromFile = false;
 
@@ -94,6 +94,7 @@ namespace CrewChiefV3
             eventsList.Add("PushNow", new PushNow(audioPlayer));
             eventsList.Add("FlagsMonitor", new FlagsMonitor(audioPlayer));
             eventsList.Add("ConditionsMonitor", new ConditionsMonitor(audioPlayer));
+            eventsList.Add("OvertakingAidsMonitor", new OvertakingAidsMonitor(audioPlayer));
             sessionEndMessages = new SessionEndMessages(audioPlayer);
         }
 

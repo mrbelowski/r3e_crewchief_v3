@@ -1207,5 +1207,29 @@ namespace CrewChiefV3.Properties {
                 this["pause_between_messages"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool enable_drs_messages {
+            get {
+                return ((bool)(this["enable_drs_messages"]));
+            }
+            set {
+                this["enable_drs_messages"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool enable_push_to_pass_messages {
+            get {
+                return ((bool)(this["enable_push_to_pass_messages"]));
+            }
+            set {
+                this["enable_push_to_pass_messages"] = value;
+            }
+        }
     }
 }

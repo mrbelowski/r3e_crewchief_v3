@@ -675,6 +675,7 @@
 		<row><td>ISX_DEFAULTCOMPONENT397</td><td>{FED764D5-FFED-4DB0-9DE8-D6B9A8152EBE}</td><td>CLEAR_RIGHT</td><td>2</td><td/><td/><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>ISX_DEFAULTCOMPONENT398</td><td>{8FA62E08-9CDC-4631-BDDB-ACDDB80DE6B7}</td><td>HOLD_YOUR_LINE</td><td>2</td><td/><td/><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>ISX_DEFAULTCOMPONENT399</td><td>{1B5BD7C7-9A16-4A75-B026-6EBDB2520584}</td><td>IN_THE_MIDDLE</td><td>2</td><td/><td/><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>ISX_DEFAULTCOMPONENT4</td><td>{6AF004DD-C181-475D-867B-F8F069CCAB1A}</td><td>OVERTAKING_AIDS</td><td>2</td><td/><td/><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>ISX_DEFAULTCOMPONENT40</td><td>{86D54145-FA80-4553-803F-58B6AD8AE623}</td><td>MINOR_SUSPENSION_DAMAGE</td><td>2</td><td/><td/><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>ISX_DEFAULTCOMPONENT400</td><td>{B7F77934-C909-4B73-8705-99DB74A2086B}</td><td>STILL_THERE</td><td>2</td><td/><td/><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>ISX_DEFAULTCOMPONENT401</td><td>{42789919-9B7B-48AE-AB1F-BF78AFD4448E}</td><td>TIMINGS</td><td>2</td><td/><td/><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
@@ -773,7 +774,15 @@
 		<row><td>ISX_DEFAULTCOMPONENT486</td><td>{0BD96AF6-7D18-4F29-8854-AB9CB9CD9E37}</td><td>WORN_RIGHTS</td><td>2</td><td/><td/><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>ISX_DEFAULTCOMPONENT487</td><td>{4A06A4FC-9FDA-4289-92B4-ABE3DD211155}</td><td>WORN_RIGHT_FRONT</td><td>2</td><td/><td/><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>ISX_DEFAULTCOMPONENT488</td><td>{F57949F7-2075-49EE-B6EB-A7A7E6BA8E1D}</td><td>WORN_RIGHT_REAR</td><td>2</td><td/><td/><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>ISX_DEFAULTCOMPONENT489</td><td>{19CC2AA9-0BF0-46E5-982A-5CAFE1AEDCF1}</td><td>ACTIVATIONS_REMAINING</td><td>2</td><td/><td/><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>ISX_DEFAULTCOMPONENT49</td><td>{3714964A-EC3B-4193-BACE-6F1B5077F729}</td><td>SEVERE_BRAKE_DAMAGE</td><td>2</td><td/><td/><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>ISX_DEFAULTCOMPONENT490</td><td>{56411A15-16E1-4625-9E4C-E025DE24C511}</td><td>A_FEW_TENTHS_OFF_DRS_RANGE</td><td>2</td><td/><td/><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>ISX_DEFAULTCOMPONENT491</td><td>{EEFB0E20-6DAD-4F09-97B2-4B847CB527A7}</td><td>A_SECOND_OFF_DRS_RANGE</td><td>2</td><td/><td/><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>ISX_DEFAULTCOMPONENT492</td><td>{F9BD06C7-8CC8-4504-8279-3A5B8ECE54E2}</td><td>DONT_FORGET_DRS</td><td>2</td><td/><td/><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>ISX_DEFAULTCOMPONENT493</td><td>{8C5BD65B-5B89-41F4-A5D1-637DC4D4D177}</td><td>GUY_BEHIND_HAS_DRS</td><td>2</td><td/><td/><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>ISX_DEFAULTCOMPONENT494</td><td>{D3766201-815C-4CAF-BFDB-E8B97102130A}</td><td>NO_ACTIVATIONS_REMAINING</td><td>2</td><td/><td/><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>ISX_DEFAULTCOMPONENT495</td><td>{F529072C-51D8-48E5-B1A8-5B9D01F15A86}</td><td>ONE_ACTIVATION_REMAINING</td><td>2</td><td/><td/><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>ISX_DEFAULTCOMPONENT496</td><td>{ABC99A58-1E3F-4639-A04E-5CB1F9FC3859}</td><td>PUSH_TO_PASS_NOW_AVAILABLE</td><td>2</td><td/><td/><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>ISX_DEFAULTCOMPONENT5</td><td>{4A04C79F-282D-4B25-9AA1-9CB4660603D0}</td><td>VOICE</td><td>2</td><td/><td/><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>ISX_DEFAULTCOMPONENT50</td><td>{0901B832-36A9-4560-99E4-A29F9AA77C61}</td><td>SEVERE_ENGINE_DAMAGE</td><td>2</td><td/><td/><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>ISX_DEFAULTCOMPONENT51</td><td>{478D848B-D9E7-4785-9B10-59C3034DCFEF}</td><td>SEVERE_SUSPENSION_DAMAGE</td><td>2</td><td/><td/><td>17</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
@@ -1548,6 +1557,7 @@
 		<row><td>MANDATORY_PIT_STOPS</td><td>ISX_DEFAULTCOMPONENT173</td></row>
 		<row><td>NUMBERS</td><td>ISX_DEFAULTCOMPONENT197</td></row>
 		<row><td>OPPONENTS</td><td>ISX_DEFAULTCOMPONENT282</td></row>
+		<row><td>OVERTAKING_AIDS</td><td>ISX_DEFAULTCOMPONENT4</td></row>
 		<row><td>PEARLS_OF_WISDOM</td><td>ISX_DEFAULTCOMPONENT298</td></row>
 		<row><td>PENALTIES</td><td>ISX_DEFAULTCOMPONENT302</td></row>
 		<row><td>POSITION</td><td>ISX_DEFAULTCOMPONENT321</td></row>
@@ -1638,6 +1648,7 @@
 		<col def="S255">ISFolderName</col>
 		<row><td>ABOUT_TO_RUN_OUT</td><td>FUEL</td><td>ABOUT_~1|about_to_run_out</td><td/><td>0</td><td/></row>
 		<row><td>ACKNOWLEDGE</td><td>VOICE</td><td>ACKNOW~1|acknowledge</td><td/><td>0</td><td/></row>
+		<row><td>ACTIVATIONS_REMAINING</td><td>OVERTAKING_AIDS</td><td>ACTIVA~1|activations_remaining</td><td/><td>0</td><td/></row>
 		<row><td>AHEAD</td><td>POSITION</td><td>ahead</td><td/><td>0</td><td/></row>
 		<row><td>AHEAD_IS_INCREASING</td><td>TIMINGS</td><td>AHEAD_~1|ahead_is_increasing</td><td/><td>0</td><td/></row>
 		<row><td>AHEAD_IS_NOW</td><td>TIMINGS</td><td>AHEAD_~1|ahead_is_now</td><td/><td>0</td><td/></row>
@@ -1650,6 +1661,8 @@
 		<row><td>AIR_TEMP_IS_NOW</td><td>CONDITIONS</td><td>AIR_TE~1|air_temp_is_now</td><td/><td>0</td><td/></row>
 		<row><td>ALLUSERSPROFILE</td><td>TARGETDIR</td><td>.:ALLUSE~1|All Users</td><td/><td>0</td><td/></row>
 		<row><td>ALL_CLEAR</td><td>ENGINE_MONITOR</td><td>ALL_CL~1|all_clear</td><td/><td>0</td><td/></row>
+		<row><td>A_FEW_TENTHS_OFF_DRS_RANGE</td><td>OVERTAKING_AIDS</td><td>A_FEW_~1|a_few_tenths_off_drs_range</td><td/><td>0</td><td/></row>
+		<row><td>A_SECOND_OFF_DRS_RANGE</td><td>OVERTAKING_AIDS</td><td>A_SECO~1|a_second_off_drs_range</td><td/><td>0</td><td/></row>
 		<row><td>AdminToolsFolder</td><td>TARGETDIR</td><td>.:Admint~1|AdminTools</td><td/><td>0</td><td/></row>
 		<row><td>AppDataFolder</td><td>TARGETDIR</td><td>.:APPLIC~1|Application Data</td><td/><td>0</td><td/></row>
 		<row><td>BACKGROUND_SOUNDS</td><td>SOUNDS</td><td>BACKGR~1|background_sounds</td><td/><td>0</td><td/></row>
@@ -1715,6 +1728,7 @@
 		<row><td>DELTASDISABLED</td><td>ACKNOWLEDGE</td><td>DELTAS~1|deltasDisabled</td><td/><td>0</td><td/></row>
 		<row><td>DELTASENABLED</td><td>ACKNOWLEDGE</td><td>DELTAS~1|deltasEnabled</td><td/><td>0</td><td/></row>
 		<row><td>DIDNT_UNDERSTAND</td><td>ACKNOWLEDGE</td><td>DIDNT_~1|didnt_understand</td><td/><td>0</td><td/></row>
+		<row><td>DONT_FORGET_DRS</td><td>OVERTAKING_AIDS</td><td>DONT_F~1|dont_forget_drs</td><td/><td>0</td><td/></row>
 		<row><td>DOUBLE_YELLOW_FLAG</td><td>FLAGS</td><td>DOUBLE~1|double_yellow_flag</td><td/><td>0</td><td/></row>
 		<row><td>DRIVER_NAMES</td><td>SOUNDS</td><td>DRIVER~1|driver_names</td><td/><td>0</td><td/></row>
 		<row><td>DesktopFolder</td><td>TARGETDIR</td><td>.:Desktop</td><td/><td>3</td><td/></row>
@@ -1750,6 +1764,7 @@
 		<row><td>GOOD_TYRE_TEMPS</td><td>TYRE_MONITOR</td><td>GOOD_T~1|good_tyre_temps</td><td/><td>0</td><td/></row>
 		<row><td>GOOD_WEAR</td><td>TYRE_MONITOR</td><td>GOOD_W~1|good_wear</td><td/><td>0</td><td/></row>
 		<row><td>GREEN_GREEN_GREEN</td><td>LAP_COUNTER</td><td>GREEN_~1|green_green_green</td><td/><td>0</td><td/></row>
+		<row><td>GUY_BEHIND_HAS_DRS</td><td>OVERTAKING_AIDS</td><td>GUY_BE~1|guy_behind_has_drs</td><td/><td>0</td><td/></row>
 		<row><td>GlobalAssemblyCache</td><td>TARGETDIR</td><td>.:Global~1|GlobalAssemblyCache</td><td/><td>0</td><td/></row>
 		<row><td>HALF_DISTANCE_GOOD_FUEL</td><td>FUEL</td><td>HALF_D~1|half_distance_good_fuel</td><td/><td>0</td><td/></row>
 		<row><td>HALF_DISTANCE_LOW_FUEL</td><td>FUEL</td><td>HALF_D~1|half_distance_low_fuel</td><td/><td>0</td><td/></row>
@@ -1850,6 +1865,7 @@
 		<row><td>NEW_PENALTY_STOPGO</td><td>PENALTIES</td><td>NEW_PE~1|new_penalty_stopgo</td><td/><td>0</td><td/></row>
 		<row><td>NEXT_CAR_IS</td><td>OPPONENTS</td><td>NEXT_C~1|next_car_is</td><td/><td>0</td><td/></row>
 		<row><td>NO</td><td>ACKNOWLEDGE</td><td>no</td><td/><td>0</td><td/></row>
+		<row><td>NO_ACTIVATIONS_REMAINING</td><td>OVERTAKING_AIDS</td><td>NO_ACT~1|no_activations_remaining</td><td/><td>0</td><td/></row>
 		<row><td>NO_AERO_DAMAGE</td><td>DAMAGE_REPORTING</td><td>NO_AER~1|no_aero_damage</td><td/><td>0</td><td/></row>
 		<row><td>NO_BRAKE_DAMAGE</td><td>DAMAGE_REPORTING</td><td>NO_BRA~1|no_brake_damage</td><td/><td>0</td><td/></row>
 		<row><td>NO_DATA</td><td>ACKNOWLEDGE</td><td>no_data</td><td/><td>0</td><td/></row>
@@ -1861,6 +1877,7 @@
 		<row><td>OH</td><td>NUMBERS</td><td>oh</td><td/><td>0</td><td/></row>
 		<row><td>OK</td><td>ACKNOWLEDGE</td><td>OK</td><td/><td>0</td><td/></row>
 		<row><td>OK_START</td><td>POSITION</td><td>ok_start</td><td/><td>0</td><td/></row>
+		<row><td>ONE_ACTIVATION_REMAINING</td><td>OVERTAKING_AIDS</td><td>ONE_AC~1|one_activation_remaining</td><td/><td>0</td><td/></row>
 		<row><td>ONE_LAP_AHEAD</td><td>POSITION</td><td>ONE_LA~1|one_lap_ahead</td><td/><td>0</td><td/></row>
 		<row><td>ONE_LAP_DOWN</td><td>POSITION</td><td>ONE_LA~1|one_lap_down</td><td/><td>0</td><td/></row>
 		<row><td>ONE_LAP_FUEL</td><td>FUEL</td><td>ONE_LA~1|one_lap_fuel</td><td/><td>0</td><td/></row>
@@ -1869,6 +1886,7 @@
 		<row><td>OPPONENTS</td><td>VOICE</td><td>OPPONE~1|opponents</td><td/><td>0</td><td/></row>
 		<row><td>OPTION_TYRES</td><td>MANDATORY_PIT_STOPS</td><td>OPTION~1|option_tyres</td><td/><td>0</td><td/></row>
 		<row><td>OVERTAKING</td><td>POSITION</td><td>OVERTA~1|overtaking</td><td/><td>0</td><td/></row>
+		<row><td>OVERTAKING_AIDS</td><td>VOICE</td><td>OVERTA~1|overtaking_aids</td><td/><td>0</td><td/></row>
 		<row><td>P</td><td>POSITION</td><td>p</td><td/><td>0</td><td/></row>
 		<row><td>P1</td><td>POSITION</td><td>p1</td><td/><td>0</td><td/></row>
 		<row><td>P10</td><td>POSITION</td><td>p10</td><td/><td>0</td><td/></row>
@@ -1945,6 +1963,7 @@
 		<row><td>PUSH_TO_GET_WIN</td><td>PUSH_NOW</td><td>PUSH_T~1|push_to_get_win</td><td/><td>0</td><td/></row>
 		<row><td>PUSH_TO_HOLD_POSITION</td><td>PUSH_NOW</td><td>PUSH_T~1|push_to_hold_position</td><td/><td>0</td><td/></row>
 		<row><td>PUSH_TO_IMPROVE</td><td>PUSH_NOW</td><td>PUSH_T~1|push_to_improve</td><td/><td>0</td><td/></row>
+		<row><td>PUSH_TO_PASS_NOW_AVAILABLE</td><td>OVERTAKING_AIDS</td><td>PUSH_T~1|push_to_pass_now_available</td><td/><td>0</td><td/></row>
 		<row><td>PersonalFolder</td><td>TARGETDIR</td><td>.:Personal</td><td/><td>0</td><td/></row>
 		<row><td>PrimaryVolumePath</td><td>TARGETDIR</td><td>.:Primar~1|PrimaryVolumePath</td><td/><td>0</td><td/></row>
 		<row><td>PrintHoodFolder</td><td>TARGETDIR</td><td>.:PRINTH~1|PrintHood</td><td/><td>0</td><td/></row>
@@ -3189,6 +3208,7 @@
 		<row><td>AlwaysInstall</td><td>ISX_DEFAULTCOMPONENT397</td></row>
 		<row><td>AlwaysInstall</td><td>ISX_DEFAULTCOMPONENT398</td></row>
 		<row><td>AlwaysInstall</td><td>ISX_DEFAULTCOMPONENT399</td></row>
+		<row><td>AlwaysInstall</td><td>ISX_DEFAULTCOMPONENT4</td></row>
 		<row><td>AlwaysInstall</td><td>ISX_DEFAULTCOMPONENT40</td></row>
 		<row><td>AlwaysInstall</td><td>ISX_DEFAULTCOMPONENT400</td></row>
 		<row><td>AlwaysInstall</td><td>ISX_DEFAULTCOMPONENT401</td></row>
@@ -3287,7 +3307,15 @@
 		<row><td>AlwaysInstall</td><td>ISX_DEFAULTCOMPONENT486</td></row>
 		<row><td>AlwaysInstall</td><td>ISX_DEFAULTCOMPONENT487</td></row>
 		<row><td>AlwaysInstall</td><td>ISX_DEFAULTCOMPONENT488</td></row>
+		<row><td>AlwaysInstall</td><td>ISX_DEFAULTCOMPONENT489</td></row>
 		<row><td>AlwaysInstall</td><td>ISX_DEFAULTCOMPONENT49</td></row>
+		<row><td>AlwaysInstall</td><td>ISX_DEFAULTCOMPONENT490</td></row>
+		<row><td>AlwaysInstall</td><td>ISX_DEFAULTCOMPONENT491</td></row>
+		<row><td>AlwaysInstall</td><td>ISX_DEFAULTCOMPONENT492</td></row>
+		<row><td>AlwaysInstall</td><td>ISX_DEFAULTCOMPONENT493</td></row>
+		<row><td>AlwaysInstall</td><td>ISX_DEFAULTCOMPONENT494</td></row>
+		<row><td>AlwaysInstall</td><td>ISX_DEFAULTCOMPONENT495</td></row>
+		<row><td>AlwaysInstall</td><td>ISX_DEFAULTCOMPONENT496</td></row>
 		<row><td>AlwaysInstall</td><td>ISX_DEFAULTCOMPONENT5</td></row>
 		<row><td>AlwaysInstall</td><td>ISX_DEFAULTCOMPONENT50</td></row>
 		<row><td>AlwaysInstall</td><td>ISX_DEFAULTCOMPONENT51</td></row>
@@ -3786,9 +3814,33 @@
 		<row><td>_.wav1380</td><td>ISX_DEFAULTCOMPONENT488</td><td>1.wav</td><td>0</td><td/><td/><td/><td>1</td><td>C:\projects\crewchief_c_sharp\CrewChiefV3\CrewChiefV3\sounds\voice\tyre_monitor\worn_right_rear\1.wav</td><td>1</td><td/></row>
 		<row><td>_.wav1381</td><td>ISX_DEFAULTCOMPONENT488</td><td>2.wav</td><td>0</td><td/><td/><td/><td>1</td><td>C:\projects\crewchief_c_sharp\CrewChiefV3\CrewChiefV3\sounds\voice\tyre_monitor\worn_right_rear\2.wav</td><td>1</td><td/></row>
 		<row><td>_.wav1382</td><td>ISX_DEFAULTCOMPONENT488</td><td>3.wav</td><td>0</td><td/><td/><td/><td>1</td><td>C:\projects\crewchief_c_sharp\CrewChiefV3\CrewChiefV3\sounds\voice\tyre_monitor\worn_right_rear\3.wav</td><td>1</td><td/></row>
+		<row><td>_.wav1383</td><td>ISX_DEFAULTCOMPONENT489</td><td>1.wav</td><td>0</td><td/><td/><td/><td>1</td><td>C:\projects\crewchief_c_sharp\CrewChiefV3\CrewChiefV3\sounds\voice\overtaking_aids\activations_remaining\1.wav</td><td>1</td><td/></row>
+		<row><td>_.wav1384</td><td>ISX_DEFAULTCOMPONENT489</td><td>2.wav</td><td>0</td><td/><td/><td/><td>1</td><td>C:\projects\crewchief_c_sharp\CrewChiefV3\CrewChiefV3\sounds\voice\overtaking_aids\activations_remaining\2.wav</td><td>1</td><td/></row>
+		<row><td>_.wav1385</td><td>ISX_DEFAULTCOMPONENT489</td><td>3.wav</td><td>0</td><td/><td/><td/><td>1</td><td>C:\projects\crewchief_c_sharp\CrewChiefV3\CrewChiefV3\sounds\voice\overtaking_aids\activations_remaining\3.wav</td><td>1</td><td/></row>
+		<row><td>_.wav1386</td><td>ISX_DEFAULTCOMPONENT490</td><td>1.wav</td><td>0</td><td/><td/><td/><td>1</td><td>C:\projects\crewchief_c_sharp\CrewChiefV3\CrewChiefV3\sounds\voice\overtaking_aids\a_few_tenths_off_drs_range\1.wav</td><td>1</td><td/></row>
+		<row><td>_.wav1387</td><td>ISX_DEFAULTCOMPONENT490</td><td>2.wav</td><td>0</td><td/><td/><td/><td>1</td><td>C:\projects\crewchief_c_sharp\CrewChiefV3\CrewChiefV3\sounds\voice\overtaking_aids\a_few_tenths_off_drs_range\2.wav</td><td>1</td><td/></row>
+		<row><td>_.wav1388</td><td>ISX_DEFAULTCOMPONENT490</td><td>3.wav</td><td>0</td><td/><td/><td/><td>1</td><td>C:\projects\crewchief_c_sharp\CrewChiefV3\CrewChiefV3\sounds\voice\overtaking_aids\a_few_tenths_off_drs_range\3.wav</td><td>1</td><td/></row>
+		<row><td>_.wav1389</td><td>ISX_DEFAULTCOMPONENT491</td><td>1.wav</td><td>0</td><td/><td/><td/><td>1</td><td>C:\projects\crewchief_c_sharp\CrewChiefV3\CrewChiefV3\sounds\voice\overtaking_aids\a_second_off_drs_range\1.wav</td><td>1</td><td/></row>
 		<row><td>_.wav139</td><td>ISX_DEFAULTCOMPONENT52</td><td>1.wav</td><td>0</td><td/><td/><td/><td>1</td><td>C:\projects\crewchief_c_sharp\CrewChiefV3\CrewChiefV3\sounds\voice\damage_reporting\severe_transmission_damage\1.wav</td><td>1</td><td/></row>
+		<row><td>_.wav1390</td><td>ISX_DEFAULTCOMPONENT491</td><td>2.wav</td><td>0</td><td/><td/><td/><td>1</td><td>C:\projects\crewchief_c_sharp\CrewChiefV3\CrewChiefV3\sounds\voice\overtaking_aids\a_second_off_drs_range\2.wav</td><td>1</td><td/></row>
+		<row><td>_.wav1391</td><td>ISX_DEFAULTCOMPONENT491</td><td>3.wav</td><td>0</td><td/><td/><td/><td>1</td><td>C:\projects\crewchief_c_sharp\CrewChiefV3\CrewChiefV3\sounds\voice\overtaking_aids\a_second_off_drs_range\3.wav</td><td>1</td><td/></row>
+		<row><td>_.wav1392</td><td>ISX_DEFAULTCOMPONENT492</td><td>1.wav</td><td>0</td><td/><td/><td/><td>1</td><td>C:\projects\crewchief_c_sharp\CrewChiefV3\CrewChiefV3\sounds\voice\overtaking_aids\dont_forget_drs\1.wav</td><td>1</td><td/></row>
+		<row><td>_.wav1393</td><td>ISX_DEFAULTCOMPONENT492</td><td>2.wav</td><td>0</td><td/><td/><td/><td>1</td><td>C:\projects\crewchief_c_sharp\CrewChiefV3\CrewChiefV3\sounds\voice\overtaking_aids\dont_forget_drs\2.wav</td><td>1</td><td/></row>
+		<row><td>_.wav1394</td><td>ISX_DEFAULTCOMPONENT492</td><td>3.wav</td><td>0</td><td/><td/><td/><td>1</td><td>C:\projects\crewchief_c_sharp\CrewChiefV3\CrewChiefV3\sounds\voice\overtaking_aids\dont_forget_drs\3.wav</td><td>1</td><td/></row>
+		<row><td>_.wav1395</td><td>ISX_DEFAULTCOMPONENT493</td><td>1.wav</td><td>0</td><td/><td/><td/><td>1</td><td>C:\projects\crewchief_c_sharp\CrewChiefV3\CrewChiefV3\sounds\voice\overtaking_aids\guy_behind_has_drs\1.wav</td><td>1</td><td/></row>
+		<row><td>_.wav1396</td><td>ISX_DEFAULTCOMPONENT493</td><td>2.wav</td><td>0</td><td/><td/><td/><td>1</td><td>C:\projects\crewchief_c_sharp\CrewChiefV3\CrewChiefV3\sounds\voice\overtaking_aids\guy_behind_has_drs\2.wav</td><td>1</td><td/></row>
+		<row><td>_.wav1397</td><td>ISX_DEFAULTCOMPONENT493</td><td>3.wav</td><td>0</td><td/><td/><td/><td>1</td><td>C:\projects\crewchief_c_sharp\CrewChiefV3\CrewChiefV3\sounds\voice\overtaking_aids\guy_behind_has_drs\3.wav</td><td>1</td><td/></row>
+		<row><td>_.wav1398</td><td>ISX_DEFAULTCOMPONENT494</td><td>1.wav</td><td>0</td><td/><td/><td/><td>1</td><td>C:\projects\crewchief_c_sharp\CrewChiefV3\CrewChiefV3\sounds\voice\overtaking_aids\no_activations_remaining\1.wav</td><td>1</td><td/></row>
+		<row><td>_.wav1399</td><td>ISX_DEFAULTCOMPONENT494</td><td>2.wav</td><td>0</td><td/><td/><td/><td>1</td><td>C:\projects\crewchief_c_sharp\CrewChiefV3\CrewChiefV3\sounds\voice\overtaking_aids\no_activations_remaining\2.wav</td><td>1</td><td/></row>
 		<row><td>_.wav14</td><td>ISX_DEFAULTCOMPONENT10</td><td>2.wav</td><td>0</td><td/><td/><td/><td>1</td><td>C:\projects\crewchief_c_sharp\CrewChiefV3\CrewChiefV3\sounds\voice\acknowledge\keepQuietDisabled\2.wav</td><td>1</td><td/></row>
 		<row><td>_.wav140</td><td>ISX_DEFAULTCOMPONENT52</td><td>2.wav</td><td>0</td><td/><td/><td/><td>1</td><td>C:\projects\crewchief_c_sharp\CrewChiefV3\CrewChiefV3\sounds\voice\damage_reporting\severe_transmission_damage\2.wav</td><td>1</td><td/></row>
+		<row><td>_.wav1400</td><td>ISX_DEFAULTCOMPONENT494</td><td>3.wav</td><td>0</td><td/><td/><td/><td>1</td><td>C:\projects\crewchief_c_sharp\CrewChiefV3\CrewChiefV3\sounds\voice\overtaking_aids\no_activations_remaining\3.wav</td><td>1</td><td/></row>
+		<row><td>_.wav1401</td><td>ISX_DEFAULTCOMPONENT495</td><td>1.wav</td><td>0</td><td/><td/><td/><td>1</td><td>C:\projects\crewchief_c_sharp\CrewChiefV3\CrewChiefV3\sounds\voice\overtaking_aids\one_activation_remaining\1.wav</td><td>1</td><td/></row>
+		<row><td>_.wav1402</td><td>ISX_DEFAULTCOMPONENT495</td><td>2.wav</td><td>0</td><td/><td/><td/><td>1</td><td>C:\projects\crewchief_c_sharp\CrewChiefV3\CrewChiefV3\sounds\voice\overtaking_aids\one_activation_remaining\2.wav</td><td>1</td><td/></row>
+		<row><td>_.wav1403</td><td>ISX_DEFAULTCOMPONENT495</td><td>3.wav</td><td>0</td><td/><td/><td/><td>1</td><td>C:\projects\crewchief_c_sharp\CrewChiefV3\CrewChiefV3\sounds\voice\overtaking_aids\one_activation_remaining\3.wav</td><td>1</td><td/></row>
+		<row><td>_.wav1404</td><td>ISX_DEFAULTCOMPONENT496</td><td>1.wav</td><td>0</td><td/><td/><td/><td>1</td><td>C:\projects\crewchief_c_sharp\CrewChiefV3\CrewChiefV3\sounds\voice\overtaking_aids\push_to_pass_now_available\1.wav</td><td>1</td><td/></row>
+		<row><td>_.wav1405</td><td>ISX_DEFAULTCOMPONENT496</td><td>2.wav</td><td>0</td><td/><td/><td/><td>1</td><td>C:\projects\crewchief_c_sharp\CrewChiefV3\CrewChiefV3\sounds\voice\overtaking_aids\push_to_pass_now_available\2.wav</td><td>1</td><td/></row>
+		<row><td>_.wav1406</td><td>ISX_DEFAULTCOMPONENT496</td><td>3.wav</td><td>0</td><td/><td/><td/><td>1</td><td>C:\projects\crewchief_c_sharp\CrewChiefV3\CrewChiefV3\sounds\voice\overtaking_aids\push_to_pass_now_available\3.wav</td><td>1</td><td/></row>
 		<row><td>_.wav141</td><td>ISX_DEFAULTCOMPONENT52</td><td>3.wav</td><td>0</td><td/><td/><td/><td>1</td><td>C:\projects\crewchief_c_sharp\CrewChiefV3\CrewChiefV3\sounds\voice\damage_reporting\severe_transmission_damage\3.wav</td><td>1</td><td/></row>
 		<row><td>_.wav142</td><td>ISX_DEFAULTCOMPONENT53</td><td>1.wav</td><td>0</td><td/><td/><td/><td>1</td><td>C:\projects\crewchief_c_sharp\CrewChiefV3\CrewChiefV3\sounds\voice\damage_reporting\trivial_aero_damage\1.wav</td><td>1</td><td/></row>
 		<row><td>_.wav143</td><td>ISX_DEFAULTCOMPONENT53</td><td>2.wav</td><td>0</td><td/><td/><td/><td>1</td><td>C:\projects\crewchief_c_sharp\CrewChiefV3\CrewChiefV3\sounds\voice\damage_reporting\trivial_aero_damage\2.wav</td><td>1</td><td/></row>
@@ -7380,6 +7432,7 @@
 		<row><td>ISX_DEFAULTCOMPONENT397</td><td/><td/><td>_C95289F6_412A_4ED3_A502_6B45285D43BC_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>ISX_DEFAULTCOMPONENT398</td><td/><td/><td>_BF55427A_AA8D_4853_BC83_1803294B704A_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>ISX_DEFAULTCOMPONENT399</td><td/><td/><td>_29633E71_F9F2_44D2_AF34_B9EA01A357D4_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>ISX_DEFAULTCOMPONENT4</td><td/><td/><td>_E103817A_782A_4806_8565_0404F0D1CC88_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>ISX_DEFAULTCOMPONENT40</td><td/><td/><td>_C5DF7704_5ECE_43FE_8111_30D0C252D5A1_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>ISX_DEFAULTCOMPONENT400</td><td/><td/><td>_B56E8F3F_2ECA_4FF8_A330_02FC0C5CB35E_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>ISX_DEFAULTCOMPONENT401</td><td/><td/><td>_33A19BA7_BF5E_4CAD_AE7E_ACB30E0E8C85_FILTER</td><td/><td/><td/><td/></row>
@@ -7478,7 +7531,15 @@
 		<row><td>ISX_DEFAULTCOMPONENT486</td><td/><td/><td>_901FBDE5_9CB3_4276_B1FD_E93CE0AF12A5_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>ISX_DEFAULTCOMPONENT487</td><td/><td/><td>_36DE9EFF_B252_4E8A_9B3D_D33B58D2F371_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>ISX_DEFAULTCOMPONENT488</td><td/><td/><td>_1F90BF75_7B30_4493_884C_C9B3FD2E35F8_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>ISX_DEFAULTCOMPONENT489</td><td/><td/><td>_E7AA934B_D82B_4CC4_8A10_03A3853A7450_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>ISX_DEFAULTCOMPONENT49</td><td/><td/><td>_7F76C7D4_E3FD_44E1_BAB4_15371BE3127F_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>ISX_DEFAULTCOMPONENT490</td><td/><td/><td>_987B3F8D_B5E0_4988_AC06_82B2C01CCBB0_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>ISX_DEFAULTCOMPONENT491</td><td/><td/><td>_C6A505D9_5529_47EB_BC13_BBCA6C461A9C_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>ISX_DEFAULTCOMPONENT492</td><td/><td/><td>_EC9E626B_8DA3_4AE1_BD46_3B18DA7FEF77_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>ISX_DEFAULTCOMPONENT493</td><td/><td/><td>_202C0538_0596_49F5_97CD_E9F2C52F2626_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>ISX_DEFAULTCOMPONENT494</td><td/><td/><td>_56979225_6757_4407_A6AF_A7BC381EFA8D_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>ISX_DEFAULTCOMPONENT495</td><td/><td/><td>_F33AFA5D_5CA1_40AD_AF78_C6D3E8272E9F_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>ISX_DEFAULTCOMPONENT496</td><td/><td/><td>_19A60A1E_BADC_4E50_93D2_6DE0FA7E0DEA_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>ISX_DEFAULTCOMPONENT5</td><td/><td/><td>_7A6AEFBC_C087_48A8_93E0_77BF8C66A16F_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>ISX_DEFAULTCOMPONENT50</td><td/><td/><td>_5FB991DF_AB15_416E_9EA6_6AB9C2EF2BF4_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>ISX_DEFAULTCOMPONENT51</td><td/><td/><td>_1D200129_5B56_4C34_8503_11B84EEC9469_FILTER</td><td/><td/><td/><td/></row>

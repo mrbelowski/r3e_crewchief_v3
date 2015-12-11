@@ -636,17 +636,6 @@ namespace CrewChiefV3.GameState
 
         // ...
         public Single BrakeBias = 0;
-
-        // should DRS be in here?
-        public Boolean DrsEnabled = false;
-
-        public Boolean DrsAvailable = false;
-
-        public Boolean DrsEngaged = false;
-
-        // steering?
-        // Anti roll bar?
-        // traction control?
     }
 
     public class PitData
@@ -852,6 +841,20 @@ namespace CrewChiefV3.GameState
         }
     }
 
+    public class OvertakingAids
+    {
+        public Boolean PushToPassAvailable = false;
+	    public Boolean PushToPassEngaged = false;
+	    public int PushToPassActivationsRemaining = 0;
+	    public Single PushToPassEngagedTimeLeft = 0;
+	    public Single PushToPassWaitTimeLeft = 0;
+
+        public Boolean DrsEnabled = false;
+        public Boolean DrsAvailable = false;
+        public Boolean DrsEngaged = false;
+        public Single DrsRange = 0;
+    }
+
     public class GameStateData
     {
         public long Ticks;
@@ -883,6 +886,8 @@ namespace CrewChiefV3.GameState
         public Dictionary<Object, OpponentData> OpponentData = new Dictionary<Object, OpponentData>();
 
         public Conditions Conditions = new Conditions();
+
+        public OvertakingAids OvertakingAids = new OvertakingAids();
 
         public GameStateData(long ticks)
         {

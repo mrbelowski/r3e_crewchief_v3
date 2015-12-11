@@ -943,6 +943,7 @@ namespace CrewChiefV3.RaceRoom
                 currentGameState.TyreData.LeftRearIsSpinning = Math.Abs(shared.wheel_speed.rear_left) > maxRotatingSpeed;
                 currentGameState.TyreData.RightRearIsSpinning = Math.Abs(shared.wheel_speed.rear_right) > maxRotatingSpeed;
             }
+            currentGameState.OvertakingAids = getOvertakingAids(shared, currentGameState.carClass.carClassEnum, currentGameState.SessionData.CompletedLaps, currentGameState.SessionData.SessionType);
             return currentGameState;
         }
 
@@ -1204,6 +1205,29 @@ namespace CrewChiefV3.RaceRoom
             {
                 return TyreCondition.NEW;
             }
+        }
+
+        private OvertakingAids getOvertakingAids(RaceRoomShared shared, CarData.CarClassEnum carClassEnum, int lapsCompleted, SessionType sessionType)
+        {
+            OvertakingAids overtakingAids = new OvertakingAids();
+            overtakingAids.DrsAvailable = shared.DrsAvailable == 1;
+            overtakingAids.DrsEngaged = shared.DrsEngaged == 1;
+            if (carClassEnum == CarData.CarClassEnum.DTM_2014)
+            {
+                overtakingAids.DrsEnabled = sessionType == SessionType.Race && lapsCompleted > 2;
+                overtakingAids.DrsRange = 2;
+            }
+            else if (carClassEnum == CarData.CarClassEnum.DTM_2015)
+            {
+                overtakingAids.DrsEnabled = sessionType == SessionType.Race && lapsCompleted > 3;
+                overtakingAids.DrsRange = 1;
+            }
+            overtakingAids.PushToPassActivationsRemaining = shared.push_to_pass.amount_left;
+            overtakingAids.PushToPassAvailable = shared.push_to_pass.available == 1;
+            overtakingAids.PushToPassEngaged = shared.push_to_pass.engaged == 1;
+            overtakingAids.PushToPassEngagedTimeLeft = shared.push_to_pass.engaged_time_left;
+            overtakingAids.PushToPassWaitTimeLeft = shared.push_to_pass.wait_time_left;
+            return overtakingAids;
         }
 
         private void upateOpponentData(OpponentData opponentData, int racePosition, int unfilteredRacePosition, int completedLaps, int sector, float sectorTime, 
