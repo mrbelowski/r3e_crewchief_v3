@@ -421,7 +421,18 @@ namespace CrewChiefV3.PCars
                     currentGameState.SessionData.EventIndex = previousGameState.SessionData.EventIndex;
                     currentGameState.SessionData.SessionIteration = previousGameState.SessionData.SessionIteration;
                     currentGameState.OpponentData = previousGameState.OpponentData;
-                    currentGameState.PitData = previousGameState.PitData;
+                    currentGameState.PitData.PitWindowStart = previousGameState.PitData.PitWindowStart;
+                    currentGameState.PitData.PitWindowEnd = previousGameState.PitData.PitWindowEnd;
+                    currentGameState.PitData.HasMandatoryPitStop = previousGameState.PitData.HasMandatoryPitStop;
+                    currentGameState.PitData.HasMandatoryDriverChange = previousGameState.PitData.HasMandatoryDriverChange;
+                    currentGameState.PitData.HasMandatoryTyreChange = previousGameState.PitData.HasMandatoryTyreChange;
+                    currentGameState.PitData.MandatoryTyreChangeRequiredTyreType = previousGameState.PitData.MandatoryTyreChangeRequiredTyreType;
+                    currentGameState.PitData.IsRefuellingAllowed = previousGameState.PitData.IsRefuellingAllowed;
+                    currentGameState.PitData.MaxPermittedDistanceOnCurrentTyre = previousGameState.PitData.MaxPermittedDistanceOnCurrentTyre;
+                    currentGameState.PitData.MinPermittedDistanceOnCurrentTyre = previousGameState.PitData.MinPermittedDistanceOnCurrentTyre;
+                    currentGameState.PitData.OnInLap = previousGameState.PitData.OnInLap;
+                    currentGameState.PitData.OnOutLap = previousGameState.PitData.OnOutLap;
+                    // the other properties of PitData are updated each tick, and shouldn't be copied over here. Nasty...
                     currentGameState.SessionData.SessionTimesAtEndOfSectors = previousGameState.SessionData.SessionTimesAtEndOfSectors;
                     currentGameState.PenaltiesData.CutTrackWarnings = previousGameState.PenaltiesData.CutTrackWarnings;
                     currentGameState.SessionData.formattedPlayerLapTimes = previousGameState.SessionData.formattedPlayerLapTimes;

@@ -2,7 +2,9 @@ CrewChief version 3.
 
 Changelog
 ---------
-Version 3.9.7: Overhauled PCars mandatory pitstop handling; added Audi TT cup car to car classes (R3E), added some new driver names. No new sound pack for this version
+Version 3.9.8: Fixed regression in PCars opponent pit detection. Added missing driver names to bundle version. No new sound pack for this version.
+
+Version 3.9.7: Overhauled PCars mandatory pitstop handling; added Audi TT cup car to car classes (R3E), added some new driver names; some driver last name extraction fixes. No new sound pack for this version
 
 Version 3.9.6: Updated to support shared memory change.
 
