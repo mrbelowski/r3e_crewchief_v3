@@ -94,7 +94,7 @@ namespace CrewChiefV3
         public static String WHOS_LEADING = "who's leading";
         public static String WHATS = "what's";
         public static String BEST_LAP = "best lap";
-        public static String BEST_LAP_TIME = "best la time";
+        public static String BEST_LAP_TIME = "best lap time";
         public static String THE_LEADER = "the leader";
         public static String THE_CAR_AHEAD = "the car ahead";
         public static String THE_CAR_IN_FRONT = "the car in front";
